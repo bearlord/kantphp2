@@ -210,10 +210,10 @@ final class Kant {
      */
     protected function bootstrap() {
         $classname = "Bootstrap";
-        $filepath = APP_PATH . "Bootstrap/Bootstrap.php";
+        $filepath = APP_PATH . "Bootstrap/$classname.php";
         if (file_exists($filepath)) {
             include $filepath;
-            $class = "Bootstrap\\Bootstrap";
+            $class = "Bootstrap\\$classname";
             if (method_exists($class, 'initialize')) {
                 return call_user_func(array($class, 'initialize'));
             }
@@ -235,7 +235,7 @@ final class Kant {
             $filename = KANT_PATH . self::$_autoCoreClass[$className] . ".php";
         } else {
             if (strpos($className, "\\") !== false) {
-                if (strpos($className, "Kant") !== false) {
+                if (strpos($className, "Kant") === 0) {
                     $className = str_replace('Kant\\', '', $className) . ".php";
                     $filename = KANT_PATH . $className;
                 } else {
