@@ -193,7 +193,7 @@ final class Kant {
         $filepath = APP_PATH . "Module/$module/Controller/$controller.php";
         if (file_exists($filepath)) {
             include $filepath;
-            $namespace = "Module\\$module\\Controller\\";
+            $namespace = "$module\\Controller\\";
             $controller = $namespace . $controller;
             if (class_exists($controller)) {
                 $class = new $controller;
@@ -240,11 +240,10 @@ final class Kant {
                     $filename = KANT_PATH . $className;
                 } else {
                     $className = str_replace('\\', '/', $className) . ".php";
+                    
                     $filename = APP_PATH . $className;
                 }
-            } else {
-                echo $className;
-            }
+            } 
         }
         require_once $filename;
         return true;

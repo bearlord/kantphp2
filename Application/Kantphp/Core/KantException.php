@@ -9,6 +9,8 @@
 
 namespace Kant;
 
+use Exception;
+
 !defined('IN_KANT') && exit('Access Denied');
 
 class KantException extends Exception {

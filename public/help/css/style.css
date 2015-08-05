@@ -1,0 +1,251 @@
+/*
+ * Globals
+ */
+
+body {
+    font-family: "simsun", Georgia, "Times New Roman", Times, serif;
+    color: #555;
+}
+
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+    margin-top: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    color: #333;
+}
+blockquote {
+    font-size: 14px;
+}
+/* Custom Styles */
+ul.nav-tabs{
+    width: 200px;
+    margin-top: 20px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
+    font-family: 'Microsoft YaHei';
+}
+ul.nav-tabs li{
+    margin: 0;
+    border-top: 1px solid #ddd;
+}
+ul.nav-tabs li:first-child{
+    border-top: none;
+}
+ul.nav-tabs li a{
+    margin: 0;
+    padding: 8px 16px;
+    border-radius: 0;
+}
+ul.nav-tabs li.active a, ul.nav-tabs li.active a:hover{
+    color: #fff;
+    background: #0088cc;
+    border: 1px solid #0088cc;
+}
+ul.nav-tabs li:first-child a{
+    border-radius: 4px 4px 0 0;
+}
+ul.nav-tabs li:last-child a{
+    border-radius: 0 0 4px 4px;
+}
+ul.nav-tabs.affix{
+    top: 30px; /* Set the top position of pinned element */
+}
+.color-emphasize {
+    color: #a94442;
+}
+
+.pln{color:#000}
+@media screen{
+    .str{color:#080}
+    .kwd{color:#008}
+    .com{color:#800}
+    .typ{color:#606}
+    .lit{color:#066}
+    .pun,.opn,.clo{color:#660}
+    .tag{color:#008}
+    .atn{color:#606}
+    .atv{color:#080}
+    .dec,.var{color:#606}
+    .fun{color:red}
+}
+@media print,projection{
+    .str{color:#060}
+    .kwd{color:#006;font-weight:bold}
+    .com{color:#600;font-style:italic}
+    .typ{color:#404;font-weight:bold}
+    .lit{color:#044}
+    .pun,.opn,.clo{color:#440}
+    .tag{color:#006;font-weight:bold}
+    .atn{color:#404}.atv{color:#060}
+}
+
+ol.linenums{
+    margin: 0 0 0 40px;
+    white-space: normal;
+    list-style: outside decimal
+}
+li.L0,li.L1,li.L2,li.L3,li.L4,li.L5,li.L6,li.L7,li.L8,li.L9{
+    border-left:1px solid #D1D7DC;
+    padding:0 5px;
+    line-height:23px;
+    background-color:#FAFAFA;
+    text-indent: 0;
+}
+code.prettyprint {
+    position: relative;
+    border: 0;
+    border: 1px solid #D1D7DC;
+    margin-left: 0;
+    padding: 2px;
+    font-size: 14px;
+    display: block;
+    font-family: "Consolas",\5FAE\8F6F\96C5\9ED1;
+    margin: 10px 0;
+    white-space: normal;
+    word-wrap: break-word;
+}
+/*
+ * Masthead for nav
+ */
+
+.help-masthead {
+    background-color: #428bca;
+    -webkit-box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
+    box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
+}
+
+/* Nav links */
+.help-nav-item {
+    position: relative;
+    display: inline-block;
+    padding: 10px;
+    font-weight: 500;
+    color: #cdddeb;
+}
+.help-nav-item:hover,
+.help-nav-item:focus {
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Active state gets a caret at the bottom */
+.help-nav .active {
+    color: #fff;
+}
+.help-nav .active:after {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 0;
+    margin-left: -5px;
+    vertical-align: middle;
+    content: " ";
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid;
+    border-left: 5px solid transparent;
+}
+
+
+/*
+ * Blog name and description
+ */
+
+.help-header {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.help-title {
+    margin-top: 30px;
+    margin-bottom: 0;
+    font-size: 60px;
+    font-weight: normal;
+}
+.help-description {
+    font-size: 20px;
+    color: #999;
+}
+
+
+/*
+ * Main column and sidebar layout
+ */
+
+.help-main {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Sidebar modules for boxing content */
+.sidebar-module {
+    padding: 15px;
+    margin: 0 -15px 15px;
+}
+.sidebar-module-inset {
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+}
+.sidebar-module-inset p:last-child,
+.sidebar-module-inset ul:last-child,
+.sidebar-module-inset ol:last-child {
+    margin-bottom: 0;
+}
+
+
+/* Pagination */
+.pager {
+    margin-bottom: 60px;
+    text-align: left;
+}
+.pager > li > a {
+    width: 140px;
+    padding: 10px 20px;
+    text-align: center;
+    border-radius: 30px;
+}
+
+
+/*
+ * Blog posts
+ */
+
+.help-post {
+    margin-bottom: 40px;
+}
+.help-post .page-header {
+    margin-top: 20px;
+}
+.help-post p {
+    text-indent: 2em;
+}
+.help-post-title {
+    margin-bottom: 5px;
+    font-size: 40px;
+}
+.help-post-meta {
+    margin-bottom: 20px;
+    color: #999;
+}
+
+
+/*
+ * Footer
+ */
+
+.help-footer {
+    padding: 40px 0;
+    color: #999;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-top: 1px solid #e5e5e5;
+}
+.help-footer p:last-child {
+    margin-bottom: 0;
+}
