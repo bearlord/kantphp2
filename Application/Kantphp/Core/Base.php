@@ -74,15 +74,7 @@ class Base {
         $key = md5($classname);
         if (file_exists($filepath)) {
             include_once $filepath;
-            if ($initialize) {
-                if (!empty($classes[$key])) {
-                    return $classes[$key];
-                }
-                $classes[$key] = new $classname;
-            } else {
-                $classes[$key] = true;
-            }
-            return $classes[$key];
+            return true;
         }
     }
 
@@ -112,6 +104,8 @@ class Base {
                 if (!empty($classes[$key])) {
                     return $classes[$key];
                 }
+                $namespace = "Module\\$module\\Model\\";
+                $classname = $namespace . $classes;
                 $classes[$key] = new $classname;
             } else {
                 $classes[$key] = true;
