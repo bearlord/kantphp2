@@ -1,5 +1,9 @@
 <?php
 
+namespace Demo\Controller;
+
+use Kant\Controller\BaseController;
+
 class UploadController extends BaseController {
 
     public function indexAction() {

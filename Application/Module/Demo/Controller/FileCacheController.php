@@ -1,5 +1,9 @@
 <?php
 
+namespace Demo\Controller;
+
+use Kant\Controller\BaseController;
+
 /**
  * 缓存
  */

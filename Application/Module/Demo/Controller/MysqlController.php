@@ -1,5 +1,9 @@
 <?php
 
+namespace Demo\Controller;
+
+use Kant\Controller\BaseController;
+
 class MysqlController extends BaseController {
 
     protected $mdM;

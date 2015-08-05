@@ -1,5 +1,9 @@
 <?php
 
+namespace Demo\Controller;
+
+use Kant\Controller\BaseController;
+
 class SecureController extends BaseController {
 
     public function __construct() {

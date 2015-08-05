@@ -1,6 +1,6 @@
 <?php
 
-namespace Module\Demo\Controller;
+namespace Demo\Controller;
 
 use Kant\Controller\BaseController;
 use Kant\Runtime\Runtime;
