@@ -13,8 +13,8 @@ class SqliteController extends BaseController {
     }
 
     public function IndexAction() {
-        $a = $this->model->readAll();
-        var_dump($a);
+        $row = $this->model->readAll();
+        var_dump($row);
         echo "index";
     }
 

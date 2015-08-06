@@ -529,75 +529,54 @@ abstract class DbQueryAbstract extends Base {
     }
 
     /**
-     *
-     * Combine a SQL
-     *
-     * @param get_count_sql boolean
-     * @return SQL string
-     */
-    public function getSql($getCountSql = false) {
-        foreach ($this->varFields as $v) {
-            $$v = $v;
-        }
-        if (!$this->from) {
-            throw new KantException('Invalid SQL: FROM');
-        }
-        $sql = "SELECT " . ($getCountSql ? "COUNT(*) as count" : ($this->select ? $this->select : "*")) .
-                " FROM " . $this->from .
-                ($this->where ? " WHERE " . $this->where : "") .
-                ($getCountSql ? '' : ($this->groupby ? " GROUP BY " . $this->groupby : "")) .
-                ($getCountSql ? '' : ($this->orderby ? " ORDER BY " . $this->orderby : "")) .
-                ($getCountSql ? '' : ($this->limit ? " LIMIT " . $this->limit : ""));
-        return $sql;
-    }
-
-    /**
-     *
-     * Combine an insert SQL
-     *
-     * @param replace boolean
-     * @param update boolean
+     * Bluid SQL
+     * 
+     * @param type $type
+     * @param type $getCountSql
      * @return string
+     * @throws KantException
      */
-    protected function insertSql($update = false) {
-        foreach ($this->varFields as $v) {
-            $$v = $v;
-        }
-        if (empty($this->from)) {
-            throw new KantException('Invalid sql: FROM(INSERT)');
-        }
-        if (empty($this->set)) {
-            throw new KantException('Invalid sql: SET(INSERT)');
-        }
-        if ($update) {
-            $split = $setsql = '';
-            foreach ($this->set as $key => $val) {
-                $setsql .= $split . $key . ' = ' . $val;
-                $split = ', ';
-            }
-            $sql = "UPDATE " . $this->from . " SET " . $setsql . ($this->where ? " WHERE " . $this->where : "");
-        } else {
-            $setsql = $setkey = $setval = '';
-            $setkey = implode(',', array_keys($this->set));
-            $setval = implode(',', array_values($this->set));
-            $sql = "INSERT INTO " . $this->from . "($setkey)  VALUES ($setval)";
-        }
-        return $sql;
-    }
-
-    /**
-     *
-     * Combine delete SQL
-     *
-     */
-    protected function deleteSql() {
+    public function bluidSql($type, $getCountSql = false) {
         foreach ($this->varFields as $v) {
             $$v = $v;
         }
         if (!$this->from) {
             throw new KantException('Invalid SQL: FROM(DELETE)');
         }
-        $sql = "DELETE FROM " . $this->from . ($this->where ? " WHERE " . $this->where : "");
+        switch ($type) {
+            case 'SELECT':
+                $sql = "SELECT " . ($getCountSql ? "COUNT(*) as count" : ($this->select ? $this->select : "*")) .
+                        " FROM " . $this->from .
+                        ($this->where ? " WHERE " . $this->where : "") .
+                        ($getCountSql ? '' : ($this->groupby ? " GROUP BY " . $this->groupby : "")) .
+                        ($getCountSql ? '' : ($this->orderby ? " ORDER BY " . $this->orderby : "")) .
+                        ($getCountSql ? '' : ($this->limit ? " LIMIT " . $this->limit : ""));
+
+                break;
+            case 'INSERT':
+                if (empty($this->set)) {
+                    throw new KantException('Invalid sql: SET(INSERT)');
+                }
+                $setsql = $setkey = $setval = '';
+                $setkey = implode(',', array_keys($this->set));
+                $setval = implode(',', array_values($this->set));
+                $sql = "INSERT INTO " . $this->from . "($setkey)  VALUES ($setval)";
+                break;
+            case 'UPDATE';
+                if (empty($this->set)) {
+                    throw new KantException('Invalid sql: SET(INSERT)');
+                }
+                $split = $setsql = '';
+                foreach ($this->set as $key => $val) {
+                    $setsql .= $split . $key . ' = ' . $val;
+                    $split = ', ';
+                }
+                $sql = "UPDATE " . $this->from . " SET " . $setsql . ($this->where ? " WHERE " . $this->where : "");
+                break;
+            case 'DELETE':
+                $sql = "DELETE FROM " . $this->from . ($this->where ? " WHERE " . $this->where : "");
+                break;
+        }
         return $sql;
     }
 
@@ -660,7 +639,6 @@ abstract class DbQueryAbstract extends Base {
     public function checkField($field) {
         if (preg_match("/[\'\\\"\<\>\/]+/", $field)) {
             throw new KantException(sprintf('Invalid field:%s', $field));
-            return;
         }
         return $field;
     }

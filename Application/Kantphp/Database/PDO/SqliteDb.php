@@ -110,7 +110,7 @@ class PdoSqliteDb extends DbQueryAbstract implements DbQueryInterface {
      *  SQl query
      *
      * @param string $sql
-     * @param string $method
+     * @param string $fetchMode
      * @return array
      */
     public function query($sql, $fetchMode = PDO::FETCH_ASSOC) {
@@ -158,13 +158,9 @@ class PdoSqliteDb extends DbQueryAbstract implements DbQueryInterface {
      * @param clear_var boolean
      * @return array
      */
-    public function fetch($fetchMode = PDO::FETCH_ASSOC, $clearVar = true) {
-        $sql = $this->getSql(0);
+    public function fetch($fetchMode = PDO::FETCH_ASSOC) {
+        $sql = $this->bluidSql("SELECT");
         $result = $this->query($sql, $fetchMode);
-        $this->cacheSql();
-        if ($clearVar) {
-            $this->clear();
-        }
         return $result;
     }
 
@@ -172,26 +168,13 @@ class PdoSqliteDb extends DbQueryAbstract implements DbQueryInterface {
      * Fetches the first column of the first row of the SQL result.
      * 
      * @param type $fetchMode
-     * @param type $clearVar
      */
-    public function fetchOne($clearVar = true) {
-        if ($this->from) {
-            $this->limit = 1;
+    public function fetchOne() {
+        $this->limit = 1;
+        $result = $this->fetch();
+        if ($result) {
+            return $result[0];
         }
-        $sql = $this->getSql(0);
-        if (!is_resource($this->dbh)) {
-            $this->_connect();
-        }
-        $sth = $this->dbh->prepare($sql);
-        $sth->execute();
-        $result = $sth->fetchColumn(0);
-        $this->sqls[] = $sql;
-        $this->queryCount++;
-        $this->cacheSql();
-        if ($clearVar) {
-            $this->clear();
-        }
-        return $result;
     }
 
     /**
@@ -229,50 +212,34 @@ class PdoSqliteDb extends DbQueryAbstract implements DbQueryInterface {
     /**
      *  Insert Data
      * 
-     * @param boolean $replace
-     * @param boolean $clearVar
      * @return
      */
-    public function insert($replace = false, $clearVar = true) {
-        $sql = $this->insertSql($replace, 0);
+    public function insert() {
+        $sql = $this->bluidSql("INSERT");
         $this->execute($sql);
-        $this->cacheSql();
         $lastInsertId = $this->lastInsertId($this->primary);
-        if ($clearVar) {
-            $this->clear();
-        }
         return $lastInsertId;
     }
 
     /**
      * Update Data
      * 
-     * @param boolean $clearVar
      * @return 
      */
-    public function update($clearVar = true) {
-        $sql = $this->insertSql(true, true);
-        $result = $this->execute($sql, 'unbuffer');
-        $this->cacheSql();
-        if ($clearVar) {
-            $this->clear();
-        }
+    public function update() {
+        $sql = $this->bluidSql("UPDATE");
+        $result = $this->execute($sql);
         return $result;
     }
 
     /**
      * Delete Data
      * 
-     * @param boolean $clearVar
      * @return
      */
-    public function delete($clearVar = true) {
-        $sql = $this->deleteSql();
+    public function delete() {
+        $sql = $this->bluidSql("DELETE");
         $result = $this->execute($sql);
-        $this->cacheSql();
-        if ($clearVar) {
-            $this->clear();
-        }
         return $result;
     }
 
@@ -283,13 +250,9 @@ class PdoSqliteDb extends DbQueryAbstract implements DbQueryInterface {
      * @param clear_var boolean
      * @return integer The number of rows in a result set on success&return.falseforfailure;.
      */
-    public function count($clearVar = true) {
-        $sql = $this->getSql(1);
+    public function count() {
+        $sql = $this->bluidSql("SELECT", true);
         $row = $this->query($sql);
-        $this->cacheSql();
-        if ($clearVar) {
-            $this->clear();
-        }
         return $row->result(0);
     }
 
