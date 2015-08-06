@@ -96,27 +96,27 @@ final class Driver {
         switch ($this->_dbConfig[$db_name]['type']) {
             case 'mysql' :
                 require_once KANT_PATH . 'Database/MySQL/MysqlDb.php';
-                $namespace  = "Database\\MySQL\\";
+                $namespace  = "Kant\\Database\\MySQL\\";
                 $class = 'MysqlDb';
                 break;
             case 'pdo_mysql' :
                 require_once KANT_PATH . 'Database/PDO/MysqlDb.php';
-                $namespace  = "Database\\PDO\\";
+                $namespace  = "Kant\\Database\\PDO\\";
                 $class = $namespace . 'PdoMysqlDb';
                 break;
             case 'pdo_sqlite';
                 require_once KANT_PATH . 'Database/PDO/SqliteDb.php';
-                $namespace  = "Database\\PDO\\";
+                $namespace  = "Kant\\Database\\PDO\\";
                 $class = $namespace .'PdoSqliteDb';
                 break;
             case 'pdo_pgsql':
                 require_once KANT_PATH . 'Database/PDO/PgsqlDb.php';
-                $namespace  = "Databas\\PDO\\";
+                $namespace  = "Kant\\Databas\\PDO\\";
                 $class = $namespace . 'PdoPgsqlDb';
                 break;
             case 'default':
                 require_once KANT_PATH . 'Database/PDO/PgsqlDb.php';
-                $namespace  = "Databas\\PDO\\";
+                $namespace  = "Kant\\Databas\\PDO\\";
                 $class = $namespace .'PdoPgsqlDb';
                 break;
         }

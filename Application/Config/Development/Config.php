@@ -31,7 +31,7 @@ return array(
         'auth_key' => 'NMa1FcQBE1HHHd4AQyTV'
     ),
     'session' => array(
-        'default' => array(
+        'default1' => array(
             'type' => 'original',
             'maxlifetime' => 1800,
         ),
@@ -44,7 +44,7 @@ return array(
             'maxlifetime' => 1800,
             'auth_key' => 'NMa1FcQBE1HHHd4AQyTV',
         ),
-        'sqlite' => array(
+        'default' => array(
             'type' => 'sqlite',
             'maxlifetime' => 1800,
             'auth_key' => 'NMa1FcQBE1HHHd4AQyTV',

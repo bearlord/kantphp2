@@ -74,7 +74,7 @@ class BaseModel extends Base {
         $this->_dbConfig = $config['database'];
         if (!isset($this->_dbConfig[$this->adapter])) {
             $this->adapter = 'default';
-        }
+        }       
         try {
             $this->db = Driver::getInstance($this->_dbConfig)->getDatabase($this->adapter);
         } catch (KantException $e) {

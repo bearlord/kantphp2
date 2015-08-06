@@ -1,25 +1,27 @@
 <?php
 
 /**
- * ===========================================
- * Project: KantPHP
- * Version: 2.0
- * Copyright (c) 2011, KantPHP
- * ALL rights reserved.
- * License: BSD license
- * ===========================================
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @copyright (c) 2011 - 2013 KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
+
+namespace Kant\Session\Sqlite;
+
+use Kant\Session\Sqlite\SessionSqliteModel;
+
 class SessionSqlite {
 
     //Session setting: gc_maxlifetime, auth_key;
     private $_setting;
     //Session Model
-    private $_sessM;
+    protected $model;
 
     public function __construct($setting) {
         $this->_setting = $setting;
         require_once KANT_PATH . 'Session/Sqlite/SessionSqliteModel.php';
-        $this->_sessM = new SessionSqliteModel();
+        $this->model = new SessionSqliteModel();
         self::_setSessionModule();
     }
 
@@ -52,7 +54,7 @@ class SessionSqlite {
      */
     public function read($sid) {
         $sessionid = 'sess_' . $sid;
-        $row = $this->_sessM->read($sessionid, '', 'sessionid');
+        $row = $this->model->read($sessionid, '', 'sessionid');
         if ($row) {
             $row = $row[0];
             require_once KANT_PATH . 'Secure/phpseclib/bootstrap.php';
@@ -79,16 +81,16 @@ class SessionSqlite {
         $crypt->setKey($this->_setting['auth_key']);
         //AES encrypt, BASE64 encode
         $secure_data = base64_encode($crypt->encrypt($data));
-        $exist = $this->_sessM->read($sessionid, '', 'sessionid');
+        $exist = $this->model->read($sessionid, '', 'sessionid');
         if (!$exist) {
-            $row = $this->_sessM->save(array(
+            $row = $this->model->save(array(
                 'sessionid' => $sessionid,
                 'data' => $secure_data,
                 'lastvisit' => time(),
                 'ip' => get_ip()
             ));
         } else {
-            $row = $this->_sessM->save(array(
+            $row = $this->model->save(array(
                 'data' => $secure_data,
                 'lastvisit' => time(),
                     ), $sessionid);
@@ -98,13 +100,13 @@ class SessionSqlite {
     }
 
     public function destroy($sid) {
-        $this->_sessM->delete($sid);
+        $this->model->delete($sid);
         return true;
     }
 
     public function gc($maxlifetime) {
         $expiretime = time() - $maxlifetime;
-        $this->_sessM->deleteExpire($expiretime);
+        $this->model->deleteExpire($expiretime);
         return true;
     }
 

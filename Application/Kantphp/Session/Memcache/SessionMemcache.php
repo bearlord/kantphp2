@@ -6,7 +6,11 @@
  * @copyright (c) 2011 - 2013 KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
+
 namespace Kant\Session;
+
+use Kant\Secure\Crypt\Crypt_AES;
+
 /**
  * Session Memcache
  * 

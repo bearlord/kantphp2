@@ -6,7 +6,11 @@
  * @copyright (c) 2011 - 2013 KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-namespace Kant\Session;
+
+namespace Kant\Session\File;
+
+use Kant\Secure\Crypt\Crypt_AES;
+
 /**
  * Session File
  * 
@@ -71,7 +75,6 @@ class SessionFile {
     public function read($sid) {
         $file = $this->_sessionPath . 'sess_' . $sid;
         if (file_exists($file)) {
-            require_once KANT_PATH . 'Secure/phpseclib/bootstrap.php';
             $crypt = new Crypt_AES();
             $crypt->setKey($this->_setting['auth_key']);
             $secure_data = file_get_contents($this->_sessionPath . 'sess_' . $sid);
@@ -91,7 +94,6 @@ class SessionFile {
      */
     public function write($sid, $data) {
         $file = $this->_sessionPath . 'sess_' . $sid;
-        require_once KANT_PATH . 'Secure/phpseclib/bootstrap.php';
         $crypt = new Crypt_AES();
         $crypt->setKey($this->_setting['auth_key']);
         //AES encrypt, BASE64 encode

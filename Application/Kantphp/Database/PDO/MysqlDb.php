@@ -7,7 +7,7 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Database\PDO;
+namespace Kant\Database\PDO;
 
 use Kant\Database\DbQueryAbstract;
 use Kant\Database\DbQueryInterface;
@@ -23,7 +23,7 @@ use PDO;
  * @since version 1.1
  * 
  */
-class PdoMysqlDb extends DbQueryAbstract implements DbQueryInterface {
+class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
 
     /**
      *

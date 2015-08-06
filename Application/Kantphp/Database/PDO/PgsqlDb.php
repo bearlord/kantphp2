@@ -8,7 +8,7 @@
  */
 !defined('IN_KANT') && exit('Access Denied');
 
-namespace Database\PDO;
+namespace Kant\Database\PDO;
 
 use Kant\Database\DbQueryAbstract;
 use Kant\Database\DbQueryInterface;
@@ -22,11 +22,7 @@ use PDO;
  * @since version 1.1
  * 
  */
-class PdoPgsqlDb extends DbQueryAbstract implements DbQueryInterface {
-
-    public function __construct() {
-        parent::__construct();
-    }
+class PgsqlDb extends DbQueryAbstract implements DbQueryInterface {
 
     /**
      *

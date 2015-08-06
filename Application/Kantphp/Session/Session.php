@@ -8,6 +8,8 @@
  */
 
 namespace Kant\Session;
+use Kant\Session\File\SessionFile;
+use Kant\Session\Sqlite\SessionSqlite;
 
 !defined('IN_KANT') && exit('Access Denied');
 

@@ -3,14 +3,15 @@
 namespace Demo\Controller;
 
 use Kant\Controller\BaseController;
+use Kant\Secure\Crypt\Crypt_AES;
 
 class SecureController extends BaseController {
 
-    public function __construct() {
-        require_once KANT_PATH . 'Secure/phpseclib/bootstrap.php';
-    }
-
     public function IndexAction() {
+        require_once KANT_PATH . 'Secure/bootstrap.php';
+        include(KANT_PATH . 'Secure/Crypt/Crypt_Random.php');
+        $bb = \Kant\Secure\Crypt\crypt_random_string(44);
+        echo $bb;
         $this->AesController();
     }
 
