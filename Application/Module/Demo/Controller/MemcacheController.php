@@ -7,7 +7,7 @@ use Kant\Controller\BaseController;
 /**
  * 缓存
  */
-class MemCacheController extends BaseController {
+class MemcacheController extends BaseController {
 
     //缓存类型，可以是file,memcache,redis.
     protected $cacheAdapter = 'memcache';

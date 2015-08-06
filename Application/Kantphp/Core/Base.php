@@ -104,8 +104,8 @@ class Base {
                 if (!empty($classes[$key])) {
                     return $classes[$key];
                 }
-                $namespace = "Module\\$module\\Model\\";
-                $classname = $namespace . $classes;
+                $namespace = "$module\\Model\\";
+                $classname = $namespace . $classname;
                 $classes[$key] = new $classname;
             } else {
                 $classes[$key] = true;

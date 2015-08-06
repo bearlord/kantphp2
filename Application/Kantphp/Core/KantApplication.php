@@ -231,21 +231,27 @@ final class Kant {
         if (class_exists($className, false) || interface_exists($className, false)) {
             return true;
         }
-        if (in_array($className, array_keys(self::$_autoCoreClass)) == true) {
-            $filename = KANT_PATH . self::$_autoCoreClass[$className] . ".php";
-        } else {
-            if (strpos($className, "\\") !== false) {
-                if (strpos($className, "Kant") === 0) {
-                    $className = str_replace('Kant\\', '', $className) . ".php";
-                    $filename = KANT_PATH . $className;
+        try {
+            if (in_array($className, array_keys(self::$_autoCoreClass)) == true) {
+                $filename = KANT_PATH . self::$_autoCoreClass[$className] . ".php";
+            } else {
+                if (strpos($className, "\\") !== false) {
+                    if (strpos($className, "Kant") === 0) {
+                        $className = str_replace('Kant\\', '', $className) . ".php";
+                        $filename = KANT_PATH . $className;
+                    } else {
+                        $className = str_replace('\\', '/', $className) . ".php";
+
+                        $filename = APP_PATH . $className;
+                    }
                 } else {
-                    $className = str_replace('\\', '/', $className) . ".php";
-                    
-                    $filename = APP_PATH . $className;
+                    $filename = $className;
                 }
-            } 
+            }
+            require_once $filename;
+        } catch (RuntimeException $e) {
+            exit('Require File Error: ' . $e->getMessage());
         }
-        require_once $filename;
         return true;
     }
 

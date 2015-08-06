@@ -6,14 +6,14 @@ use Kant\Controller\BaseController;
 
 class SqliteController extends BaseController {
 
-    protected $dM;
+    protected $model;
 
     public function __construct() {
-        $this->dM = $this->model("SqliteDemo");
+        $this->model = $this->model("SqliteDemo");
     }
 
     public function IndexAction() {
-        $a = $this->dM->readAll();
+        $a = $this->model->readAll();
         var_dump($a);
         echo "index";
     }
