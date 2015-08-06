@@ -13,7 +13,7 @@ namespace Database\PDO;
 use Kant\Database\DbQueryAbstract;
 use Kant\Database\DbQueryInterface;
 use Kant\KantException;
-//use PDO;
+use PDO;
 
 /**
  * Postgresql database

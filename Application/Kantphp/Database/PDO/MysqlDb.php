@@ -12,7 +12,7 @@ namespace Database\PDO;
 use Kant\Database\DbQueryAbstract;
 use Kant\Database\DbQueryInterface;
 use Kant\KantException;
-
+use PDO;
 !defined('IN_KANT') && exit('Access Denied');
 
 /**

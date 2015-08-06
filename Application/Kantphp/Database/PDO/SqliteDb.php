@@ -12,6 +12,7 @@ namespace Database\PDO;
 use Kant\Database\DbQueryAbstract;
 use Kant\Database\DbQueryInterface;
 use Kant\KantException;
+use PDO;
 
 /**
  * SQLite Datbase
@@ -70,7 +71,7 @@ class PdoSqliteDb extends DbQueryAbstract implements DbQueryInterface {
         } catch (PDOException $e) {
             throw new KantException(sprintf('Can not connect to SQLite server or cannot use database.%s', $e->getMessage()));
         }
-       // $this->dbh->exec(sprintf("SET NAMES \"%s\"", $this->config['charset']));
+        // $this->dbh->exec(sprintf("SET NAMES \"%s\"", $this->config['charset']));
         $this->database = $this->config['database'];
     }
 
