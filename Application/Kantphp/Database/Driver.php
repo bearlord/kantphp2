@@ -9,6 +9,8 @@
 
 namespace Kant\Database;
 
+use Kant\KantException;
+
 !defined('IN_KANT') && exit('Access Denied');
 
 /**
@@ -79,6 +81,11 @@ final class Driver {
      * failure.
      */
     public function getDatabase($db_name) {
+        static $i;
+        $i++;
+        if ($i > 3) {
+            return;
+        }
         if (!isset($this->_dbList[$db_name]) || !is_object($this->_dbList[$db_name])) {
             $this->_dbList[$db_name] = $this->connect($db_name);
         }
@@ -96,32 +103,32 @@ final class Driver {
         switch ($this->_dbConfig[$db_name]['type']) {
             case 'mysql' :
                 require_once KANT_PATH . 'Database/MySQL/MysqlDb.php';
-                $namespace  = "Kant\\Database\\MySQL\\";
+                $namespace = "Kant\\Database\\MySQL\\";
                 $class = 'MysqlDb';
                 break;
             case 'pdo_mysql' :
                 require_once KANT_PATH . 'Database/PDO/MysqlDb.php';
-                $namespace  = "Kant\\Database\\PDO\\";
-                $class = $namespace . 'PdoMysqlDb';
+                $namespace = "Kant\\Database\\PDO\\";
+                $class = $namespace . 'MysqlDb';
                 break;
             case 'pdo_sqlite';
                 require_once KANT_PATH . 'Database/PDO/SqliteDb.php';
-                $namespace  = "Kant\\Database\\PDO\\";
-                $class = $namespace .'PdoSqliteDb';
+                $namespace = "Kant\\Database\\PDO\\";
+                $class = $namespace . 'SqliteDb';
                 break;
             case 'pdo_pgsql':
                 require_once KANT_PATH . 'Database/PDO/PgsqlDb.php';
-                $namespace  = "Kant\\Databas\\PDO\\";
-                $class = $namespace . 'PdoPgsqlDb';
+                $namespace = "Kant\\Databas\\PDO\\";
+                $class = $namespace . 'PgsqlDb';
                 break;
             case 'default':
                 require_once KANT_PATH . 'Database/PDO/PgsqlDb.php';
-                $namespace  = "Kant\\Databas\\PDO\\";
-                $class = $namespace .'PdoPgsqlDb';
+                $namespace = "Kant\\Databas\\PDO\\";
+                $class = $namespace . 'PgsqlDb';
                 break;
         }
         if (!class_exists($class)) {
-            throw new RuntimeException(sprintf('Unable to load Database Driver: %s', $this->_dbConfig[$db_name]['type']));
+            throw new KantException(sprintf('Unable to load Database Driver: %s', $this->_dbConfig[$db_name]['type']));
         }
         $object = new $class;
         $object->open($this->_dbConfig[$db_name]);

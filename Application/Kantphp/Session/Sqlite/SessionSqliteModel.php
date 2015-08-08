@@ -1,74 +1,86 @@
 <?php
 
-require_once KANT_PATH . 'Model/BaseModel.php';
+namespace Kant\Session\Sqlite;
 
-class SessionSqliteModel extends BaseModel {
+use Kant\KantException;
+use PDO;
 
+class SessionSqliteModel {
+
+    protected $adapter = 'session_db';
     protected $table = 'session';
     protected $primary = 'sessionid';
-    private $_dbConfig;
+    protected $db;
+    protected $_dbConfig = array();
 
     public function __construct() {
-        $this->_setDbConfig();
-        $this->getDbo();
-    }
-
-    /**
-     *
-     * Get a database object.
-     * 
-     */
-    public function getDbo() {
+        $this->_dbConfig = $this->_setDbConfig();
         if ($this->db == '') {
-            $this->createDbo();
+            $this->db = new SqliteDatabase($this->_dbConfig);
         }
-    }
-
-    /**
-     * 
-     * Create an database object
-     * 
-     */
-    public function createDbo() {
-        if (!isset($this->_dbConfig[$this->adapter])) {
-            $this->adapter = 'default';
-        }
-        try {
-            $this->db = Driver::getInstance($this->_dbConfig)->getDatabase($this->adapter);
-        } catch (KantException $e) {
-            if (!headers_sent()) {
-                header('HTTP/1.1 500 Internal Server Error');
-            }
-            exit('Database Error: ' . $e->getMessage());
-        }
-        $this->db->dbTablepre = $this->_dbConfig[$this->adapter]['tablepre'];
-        $this->db->table = $this->table;
-        $this->db->primary = $this->primary;
+        $this->table = $this->_dbConfig['tablepre'] . $this->table;
     }
 
     private function _setDbConfig() {
-        $this->_dbConfig = array(
-            'default' => array(
-                'hostname' => '',
-                'port' => '',
-                'database' => CACHE_PATH . 'Session/SessionSqlite/session.db',
-                'username' => '',
-                'password' => '',
-                'tablepre' => 'kant_',
-                'charset' => 'UTF-8',
-                'type' => 'pdo_sqlite',
-                'debug' => true,
-                'persistent' => 0,
-                'autoconnect' => 1
-            )
+        return array(
+            'hostname' => '',
+            'port' => '',
+            'database' => CACHE_PATH . 'Session/SessionSqlite/session.db',
+            'username' => '',
+            'password' => '',
+            'tablepre' => 'kant_',
+            'charset' => 'UTF-8',
+            'type' => 'pdo_sqlite',
+            'debug' => true,
+            'persistent' => 0,
+            'autoconnect' => 1
         );
+        
+    }
+
+    /**
+     * Read session
+     * 
+     * @param string $sessionid
+     * @return 
+     */
+    public function readSession($sessionid) {
+        $sql = sprintf("SELECT * FROM %s WHERE sessionid = '{$sessionid}'", $this->table);
+        $row = $this->db->query($sql);
+        return $row;
+    }
+
+    public function saveSession($data, $sessionid = '') {
+        if ($sessionid == '') {
+                    $sql = sprintf("INSERT INTO %s (sessionid, data, lastvisit, ip) VALUES ('%s', '%s', '%s', '%s')", $this->table, $data['sessionid'], $data['data'], $data['lastvisit'], $data['ip']);
+
+        } else {
+                    $sql = sprintf("UPDATE %s SET data = '%s', lastvisit = '%s', ip = '%s' WHERE sessionid = '%s'", $this->table, $data['data'], $data['lastvisit'], $data['ip'], $sessionid);
+
+        }
+        $row = $this->db->query($sql);
+        return $row;
+    }
+
+    /**
+     * Delete session
+     * 
+     * @param string $sessionid
+     * @return 
+     */
+    public function deleteSesssion($sessionid) {
+        $sql = sprintf("DELETE FROM %s", $this->table);
+        $row = $this->db->query($sql);
+        return $row;
     }
 
     /**
      * Delete all Session
      */
     public function deleteAll() {
-        return $this->db->from($this->table)->delete();
+        $sql = sprintf("DELETE FROM %s", $this->table);
+        $row = $this->db->query($sql);
+        return $row;
     }
 
     /**
@@ -76,7 +88,77 @@ class SessionSqliteModel extends BaseModel {
      * @param type $expiretime
      */
     public function deleteExpire($expiretime) {
-        $this->db->from($this->table)->whereLess('lastvisit', $expiretime)->delete();
+        $sql = sprintf("DELETE FROM %s WHERE lastvisit < $expiretime", $this->table);
+        $row = $this->db->query($sql);
+        return $row;
+    }
+
+}
+
+class SqliteDatabase {
+
+    protected $dbh;
+
+    public function __construct($config) {
+        $this->open($config);
+    }
+
+    public function open($config) {
+        $this->config = $config;
+        if ($config['autoconnect'] == 1) {
+            $this->_connect();
+        }
+    }
+
+    /**
+     *
+     * Creates a PDO object and connects to the database.
+     *
+     * @return void
+     */
+    private function _connect() {
+        if ($this->dbh) {
+            return;
+        }
+        // check for PDO extension
+        if (!extension_loaded('pdo')) {
+            throw new KantException('The PDO extension is required for this adapter but the extension is not loaded');
+        }
+        // check for PDO_PGSQL extension
+        if (!extension_loaded('pdo_sqlite')) {
+            throw new KantException('The PDO_PGSQL extension is required for this adapter but the extension is not loaded');
+        }
+
+        $dsn = sprintf("%s:%s", "sqlite", $this->config['database']);
+
+        //Request a persistent connection, rather than creating a new connection.
+        if (isset($this->config['persistent']) && $this->config['persistent'] == true) {
+            $options = array(PDO::ATTR_PERSISTENT => true);
+        } else {
+            $options = null;
+        }
+        $this->config['username'] = null;
+        $this->config['password'] = null;
+        try {
+            $this->dbh = new PDO($dsn, null, null, $options);
+            // always use exceptions.
+            $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            throw new KantException(sprintf('Can not connect to SQLite server or cannot use database.%s', $e->getMessage()));
+        }
+//         $this->dbh->exec(sprintf("SET NAMES \"%s\"", $this->config['charset']));
+        $this->database = $this->config['database'];
+    }
+
+    /**
+     * SQl query
+     * @param type $sql
+     */
+    public function query($sql) {
+        $sth = $this->dbh->prepare($sql);
+        $sth->execute();
+        $rows = $sth->fetchAll(PDO::FETCH_ASSOC);
+        return $rows;
     }
 
 }

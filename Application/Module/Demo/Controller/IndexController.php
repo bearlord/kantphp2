@@ -57,6 +57,7 @@ class IndexController extends BaseController {
     }
 
     public function sessionAction() {
+//        session_destroy();
         $_SESSION['hello'] = 'hello world';
         echo session_id();
         var_dump($_SESSION);

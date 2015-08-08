@@ -31,7 +31,7 @@ return array(
         'auth_key' => 'NMa1FcQBE1HHHd4AQyTV'
     ),
     'session' => array(
-        'default1' => array(
+        'default4' => array(
             'type' => 'original',
             'maxlifetime' => 1800,
         ),

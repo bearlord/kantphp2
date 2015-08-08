@@ -10,9 +10,11 @@
 namespace Kant\Session\Sqlite;
 
 use Kant\Session\Sqlite\SessionSqliteModel;
+use Kant\Secure\Crypt\Crypt_AES;
 
 class SessionSqlite {
 
+    protected $sidpre = 'sess_';
     //Session setting: gc_maxlifetime, auth_key;
     private $_setting;
     //Session Model
@@ -53,11 +55,10 @@ class SessionSqlite {
      * @return string
      */
     public function read($sid) {
-        $sessionid = 'sess_' . $sid;
-        $row = $this->model->read($sessionid, '', 'sessionid');
+        $sessionid = $this->sidpre . $sid;
+        $row = $this->model->readSession($sessionid);
         if ($row) {
             $row = $row[0];
-            require_once KANT_PATH . 'Secure/phpseclib/bootstrap.php';
             $crypt = new Crypt_AES();
             $crypt->setKey($this->_setting['auth_key']);
             $secure_data = $row['data'];
@@ -75,32 +76,33 @@ class SessionSqlite {
      * @return boolean
      */
     public function write($sid, $data) {
-        $sessionid = 'sess_' . $sid;
-        require_once KANT_PATH . 'Secure/phpseclib/bootstrap.php';
+        $sessionid = $this->sidpre . $sid;
         $crypt = new Crypt_AES();
         $crypt->setKey($this->_setting['auth_key']);
         //AES encrypt, BASE64 encode
         $secure_data = base64_encode($crypt->encrypt($data));
-        $exist = $this->model->read($sessionid, '', 'sessionid');
+        $exist = $this->model->readSession($sessionid);
         if (!$exist) {
-            $row = $this->model->save(array(
+            $row = $this->model->saveSession(array(
                 'sessionid' => $sessionid,
                 'data' => $secure_data,
                 'lastvisit' => time(),
-                'ip' => get_ip()
+                'ip' => get_client_ip()
             ));
         } else {
-            $row = $this->model->save(array(
+            $row = $this->model->saveSession(array(
                 'data' => $secure_data,
                 'lastvisit' => time(),
+                'ip' => get_client_ip()
                     ), $sessionid);
         }
 
-        return $row ? 'true' : 'false';
+        return $row;
     }
 
     public function destroy($sid) {
-        $this->model->delete($sid);
+        $sessionid = $this->sidpre . $sid;
+        $this->model->readSession($sessionid);
         return true;
     }
 

@@ -7,7 +7,7 @@
  * @license BSD License.
  */
 
-namespace Database\PDO;
+namespace Database\MySQL;
 
 use Kant\Database\DbQueryAbstract;
 use Kant\Database\DbQueryInterface;
@@ -207,7 +207,7 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
      * Fetches the first column of the first row of the SQL result.
      * 
      */
-    public function fetchOne() {        
+    public function fetchOne() {
         $this->limit = 1;
         $result = $this->fetch();
         if ($result) {

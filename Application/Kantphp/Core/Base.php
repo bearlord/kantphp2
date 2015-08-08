@@ -23,6 +23,7 @@ class Base {
     protected $cache;
     //cookie
     protected $cookie;
+    protected $session;
 
     public function __construct() {
         $this->cache = $this->_initCache();
@@ -202,6 +203,9 @@ class Base {
      * Load Cookie
      */
     private function _initCookie() {
+        if ($this->cookie) {
+            return $this->cookie;
+        }
         static $cookie;
         if ($cookie) {
             return $cookie;
@@ -215,6 +219,7 @@ class Base {
             }
             exit('Load Cache Error: ' . $e->getMessage());
         }
+        $this->cookie = $cookie;
         return $cookie;
     }
 
@@ -222,6 +227,9 @@ class Base {
      * Load Session
      */
     private function _initSession() {
+        if ($this->session) {
+            return $this->session;
+        }
         static $session;
         if ($session) {
             return $session;
@@ -237,6 +245,7 @@ class Base {
             }
             exit('Load Cache Error: ' . $e->getMessage());
         }
+        $this->session = $session;
         return $session;
     }
 
