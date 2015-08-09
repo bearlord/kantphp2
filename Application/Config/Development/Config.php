@@ -12,7 +12,7 @@ return array(
     'route_rules' => array(    
         '|topic/id,(\d+)|i' => 'blog/detail/index/id,$1',
         '|cache|i' => 'demo/cache',
-        '|get/(.+)+|is' => 'demo/index/get/id,$1',
+       // '|get/(.+)+|is' => 'demo/index/get/id,$1',
     ),
     'path_info_repair' => true,
     'debug' => true,

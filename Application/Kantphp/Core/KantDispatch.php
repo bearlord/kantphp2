@@ -8,6 +8,7 @@
  */
 
 namespace Kant;
+
 use Kant\Log\Log;
 
 !defined('IN_KANT') && exit('Access Denied');
@@ -45,7 +46,7 @@ class Dispatch {
                 foreach (array('REQUEST_URI', 'HTTP_X_REWRITE_URL', 'argv') as $var) {
                     if (!empty($_SERVER[$var])) {
                         $requestUri = $_SERVER[$var];
-                         if ($var == 'argv') {
+                        if ($var == 'argv') {
                             $requestUri = strtolower($requestUri[1]);
                         }
                         break;
@@ -99,23 +100,23 @@ class Dispatch {
      * @param array $dispatchInfo
      * @return Cola
      */
-    public function setDispatchInfo($dispatchInfo = null) {
+    public function setDispatchInfo($dispatchInfo = null) {       
         if (null === $dispatchInfo) {
             $config = KantRegistry::get('config');
-            $pathInfo = $this->getPathInfo();
-            if (!empty($pathInfo)) {
+            $pathinfo = $this->getPathInfo();
+            if (!empty($pathinfo)) {
                 $router = KantRouter::getInstance();
                 $router->setUrlSuffix($config['url_suffix']);
                 $router->add($config['route_rules']);
                 $router->enableDynamicMatch(true, $config['route']);
-                $dispatchInfo = $router->match($pathInfo);
+                $dispatchInfo = $router->match($pathinfo);
             } else {
                 $dispatchInfo['module'] = empty($_GET['module']) ? $config['route']['module'] : $_GET['module'];
                 $dispatchInfo['ctrl'] = empty($_GET['ctrl']) ? $config['route']['ctrl'] : $_GET['ctrl'];
                 $dispatchInfo['act'] = empty($_GET['act']) ? $config['route']['act'] : $_GET['act'];
             }
-            $merge = array_merge($_GET, $dispatchInfo);
-            $dispatchInfo = $_GET = $merge;
+            $merge = array_merge($dispatchInfo, $_GET);
+            $dispatchInfo = $_GET = $merge;          
             KantRegistry::set('dispatchInfo', $dispatchInfo);
         }
         return $dispatchInfo;

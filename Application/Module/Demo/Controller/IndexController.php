@@ -3,6 +3,7 @@
 namespace Demo\Controller;
 
 use Kant\Controller\BaseController;
+use Kant\Runtime\Runtime;
 
 /**
  * \Demo\IndexController
@@ -44,8 +45,8 @@ class IndexController extends BaseController {
     public function getAction() {
         print_r($_GET);
         print_r($this->get);
-        $a = $this->input->get('id', 'intval', '99');
-        echo $a;
+//        $a = $this->input->get('id', 'intval', '99');
+//        echo $a;
     }
 
     /**
