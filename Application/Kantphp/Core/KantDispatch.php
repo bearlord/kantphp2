@@ -8,6 +8,7 @@
  */
 
 namespace Kant;
+use Kant\Log\Log;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -42,12 +43,19 @@ class Dispatch {
                 $pathinfo = str_replace($config['url_suffix'], '', $pathinfo);
             } else {
                 foreach (array('REQUEST_URI', 'HTTP_X_REWRITE_URL', 'argv') as $var) {
-                    if ($requestUri = $_SERVER[$var]) {
-                        if ($var == 'argv') {
-                            $requestUri = strtolower($requestUri[0]);
+                    if (!empty($_SERVER[$var])) {
+                        $requestUri = $_SERVER[$var];
+                         if ($var == 'argv') {
+                            $requestUri = strtolower($requestUri[1]);
                         }
                         break;
                     }
+//                    if ($requestUri = $_SERVER[$var]) {
+//                        if ($var == 'argv') {
+//                            $requestUri = strtolower($requestUri[1]);
+//                        }
+//                        break;
+//                    }
                 }
                 $requestUri = str_replace($config['url_suffix'], '', ltrim($requestUri, '/'));
                 $scriptName = strtolower(ltrim(dirname($_SERVER['SCRIPT_NAME']), '/'));

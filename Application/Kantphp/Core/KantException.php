@@ -10,6 +10,7 @@
 namespace Kant;
 
 use Exception;
+use Kant\Log\Log;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -40,7 +41,23 @@ class KantException extends Exception {
             parent::__construct($msg, (int) $code);
             $this->_previous = $previous;
         } else {
-            parent::__construct($msg, (int) $code, $previous);
+            $error = array();
+            $error['message'] = $msg;
+            $trace = $this->getTrace();
+            if ('E' == $trace[0]['function']) {
+                $error['file'] = $trace[0]['file'];
+                $error['line'] = $trace[0]['line'];
+            } else {
+                $error['file'] = $this->getFile();
+                $error['line'] = $this->getLine();
+            }
+            $error['trace'] = $this->getTraceAsString();
+            Log::write($error['message'], Log::ERR);
+            $exceptionFile = KANT_PATH . 'View/system/exception.php';
+            include $exceptionFile;
+            
+            exit();
+//            parent::__construct($msg, (int) $code, $previous);
         }
     }
 

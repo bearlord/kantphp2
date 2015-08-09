@@ -26,46 +26,39 @@ class Log {
     const DEBUG = 'DEBUG';
     const SQL = 'SQL';
 
-    // 日志信息
-
+    //Config
+    static protected $config = array();
+    //Log message
     static protected $log = array();
-    // 日志存储
+    //Log storage
     static protected $storage = null;
 
     // 日志初始化
     static public function init($config = array()) {
-        $type = isset($config['type']) ? $config['type'] : 'File';
+        self::$config = array_merge(self::$config, $config);
+        $type = isset(self::$config) ? self::$config['type'] : 'File';
         $class = "Log" . ucwords(strtolower($type));
-        unset($config['type']);
         require $class . '.php';
         $className = "\\Log\\" . $class;
-        self::$storage = new $className($config);
+        self::$storage = new $className(self::$config);
     }
 
     /**
-     * 记录日志 并且会过滤未经设置的级别
-     * @static
-     * @access public
-     * @param string $message 日志信息
-     * @param string $level  日志级别
-     * @param boolean $record  是否强制记录
-     * @return void
+     * Record message
+     * 
+     * @param string $message
      */
-    static function record($message, $level = self::ERR, $record = false) {
-        if ($record || false !== strpos(C('LOG_LEVEL'), $level)) {
-            self::$log[] = "{$level}: {$message}\r\n";
-        }
+    static function record($message) {
+        self::$log[] = "{$level}: {$message}\r\n";
     }
 
     /**
-     * 日志保存
-     * @static
-     * @access public
-     * @param integer $type 日志记录方式
-     * @param string $destination  写入目标
-     * @return void
+     * Record savae
+     * 
+     * @param string $destination
+     * @return type
      */
-    static function save($type = '', $destination = '') {
+    static function save($destination = '') {
         if (empty(self::$log)) {
             return;
         }
@@ -91,7 +84,7 @@ class Log {
      * @param string $destination  写入目标
      * @return void
      */
-    static function write($message, $level = self::ERR, $type = '', $destination = '') {
+    static function write($message, $level = self::DEBUG, $destination = '') {
         if (!self::$storage) {
             return;
         }

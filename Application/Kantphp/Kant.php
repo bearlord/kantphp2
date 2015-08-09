@@ -37,5 +37,7 @@ if (!defined('APP_URL')) {
     define('APP_URL', substr(dirname($_SERVER['SCRIPT_NAME']), -1, 1) == '/' ? dirname($_SERVER['SCRIPT_NAME']) : dirname($_SERVER['SCRIPT_NAME']) . '/' );
 }
 define('PUBLIC_URL', APP_URL . 'public/');
+define('IS_CGI', (0 === strpos(PHP_SAPI, 'cgi') || false !== strpos(PHP_SAPI, 'fcgi')) ? 1 : 0 );
+define('IS_CLI', PHP_SAPI == 'cli' ? 1 : 0);
 
 //header("Content-type: text/html; charset=utf-8"); 

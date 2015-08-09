@@ -14,7 +14,7 @@ return array(
         '|cache|i' => 'demo/cache',
         '|get/(.+)+|is' => 'demo/index/get/id,$1',
     ),
-    'path_info_repair' => false,
+    'path_info_repair' => true,
     'debug' => true,
     'url_suffix' => '.html',
     'redirect_tpl' => 'dispatch/redirect',

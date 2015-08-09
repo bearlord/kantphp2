@@ -126,7 +126,10 @@ final class Kant {
         //default timezone
         date_default_timezone_set(self::$_config['default_timezone']);
         //logfile initialization
-        Log::init();
+        Log::init(array(
+            'type' => 'File',
+            'log_path' => LOG_PATH
+        ));
         Hook::import(self::$_config['tags']);
         if (self::$_config['debug']) {
             ini_set('display_errors', 1);

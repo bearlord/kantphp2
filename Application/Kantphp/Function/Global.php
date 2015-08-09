@@ -28,7 +28,7 @@ function get_client_ip() {
     }
     $onlineip = addslashes($onlineip);
     @preg_match("/[\d\.]{7,15}/", $onlineip, $onlineipmatches);
-    $onlineip = $onlineipmatches[0] ? $onlineipmatches[0] : 'unknown';
+    $onlineip = !empty($onlineipmatches[0]) ? $onlineipmatches[0] : 'unknown';
     unset($onlineipmatches);
     return $onlineip;
 }

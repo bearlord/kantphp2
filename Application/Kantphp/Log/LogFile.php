@@ -32,10 +32,10 @@ class LogFile {
      * @return void
      */
     public function write($log, $destination = '') {
-        var_dump($this->config);
         $now = date($this->config['log_time_format']);
-        if (empty($destination))
+        if (empty($destination)) {
             $destination = $this->config['log_path'] . date('y_m_d') . '.log';
+        }
         if (!is_dir($this->config['log_path'])) {
             mkdir($this->config['log_path'], 0755, true);
         }
@@ -43,7 +43,9 @@ class LogFile {
         if (is_file($destination) && floor($this->config['log_file_size']) <= filesize($destination)) {
             rename($destination, dirname($destination) . '/' . time() . '-' . basename($destination));
         }
-        error_log("[{$now}] " . $_SERVER['REMOTE_ADDR'] . ' ' . $_SERVER['REQUEST_URI'] . "\r\n{$log}\r\n", 3, $destination);
+        $ip = get_client_ip();
+        $request_url = !empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'CLI MODE';
+        error_log("[{$now}] " . $ip . ' ' . $request_url . "\r\n{$log}\r\n", 3, $destination);
     }
 
 }
