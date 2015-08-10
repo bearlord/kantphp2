@@ -98,13 +98,13 @@ class SqliteDb extends DbQueryAbstract implements DbQueryInterface {
             $this->_connect();
         }
         try {
-            $query = $this->dbh->exec($sql);
+            $this->queryID = $this->dbh->exec($sql);
         } catch (PDOException $e) {
             throw new KantException(sprintf('Can not connect to PostgreSQL server or cannot use database.%s', $e->getMessage()));
         }
         $this->sqls[] = $sql;
         $this->querycount++;
-        return $query;
+        return $this->queryID;
     }
 
     /**
@@ -116,30 +116,31 @@ class SqliteDb extends DbQueryAbstract implements DbQueryInterface {
      * @return array
      */
     public function query($sql, $fetchMode = PDO::FETCH_ASSOC) {
+        $row = null;
         $cacheSqlMd5 = 'sql_' . md5($sql);
         if ($this->ttl) {
+            $this->cacheSql();
+            $this->clear();
             $rows = $this->cache->get($cacheSqlMd5);
-            if (empty($rows)) {
-                if (!is_resource($this->dbh)) {
-                    $this->_connect();
-                }
-                $sth = $this->dbh->prepare($sql);
-                $sth->execute();
-                $rows = $sth->fetchAll($fetchMode);
-                $this->cache->set($cacheSqlMd5, $rows, $this->ttl);
+            if (!empty($rows)) {
+                return $rows;
             }
+        }
+        if (!is_resource($this->dbh)) {
+            $this->_connect();
+        }
+        $sth = $this->dbh->prepare($sql);
+        $sth->execute();
+        $rows = $sth->fetchAll($fetchMode);
+        if ($this->ttl) {
+            $this->cache->set($cacheSqlMd5, $rows, $this->ttl);
         } else {
-            if (!is_resource($this->dbh)) {
-                $this->_connect();
-            }
-            $sth = $this->dbh->prepare($sql);
-            $sth->execute();
-            $rows = $sth->fetchAll($fetchMode);
             $this->cache->delete($cacheSqlMd5);
         }
-
         $this->sqls[] = $sql;
         $this->queryCount++;
+        $this->cacheSql();
+        $this->clear();
         return $rows;
     }
 

@@ -96,9 +96,9 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
         if (!is_object($this->dbh)) {
             $this->_connect();
         }
-
-        $query = $this->dbh->exec($sql);
-        if (!$query) {
+        try {
+            $this->queryID = $this->dbh->exec($sql);
+        } catch (PDOException $e) {
             throw new KantException(sprintf("MySQL Query Error:%s,Error Code:%s", $sql, $this->dbh->errorCode()));
         }
         $this->sqls[] = $sql;
@@ -117,29 +117,31 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
      * @return array
      */
     public function query($sql, $fetchMode = PDO::FETCH_ASSOC) {
+        $row = null;
         $cacheSqlMd5 = 'sql_' . md5($sql);
         if ($this->ttl) {
+            $this->cacheSql();
+            $this->clear();
             $rows = $this->cache->get($cacheSqlMd5);
-            if (empty($rows)) {
-                if (!is_resource($this->dbh)) {
-                    $this->_connect();
-                }
-                $sth = $this->dbh->prepare($sql);
-                $sth->execute();
-                $rows = $sth->fetchAll($fetchMode);
-                $this->cache->set($cacheSqlMd5, $rows, $this->ttl);
+            if (!empty($rows)) {
+                return $rows;
             }
+        }
+        if (!is_resource($this->dbh)) {
+            $this->_connect();
+        }
+        $sth = $this->dbh->prepare($sql);
+        $sth->execute();
+        $rows = $sth->fetchAll($fetchMode);
+        if ($this->ttl) {
+            $this->cache->set($cacheSqlMd5, $rows, $this->ttl);
         } else {
-            if (!is_resource($this->dbh)) {
-                $this->_connect();
-            }
-            $sth = $this->dbh->prepare($sql);
-            $sth->execute();
-            $rows = $sth->fetchAll($fetchMode);
             $this->cache->delete($cacheSqlMd5);
         }
         $this->sqls[] = $sql;
         $this->queryCount++;
+        $this->cacheSql();
+        $this->clear();
         return $rows;
     }
 

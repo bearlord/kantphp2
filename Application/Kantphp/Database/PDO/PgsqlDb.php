@@ -97,7 +97,11 @@ class PgsqlDb extends DbQueryAbstract implements DbQueryInterface {
         if (!is_object($this->dbh)) {
             $this->_connect();
         }
-
+        try {
+            $this->queryID = $this->dbh->exec($sql);
+        } catch (PDOException $e) {
+            throw new KantException(sprintf('PostgreSQL Query Error:%s,Error Code:%s', $sql, $this->dbh->errorCode()));
+        }
         $query = $this->dbh->exec($sql);
         if (!$query) {
             throw new KantException(sprintf('PostgreSQL Query Error:%s,Error Code:%s', $sql, $this->dbh->errorCode()));
@@ -116,8 +120,11 @@ class PgsqlDb extends DbQueryAbstract implements DbQueryInterface {
      * @return array
      */
     public function query($sql, $fetchMode = PDO::FETCH_ASSOC) {
+        $row = null;
         $cacheSqlMd5 = 'sql_' . md5($sql);
         if ($this->ttl) {
+            $this->cacheSql();
+            $this->clear();
             $rows = $this->cache->get($cacheSqlMd5);
             if (!empty($rows)) {
                 return $rows;
@@ -136,6 +143,8 @@ class PgsqlDb extends DbQueryAbstract implements DbQueryInterface {
         }
         $this->sqls[] = $sql;
         $this->queryCount++;
+        $this->cacheSql();
+        $this->clear();
         return $rows;
     }
 
