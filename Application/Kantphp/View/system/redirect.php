@@ -78,7 +78,7 @@
                     <?php endif ?>
                 </p>
                 <div id="copyright" class="t_c">
-                    <p>copyright (c) 2011 - 2013 KantPHP Studio, All rights reserved.</p>
+                    <p>copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.</p>
                 </div>
             </div>
         </div>

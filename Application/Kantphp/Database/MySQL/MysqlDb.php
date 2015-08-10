@@ -3,7 +3,7 @@
 /**
  * @package KantPHP
  * 
- * @copyright (c) 2011 - 2013 KantPHP Studio, All rights reserved.
+ * @copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.
  * @license BSD License.
  */
 
