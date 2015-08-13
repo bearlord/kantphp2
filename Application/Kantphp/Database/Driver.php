@@ -104,7 +104,7 @@ final class Driver {
             case 'mysql' :
                 require_once KANT_PATH . 'Database/MySQL/MysqlDb.php';
                 $namespace = "Kant\\Database\\MySQL\\";
-                $class = 'MysqlDb';
+                $class = $namespace . 'MysqlDb';
                 break;
             case 'pdo_mysql' :
                 require_once KANT_PATH . 'Database/PDO/MysqlDb.php';

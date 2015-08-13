@@ -7,7 +7,7 @@
  * @license BSD License.
  */
 
-namespace Database\MySQL;
+namespace Kant\Database\MySQL;
 
 use Kant\Database\DbQueryAbstract;
 use Kant\Database\DbQueryInterface;
