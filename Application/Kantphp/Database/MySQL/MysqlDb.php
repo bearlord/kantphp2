@@ -72,8 +72,9 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
      * Free result memory
      */
     public function free() {
-        mysql_free_result($this->queryID);
-        $this->queryID = null;
+        if (is_resource($this->queryID)) {
+            mysql_free_result($this->queryID);
+        }
     }
 
     /**
@@ -123,7 +124,7 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
         $this->sqls[] = $sql;
         $this->queryCount++;
         $this->cacheSql();
-        return $query;
+        return $this->queryID;
     }
 
     /**
