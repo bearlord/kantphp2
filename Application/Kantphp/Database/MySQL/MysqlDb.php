@@ -75,6 +75,7 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
         if (is_resource($this->queryID)) {
             mysql_free_result($this->queryID);
         }
+        $this->queryID = null;
     }
 
     /**
