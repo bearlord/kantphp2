@@ -87,6 +87,7 @@ final class Kant {
         self::$config->merge($coreConfig)->merge($appConfig);
         self::$_config = self::$config->reference();
         KantRegistry::set('config', self::$_config);
+        KantRegistry::set('config_path', CFG_PATH . self::$_environment . DIRECTORY_SEPARATOR);
     }
 
     /**
@@ -242,6 +243,9 @@ final class Kant {
                     if (strpos($className, "Kant") === 0) {
                         $className = str_replace('Kant\\', '', $className) . ".php";
                         $filename = KANT_PATH . $className;
+                    } else if (strpos($className, "Model") !== false || strpos($className, "Controller") !== false) {
+                        $className = str_replace('\\', '/', $className) . ".php";
+                        $filename = MODULE_PATH . $className;
                     } else {
                         $className = str_replace('\\', '/', $className) . ".php";
                         $filename = APP_PATH . $className;

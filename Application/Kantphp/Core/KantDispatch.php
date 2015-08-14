@@ -47,7 +47,7 @@ class Dispatch {
                     if (!empty($_SERVER[$var])) {
                         $requestUri = $_SERVER[$var];
                         if ($var == 'argv') {
-                            $requestUri = strtolower($requestUri[1]);
+                            $requestUri = @strtolower($requestUri[1]);
                         }
                         break;
                     }
