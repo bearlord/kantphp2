@@ -75,7 +75,6 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
         if (is_resource($this->queryID)) {
             mysql_free_result($this->queryID);
         }
-        $this->queryID = null;
     }
 
     /**
@@ -136,7 +135,7 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
      * @throws KantException
      */
     public function query($sql) {
-        $row = null;
+        $rows = null;
         $cacheSqlMd5 = 'sql_' . md5($sql);
         if ($this->ttl) {
             $this->cacheSql();

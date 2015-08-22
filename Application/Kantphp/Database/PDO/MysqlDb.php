@@ -117,7 +117,7 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
      * @return array
      */
     public function query($sql, $fetchMode = PDO::FETCH_ASSOC) {
-        $row = null;
+        $rows = null;
         $cacheSqlMd5 = 'sql_' . md5($sql);
         if ($this->ttl) {
             $this->cacheSql();
