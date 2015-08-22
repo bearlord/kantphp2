@@ -104,6 +104,8 @@ class SqliteDb extends DbQueryAbstract implements DbQueryInterface {
         }
         $this->sqls[] = $sql;
         $this->querycount++;
+        $this->cacheSql();
+        $this->clear();
         return $this->queryID;
     }
 

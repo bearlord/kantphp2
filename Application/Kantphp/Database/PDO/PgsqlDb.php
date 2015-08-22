@@ -101,13 +101,11 @@ class PgsqlDb extends DbQueryAbstract implements DbQueryInterface {
         } catch (PDOException $e) {
             throw new KantException(sprintf('PostgreSQL Query Error:%s,Error Code:%s', $sql, $this->dbh->errorCode()));
         }
-        $query = $this->dbh->exec($sql);
-        if (!$query) {
-            throw new KantException(sprintf('PostgreSQL Query Error:%s,Error Code:%s', $sql, $this->dbh->errorCode()));
-        }
         $this->sqls[] = $sql;
         $this->queryCount++;
-        return $query;
+        $this->cacheSql();
+        $this->clear();
+        return $this->queryID;
     }
 
     /**

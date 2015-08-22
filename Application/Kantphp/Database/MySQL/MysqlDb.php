@@ -124,6 +124,7 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
         $this->sqls[] = $sql;
         $this->queryCount++;
         $this->cacheSql();
+        $this->clear();
         return $this->queryID;
     }
 
