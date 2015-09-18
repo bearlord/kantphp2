@@ -9,6 +9,7 @@
 
 namespace Kant;
 
+use Kant\Config\KantConfig;
 use Kant\Log\Log;
 use Kant\Hook\Hook;
 use Kant\Runtime\Runtime;
@@ -79,7 +80,7 @@ final class Kant {
      */
     public function __construct() {
         $_config['class'] = self::$_autoCoreClass;
-        self::$config = new Config\KantConfig($_config);
+        self::$config = new KantConfig($_config);
         //Core configuration
         $coreConfig = include KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Base.php';
         //Application configration
@@ -241,7 +242,8 @@ final class Kant {
             } else {
                 if (strpos($className, "\\") !== false) {
                     if (strpos($className, "Kant") === 0) {
-                        $className = str_replace('Kant\\', '', $className) . ".php";
+                        $className = str_replace('Kant\\', '', $className);
+                        $className = str_replace('\\', '/', $className) . ".php";
                         $filename = KANT_PATH . $className;
                     } else if (strpos($className, "Model") !== false || strpos($className, "Controller") !== false) {
                         $className = str_replace('\\', '/', $className) . ".php";
