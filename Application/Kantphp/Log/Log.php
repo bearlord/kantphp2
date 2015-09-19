@@ -48,7 +48,7 @@ class Log {
      * 
      * @param string $message
      */
-    static function record($message) {
+    static function record($message, $level = self::DEBUG) {
         self::$log[] = "{$level}: {$message}\r\n";
     }
 
