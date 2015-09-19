@@ -10,6 +10,7 @@
 namespace Kant\Session;
 use Kant\Session\File\SessionFile;
 use Kant\Session\Sqlite\SessionSqlite;
+use Kant\Session\Mysql\SessionMysql;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -74,6 +75,10 @@ final class Session {
                 case 'sqlite':
                     require_once KANT_PATH . 'Session/Sqlite/SessionSqlite.php';
                     $object = new SessionSqlite($this->_sessionConfig[$sessionName]);
+                    break;
+                case 'mysql':
+                    require_once KANT_PATH . 'Session/Mysql/SessionMysql.php';
+                    $object = new SessionMysql($this->_sessionConfig[$sessionName]);
                     break;
                 case 'memcache':
                     break;

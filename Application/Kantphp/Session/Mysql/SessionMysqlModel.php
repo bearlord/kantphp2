@@ -1,13 +1,12 @@
 <?php
 
-namespace Kant\Session\Sqlite;
+namespace Kant\Session\Mysql;
 
 use Kant\KantException;
 use PDO;
 
-class SessionSqliteModel {
+class SessionMysqlModel {
 
-    protected $adapter = 'session_db';
     protected $table = 'session';
     protected $primary = 'sessionid';
     protected $db;
@@ -16,22 +15,21 @@ class SessionSqliteModel {
     public function __construct() {
         $this->_dbConfig = $this->_setDbConfig();
         if ($this->db == '') {
-            $this->db = new SqliteDatabase($this->_dbConfig);
+            $this->db = new MysqlDatabase($this->_dbConfig);
         }
         $this->table = $this->_dbConfig['tablepre'] . $this->table;
     }
 
     private function _setDbConfig() {
         return array(
-            'hostname' => '',
-            'port' => '',
-            'database' => CACHE_PATH . 'Session/SessionSqlite/session.db',
-            'username' => '',
-            'password' => '',
+            'hostname' => 'localhost',
+            'port' => '3306',
+            'database' => '4kmovie',
+            'username' => 'root',
+            'password' => 'root',
             'tablepre' => 'kant_',
-            'charset' => 'UTF-8',
-            'type' => 'pdo_sqlite',
-            'debug' => true,
+            'charset' => 'utf8',
+            'type' => 'mysql',
             'persistent' => 0,
             'autoconnect' => 1
         );
@@ -46,14 +44,16 @@ class SessionSqliteModel {
     public function readSession($sessionid) {
         $sql = sprintf("SELECT * FROM %s WHERE sessionid = '{$sessionid}'", $this->table);
         $row = $this->db->query($sql);
-        return $row;
+        if ($row) {
+            return $row[0];
+        }
     }
 
     public function saveSession($data, $sessionid = '') {
         if ($sessionid == '') {
-            $sql = sprintf("INSERT INTO %s (sessionid, data, lastvisit, ip) VALUES ('%s', '%s', '%s', '%s')", $this->table, $data['sessionid'], $data['data'], $data['lastvisit'], $data['ip']);
+            $sql = sprintf("INSERT INTO %s (sessionid, data, lastvisit, ip, http_cookie) VALUES ('%s', '%s', '%s', '%s', '%s')", $this->table, $data['sessionid'], $data['data'], $data['lastvisit'], $data['ip'], $data['http_cookie']);
         } else {
-            $sql = sprintf("UPDATE %s SET data = '%s', lastvisit = '%s', ip = '%s' WHERE sessionid = '%s'", $this->table, $data['data'], $data['lastvisit'], $data['ip'], $sessionid);
+            $sql = sprintf("UPDATE %s SET data = '%s', lastvisit = '%s', ip = '%s', http_cookie = '%s' WHERE sessionid = '%s'", $this->table, $data['data'], $data['lastvisit'], $data['ip'], $data['http_cookie'], $sessionid);
         }
         $row = $this->db->execute($sql);
         return $row;
@@ -92,7 +92,7 @@ class SessionSqliteModel {
 
 }
 
-class SqliteDatabase {
+class MysqlDatabase {
 
     protected $dbh;
 
@@ -122,28 +122,26 @@ class SqliteDatabase {
             throw new KantException('The PDO extension is required for this adapter but the extension is not loaded');
         }
         // check for PDO_PGSQL extension
-        if (!extension_loaded('pdo_sqlite')) {
-            throw new KantException('The PDO_PGSQL extension is required for this adapter but the extension is not loaded');
+        if (!extension_loaded('pdo_mysql')) {
+            throw new KantException('The PDO_MYSQL extension is required for this adapter but the extension is not loaded');
         }
 
-        $dsn = sprintf("%s:%s", "sqlite", $this->config['database']);
-
+        $dsn = sprintf("mysql:host=%s;dbname=%s", $this->config['hostname'], $this->config['database']);
         //Request a persistent connection, rather than creating a new connection.
         if (isset($this->config['persistent']) && $this->config['persistent'] == true) {
             $options = array(PDO::ATTR_PERSISTENT => true);
         } else {
             $options = null;
         }
-        $this->config['username'] = null;
-        $this->config['password'] = null;
+//        $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8"; 
         try {
-            $this->dbh = new PDO($dsn, null, null, $options);
+            $this->dbh = new PDO($dsn, $this->config['username'], $this->config['password'], $options);
             // always use exceptions.
             $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            throw new KantException(sprintf('Can not connect to SQLite server or cannot use database.%s', $e->getMessage()));
+            throw new KantException(sprintf('Can not connect to MySQL server or cannot use database.%s', $e->getMessage()));
         }
-//         $this->dbh->exec(sprintf("SET NAMES \"%s\"", $this->config['charset']));
+        $this->dbh->exec(sprintf("SET NAMES \"%s\"", $this->config['charset']));
         $this->database = $this->config['database'];
     }
 
