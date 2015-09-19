@@ -245,6 +245,9 @@ final class Kant {
                         $className = str_replace('Kant\\', '', $className);
                         $className = str_replace('\\', '/', $className) . ".php";
                         $filename = KANT_PATH . $className;
+                    }  else if (strpos($className, "Bootstrap") !== false) {
+                        $className = str_replace('\\', '/', $className) . ".php";
+                        $filename = APP_PATH . $className;
                     } else if (strpos($className, "Model") !== false || strpos($className, "Controller") !== false) {
                         $className = str_replace('\\', '/', $className) . ".php";
                         $filename = MODULE_PATH . $className;
