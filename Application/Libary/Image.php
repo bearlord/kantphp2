@@ -102,6 +102,66 @@ class Image {
         return $filename;
     }
 
+    public function thumbOutput($image, $maxwidth = 200, $maxheight = 200, $autocut = 0) {
+        if (!$this->check($image)) {
+            return false;
+        }
+        $info = $this->info($image);
+        if ($info === false) {
+            return false;
+        }
+        $srcwidth = $info['width'];
+        $srcheight = $info['height'];
+        $type = $info['type'];
+
+        $creat_arr = $this->getPercent($srcwidth, $srcheight, $maxwidth, $maxheight);
+        $createwidth = $width = $creat_arr['w'];
+        $createheight = $height = $creat_arr['h'];
+        $psrc_x = $psrc_y = 0;
+        if ($autocut && $maxwidth > 0 && $maxheight > 0) {
+            if ($maxwidth / $maxheight < $srcwidth / $srcheight && $maxheight >= $height) {
+                $width = $maxheight / $height * $width;
+                $height = $maxheight;
+            } elseif ($maxwidth / $maxheight > $srcwidth / $srcheight && $maxwidth >= $width) {
+                $height = $maxwidth / $width * $height;
+                $width = $maxwidth;
+            }
+            $createwidth = $maxwidth;
+            $createheight = $maxheight;
+        }
+
+        $createfun = 'imagecreatefrom' . ($type == 'jpg' ? 'jpeg' : $type);
+        $srcimg = $createfun($image);
+
+        if ($type != 'gif' && function_exists('imagecreatetruecolor')) {
+            $thumbimg = imagecreatetruecolor($createwidth, $createheight);
+        } else {
+            $thumbimg = imagecreate($width, $height);
+        }
+        if ($type == 'gif') {
+            $background_color = imagecolorallocate($thumbimg, 0, 255, 0);
+            imagecolortransparent($thumbimg, $background_color);
+        } elseif ($type == 'png') {
+            imagealphablending($thumbimg, false);
+            imagesavealpha($thumbimg, true);
+        }
+
+        if (function_exists('imagecopyresampled')) {
+            imagecopyresampled($thumbimg, $srcimg, 0, 0, $psrc_x, $psrc_y, $width, $height, $srcwidth, $srcheight);
+        } else {
+            imagecopyresized($thumbimg, $srcimg, 0, 0, $psrc_x, $psrc_y, $width, $height, $srcwidth, $srcheight);
+        }
+        if ($type == 'jpg' || $type == 'jpeg') {
+            imageinterlace($thumbimg, $this->interlace);
+        }
+        header("content-type:image/$type\r\n");
+        $imagefun = 'image' . ($type == 'jpg' ? 'jpeg' : $type);
+        
+        $imagefun($thumbimg);
+        imagedestroy($thumbimg);
+        imagedestroy($srcimg);
+    }
+    
     /**
      *  Check image
      * 
