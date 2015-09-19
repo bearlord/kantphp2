@@ -627,8 +627,19 @@ abstract class DbQueryAbstract extends Base {
         }
     }
 
+    /**
+     * Get query sqls
+     * @return type
+     */
     public function getLastSqls() {
         return $this->sqls;
+    }
+
+    /**
+     * Flush cached sqls when too many
+     */
+    public function flushSqls() {
+        $this->sqls = array();
     }
 
     /**
