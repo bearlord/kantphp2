@@ -210,8 +210,12 @@ abstract class DbQueryAbstract extends Base {
         } elseif (is_array($value)) {
             $this->whereIn($key, $value, $split);
         } else {
-            $where = $this->checkField($key) . " = " . $this->quote($value);
-            $this->where .= ($this->where ? " $split " : '') . $where;
+            if (empty($value)) {
+                $this->where .= ($this->where ? " $split " : '') . $key;
+            } else {
+                $where = $this->checkField($key) . " = " . $this->quote($value);
+                $this->where .= ($this->where ? " $split " : '') . $where;
+            }
         }
         return $this;
     }
