@@ -57,15 +57,10 @@ class SessionSqlite {
     public function read($sid) {
         $sessionid = $this->sidpre . $sid;
         $row = $this->model->readSession($sessionid);
-        if ($row) {
-            $row = $row[0];
-            $crypt = new Crypt_AES();
-            $crypt->setKey($this->_setting['auth_key']);
-            $secure_data = $row['data'];
-            //BASE64 decode, AES decrypt
-            $data = $crypt->decrypt(base64_decode($secure_data));
-            return $data;
+        if (empty($row)) {
+            return false;
         }
+        return $row['data'];
     }
 
     /**
@@ -77,26 +72,25 @@ class SessionSqlite {
      */
     public function write($sid, $data) {
         $sessionid = $this->sidpre . $sid;
-        $crypt = new Crypt_AES();
-        $crypt->setKey($this->_setting['auth_key']);
-        //AES encrypt, BASE64 encode
-        $secure_data = base64_encode($crypt->encrypt($data));
         $exist = $this->model->readSession($sessionid);
+        $savedata = $data;
+        $httpcookie = !empty($_SERVER['HTTP_COOKIE']) ? $_SERVER['HTTP_COOKIE'] : '';
         if (!$exist) {
             $row = $this->model->saveSession(array(
                 'sessionid' => $sessionid,
-                'data' => $secure_data,
+                'data' => $savedata,
                 'lastvisit' => time(),
-                'ip' => get_client_ip()
+                'ip' => get_client_ip(),
+                'http_cookie' => $httpcookie
             ));
         } else {
             $row = $this->model->saveSession(array(
-                'data' => $secure_data,
+                'data' => $savedata,
                 'lastvisit' => time(),
-                'ip' => get_client_ip()
+                'ip' => get_client_ip(),
+                'http_cookie' => $httpcookie
                     ), $sessionid);
         }
-
         return $row;
     }
 

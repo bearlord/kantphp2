@@ -56,9 +56,10 @@ class SessionMysql {
     public function read($sid) {
         $sessionid = $this->sidpre . $sid;
         $row = $this->model->readSession($sessionid);
-        if (!empty($row['data'])) {
-            return json_decode($row['data'], true);
+        if (empty($row)) {
+            return false;
         }
+        return $row['data'];
     }
 
     /**
@@ -71,7 +72,7 @@ class SessionMysql {
     public function write($sid, $data) {
         $sessionid = $this->sidpre . $sid;
         $exist = $this->model->readSession($sessionid);
-        $savedata = json_encode($data);
+        $savedata = $data;
         $httpcookie = !empty($_SERVER['HTTP_COOKIE']) ? $_SERVER['HTTP_COOKIE'] : '';
         if (!$exist) {
             $row = $this->model->saveSession(array(
@@ -89,7 +90,6 @@ class SessionMysql {
                 'http_cookie' => $httpcookie
                     ), $sessionid);
         }
-
         return $row;
     }
 
