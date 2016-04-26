@@ -86,7 +86,6 @@ class SessionMemcache {
         $sessionid = 'sess_' . $sid;
         require_once KANT_PATH . 'Secure/phpseclib/bootstrap.php';
         $crypt = new Crypt_AES();
-        var_dump($this);
         $crypt->setKey($this->_setting['auth_key']);
         //AES encrypt, BASE64 encode
         $secure_data = base64_encode($crypt->encrypt($data));

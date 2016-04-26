@@ -10,7 +10,7 @@
 namespace Kant\Controller;
 
 use Kant\Base;
-use Kant\KantException;
+use Kant\Exception\KantException;
 use Kant\KantRegistry;
 
 !defined('IN_KANT') && exit('Access Denied');
@@ -33,6 +33,13 @@ class BaseController extends Base {
     public function __construct() {
         parent::__construct();
         $this->initView();
+        if (method_exists($this, '_initialize')) {
+            $this->_initialize();
+        }
+    }
+
+    protected function _initialize() {
+        
     }
 
     /**

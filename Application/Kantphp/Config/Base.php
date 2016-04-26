@@ -8,6 +8,9 @@
  */
 !defined('IN_KANT') && exit('Access Denied');
 return array(
+    'check_app_dir' => true,
+    'dir_secure_filename' => 'index.html',
+    'dir_secure_content' => 'Powered By KantPHP Framework 2.0',
     'route' => array(
         'module' => 'index',
         'ctrl' => 'index',

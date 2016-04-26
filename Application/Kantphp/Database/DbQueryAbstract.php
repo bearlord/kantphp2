@@ -10,6 +10,7 @@
 namespace Kant\Database;
 
 use Kant\Base;
+use Kant\Exception\KantException;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -37,9 +38,8 @@ abstract class DbQueryAbstract extends Base {
     protected $orderby = '';
     protected $limit = '';
     protected $ttl = 0;
-    protected $varFields = array('set', 'select', 'from', 'where', 'groupby', 'orderby', 'limit');
-    protected $cacheFields = array('set' => '', 'select' => '', 'from' => '', 'where' => '', 'groupby' => '', 'orderby' => '', 'limit' => '');
-    protected $sqls;
+    protected $varFields = array('set', 'select', 'from', 'where', 'groupby', 'orderby', 'limit', 'ttl');
+    protected $sqls = array();
     protected $queryCount;
 
     /**
@@ -588,46 +588,13 @@ abstract class DbQueryAbstract extends Base {
 
     /**
      *
-     * SQL roll back,the cached SQL is reset to be the current effective SQL
-     *
-     * @param vars string
-     */
-    public function sqlRollback($vars = null) {
-        $arr = $vars ? ((is_array($vars) ? $vars : explode(',', $vars))) : $this->varFields;
-        foreach ($arr as $v) {
-            $this->$v = $this->cacheFields[$v];
-        }
-        return $this;
-    }
-
-    /**
-     *
      * Clear SQL cache
      *
      * @param name string
      */
-    public function clear($name = 'ALL') {
-        if ($name == 'ALL') {
-            foreach ($this->varFields as $v) {
-                $this->$v = '';
-            }
-        } elseif (isset($name[$this->varFields])) {
-            $this->$name = '';
-        }
-    }
-
-    /**
-     *
-     * Cache SQL clause data
-     *
-     * @param clear boolean
-     */
-    public function cacheSql($clear = false) {
+    public function clearFields() {
         foreach ($this->varFields as $v) {
-            $this->cacheFields[$v] = $this->$v;
-            if ($clear) {
-                $this->$v = '';
-            }
+            $this->$v = '';
         }
     }
 

@@ -91,6 +91,32 @@ class Input {
         }
     }
 
+    public function ispost() {
+        $row = $_SERVER['REQUEST_METHOD'] == 'POST' ? true : false;
+        return $row;
+    }
+    
+    public function isget() {
+        $row = $_SERVER['REQUEST_METHOD'] == 'GET' ? true : false;
+        return $row;
+    }
+    
+    public function isput() {
+        $row = $_SERVER['REQUEST_METHOD'] == 'PUT' ? true : false;
+        return $row;
+    }
+    
+    public function isdelete() {
+        $row = $_SERVER['REQUEST_METHOD'] == 'DELETE' ? true : false;
+        return $row;
+    }
+    
+    public function isajax() {
+        $row == isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'  ? true : false;
+        return $row;
+    }
+
+
     public function filter($filter) {
         $this->filter = $filter;
         return $this;

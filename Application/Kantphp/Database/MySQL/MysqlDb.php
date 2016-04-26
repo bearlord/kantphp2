@@ -11,7 +11,7 @@ namespace Kant\Database\MySQL;
 
 use Kant\Database\DbQueryAbstract;
 use Kant\Database\DbQueryInterface;
-use Kant\KantException;
+use Kant\Exception\KantException;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -121,11 +121,11 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
         if (!$this->queryID) {
             throw new KantException(sprintf("MySQL Query Error:%s,Error Code:%s", $sql, mysql_errno()));
         }
+        $this->numRows = mysql_affected_rows($this->dbh);
         $this->sqls[] = $sql;
         $this->queryCount++;
-        $this->cacheSql();
-        $this->clear();
-        return $this->queryID;
+        $this->clearFields();
+        return $this->numRows;
     }
 
     /**
@@ -139,10 +139,9 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
         $rows = null;
         $cacheSqlMd5 = 'sql_' . md5($sql);
         if ($this->ttl) {
-            $this->cacheSql();
-            $this->clear();
             $rows = $this->cache->get($cacheSqlMd5);
             if (!empty($rows)) {
+                $this->clearFields();
                 return $rows;
             }
         }
@@ -163,6 +162,7 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
             }
             mysql_data_seek($this->queryID, 0);
         }
+
         if ($this->ttl) {
             $this->cache->set($cacheSqlMd5, $rows, $this->ttl);
         } else {
@@ -170,8 +170,7 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
         }
         $this->sqls[] = $sql;
         $this->queryCount++;
-        $this->cacheSql();
-        $this->clear();
+        $this->clearFields();
         return $rows;
     }
 

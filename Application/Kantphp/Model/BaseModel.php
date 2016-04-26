@@ -11,7 +11,7 @@ namespace Kant\Model;
 
 use Kant\Base;
 use Kant\KantRegistry;
-use Kant\KantException;
+use Kant\Exception\KantException;
 use Kant\Database\Driver;
 
 !defined('IN_KANT') && exit('Access Denied');
@@ -229,7 +229,6 @@ class BaseModel extends Base {
      * @return result array
      */
     public function readAll($select = "*", $orderby = null) {
-        $this->db->clear();
         $result = $this->db->from($this->table)->select($select)->orderby($orderby)->fetch();
         return $result;
     }
@@ -250,8 +249,7 @@ class BaseModel extends Base {
         $result = array(0, '');
         $result[0] = $this->db->from($this->table)->select($select)->where($where)->orderby($orderby)->limit($start, $offset)->fetch();
         if ($total) {
-            $this->db->sqlRollback('from,where');
-            $result[1] = $this->db->count();
+            $result[1] = $this->db->from($this->table)->where($where)->count();
         }
         return $result;
     }

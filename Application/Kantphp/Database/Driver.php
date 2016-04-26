@@ -9,7 +9,7 @@
 
 namespace Kant\Database;
 
-use Kant\KantException;
+use Kant\Exception\KantException;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -81,11 +81,6 @@ final class Driver {
      * failure.
      */
     public function getDatabase($db_name) {
-        static $i;
-        $i++;
-        if ($i > 3) {
-            return;
-        }
         if (!isset($this->_dbList[$db_name]) || !is_object($this->_dbList[$db_name])) {
             $this->_dbList[$db_name] = $this->connect($db_name);
         }

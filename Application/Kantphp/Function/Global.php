@@ -6,6 +6,14 @@
  * @copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
+function addslashess($value) {
+    if (is_array($value)) {
+        $value = array_map('addslashess', $value);
+    } else {
+        $value = addslashes($value);
+    }
+    return $value;
+}
 
 /**
  *

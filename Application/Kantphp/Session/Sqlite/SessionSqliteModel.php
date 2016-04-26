@@ -2,7 +2,7 @@
 
 namespace Kant\Session\Sqlite;
 
-use Kant\KantException;
+use Kant\Exception\KantException;
 use PDO;
 
 class SessionSqliteModel {
@@ -123,7 +123,7 @@ class SqliteDatabase {
         }
         // check for PDO_PGSQL extension
         if (!extension_loaded('pdo_sqlite')) {
-            throw new KantException('The PDO_PGSQL extension is required for this adapter but the extension is not loaded');
+            throw new KantException('The PDO_SQLITE extension is required for this adapter but the extension is not loaded');
         }
 
         $dsn = sprintf("%s:%s", "sqlite", $this->config['database']);

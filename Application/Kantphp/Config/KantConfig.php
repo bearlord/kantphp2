@@ -176,7 +176,7 @@ class KantConfig {
         return $arr1;
     }
 
-    public function &reference() {
+    public function reference() {
         return $this->_data;
     }
 

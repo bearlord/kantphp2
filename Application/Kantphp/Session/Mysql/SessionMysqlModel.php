@@ -2,7 +2,7 @@
 
 namespace Kant\Session\Mysql;
 
-use Kant\KantException;
+use Kant\Exception\KantException;
 use PDO;
 
 class SessionMysqlModel {

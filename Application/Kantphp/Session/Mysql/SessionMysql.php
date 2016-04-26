@@ -56,9 +56,6 @@ class SessionMysql {
     public function read($sid) {
         $sessionid = $this->sidpre . $sid;
         $row = $this->model->readSession($sessionid);
-        if (empty($row)) {
-            return false;
-        }
         return $row['data'];
     }
 
@@ -90,6 +87,7 @@ class SessionMysql {
                 'http_cookie' => $httpcookie
                     ), $sessionid);
         }
+
         return $row;
     }
 

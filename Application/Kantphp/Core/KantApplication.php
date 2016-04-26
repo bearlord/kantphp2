@@ -9,7 +9,8 @@
 
 namespace Kant;
 
-use Kant\Config\KantConfig;
+use Kant\KantFactory;
+use Kant\Build\Build;
 use Kant\Log\Log;
 use Kant\Hook\Hook;
 use Kant\Runtime\Runtime;
@@ -26,7 +27,6 @@ final class Kant {
     private static $_autoCoreClass = array(
         'Kant\KantRouter' => 'Core/KantRouter',
         'Kant\KantDispatch' => 'Core/KantDispatch',
-        'Kant\KantConfig' => 'Config/KantConfig',
         'Kant\KantRegistry' => 'Core/KantRegistry',
         'Kant\KantException' => 'Core/KantException'
     );
@@ -37,7 +37,7 @@ final class Kant {
      *
      * @var Kant_Config
      */
-    public static $config;
+    public static $configObj;
 
     /**
      * Run time config's reference, for better performance
@@ -78,44 +78,26 @@ final class Kant {
     /**
      * Constructs
      */
-    public function __construct() {
-        $_config['class'] = self::$_autoCoreClass;
-        self::$config = new KantConfig($_config);
-        //Core configuration
-        $coreConfig = include KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Base.php';
-        //Application configration
-        $appConfig = include CFG_PATH . self::$_environment . DIRECTORY_SEPARATOR . 'Config.php';
-        self::$config->merge($coreConfig)->merge($appConfig);
-        self::$_config = self::$config->reference();
+    public function __construct($environment) {
+        self::registerAutoload();     
+        $appConfig = include CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php';
+        self::$configObj = KantFactory::getConfig();
+        self::$configObj->merge($appConfig);
+        self::$_config = self::$configObj->reference();    
+        KantRegistry::set('environment', $environment);
         KantRegistry::set('config', self::$_config);
         KantRegistry::set('config_path', CFG_PATH . self::$_environment . DIRECTORY_SEPARATOR);
     }
 
     /**
-     * Create application
-     * 
-     * @param type $environment
-     * @return type
-     */
-    public static function createApplication($environment = '') {
-        if ($environment == NULL) {
-            $environment = self::$_environment;
-        }
-        return self::getInstance($environment);
-    }
-
-    /**
      * Singleton instance
      * 
-     * @param type $environment
+     * @param type $env
      * @return type
      */
-    public static function getInstance($environment = 'Development') {
-        self::registerAutoload();
-        self::$_environment = $environment;
-        KantRegistry::set('environment', $environment);
+    public static function getInstance($environment = 'Development') {      
         if (null === self::$_instance) {
-            self::$_instance = new self();
+            self::$_instance = new self($environment);
         }
         return self::$_instance;
     }
@@ -127,6 +109,13 @@ final class Kant {
     public function boot() {
         //default timezone
         date_default_timezone_set(self::$_config['default_timezone']);
+
+        if (self::$_config['check_app_dir']) {
+            $module = defined('CREATE_MODULE') ? CREATE_MODULE : self::$_config['route']['module'];
+            if (is_dir(MODULE_PATH . $module) == false) {
+                Build::checkDir($module);
+            }
+        }
         //logfile initialization
         Log::init(array(
             'type' => 'File',
@@ -153,7 +142,7 @@ final class Kant {
      * @throws ReflectionException
      */
     public function exec() {
-        $this->_dispatchInfo = KantDispatch::getInstance()->getDispatchInfo();
+        $this->_dispatchInfo = KantFactory::getDispatch()->getDispatchInfo();
         $this->bootstrap();
         $controller = $this->controller();
         if (!$controller) {
@@ -245,7 +234,7 @@ final class Kant {
                         $className = str_replace('Kant\\', '', $className);
                         $className = str_replace('\\', '/', $className) . ".php";
                         $filename = KANT_PATH . $className;
-                    }  else if (strpos($className, "Bootstrap") !== false) {
+                    } else if (strpos($className, "Bootstrap") !== false) {
                         $className = str_replace('\\', '/', $className) . ".php";
                         $filename = APP_PATH . $className;
                     } else if (strpos($className, "Model") !== false || strpos($className, "Controller") !== false) {

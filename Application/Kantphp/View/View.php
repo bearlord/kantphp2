@@ -11,7 +11,7 @@ namespace Kant\View;
 
 use Kant\Base;
 use Kant\KantRegistry;
-use Kant\KantException;
+use Kant\Exception\KantException;
 
 !defined('IN_KANT') && exit('Access Denied');
 

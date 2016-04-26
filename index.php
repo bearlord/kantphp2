@@ -1,11 +1,12 @@
 <?php
 
-use Kant\Kant;
+use Kant\KantFactory;
 
 //Application path
 define('APP_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Application' . DIRECTORY_SEPARATOR);
 
-include APP_PATH . 'Kantphp/Kant.php';
+include APP_PATH . 'Kantphp/Framework.php';
 
-Kant::createApplication('Development')->boot();
+$app = KantFactory::getApplication('Development');
+$app->boot();
 ?>

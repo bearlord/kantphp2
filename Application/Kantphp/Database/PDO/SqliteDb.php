@@ -11,7 +11,7 @@ namespace Kant\Database\PDO;
 
 use Kant\Database\DbQueryAbstract;
 use Kant\Database\DbQueryInterface;
-use Kant\KantException;
+use Kant\Exception\KantException;
 use PDO;
 
 !defined('IN_KANT') && exit('Access Denied');
@@ -98,15 +98,16 @@ class SqliteDb extends DbQueryAbstract implements DbQueryInterface {
             $this->_connect();
         }
         try {
-            $this->queryID = $this->dbh->exec($sql);
+            $sth = $this->dbh->prepare($sql);
+            $sth->execute();
         } catch (PDOException $e) {
             throw new KantException(sprintf('Can not connect to PostgreSQL server or cannot use database.%s', $e->getMessage()));
         }
+        $this->numRows = $this->dbh->rowCount();
         $this->sqls[] = $sql;
         $this->querycount++;
-        $this->cacheSql();
-        $this->clear();
-        return $this->queryID;
+        $this->clearFields();
+        return $this->numRows;
     }
 
     /**
@@ -121,8 +122,7 @@ class SqliteDb extends DbQueryAbstract implements DbQueryInterface {
         $rows = null;
         $cacheSqlMd5 = 'sql_' . md5($sql);
         if ($this->ttl) {
-            $this->cacheSql();
-            $this->clear();
+            $this->clearFields();
             $rows = $this->cache->get($cacheSqlMd5);
             if (!empty($rows)) {
                 return $rows;
@@ -141,8 +141,7 @@ class SqliteDb extends DbQueryAbstract implements DbQueryInterface {
         }
         $this->sqls[] = $sql;
         $this->queryCount++;
-        $this->cacheSql();
-        $this->clear();
+        $this->clearFields();
         return $rows;
     }
 
