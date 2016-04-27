@@ -10,7 +10,6 @@
 namespace Kant\Session\Sqlite;
 
 use Kant\Session\Sqlite\SessionSqliteModel;
-use Kant\Secure\Crypt\Crypt_AES;
 
 class SessionSqlite {
 
@@ -58,12 +57,7 @@ class SessionSqlite {
         $sessionid = $this->sidpre . $sid;
         $row = $this->model->readSession($sessionid);
         if ($row) {
-            $row = $row[0];
-            $crypt = new Crypt_AES();
-            $crypt->setKey($this->_setting['auth_key']);
-            $secure_data = $row['data'];
-            //BASE64 decode, AES decrypt
-            $data = $crypt->decrypt(base64_decode($secure_data));
+            $data = $row[0]['data'];
             return $data;
         }
     }
@@ -77,26 +71,21 @@ class SessionSqlite {
      */
     public function write($sid, $data) {
         $sessionid = $this->sidpre . $sid;
-        $crypt = new Crypt_AES();
-        $crypt->setKey($this->_setting['auth_key']);
-        //AES encrypt, BASE64 encode
-        $secure_data = base64_encode($crypt->encrypt($data));
         $exist = $this->model->readSession($sessionid);
         if (!$exist) {
             $row = $this->model->saveSession(array(
                 'sessionid' => $sessionid,
-                'data' => $secure_data,
+                'data' => $data,
                 'lastvisit' => time(),
                 'ip' => get_client_ip()
             ));
         } else {
             $row = $this->model->saveSession(array(
-                'data' => $secure_data,
+                'data' => $data,
                 'lastvisit' => time(),
                 'ip' => get_client_ip()
                     ), $sessionid);
         }
-
         return $row;
     }
 

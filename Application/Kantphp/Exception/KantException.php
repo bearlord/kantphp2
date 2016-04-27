@@ -11,6 +11,7 @@ namespace Kant\Exception;
 
 use Exception;
 use Kant\Log\Log;
+use Kant\KantFactory;
 
 !defined('IN_KANT') && exit('Access Denied');
 

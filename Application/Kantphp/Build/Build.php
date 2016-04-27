@@ -62,6 +62,12 @@ class [CONTROLLER]Controller extends BaseController {
         }
     }
 
+    /**
+     * Build Controller
+     * 
+     * @param string $module
+     * @param string $controller
+     */
     static public function buildController($module, $controller = 'Index') {
         $file = MODULE_PATH . $module . '/Controller/' . $controller . 'Controller.php';
         if (!is_file($file)) {

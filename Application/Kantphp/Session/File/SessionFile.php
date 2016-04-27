@@ -22,6 +22,7 @@ use Kant\Secure\Crypt\Crypt_AES;
 class SessionFile {
 
     private $_sessionPath;
+    protected $sidpre = 'sess_';
     //Session setting: gc_maxlifetime, auth_key;
     private $_setting;
 
@@ -73,13 +74,9 @@ class SessionFile {
      * @return string
      */
     public function read($sid) {
-        $file = $this->_sessionPath . 'sess_' . $sid;
+        $file = $this->_sessionPath . $this->sidpre . $sid;
         if (file_exists($file)) {
-            $crypt = new Crypt_AES();
-            $crypt->setKey($this->_setting['auth_key']);
-            $secure_data = file_get_contents($this->_sessionPath . 'sess_' . $sid);
-            //BASE64 decode, AES decrypt
-            $data = $crypt->decrypt(base64_decode($secure_data));
+            $data = file_get_contents($this->_sessionPath . 'sess_' . $sid);
             return $data;
         }
     }
@@ -94,11 +91,7 @@ class SessionFile {
      */
     public function write($sid, $data) {
         $file = $this->_sessionPath . 'sess_' . $sid;
-        $crypt = new Crypt_AES();
-        $crypt->setKey($this->_setting['auth_key']);
-        //AES encrypt, BASE64 encode
-        $secure_data = base64_encode($crypt->encrypt($data));
-        $file_size = file_put_contents($file, $secure_data, LOCK_EX);
+        $file_size = file_put_contents($file, $data, LOCK_EX);
         return $file_size ? $file_size : 'false';
     }
 

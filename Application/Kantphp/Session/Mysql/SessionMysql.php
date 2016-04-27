@@ -56,7 +56,10 @@ class SessionMysql {
     public function read($sid) {
         $sessionid = $this->sidpre . $sid;
         $row = $this->model->readSession($sessionid);
-        return $row['data'];
+        if ($row) {
+            $data = $row[0]['data'];
+            return $data;
+        }
     }
 
     /**
@@ -69,25 +72,20 @@ class SessionMysql {
     public function write($sid, $data) {
         $sessionid = $this->sidpre . $sid;
         $exist = $this->model->readSession($sessionid);
-        $savedata = $data;
-        $httpcookie = !empty($_SERVER['HTTP_COOKIE']) ? $_SERVER['HTTP_COOKIE'] : '';
         if (!$exist) {
             $row = $this->model->saveSession(array(
                 'sessionid' => $sessionid,
-                'data' => $savedata,
+                'data' => $data,
                 'lastvisit' => time(),
-                'ip' => get_client_ip(),
-                'http_cookie' => $httpcookie
+                'ip' => get_client_ip()
             ));
         } else {
             $row = $this->model->saveSession(array(
-                'data' => $savedata,
+                'data' => $data,
                 'lastvisit' => time(),
-                'ip' => get_client_ip(),
-                'http_cookie' => $httpcookie
+                'ip' => get_client_ip()
                     ), $sessionid);
         }
-
         return $row;
     }
 
