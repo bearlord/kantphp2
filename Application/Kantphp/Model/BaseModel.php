@@ -10,7 +10,7 @@
 namespace Kant\Model;
 
 use Kant\Base;
-use Kant\KantRegistry;
+use Kant\Registry\KantRegistry;
 use Kant\Exception\KantException;
 use Kant\Database\Driver;
 

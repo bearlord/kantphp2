@@ -7,9 +7,11 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant;
+namespace Kant\Dispatch;
 
 use Kant\Log\Log;
+use Kant\Registry\KantRegistry;
+use Kant\KantFactory;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -100,12 +102,12 @@ class Dispatch {
      * @param array $dispatchInfo
      * @return Cola
      */
-    public function setDispatchInfo($dispatchInfo = null) {       
+    public function setDispatchInfo($dispatchInfo = null) {
         if (null === $dispatchInfo) {
             $config = KantRegistry::get('config');
             $pathinfo = $this->getPathInfo();
             if (!empty($pathinfo)) {
-                $router = KantRouter::getInstance();
+                $router = KantFactory::getRoute();
                 $router->setUrlSuffix($config['url_suffix']);
                 $router->add($config['route_rules']);
                 $router->enableDynamicMatch(true, $config['route']);
@@ -116,7 +118,7 @@ class Dispatch {
                 $dispatchInfo['act'] = empty($_GET['act']) ? $config['route']['act'] : $_GET['act'];
             }
             $merge = array_merge($dispatchInfo, $_GET);
-            $dispatchInfo = $_GET = $merge;          
+            $dispatchInfo = $_GET = $merge;
             KantRegistry::set('dispatchInfo', $dispatchInfo);
         }
         return $dispatchInfo;

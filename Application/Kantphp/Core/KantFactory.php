@@ -11,6 +11,8 @@ namespace Kant;
 
 use Kant\Kant;
 use Kant\Config\KantConfig;
+use Kant\Dispatch\KantDispatch;
+use Kant\Route\KantRouter;
 
 class KantFactory {
 
@@ -30,6 +32,12 @@ class KantFactory {
      * 
      */
     public static $config = null;
+    
+    /**
+     * Route object
+     * 
+     */
+    public static $route = null;
 
     /**
      * Get a application object.
@@ -66,6 +74,16 @@ class KantFactory {
             self::$config = new KantConfig($coreConfig);
         }
         return self::$config;
+    }
+    
+    /**
+     * Get Config Object
+     */
+    public static function getRoute() {
+        if (!self::$route) {           
+            self::$route = KantRouter::getInstance();
+        }
+        return self::$route;
     }
 
 }

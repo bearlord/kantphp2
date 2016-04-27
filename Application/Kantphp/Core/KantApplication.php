@@ -10,6 +10,7 @@
 namespace Kant;
 
 use Kant\KantFactory;
+use Kant\Registry\KantRegistry;
 use Kant\Build\Build;
 use Kant\Log\Log;
 use Kant\Hook\Hook;

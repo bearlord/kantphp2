@@ -9,7 +9,7 @@
 
 namespace Kant\Cookie;
 
-use Kant\KantRegistry;
+use Kant\Registry\KantRegistry;
 
 !defined('IN_KANT') && exit('Access Denied');
 

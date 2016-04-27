@@ -50,5 +50,3 @@ define('PUBLIC_URL', APP_URL . 'public/');
 define('IS_CGI', (0 === strpos(PHP_SAPI, 'cgi') || false !== strpos(PHP_SAPI, 'fcgi')) ? 1 : 0 );
 define('IS_CLI', PHP_SAPI == 'cli' ? 1 : 0);
 define('CHARSET', 'utf-8');
-
-//header("Content-type: text/html; charset=utf-8"); 

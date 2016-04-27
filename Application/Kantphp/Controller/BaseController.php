@@ -11,7 +11,7 @@ namespace Kant\Controller;
 
 use Kant\Base;
 use Kant\Exception\KantException;
-use Kant\KantRegistry;
+use Kant\Registry\KantRegistry;
 
 !defined('IN_KANT') && exit('Access Denied');
 
