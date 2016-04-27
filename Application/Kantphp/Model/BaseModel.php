@@ -70,7 +70,7 @@ class BaseModel extends Base {
      * 
      */
     public function createDbo() {
-        $config = KantRegistry::get('config');
+        $config = KantFactory::getConfig()->reference();
         $this->_dbConfig = $config['database'];
         if (!isset($this->_dbConfig[$this->adapter])) {
             $this->adapter = 'default';

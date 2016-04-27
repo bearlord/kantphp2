@@ -12,6 +12,7 @@ namespace Kant\Controller;
 use Kant\Base;
 use Kant\Exception\KantException;
 use Kant\Registry\KantRegistry;
+use Kant\KantFactory;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -55,7 +56,7 @@ class BaseController extends Base {
     }
 
     public function __call($method, $args) {
-        $dispatchInfo = KantRegistry::get('dispatchInfo');
+        $dispatchInfo = KantFactory::getConfig()->reference('dispatchInfo');
         if (0 === strcasecmp($method, strtolower($dispatchInfo['act']) . "Action")) {
             if (method_exists($this, '_empty')) {
                 // 如果定义了_empty操作 则调用

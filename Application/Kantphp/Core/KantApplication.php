@@ -84,7 +84,7 @@ final class Kant {
         $appConfig = include CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php';
         self::$configObj = KantFactory::getConfig();
         self::$configObj->merge($appConfig);
-        self::$_config = self::$configObj->reference();    
+        self::$_config = self::$configObj->reference();
         KantRegistry::set('environment', $environment);
         KantRegistry::set('config', self::$_config);
         KantRegistry::set('config_path', CFG_PATH . self::$_environment . DIRECTORY_SEPARATOR);

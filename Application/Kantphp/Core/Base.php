@@ -126,7 +126,7 @@ class Base {
      * @param integer $second
      */
     public function redirect($message, $url = 'goback', $second = 3) {
-        $config = KantRegistry::get('config');
+        $config = KantFactory::getConfig()->reference();
         $redirectTpl = $config['redirect_tpl'];
         if ($redirectTpl) {
             include TPL_PATH . $redirectTpl . '.php';
@@ -144,7 +144,7 @@ class Base {
     public function getLang() {
         static $lang;
         if (empty($lang)) {
-            $config = KantRegistry::get('config');
+            $config = KantFactory::getConfig()->reference();
             $lang = !empty($_COOKIE['lang']) ? $_COOKIE['lang'] : $config['lang'];
             if (empty($lang)) {
                 $lang = 'en_US';
@@ -187,11 +187,11 @@ class Base {
         if ($cache) {
             return $cache;
         }
-        $config = KantRegistry::get('config');
+        $config = KantFactory::getConfig()->reference();
         $cacheConfig = $config['cache'];
         $cacheAdapter = 'default';
         try {
-            $cache = Cache\Cache::getInstance($cacheConfig)->getCache($cacheAdapter);
+            $cache = KantFactory::getCache($cacheConfig)->getCache($cacheAdapter);
         } catch (RuntimeException $e) {
             if (!headers_sent()) {
                 header('HTTP/1.1 500 Internal Server Error');
@@ -212,7 +212,7 @@ class Base {
         if ($cookie) {
             return $cookie;
         }
-        $config = KantRegistry::get('config');
+        $config = KantFactory::getConfig()->reference();
         try {
             $cookie = Cookie\Cookie::getInstance($config['cookie']);
         } catch (RuntimeException $e) {
@@ -236,7 +236,7 @@ class Base {
         if ($session) {
             return $session;
         }
-        $config = KantRegistry::get('config');
+        $config = KantFactory::getConfig()->reference();
         $sessionConfig = $config['session'];
         $sessionAdapter = 'default';
         try {
@@ -262,7 +262,7 @@ class Base {
      */
     public function url($url = '', $vars = '', $suffix = true) {
         $originalparams = array();
-        $config = KantRegistry::get('config');
+        $config = KantFactory::getConfig()->reference();
         if (strpos($url, $config['url_suffix']) !== false) {
             $url = rtrim($url, $config['url_suffix']);
         }
@@ -344,7 +344,7 @@ class Base {
     }
 
     public function widget($widgetname, $method, $data = array(), $return = false) {
-        $dispatchInfo = KantRegistry::get('dispatchInfo');
+        $dispatchInfo = KantFactory::getConfig()->reference('dispatchInfo');
         $module = isset($dispatchInfo['module']) ? ucfirst($dispatchInfo['module']) : '';
         $classname = ucfirst($widgetname) . 'Widget';
         if ($module) {

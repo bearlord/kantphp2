@@ -176,8 +176,13 @@ class KantConfig {
         return $arr1;
     }
 
-    public function reference() {
-        return $this->_data;
+    public function reference($key = '') {
+        if ($key == '') {
+            return $this->_data;
+        } else {
+            return $this->_data[$key];
+        }
+        
     }
 
 }

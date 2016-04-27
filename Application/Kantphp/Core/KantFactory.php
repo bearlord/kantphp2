@@ -13,6 +13,7 @@ use Kant\Kant;
 use Kant\Config\KantConfig;
 use Kant\Dispatch\KantDispatch;
 use Kant\Route\KantRouter;
+use Kant\Cache\Cache;
 
 class KantFactory {
 
@@ -32,12 +33,18 @@ class KantFactory {
      * 
      */
     public static $config = null;
-    
+
     /**
      * Route object
      * 
      */
     public static $route = null;
+
+    /**
+     * Cache object
+     * 
+     */
+    public static $cache = null;
 
     /**
      * Get a application object.
@@ -70,20 +77,30 @@ class KantFactory {
     public static function getConfig() {
         if (!self::$config) {
             //Core configuration
-            $coreConfig = include KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Base.php';            
+            $coreConfig = include KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Base.php';
             self::$config = new KantConfig($coreConfig);
         }
         return self::$config;
     }
-    
+
     /**
      * Get Config Object
      */
     public static function getRoute() {
-        if (!self::$route) {           
+        if (!self::$route) {
             self::$route = KantRouter::getInstance();
         }
         return self::$route;
+    }
+
+    /**
+     * Get Cache Object
+     */
+    public static function getCache($config) {
+        if (!self::$cache) {
+            self::$cache = Cache::getInstance($config);
+        }
+        return self::$cache;
     }
 
 }

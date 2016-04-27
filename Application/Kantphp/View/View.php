@@ -12,6 +12,7 @@ namespace Kant\View;
 use Kant\Base;
 use Kant\Registry\KantRegistry;
 use Kant\Exception\KantException;
+use Kant\KantFactory;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -80,7 +81,7 @@ class View extends Base {
         if (is_file($template)) {
             return $template;
         }
-        $config = KantRegistry::get('config');
+        $config = KantFactory::getConfig()->reference();
         $tpldir = $this->getTplDir();
         if (empty($template)) {
             $tplfile = $tpldir . strtolower($this->dispatchInfo['ctrl']) . DIRECTORY_SEPARATOR . strtolower($this->dispatchInfo['act']) . $config['template_suffix'];
@@ -144,7 +145,7 @@ class View extends Base {
         $tpldir = $this->getTplDir($module);
         $tplfile = $tpldir . $ctrl . DIRECTORY_SEPARATOR . $act . '.php';
         if (!file_exists($tplfile)) {
-            $config = KantRegistry::get('config');
+            $config = KantFactory::getConfig()->reference();
             if ($config['debug']) {
                 throw new RuntimeException(sprintf("No template: %s", $tplfile));
             } else {
@@ -161,7 +162,7 @@ class View extends Base {
         if ($module == '') {
             $module = isset($this->dispatchInfo['module']) ? strtolower($this->dispatchInfo['module']) : '';
         }
-        $config = KantRegistry::get('config');
+        $config = KantFactory::getConfig()->reference();
         $theme = $config['theme'];
         if ($module) {
             $tpldir = TPL_PATH . $theme . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR;

@@ -40,7 +40,7 @@ class Dispatch {
      */
     public function setPathInfo($pathinfo = null) {
         if (null === $pathinfo) {
-            $config = KantRegistry::get('config');
+            $config = KantFactory::getConfig()->reference();
             if ($config['path_info_repair'] == false) {
                 $pathinfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
                 $pathinfo = str_replace($config['url_suffix'], '', $pathinfo);
@@ -104,7 +104,7 @@ class Dispatch {
      */
     public function setDispatchInfo($dispatchInfo = null) {
         if (null === $dispatchInfo) {
-            $config = KantRegistry::get('config');
+            $config = KantFactory::getConfig()->reference();
             $pathinfo = $this->getPathInfo();
             if (!empty($pathinfo)) {
                 $router = KantFactory::getRoute();
