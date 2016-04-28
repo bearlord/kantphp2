@@ -71,7 +71,6 @@ class Base {
      * @return
      */
     public function library($classname, $initialize = 0) {
-        static $classes = array();
         $filepath = APP_PATH . 'Libary' . DIRECTORY_SEPARATOR . $classname . '.php';
         $key = md5($classname);
         if (file_exists($filepath)) {
@@ -141,7 +140,7 @@ class Base {
      * @return
      */
     public function getLang() {
-        static $lang;
+        static $lang = null;
         if (empty($lang)) {
             $config = KantFactory::getConfig()->reference();
             $lang = !empty($_COOKIE['lang']) ? $_COOKIE['lang'] : $config['lang'];
