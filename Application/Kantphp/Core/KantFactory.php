@@ -14,6 +14,7 @@ use Kant\Config\KantConfig;
 use Kant\Dispatch\KantDispatch;
 use Kant\Route\KantRouter;
 use Kant\Cache\Cache;
+use Kant\Session\Session;
 
 class KantFactory {
 
@@ -45,6 +46,12 @@ class KantFactory {
      * 
      */
     public static $cache = null;
+    
+    /**
+     * Session object
+     * 
+     */
+    public static $session = null;
 
     /**
      * Get a application object.
@@ -72,7 +79,7 @@ class KantFactory {
     }
 
     /**
-     * Get Config Object
+     * Get config object
      */
     public static function getConfig() {
         if (!self::$config) {
@@ -84,7 +91,7 @@ class KantFactory {
     }
 
     /**
-     * Get Config Object
+     * Get config object
      */
     public static function getRoute() {
         if (!self::$route) {
@@ -94,7 +101,7 @@ class KantFactory {
     }
 
     /**
-     * Get Cache Object
+     * Get cache object
      */
     public static function getCache($config) {
         if (!self::$cache) {
@@ -102,5 +109,16 @@ class KantFactory {
         }
         return self::$cache;
     }
+    
+    /**
+     * Get session object
+     * 
+     */
+    public static function getSession(){
+        if (!self::$session) {
+            self::$session = Session::getInstance();
+        }
+        return self::$session;
+    } 
 
 }

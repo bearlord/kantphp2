@@ -19,10 +19,6 @@ class IndexController extends BaseController {
      */
     public function indexAction() {
         echo "Welcome to KantPHP Framework";
-        $session_id = session_id();
-        $_SESSION['a'] = 123;
-        var_dump($session_id);
-        var_dump($this->session->read($session_id));
     }
 
     /**

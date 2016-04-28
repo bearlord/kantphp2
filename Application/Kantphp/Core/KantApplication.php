@@ -80,7 +80,7 @@ final class Kant {
      * Constructs
      */
     public function __construct($environment) {
-        self::registerAutoload();     
+        self::registerAutoload();
         $appConfig = include CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php';
         self::$configObj = KantFactory::getConfig();
         self::$configObj->merge($appConfig);
@@ -88,6 +88,38 @@ final class Kant {
         KantRegistry::set('environment', $environment);
         KantRegistry::set('config', self::$_config);
         KantRegistry::set('config_path', CFG_PATH . self::$_environment . DIRECTORY_SEPARATOR);
+        $this->_init();
+    }
+
+    /**
+     * Further initialization
+     */
+    private function _init() {
+        $this->_initSession();
+    }
+
+    /**
+     * Initialize session
+     * 
+     * @staticvar type $session
+     * @return type
+     */
+    private function _initSession() {
+        static $session = null;
+        if (empty($session)) {
+            $config = KantFactory::getConfig()->reference();
+            $sessionConfig = $config['session'];
+            $sessionAdapter = 'default';
+            try {
+                $session = Session\Session::getInstance($sessionConfig)->getSession($sessionAdapter);
+            } catch (RuntimeException $e) {
+                if (!headers_sent()) {
+                    header('HTTP/1.1 500 Internal Server Error');
+                }
+                exit('Load Cache Error: ' . $e->getMessage());
+            }
+        }
+        return $session;
     }
 
     /**
@@ -96,7 +128,7 @@ final class Kant {
      * @param type $env
      * @return type
      */
-    public static function getInstance($environment = 'Development') {      
+    public static function getInstance($environment = 'Development') {
         if (null === self::$_instance) {
             self::$_instance = new self($environment);
         }

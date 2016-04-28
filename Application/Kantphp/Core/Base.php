@@ -30,7 +30,6 @@ class Base {
     public function __construct() {
         $this->cache = $this->_initCache();
         $this->cookie = $this->_initCookie();
-        $this->_initSession();
         $this->input = Help\Input::getInstance();
     }
 
@@ -183,20 +182,19 @@ class Base {
      * @return type
      */
     private function _initCache() {
-        static $cache;
-        if ($cache) {
-            return $cache;
-        }
-        $config = KantFactory::getConfig()->reference();
-        $cacheConfig = $config['cache'];
-        $cacheAdapter = 'default';
-        try {
-            $cache = KantFactory::getCache($cacheConfig)->getCache($cacheAdapter);
-        } catch (RuntimeException $e) {
-            if (!headers_sent()) {
-                header('HTTP/1.1 500 Internal Server Error');
+        static $cache = null;
+        if (empty($cache)) {
+            $config = KantFactory::getConfig()->reference();
+            $cacheConfig = $config['cache'];
+            $cacheAdapter = 'default';
+            try {
+                $cache = KantFactory::getCache($cacheConfig)->getCache($cacheAdapter);
+            } catch (RuntimeException $e) {
+                if (!headers_sent()) {
+                    header('HTTP/1.1 500 Internal Server Error');
+                }
+                exit('Load Cache Error: ' . $e->getMessage());
             }
-            exit('Load Cache Error: ' . $e->getMessage());
         }
         return $cache;
     }
@@ -205,50 +203,20 @@ class Base {
      * Load Cookie
      */
     private function _initCookie() {
-        if ($this->cookie) {
-            return $this->cookie;
-        }
-        static $cookie;
-        if ($cookie) {
-            return $cookie;
-        }
-        $config = KantFactory::getConfig()->reference();
-        try {
-            $cookie = Cookie\Cookie::getInstance($config['cookie']);
-        } catch (RuntimeException $e) {
-            if (!headers_sent()) {
-                header('HTTP/1.1 500 Internal Server Error');
+        static $cookie = null;
+        if (empty($cookie)) {
+            $config = KantFactory::getConfig()->reference();
+            try {
+                $cookie = Cookie\Cookie::getInstance($config['cookie']);
+            } catch (RuntimeException $e) {
+                if (!headers_sent()) {
+                    header('HTTP/1.1 500 Internal Server Error');
+                }
+                exit('Load Cache Error: ' . $e->getMessage());
             }
-            exit('Load Cache Error: ' . $e->getMessage());
+            $this->cookie = $cookie;
         }
-        $this->cookie = $cookie;
         return $cookie;
-    }
-
-    /**
-     * Load Session
-     */
-    private function _initSession() {
-        if ($this->session) {
-            return $this->session;
-        }
-        static $session;
-        if ($session) {
-            return $session;
-        }
-        $config = KantFactory::getConfig()->reference();
-        $sessionConfig = $config['session'];
-        $sessionAdapter = 'default';
-        try {
-            $session = Session\Session::getInstance($sessionConfig)->getSession($sessionAdapter);
-        } catch (RuntimeException $e) {
-            if (!headers_sent()) {
-                header('HTTP/1.1 500 Internal Server Error');
-            }
-            exit('Load Cache Error: ' . $e->getMessage());
-        }
-        $this->session = $session;
-        return $session;
     }
 
     /**
