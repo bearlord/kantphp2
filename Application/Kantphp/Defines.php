@@ -30,8 +30,8 @@ define('IS_CLI', PHP_SAPI == 'cli' ? 1 : 0);
 define('CHARSET', 'utf-8');
 
 require_once KANT_PATH . 'Function/Global.php';
-require_once KANT_PATH . 'Core/KantFactory.php';
-require_once KANT_PATH . 'Core/KantApplication.php';
+require_once KANT_PATH . 'Foundation/KantFactory.php';
+require_once KANT_PATH . 'Foundation/KantApplication.php';
 require_once APP_PATH . 'Function/Common.php';
 
 ini_set('magic_quotes_runtime', 0);

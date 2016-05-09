@@ -20,7 +20,7 @@ use ReflectionMethod;
 
 !defined('IN_KANT') && exit('Access Denied');
 
-require_once KANT_PATH . '/Core/Base.php';
+require_once KANT_PATH . '/Foundation/Base.php';
 
 final class Kant {
 
