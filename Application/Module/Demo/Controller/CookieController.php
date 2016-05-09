@@ -11,6 +11,7 @@ class CookieController extends BaseController {
     }
 
     public function setAction() {
+		var_dump($_SERVER);
         $this->cookie->set('str', "Hello World!!");
         $this->cookie->set('array', array("name" => '张三', 'sex' => '男'));
         var_dump($_COOKIE);

@@ -95,6 +95,7 @@ final class Driver {
      * @return object on success
      */
     public function connect($db_name) {
+        $dbType = $this->_dbConfig[$db_name]['type'];
         switch ($this->_dbConfig[$db_name]['type']) {
             case 'mysql' :
                 require_once KANT_PATH . 'Database/MySQL/MysqlDb.php';
@@ -112,10 +113,6 @@ final class Driver {
                 $class = $namespace . 'SqliteDb';
                 break;
             case 'pdo_pgsql':
-                require_once KANT_PATH . 'Database/PDO/PgsqlDb.php';
-                $namespace = "Kant\\Databas\\PDO\\";
-                $class = $namespace . 'PgsqlDb';
-                break;
             case 'default':
                 require_once KANT_PATH . 'Database/PDO/PgsqlDb.php';
                 $namespace = "Kant\\Databas\\PDO\\";
