@@ -56,7 +56,7 @@ class BaseController extends Base {
     }
 
     public function __call($method, $args) {
-        $dispatchInfo = KantFactory::getConfig()->reference('dispatchInfo');
+        $dispatchInfo = KantRegistry::get('dispatchInfo');
         if (0 === strcasecmp($method, strtolower($dispatchInfo['act']) . "Action")) {
             if (method_exists($this, '_empty')) {
                 // 如果定义了_empty操作 则调用
@@ -65,10 +65,10 @@ class BaseController extends Base {
                 // 检查是否存在默认模版 如果有直接输出模版
                 $this->display();
             } else {
-                throw new KantException(sprintf("No action exists:%s", cfirst($dispatchInfo['act']) . 'Action'));
+                throw new KantException(sprintf("No action exists:%s", ucfirst($dispatchInfo['act']) . 'Action'));
             }
         } else {
-            throw new KantException("Method not exists");
+         throw new KantException("Method not exists");
         }
     }
 

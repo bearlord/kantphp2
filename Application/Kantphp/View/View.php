@@ -88,14 +88,14 @@ class View extends Base {
         } else {
             $tplfile = $tpldir . $template . $config['template_suffix'];
         }
-        if (!file_exists($tplfile)) {
-            if ($config['debug']) {
-//                throw new RuntimeException(sprintf("No template: %s", $tplfile));
-                throw new KantException(sprintf("No template: %s", $tplfile));
-            } else {
-                $this->redirect($this->lang('system_error'), 'close');
-            }
-        }
+//        if (!file_exists($tplfile)) {
+//            if ($config['debug']) {
+////                throw new RuntimeException(sprintf("No template: %s", $tplfile));
+//                throw new KantException(sprintf("No template: %s", $tplfile));
+//            } else {
+//                $this->redirect($this->lang('system_error'), 'close');
+//            }
+//        }
         return $tplfile;
     }
 

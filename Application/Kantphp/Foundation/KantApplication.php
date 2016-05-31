@@ -15,6 +15,7 @@ use Kant\Build\Build;
 use Kant\Log\Log;
 use Kant\Hook\Hook;
 use Kant\Runtime\Runtime;
+use Kant\Exception\KantException;
 use ReflectionException;
 use ReflectionMethod;
 
