@@ -180,7 +180,13 @@ final class Kant {
         //remove url suffix
         $pathinfo = str_replace(self::$_config['url_suffix'], '', $this->parsePathinfo());
         $pathinfo = trim($pathinfo, '/');
-        self::$dispatch = Route::check($pathinfo);
+        $pathinfo = "demo/cookie/index/a,100/b,200/&c=100";
+        $dispath = Route::check($pathinfo);
+        if ($dispath === false) {
+            $dispath = Route::parseUrl($pathinfo);
+        }
+        var_dump($dispath);
+        self::$dispatch = $dispath;
     }
 
     /**
@@ -203,7 +209,7 @@ final class Kant {
                 break;
             case 'module':
                 // 模块/控制器/操作
-                $data = self::module(self::$dispatch['module'], $config);
+                $data = self::module(self::$dispatch['module']);
                 break;
             case 'controller':
                 // 执行控制器操作
@@ -274,7 +280,6 @@ final class Kant {
      */
     public function module() {
         $this->_dispatchInfo = KantFactory::getDispatch()->getDispatchInfo();
-        $this->bootstrap();
         $controller = $this->controller();
         if (!$controller) {
             $controller = $this->controller('empty');

@@ -9,6 +9,8 @@
 
 namespace Kant\Route;
 
+use Kant\KantFactory;
+
 !defined('IN_KANT') && exit('Access Denied');
 
 class Route {
@@ -175,7 +177,6 @@ class Route {
                             $option = array_merge($option, $option1);
                         }
                         $result = self::checkRule($key, $route, $url1, $pattern, $option);
-
                         if (false !== $result) {
                             return $result;
                         }
@@ -235,7 +236,6 @@ class Route {
                 }
             }
             $pattern = array_merge(self::$pattern, $pattern);
-            $bb = self::matchUrl($url, $rule, $pattern);
             if (false !== $match = self::matchUrl($url, $rule, $pattern)) {
                 if ($route instanceof \Closure) {
                     // 执行闭包
@@ -331,15 +331,77 @@ class Route {
             // 路由到控制器
             $result = ['type' => 'controller', 'controller' => substr($url, 1), 'params' => $matches];
         } else {
+            echo $url;
             // 解析路由地址
             $result = self::parseRoute($url);
             $var = array_merge($matches, $result['var']);
-            // 解析剩余的URL参数
             self::parseUrlParams(implode('/', $paths), $var);
             // 路由到模块/控制器/操作
             $result = ['type' => 'module', 'module' => $result['route']];
         }
         return $result;
+    }
+
+    /**
+     * Parse route
+     * 
+     * @param type $pathinfo
+     */
+    protected static function parseRoute($pathinfo) {
+        $route = [null, null, null];
+        $var = [];
+        //Special pathinof as demo/index/get/a,100/b,101?c=102&d=103
+        if (strpos($pathinfo, "?") !== false) {
+            $parse = explode("?", $pathinfo);
+            $path = explode('/', $parse[0]);
+            if (!empty($parse[1])) {
+                parse_str($parse[1], $query);
+                foreach ($query as $key => $val) {
+                    $dispatchInfo[$key] = urldecode($val);
+                }
+            }
+        } else {
+            //Normal pathinfo as demo/index/get/a,100/b,101
+            $path = explode('/', $pathinfo);
+        }
+        if ($path) {
+            $module = array_shift($path);
+            $controller = !empty($path) ? array_shift($path) : null;
+            $action = !empty($path) ? array_shift($path) : null;
+            if ($action) {
+                if (strpos($action, "?") !== false) {
+                    $action = substr($action, 0, strpos($action, "?"));
+                }
+                $urlsuffix = KantFactory::getConfig()->reference('url_suffix');
+                if ($urlsuffix) {
+                    if (strpos($action, "&") !== false) {
+                        $action = substr($action, 0, strpos($action, $urlsuffix));
+                    }
+                } else {
+                    if (strpos($action, "&") !== false) {
+                        $action = substr($action, 0, strpos($action, "&"));
+                    }
+                }
+                while ($next = array_shift($path)) {
+                    $query = preg_split("/[?&]/", $next);
+                    if (!empty($query)) {
+                        foreach ($query as $key => $val) {
+                            $arr = preg_split("/[,:=-]/", $val, 2);
+                            if (!empty($arr[1])) {
+                                $var[$arr[0]] = urldecode($arr[1]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        $route = [$module, $controller, $action];
+        return ['route' => $route, 'var' => $var];
+    }
+
+    protected static function parseUrlParams($url, $var) {
+        $_GET = array_merge($var, $_GET);
+        var_dump($_GET);
     }
 
     /**
