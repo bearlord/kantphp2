@@ -274,7 +274,6 @@ class Route {
                     return false;
                 }
             }
-            
             if (0 === strpos($val, '[:')) {
                 // 可选参数
                 $val = substr($val, 1, -1);

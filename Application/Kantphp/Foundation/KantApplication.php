@@ -215,7 +215,6 @@ final class Kant {
                 $data = self::invokeMethod(self::$dispatch['method'], self::$dispatch['params']);
                 break;
             case 'function':
-                var_dump(self::$dispatch);
                 // 规则闭包
                 $data = self::invokeFunction(self::$dispatch['function'], self::$dispatch['params']);
                 break;
@@ -250,7 +249,6 @@ final class Kant {
         $args = [];
         // 判断数组类型 数字数组时按顺序绑定参数
         $type = key($vars) === 0 ? 1 : 0;
-        var_dump($vars);
         if ($reflect->getNumberOfParameters() > 0) {
             $params = $reflect->getParameters();
             foreach ($params as $param) {
