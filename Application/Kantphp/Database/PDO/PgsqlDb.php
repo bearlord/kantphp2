@@ -72,7 +72,7 @@ class PgsqlDb extends DbQueryAbstract implements DbQueryInterface {
         } catch (PDOException $e) {
             throw new KantException(sprintf('Can not connect to PostgreSQL server or cannot use database.%s', $e->getMessage()));
         }
-        $this->dbh->exec(sprintf("SET NAMES \"%s\"", $this->config['charset']));
+        $this->dbh->dispatch(sprintf("SET NAMES \"%s\"", $this->config['charset']));
         $this->database = $this->config['database'];
     }
 

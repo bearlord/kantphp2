@@ -11,10 +11,11 @@ namespace Kant;
 
 use Kant\Kant;
 use Kant\Config\KantConfig;
-use Kant\Dispatch\KantDispatch;
-use Kant\Route\KantRouter;
+use Kant\Dispatch\Dispatch;
+use Kant\Route\Route;
 use Kant\Cache\Cache;
 use Kant\Session\Session;
+use Kant\Pathinfo\Pathinfo;
 
 class KantFactory {
 
@@ -46,12 +47,18 @@ class KantFactory {
      * 
      */
     public static $cache = null;
-    
+
     /**
      * Session object
      * 
      */
     public static $session = null;
+
+    /**
+     *
+     * Pathinfo object
+     */
+    public static $pathinfo = null;
 
     /**
      * Get a application object.
@@ -73,7 +80,7 @@ class KantFactory {
      */
     public static function getDispatch() {
         if (!self::$dispatch) {
-            self::$dispatch = KantDispatch::getInstance();
+            self::$dispatch = Dispatch::getInstance();
         }
         return self::$dispatch;
     }
@@ -95,7 +102,7 @@ class KantFactory {
      */
     public static function getRoute() {
         if (!self::$route) {
-            self::$route = KantRouter::getInstance();
+            self::$route = Route::getInstance();
         }
         return self::$route;
     }
@@ -109,16 +116,26 @@ class KantFactory {
         }
         return self::$cache;
     }
-    
+
     /**
      * Get session object
      * 
      */
-    public static function getSession(){
+    public static function getSession() {
         if (!self::$session) {
             self::$session = Session::getInstance();
         }
         return self::$session;
-    } 
+    }
+
+    /**
+     * Get Pathinfo object
+     */
+    public static function getPathInfo() {
+        if (!self::$pathinfo) {
+            self::$pathinfo = Pathinfo::getInstance();
+        }
+        return self::$pathinfo;
+    }
 
 }

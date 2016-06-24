@@ -20,6 +20,7 @@ return array(
         )
     ),
     'route_rules' => array(),
+    'default_return_type' => 'html',
     'path_info_repair' => false,
     'debug' => false,
     'url_suffix' => '.html',

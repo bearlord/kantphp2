@@ -171,7 +171,7 @@ class Net_SCP {
             return false;
         }
 
-        $this->ssh->exec('scp -t ' . $remote_file, false); // -t = to
+        $this->ssh->dispatch('scp -t ' . $remote_file, false); // -t = to
 
         $temp = $this->_receive();
         if ($temp !== chr(0)) {
@@ -227,7 +227,7 @@ class Net_SCP {
             return false;
         }
 
-        $this->ssh->exec('scp -f ' . $remote_file, false); // -f = from
+        $this->ssh->dispatch('scp -f ' . $remote_file, false); // -f = from
 
         $this->_send("\0");
 

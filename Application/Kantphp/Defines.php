@@ -20,6 +20,9 @@ define('PUBLIC_PATH', dirname(APP_PATH) . DIRECTORY_SEPARATOR . 'public' . DIREC
 if (!defined('LOG_PATH')) {
     define('LOG_PATH', APP_PATH . 'Logs/');
 }
+if (!defined('PATH_INFO_REPAIR')) {
+    define("PATH_INFO_REPAIR", FALSE);
+}
 //Web root
 if (!defined('APP_URL')) {
     define('APP_URL', substr(dirname($_SERVER['SCRIPT_NAME']), -1, 1) == '/' ? dirname($_SERVER['SCRIPT_NAME']) : dirname($_SERVER['SCRIPT_NAME']) . '/' );
@@ -27,6 +30,7 @@ if (!defined('APP_URL')) {
 define('PUBLIC_URL', APP_URL . 'public/');
 define('IS_CGI', (0 === strpos(PHP_SAPI, 'cgi') || false !== strpos(PHP_SAPI, 'fcgi')) ? 1 : 0 );
 define('IS_CLI', PHP_SAPI == 'cli' ? 1 : 0);
+define('REQUEST_METHOD', IS_CLI ? 'GET' : $_SERVER['REQUEST_METHOD']);
 define('CHARSET', 'utf-8');
 
 require_once KANT_PATH . 'Function/Global.php';

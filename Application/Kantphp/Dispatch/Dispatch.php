@@ -15,10 +15,6 @@ use Kant\KantFactory;
 
 !defined('IN_KANT') && exit('Access Denied');
 
-class KantDispatch extends Dispatch {
-    
-}
-
 class Dispatch {
 
     private static $_instance;
@@ -53,12 +49,6 @@ class Dispatch {
                         }
                         break;
                     }
-//                    if ($requestUri = $_SERVER[$var]) {
-//                        if ($var == 'argv') {
-//                            $requestUri = strtolower($requestUri[1]);
-//                        }
-//                        break;
-//                    }
                 }
                 $requestUri = str_replace($config['url_suffix'], '', ltrim($requestUri, '/'));
                 $scriptName = strtolower(ltrim(dirname($_SERVER['SCRIPT_NAME']), '/'));

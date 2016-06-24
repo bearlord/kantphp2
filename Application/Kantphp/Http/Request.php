@@ -24,6 +24,8 @@ class Request implements ArrayAccess {
     const METHOD_TRACE = 'TRACE';
     const METHOD_CONNECT = 'CONNECT';
 
+    protected static $instance;
+
     /**
      * @var string[]
      */
@@ -1868,8 +1870,11 @@ class Request implements ArrayAccess {
      *
      * @return $this
      */
-    public function instance() {
-        return $this;
+    public static function instance($options = []) {
+        if (is_null(self::$instance)) {
+            self::$instance = new static($options);
+        }
+        return self::$instance;
     }
 
     /**

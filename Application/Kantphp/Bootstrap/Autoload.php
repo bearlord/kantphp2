@@ -8,8 +8,7 @@ namespace Kant\Bootstrap;
 
 class KantAutoloaderInit {
 
-    protected static $classMap = array(
-        'Kant\KantRouter' => 'Foundation/KantRouter',
+    protected static $_autoCoreClass = array(
         'Kant\KantDispatch' => 'Foundation/KantDispatch',
         'Kant\KantRegistry' => 'Foundation/KantRegistry',
         'Kant\KantException' => 'Foundation/KantException'
@@ -34,8 +33,8 @@ class KantAutoloaderInit {
             return true;
         }
         try {
-            if (in_array($className, array_keys(self::$classMap)) == true) {
-                $filename = KANT_PATH . self::$classMap[$className] . ".php";
+            if (in_array($className, array_keys(self::$_autoCoreClass)) == true) {
+                $filename = KANT_PATH . self::$_autoCoreClass[$className] . ".php";
             } else {
                 if (strpos($className, "\\") !== false) {
                     if (strpos($className, "Kant") === 0) {

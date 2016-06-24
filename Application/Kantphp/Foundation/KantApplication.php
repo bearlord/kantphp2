@@ -10,6 +10,8 @@
 namespace Kant;
 
 use Kant\KantFactory;
+use Kant\Route\Route;
+use Kant\Http\Response;
 use Kant\Registry\KantRegistry;
 use Kant\Build\Build;
 use Kant\Log\Log;
@@ -26,13 +28,13 @@ require_once KANT_PATH . '/Foundation/Base.php';
 final class Kant {
 
     private static $_instance = null;
-    private static $_autoCoreClass = array(
-        'Kant\KantRouter' => 'Core/KantRouter',
-        'Kant\KantDispatch' => 'Core/KantDispatch',
-        'Kant\KantRegistry' => 'Core/KantRegistry',
-        'Kant\KantException' => 'Core/KantException'
-    );
     private static $_environment = 'Development';
+
+    /**
+     * defined dispath
+     * @var array 
+     */
+    private static $dispatch = [];
 
     /**
      * Run time config
@@ -75,13 +77,11 @@ final class Kant {
      * @var array
      */
     protected $_dispatchInfo = null;
-    protected $defaultAction = 'Index';
 
     /**
      * Constructs
      */
     public function __construct($environment) {
-        self::registerAutoload();
         $appConfig = include CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php';
         self::$configObj = KantFactory::getConfig();
         self::$configObj->merge($appConfig);
@@ -89,13 +89,6 @@ final class Kant {
         KantRegistry::set('environment', $environment);
         KantRegistry::set('config', self::$_config);
         KantRegistry::set('config_path', CFG_PATH . self::$_environment . DIRECTORY_SEPARATOR);
-        $this->_init();
-    }
-
-    /**
-     * Further initialization
-     */
-    private function _init() {
         $this->_initSession();
     }
 
@@ -141,32 +134,139 @@ final class Kant {
      * 
      */
     public function boot() {
-        //default timezone
-        date_default_timezone_set(self::$_config['default_timezone']);
-
-        if (self::$_config['check_app_dir']) {
-            $module = defined('CREATE_MODULE') ? CREATE_MODULE : self::$_config['route']['module'];
-            if (is_dir(MODULE_PATH . $module) == false) {
-                Build::checkDir($module);
-            }
-        }
-        //logfile initialization
-        Log::init(array(
-            'type' => 'File',
-            'log_path' => LOG_PATH
-        ));
+        $this->parpare();
+        $this->route();
         Hook::import(self::$_config['tags']);
+        Hook::listen('app_begin');
+        $this->dispatch();
+        Hook::listen('app_end');
+        $this->end();
+    }
+
+    /**
+     * Parpare
+     */
+    protected function parpare() {
+        //Default timezone
+        date_default_timezone_set(self::$_config['default_timezone']);
         if (self::$_config['debug']) {
             ini_set('display_errors', 1);
             error_reporting(E_ALL);
             Runtime::mark('begin');
         }
-        Hook::listen('app_begin');
-        $this->exec();
-        Hook::listen('app_end');
+        //load common file
+        require_once APP_PATH . 'Common.php';
+        //Build Module
+        $this->buildModule();
+        //Logfile initialization
+        Log::init(array(
+            'type' => 'File',
+            'log_path' => LOG_PATH
+        ));
+    }
+
+    /**
+     * End
+     */
+    protected function end() {
         if (self::$_config['debug']) {
             Runtime::mark('end');
         }
+    }
+
+    /**
+     * Route
+     */
+    protected function route() {
+        //remove url suffix
+        $pathinfo = str_replace(self::$_config['url_suffix'], '', $this->parsePathinfo());
+        $pathinfo = trim($pathinfo, '/');
+        self::$dispatch = Route::check($pathinfo);
+    }
+
+    /**
+     * Parse Pathinfo
+     */
+    protected function parsePathinfo() {
+        $pathinfo = KantFactory::getPathInfo()->parsePathinfo();
+        return $pathinfo;
+    }
+
+    /**
+     * Dispatch
+     */
+    protected function dispatch() {
+        $data = [];
+        switch (self::$dispatch['type']) {
+            case 'redirect':
+                // 执行重定向跳转
+                header('Location: ' . self::$dispatch['url'], true, self::$dispatch['status']);
+                break;
+            case 'module':
+                // 模块/控制器/操作
+                $data = self::module(self::$dispatch['module'], $config);
+                break;
+            case 'controller':
+                // 执行控制器操作
+                $data = Loader::action(self::$dispatch['controller'], self::$dispatch['params']);
+                break;
+            case 'method':
+                // 执行回调方法
+                $data = self::invokeMethod(self::$dispatch['method'], self::$dispatch['params']);
+                break;
+            case 'function':
+                var_dump(self::$dispatch);
+                // 规则闭包
+                $data = self::invokeFunction(self::$dispatch['function'], self::$dispatch['params']);
+                break;
+            default:
+                throw new KantException('dispatch type not support', 10008);
+        }
+        Http\Response::create($data, 301)->send();
+    }
+
+    /**
+     * Invoke Function
+     * 
+     * @param type $function
+     * @param type $vars
+     * @return type
+     */
+    public static function invokeFunction($function, $vars = []) {
+        $reflect = new \ReflectionFunction($function);
+        $args = self::bindParams($reflect, $vars);
+        return $reflect->invokeArgs($args);
+    }
+
+    /**
+     * Bind Params
+     * 
+     * @param type $reflect
+     * @param type $vars
+     * @return type
+     * @throws Exception
+     */
+    private static function bindParams($reflect, $vars) {
+        $args = [];
+        // 判断数组类型 数字数组时按顺序绑定参数
+        $type = key($vars) === 0 ? 1 : 0;
+        var_dump($vars);
+        if ($reflect->getNumberOfParameters() > 0) {
+            $params = $reflect->getParameters();
+            foreach ($params as $param) {
+                $name = $param->getName();
+                if (1 == $type && !empty($vars)) {
+                    $args[] = array_shift($vars);
+                } elseif (0 == $type && isset($vars[$name])) {
+                    $args[] = $vars[$name];
+                } elseif ($param->isDefaultValueAvailable()) {
+                    $args[] = $param->getDefaultValue();
+                } else {
+                    throw new KantException('method param miss:' . $name, 10004);
+                }
+            }
+        }
+        return $args;
     }
 
     /**
@@ -175,7 +275,7 @@ final class Kant {
      * @throws KantException
      * @throws ReflectionException
      */
-    public function exec() {
+    public function dispatch_bak() {
         $this->_dispatchInfo = KantFactory::getDispatch()->getDispatchInfo();
         $this->bootstrap();
         $controller = $this->controller();
@@ -230,6 +330,16 @@ final class Kant {
         }
     }
 
+    public function buildModule() {
+        //build module
+        if (self::$_config['check_app_dir']) {
+            $module = defined('CREATE_MODULE') ? CREATE_MODULE : self::$_config['route']['module'];
+            if (is_dir(MODULE_PATH . $module) == false) {
+                Build::checkDir($module);
+            }
+        }
+    }
+
     /**
      * Bootstrap
      * 
@@ -246,47 +356,6 @@ final class Kant {
                 return call_user_func(array($class, 'initialize'));
             }
         }
-    }
-
-    /**
-     * Load core class
-     * 
-     * @param type $className
-     * @param type $dir
-     * @return boolean
-     */
-    public static function autoload($className, $dir = '') {
-        if (class_exists($className, false) || interface_exists($className, false)) {
-            return true;
-        }
-        try {
-            if (in_array($className, array_keys(self::$_autoCoreClass)) == true) {
-                $filename = KANT_PATH . self::$_autoCoreClass[$className] . ".php";
-            } else {
-                if (strpos($className, "\\") !== false) {
-                    if (strpos($className, "Kant") === 0) {
-                        $className = str_replace('Kant\\', '', $className);
-                        $className = str_replace('\\', '/', $className) . ".php";
-                        $filename = KANT_PATH . $className;
-                    } else if (strpos($className, "Bootstrap") !== false) {
-                        $className = str_replace('\\', '/', $className) . ".php";
-                        $filename = APP_PATH . $className;
-                    } else if (strpos($className, "Model") !== false || strpos($className, "Controller") !== false) {
-                        $className = str_replace('\\', '/', $className) . ".php";
-                        $filename = MODULE_PATH . $className;
-                    } else {
-                        $className = str_replace('\\', '/', $className) . ".php";
-                        $filename = APP_PATH . $className;
-                    }
-                } else {
-                    $filename = $className;
-                }
-            }
-            self::inclde($filename);
-        } catch (RuntimeException $e) {
-            exit('Require File Error: ' . $e->getMessage());
-        }
-        return true;
     }
 
     /**
@@ -307,16 +376,6 @@ final class Kant {
             }
         }
         return $files[$filename];
-    }
-
-    /**
-     * Register autoload function
-     *
-     * @param string $func
-     * @param boolean $enable
-     */
-    public static function registerAutoload($func = 'self::autoload', $enable = true) {
-        $enable ? spl_autoload_register($func) : spl_autoload_unregister($func);
     }
 
 }
