@@ -11,5 +11,5 @@ define('IN_KANT', TRUE);
 define('KANT_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
 
 require_once KANT_PATH . 'Defines.php';
-require_once KANT_PATH . 'Bootstrap/Autoload.php';
+require_once KANT_PATH . 'Loader/Autoload.php';
 

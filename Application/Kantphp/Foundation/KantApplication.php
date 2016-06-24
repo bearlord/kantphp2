@@ -101,8 +101,7 @@ final class Kant {
     private function _initSession() {
         static $session = null;
         if (empty($session)) {
-            $config = KantFactory::getConfig()->reference();
-            $sessionConfig = $config['session'];
+            $sessionConfig = KantFactory::getConfig()->reference('session');
             $sessionAdapter = 'default';
             try {
                 $session = Session\Session::getInstance($sessionConfig)->getSession($sessionAdapter);
@@ -221,7 +220,7 @@ final class Kant {
             default:
                 throw new KantException('dispatch type not support', 10008);
         }
-        Http\Response::create($data, 301)->send();
+        Response::create($data, 200)->send();
     }
 
     /**
@@ -273,7 +272,7 @@ final class Kant {
      * @throws KantException
      * @throws ReflectionException
      */
-    public function dispatch_bak() {
+    public function module() {
         $this->_dispatchInfo = KantFactory::getDispatch()->getDispatchInfo();
         $this->bootstrap();
         $controller = $this->controller();
@@ -334,24 +333,6 @@ final class Kant {
             $module = defined('CREATE_MODULE') ? CREATE_MODULE : self::$_config['route']['module'];
             if (is_dir(MODULE_PATH . $module) == false) {
                 Build::checkDir($module);
-            }
-        }
-    }
-
-    /**
-     * Bootstrap
-     * 
-     * @staticvar array $classes
-     * @return boolean|array
-     */
-    protected function bootstrap() {
-        $classname = "Bootstrap";
-        $filepath = APP_PATH . "Bootstrap/$classname.php";
-        if (file_exists($filepath)) {
-            include $filepath;
-            $class = "Bootstrap\\$classname";
-            if (method_exists($class, 'initialize')) {
-                return call_user_func(array($class, 'initialize'));
             }
         }
     }

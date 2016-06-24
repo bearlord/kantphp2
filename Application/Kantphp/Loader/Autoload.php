@@ -4,7 +4,7 @@
  * Autoloader 
  */
 
-namespace Kant\Bootstrap;
+namespace Kant\Loader;
 
 class KantAutoloaderInit {
 
