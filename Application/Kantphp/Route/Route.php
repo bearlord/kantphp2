@@ -187,8 +187,10 @@ class Route {
                     }
                     // 单项路由
                     $route = !empty($val['route']) ? $val['route'] : '';
+                                        var_dump($url);
                     // 规则路由
                     $result = self::checkRule($rule, $route, $url, $pattern, $option);
+                    var_dump($result);
                     if (false !== $result) {
                         return $result;
                     }
@@ -245,7 +247,6 @@ class Route {
                     $rule = substr($rule, 0, -1);
                 }
             }
-
             $pattern = array_merge(self::$pattern, $pattern);
             $match = self::matchUrl($url, $rule, $pattern);
             if (false !== $match = self::matchUrl($url, $rule, $pattern)) {
@@ -351,8 +352,9 @@ class Route {
             }
         }
         if (0 === strpos($url, '/') || 0 === strpos($url, 'http')) {
-            // 路由到重定向地址
+            ob_start();
             $result = ['type' => 'redirect', 'url' => $url, 'status' => (is_array($route) && isset($route[1])) ? $route[1] : 301];
+            ob_end_flush();
         } elseif (0 === strpos($url, '\\')) {
             // 路由到方法
             $result = ['type' => 'method', 'method' => is_array($route) ? [$url, $route[1]] : $url, 'params' => $matches];
@@ -360,7 +362,6 @@ class Route {
             // 路由到控制器
             $result = ['type' => 'controller', 'controller' => substr($url, 1), 'params' => $matches];
         } else {
-            echo $url;
             // 解析路由地址
             $result = self::parseRoute($url);
             $var = array_merge($matches, $result['var']);

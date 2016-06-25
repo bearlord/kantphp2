@@ -91,7 +91,7 @@ class KantFactory {
     public static function getConfig() {
         if (!self::$config) {
             //Core configuration
-            $coreConfig = include KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Base.php';
+            $coreConfig = include KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php';
             self::$config = new KantConfig($coreConfig);
         }
         return self::$config;
