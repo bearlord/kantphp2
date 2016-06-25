@@ -180,12 +180,11 @@ final class Kant {
         //remove url suffix
         $pathinfo = str_replace(self::$_config['url_suffix'], '', $this->parsePathinfo());
         $pathinfo = trim($pathinfo, '/');
-        $pathinfo = "demo/cookie/index/a,100/b,200/&c=100";
+//        $pathinfo = "demo/cookie/index/a,100/b,200/&c=100";
         $dispath = Route::check($pathinfo);
         if ($dispath === false) {
             $dispath = Route::parseUrl($pathinfo);
         }
-        var_dump($dispath);
         self::$dispatch = $dispath;
     }
 
@@ -224,9 +223,9 @@ final class Kant {
                 $data = self::invokeFunction(self::$dispatch['function'], self::$dispatch['params']);
                 break;
             default:
-                throw new KantException('dispatch type not support', 10008);
+                throw new KantException('dispatch type not support', 5002);
         }
-        Response::create($data, 200)->send();
+        Response::create($data, Response::HTTP_OK)->send();
     }
 
     /**
@@ -265,7 +264,7 @@ final class Kant {
                 } elseif ($param->isDefaultValueAvailable()) {
                     $args[] = $param->getDefaultValue();
                 } else {
-                    throw new KantException('method param miss:' . $name, 10004);
+                    throw new KantException('method param miss:' . $name, 5004);
                 }
             }
         }

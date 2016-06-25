@@ -220,6 +220,16 @@ class Route {
         return ['type' => 'module', 'module' => $result['route']];
     }
 
+    /**
+     * Check Rule
+     * 
+     * @param type $rule
+     * @param \Closure $route
+     * @param type $url
+     * @param type $pattern
+     * @param type $option
+     * @return boolean
+     */
     private static function checkRule($rule, $route, $url, $pattern, $option) {
         // 检查完整规则定义
         if (isset($pattern['__url__']) && !preg_match('/^' . $pattern['__url__'] . '/', $url)) {
@@ -235,7 +245,9 @@ class Route {
                     $rule = substr($rule, 0, -1);
                 }
             }
+
             $pattern = array_merge(self::$pattern, $pattern);
+            $match = self::matchUrl($url, $rule, $pattern);
             if (false !== $match = self::matchUrl($url, $rule, $pattern)) {
                 if ($route instanceof \Closure) {
                     // 执行闭包
@@ -247,6 +259,14 @@ class Route {
         return false;
     }
 
+    /**
+     * Match url
+     * 
+     * @param type $url
+     * @param type $rule
+     * @param type $pattern
+     * @return boolean
+     */
     protected static function matchUrl($url, $rule, $pattern) {
         $m1 = explode('/', $url);
         $m2 = explode('/', $rule);
@@ -294,6 +314,15 @@ class Route {
         return $var;
     }
 
+    /**
+     * Parse Rule
+     * 
+     * @param type $rule
+     * @param type $route
+     * @param type $pathinfo
+     * @param type $matches
+     * @return string
+     */
     private static function parseRule($rule, $route, $pathinfo, $matches) {
         // 获取URL地址中的参数
         $paths = explode('/', $pathinfo);
@@ -401,7 +430,6 @@ class Route {
 
     protected static function parseUrlParams($url, $var) {
         $_GET = array_merge($var, $_GET);
-        var_dump($_GET);
     }
 
     /**
