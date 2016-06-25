@@ -30,13 +30,6 @@ class Route {
      */
     protected $_moduleType = false;
     protected $_urlSuffix;
-    // URL映射规则
-    private static $map = [];
-    // 子域名部署规则
-    private static $domain = [];
-    // 子域名
-    private static $subDomain = '';
-    // 变量规则
     private static $pattern = [];
 
     /**
@@ -164,7 +157,6 @@ class Route {
                     if (0 !== strpos($url, $rule)) {
                         continue;
                     }
-                    // 匹配到路由分组
                     foreach ($val['routes'] as $key => $route) {
                         if (is_numeric($key)) {
                             $key = array_shift($route);
@@ -185,12 +177,8 @@ class Route {
                     if (is_numeric($rule)) {
                         $rule = array_shift($val);
                     }
-                    // 单项路由
                     $route = !empty($val['route']) ? $val['route'] : '';
-                                        var_dump($url);
-                    // 规则路由
                     $result = self::checkRule($rule, $route, $url, $pattern, $option);
-                    var_dump($result);
                     if (false !== $result) {
                         return $result;
                     }
@@ -233,7 +221,6 @@ class Route {
      * @return boolean
      */
     private static function checkRule($rule, $route, $url, $pattern, $option) {
-        // 检查完整规则定义
         if (isset($pattern['__url__']) && !preg_match('/^' . $pattern['__url__'] . '/', $url)) {
             return false;
         }
@@ -251,7 +238,6 @@ class Route {
             $match = self::matchUrl($url, $rule, $pattern);
             if (false !== $match = self::matchUrl($url, $rule, $pattern)) {
                 if ($route instanceof \Closure) {
-                    // 执行闭包
                     return ['type' => 'function', 'function' => $route, 'params' => $match];
                 }
                 return self::parseRule($rule, $route, $url, $match);
@@ -273,7 +259,6 @@ class Route {
         $m2 = explode('/', $rule);
         $var = [];
         foreach ($m2 as $key => $val) {
-            // val中定义了多个变量 <id><name>
             if (false !== strpos($val, '<') && preg_match_all('/<(\w+(\??))>/', $val, $matches)) {
                 $value = [];
                 foreach ($matches[1] as $name) {
@@ -296,14 +281,11 @@ class Route {
                 }
             }
             if (0 === strpos($val, '[:')) {
-                // 可选参数
                 $val = substr($val, 1, -1);
             }
             if (0 === strpos($val, ':')) {
-                // URL变量
                 $name = substr($val, 1);
                 if (isset($m1[$key]) && isset($pattern[$name]) && !preg_match('/^' . $pattern[$name] . '$/', $m1[$key])) {
-                    // 检查变量规则
                     return false;
                 }
                 $var[$name] = isset($m1[$key]) ? $m1[$key] : '';
@@ -311,7 +293,6 @@ class Route {
                 return false;
             }
         }
-        // 成功匹配后返回URL中的动态变量数组
         return $var;
     }
 
@@ -325,11 +306,8 @@ class Route {
      * @return string
      */
     private static function parseRule($rule, $route, $pathinfo, $matches) {
-        // 获取URL地址中的参数
         $paths = explode('/', $pathinfo);
-        // 获取路由地址规则
         $url = is_array($route) ? $route[0] : $route;
-        // 解析路由规则
         $rule = explode('/', $rule);
         foreach ($rule as $item) {
             $fun = '';
@@ -340,7 +318,6 @@ class Route {
                 $var = substr($item, 1);
                 $matches[$var] = array_shift($paths);
             } else {
-                // 过滤URL中的静态变量
                 array_shift($paths);
             }
         }

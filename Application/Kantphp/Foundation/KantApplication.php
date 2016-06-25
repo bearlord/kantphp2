@@ -28,7 +28,7 @@ require_once KANT_PATH . '/Foundation/Base.php';
 final class Kant {
 
     private static $_instance = null;
-    private static $_environment = 'Development';
+    private $_environment = 'Development';
 
     /**
      * defined dispath
@@ -82,14 +82,29 @@ final class Kant {
      * Constructs
      */
     public function __construct($environment) {
-        $appConfig = include CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php';
+        $this->_environment = $environment;
+        $this->_init();
+    }
+
+    /**
+     * Init
+     */
+    private function _init() {
+        $this->_initConfig();
+        $this->_initSession();
+    }
+
+    /**
+     * Init Config
+     */
+    private function _initConfig() {
+        $appConfig = include CFG_PATH . $this->_environment . DIRECTORY_SEPARATOR . 'Config.php';
         self::$configObj = KantFactory::getConfig();
         self::$configObj->merge($appConfig);
         self::$_config = self::$configObj->reference();
-        KantRegistry::set('environment', $environment);
+        KantRegistry::set('environment', $this->_environment);
         KantRegistry::set('config', self::$_config);
-        KantRegistry::set('config_path', CFG_PATH . self::$_environment . DIRECTORY_SEPARATOR);
-        $this->_initSession();
+        KantRegistry::set('config_path', CFG_PATH . $this->_environment . DIRECTORY_SEPARATOR);
     }
 
     /**
@@ -203,23 +218,18 @@ final class Kant {
         $data = [];
         switch (self::$dispatch['type']) {
             case 'redirect':
-                // 执行重定向跳转
                 header('Location: ' . self::$dispatch['url'], true, self::$dispatch['status']);
                 break;
             case 'module':
-                // 模块/控制器/操作
                 $data = self::module(self::$dispatch['module']);
                 break;
             case 'controller':
-                // 执行控制器操作
                 $data = Loader::action(self::$dispatch['controller'], self::$dispatch['params']);
                 break;
             case 'method':
-                // 执行回调方法
                 $data = self::invokeMethod(self::$dispatch['method'], self::$dispatch['params']);
                 break;
             case 'function':
-                // 规则闭包
                 $data = self::invokeFunction(self::$dispatch['function'], self::$dispatch['params']);
                 break;
             default:
@@ -251,7 +261,6 @@ final class Kant {
      */
     private static function bindParams($reflect, $vars) {
         $args = [];
-        // 判断数组类型 数字数组时按顺序绑定参数
         $type = key($vars) === 0 ? 1 : 0;
         if ($reflect->getNumberOfParameters() > 0) {
             $params = $reflect->getParameters();
@@ -277,13 +286,17 @@ final class Kant {
      * @throws KantException
      * @throws ReflectionException
      */
-    public function module() {
-        $this->_dispatchInfo = KantFactory::getDispatch()->getDispatchInfo();
-        $controller = $this->controller();
+    public function module($dispatchInfo) {
+        KantRegistry::set('dispatchInfo', $dispatchInfo);
+        $this->_dispatchInfo = $dispatchInfo;
+        $module = isset($dispatchInfo[0]) ? ucfirst($dispatchInfo[0]) : null;
+        if (empty($module)) {
+            throw new KantException('No Module found');
+        }
+        $controller = $this->controller($dispatchInfo[1], $dispatchInfo[0]);
         if (!$controller) {
-            $controller = $this->controller('empty');
             if (empty($controller)) {
-                throw new KantException(sprintf("No controller exists:%s", ucfirst($this->_dispatchInfo['ctrl']) . 'Controller'));
+                throw new KantException(sprintf("No controller exists:%s", ucfirst($this->_dispatchInfo[1]) . 'Controller'));
             }
         }
         $action = isset($this->_dispatchInfo['act']) ? $this->_dispatchInfo['act'] . self::$_config['action_suffix'] : 'Index' . self::$_config['action_suffix'];
@@ -304,30 +317,28 @@ final class Kant {
     }
 
     /**
+     * Controller
      * 
      * @staticvar array $classes
      * @return boolean|array|\classname
      * @throws KantException
      */
-    protected function controller($controller = '') {
-        $module = isset($this->_dispatchInfo['module']) ? ucfirst($this->_dispatchInfo['module']) : '';
-        if (empty($module)) {
-            throw new KantException('No Module found');
-        }
+    protected function controller($controller = '', $module) {
         if (empty($controller)) {
-            $controller = ucfirst($this->_dispatchInfo['ctrl']) . 'Controller';
+            $controller = ucfirst($this->_dispatchInfo[1]) . 'Controller';
         } else {
             $controller = ucfirst($controller) . "Controller";
         }
-        $filepath = APP_PATH . "Module/$module/Controller/$controller.php";
-        if (file_exists($filepath)) {
-            include $filepath;
-            $namespace = "$module\\Controller\\";
-            $controller = $namespace . $controller;
-            if (class_exists($controller)) {
-                $class = new $controller;
-                return $class;
-            }
+        $filepath = APP_PATH . "Module/" . $module . "/Controller/$controller.php";
+        if (!file_exists($filepath)) {
+            throw new KantException(sprintf("File does not exists:%s", $filepath));
+        }
+        include $filepath;
+        $namespace = "$module\\Controller\\";
+        $controller = $namespace . $controller;
+        if (class_exists($controller)) {
+            $class = new $controller;
+            return $class;
         }
     }
 

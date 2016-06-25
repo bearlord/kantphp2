@@ -8,7 +8,7 @@
             html{ overflow-y: scroll; }
             body{ background: #fff; color: #333; font-size: 16px; }
             .error{ padding: 24px 48px; }
-            h1{ font-size: 32px; line-height: 48px; }
+            h1{ font-size: 28px; line-height: 42px; }
             .error .content{ padding-top: 10px}
             .error .info{ margin-bottom: 12px; }
             .error .info .title{ margin-bottom: 3px; }
