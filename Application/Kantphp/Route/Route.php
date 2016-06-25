@@ -15,26 +15,9 @@ use Kant\KantFactory;
 
 class Route {
 
-    private static $_instance = null;
-    private $_rules = array();
-    protected $_enableDynamicMatch = true;
-    protected $_dynamicRule = array();
-    protected $get;
-    protected $post;
-    protected $request;
-
-    /**
-     * Module type
-     * 
-     * @var type 
-     */
-    protected $_moduleType = false;
-    protected $_urlSuffix;
-    private static $pattern = [];
-
     /**
      * Rules
-     * @var type 
+     * @var array 
      */
     private static $rules = [
         'GET' => [],
@@ -46,8 +29,56 @@ class Route {
         '*' => [],
     ];
 
-    public function __construct() {
-        
+    /**
+     * Route map
+     * 
+     * @var array 
+     */
+    private static $map = [];
+
+    /**
+     * Route pattern
+     * 
+     * @var array 
+     */
+    private static $pattern = [];
+
+    /**
+     * Rule map addition
+     * 
+     * @param type $map
+     * @param type $route
+     * @return type
+     */
+    public static function map($map = '', $route = '') {
+        return self::setting('map', $map, $route);
+    }
+
+    /**
+     * 
+     * Variable rule addtion
+     * @param type $name
+     * @param type $rule
+     * @return type
+     */
+    public static function pattern($name = '', $rule = '') {
+        return self::setting('pattern', $name, $rule);
+    }
+
+    // 添加子域名部署规则
+    public static function domain($domain = '', $rule = '') {
+        return self::setting('domain', $domain, $rule);
+    }
+
+    // 属性设置
+    private static function setting($var, $name = '', $value = '') {
+        if (is_array($name)) {
+            self::${$var} = self::${$var} + $name;
+        } elseif (empty($value)) {
+            return empty($name) ? self::${$var} : self::${$var}[$name];
+        } else {
+            self::${$var}[$name] = $value;
+        }
     }
 
     /**
@@ -59,7 +90,7 @@ class Route {
      * @param array $pattern
      */
     public static function get($rule, $route = '', $option = [], $pattern = []) {
-        self::register($rule, $route, 'GET', $option, $pattern);
+        self::rule($rule, $route, 'GET', $option, $pattern);
     }
 
     /**
@@ -71,29 +102,25 @@ class Route {
      * @param type $option
      * @param type $pattern
      */
-    public static function register($rule, $route = '', $type = '*', $option = [], $pattern = []) {
+    public static function rule($rule, $route = '', $type = '*', $option = [], $pattern = []) {
         if (strpos($type, '|')) {
             foreach (explode('|', $type) as $val) {
-                self::register($rule, $route, $val, $option);
+                self::rule($rule, $route, $val, $option);
             }
         } else {
             if (is_array($rule)) {
-                // 检查域名部署
                 if (isset($rule['__domain__'])) {
                     self::domain($rule['__domain__']);
                     unset($rule['__domain__']);
                 }
-                // 检查变量规则
                 if (isset($rule['__pattern__'])) {
                     self::pattern($rule['__pattern__']);
                     unset($rule['__pattern__']);
                 }
-                // 检查路由映射
                 if (isset($rule['__map__'])) {
                     self::map($rule['__map__']);
                     unset($rule['__map__']);
                 }
-                // 检查资源路由
                 if (isset($rule['__rest__'])) {
                     self::resource($rule['__rest__']);
                     unset($rule['__rest__']);
@@ -144,8 +171,13 @@ class Route {
         if (empty($url)) {
             $url = '/';
         }
-
+        
+        if (isset(self::$map[$url])) {
+            return self::parseUrl(self::$map[$url], $depr);
+        }
+        
         $rules = self::$rules[REQUEST_METHOD];
+        
         if (!empty(self::$rules['*'])) {
             $rules = array_merge(self::$rules['*'], $rules);
         }
@@ -179,7 +211,7 @@ class Route {
                     }
                     $route = !empty($val['route']) ? $val['route'] : '';
                     $result = self::checkRule($rule, $route, $url, $pattern, $option);
-                    if (false !== $result) {
+                    if ($result !== false) {
                         return $result;
                     }
                 }
@@ -235,8 +267,8 @@ class Route {
                 }
             }
             $pattern = array_merge(self::$pattern, $pattern);
-            $match = self::matchUrl($url, $rule, $pattern);
-            if (false !== $match = self::matchUrl($url, $rule, $pattern)) {
+            $match = self::match($url, $rule, $pattern);
+            if (false !== $match = self::match($url, $rule, $pattern)) {
                 if ($route instanceof \Closure) {
                     return ['type' => 'function', 'function' => $route, 'params' => $match];
                 }
@@ -254,7 +286,7 @@ class Route {
      * @param type $pattern
      * @return boolean
      */
-    protected static function matchUrl($url, $rule, $pattern) {
+    protected static function match($url, $rule, $pattern) {
         $m1 = explode('/', $url);
         $m2 = explode('/', $rule);
         $var = [];
@@ -285,7 +317,7 @@ class Route {
             }
             if (0 === strpos($val, ':')) {
                 $name = substr($val, 1);
-                if (isset($m1[$key]) && isset($pattern[$name]) && !preg_match('/^' . $pattern[$name] . '$/', $m1[$key])) {
+                if (isset($m1[$key]) && isset($pattern[$name]) && !preg_match('|^' . $pattern[$name] . '$|', $m1[$key])) {
                     return false;
                 }
                 $var[$name] = isset($m1[$key]) ? $m1[$key] : '';
@@ -333,17 +365,13 @@ class Route {
             $result = ['type' => 'redirect', 'url' => $url, 'status' => (is_array($route) && isset($route[1])) ? $route[1] : 301];
             ob_end_flush();
         } elseif (0 === strpos($url, '\\')) {
-            // 路由到方法
             $result = ['type' => 'method', 'method' => is_array($route) ? [$url, $route[1]] : $url, 'params' => $matches];
         } elseif (0 === strpos($url, '@')) {
-            // 路由到控制器
             $result = ['type' => 'controller', 'controller' => substr($url, 1), 'params' => $matches];
         } else {
-            // 解析路由地址
             $result = self::parseRoute($url);
             $var = array_merge($matches, $result['var']);
             self::parseUrlParams(implode('/', $paths), $var);
-            // 路由到模块/控制器/操作
             $result = ['type' => 'module', 'module' => $result['route']];
         }
         return $result;
@@ -406,172 +434,14 @@ class Route {
         return ['route' => $route, 'var' => $var];
     }
 
+    /**
+     * Parse url params
+     * 
+     * @param string $url
+     * @param string $var
+     */
     protected static function parseUrlParams($url, $var) {
         $_GET = array_merge($var, $_GET);
-    }
-
-    /**
-     * Singleton instance
-     * 
-     * @return array
-     */
-    public static function getInstance() {
-        if (null === self::$_instance) {
-            self::$_instance = new self();
-        }
-        return self::$_instance;
-    }
-
-    /**
-     * Set url suffix
-     * 
-     * @param type $var
-     * @return type
-     */
-    public function setUrlSuffix($var) {
-        return $this->_urlSuffix = $var;
-    }
-
-    /*
-     * Get url suffix
-     * 
-     */
-
-    public function getUrlSuffix() {
-        return $this->_urlSuffix;
-    }
-
-    /**
-     * Get rules
-     *
-     * @param string $regex
-     * @return array
-     */
-    public function rules($regex = null) {
-        if (null === $regex) {
-            return $this->_rules;
-        }
-        return isset($this->_rules[$regex]) ? $this->_rules[$regex] : null;
-    }
-
-    /**
-     * Add rule
-     *
-     * @param array $rule
-     * @param boolean $overwrite
-     */
-    public function add($rules, $overwrite = true) {
-        $rules = (array) $rules;
-        if ($overwrite) {
-            $this->_rules = $rules + $this->_rules;
-        } else {
-            $this->_rules += $rules;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove rule
-     *
-     * @param string $regex
-     */
-    public function remove($regex) {
-        unset($this->_rules[$regex]);
-        return $this;
-    }
-
-    /**
-     * Enable or disable dynamic match
-     *
-     * @param boolean $flag
-     * @param array $opts
-     * @return Cola_Router
-     */
-    public function enableDynamicMatch($flag = true, $opts = array()) {
-        $this->_enableDynamicMatch = true;
-        $this->_dynamicRule = $opts + $this->_dynamicRule;
-        return $this;
-    }
-
-    /**
-     * Match path
-     *
-     * @param string $path
-     * @return boolean
-     */
-    public function match($pathInfo = null) {
-        $pathInfo = trim($pathInfo, '/');
-        if (!empty($this->_rules)) {
-            $pathInfo = str_replace("$1", 4, $pathInfo);
-            foreach ($this->_rules as $regex => $rule) {
-                $res = preg_match($regex, $pathInfo, $matches);
-                if ($matches) {
-                    $pathInfo = $this->_rules[$regex];
-                    for ($i = 1; $i < count($matches); $i++) {
-                        $pathInfo = str_replace("$" . $i, $matches[$i], $pathInfo);
-                    }
-                    break;
-                }
-            }
-        }
-        return $this->_dynamicMatch($pathInfo);
-    }
-
-    /**
-     * Dynamic Match
-     *
-     * @param string $pathInfo
-     * @return array $dispatchInfo
-     */
-    protected function _dynamicMatch($pathInfo) {
-        //Special pathinof as demo/index/get/a,100/b,101?c=102&d=103
-        if (strpos($pathInfo, "?") > 0) {
-            $parse = explode("?", $pathInfo);
-            $tmp = explode('/', $parse[0]);
-            if (!empty($parse[1])) {
-                parse_str($parse[1], $query);
-                foreach ($query as $key => $val) {
-                    $dispatchInfo[$key] = urldecode($val);
-                }
-            }
-        } else {
-            //Normal pathinfo as demo/index/get/a,100/b,101
-            $tmp = explode('/', $pathInfo);
-        }
-        if ($module = current($tmp)) {
-            $dispatchInfo['module'] = ucfirst(current($tmp));
-        } else {
-            $dispatchInfo['module'] = ucfirst($this->_dynamicRule['module']);
-        }
-        if ($controller = next($tmp)) {
-            $dispatchInfo['ctrl'] = ucfirst($controller);
-        } else {
-            $dispatchInfo['ctrl'] = ucfirst($this->_dynamicRule['ctrl']);
-        }
-        if ($action = next($tmp)) {
-            if (strpos($action, "?") !== false) {
-                $action = substr($action, 0, strpos($action, "?"));
-            }
-            if (strpos($action, "&") !== false) {
-                $action = substr($action, 0, strpos($action, "."));
-            }
-            $dispatchInfo['act'] = ucfirst($action);
-        } else {
-            $dispatchInfo['act'] = $this->_dynamicRule['act'];
-        }
-        while (false !== ($next = next($tmp))) {
-            $query = preg_split("/[?&]/", $next);
-            if (!empty($query)) {
-                foreach ($query as $key => $val) {
-                    $arr = preg_split("/[,:=-]/", $val, 2);
-                    if (!empty($arr[1])) {
-                        $dispatchInfo[$arr[0]] = urldecode($arr[1]);
-                    }
-                }
-            }
-        }
-        return $dispatchInfo;
     }
 
 }
