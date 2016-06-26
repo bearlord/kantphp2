@@ -10,6 +10,7 @@
 namespace Kant\Database;
 
 use Kant\Exception\KantException;
+use Kant\Registry\KantRegistry;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -60,8 +61,7 @@ final class Driver {
      */
     public static function getInstance($dbConfig = '') {
         if ($dbConfig == '') {
-            $config = KantRegistry::get('config');
-            $dbConfig = $config['database'];
+            $dbConfig = KantRegistry::get('config')->reference('database');
         }
         if (self::$_database == '') {
             self::$_database = new self();

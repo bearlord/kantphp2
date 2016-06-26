@@ -103,8 +103,22 @@ final class Kant {
         self::$configObj->merge($appConfig);
         self::$_config = self::$configObj->reference();
         KantRegistry::set('environment', $this->_environment);
-        KantRegistry::set('config', self::$_config);
+        KantRegistry::set('config', self::$configObj);
         KantRegistry::set('config_path', CFG_PATH . $this->_environment . DIRECTORY_SEPARATOR);
+    }
+
+    /**
+     * Init Module Config;
+     * @param type $module
+     */
+    private function _initModuleConfig($module) {
+        $configFilePath = MODULE_PATH . $module . DIRECTORY_SEPARATOR . 'Config.php';
+        if (!file_exists($configFilePath)) {
+            return false;
+        }
+        $moduleConfig = include $configFilePath;
+        self::$configObj->merge($moduleConfig);
+        self::$_config = self::$configObj->reference();
     }
 
     /**
@@ -293,6 +307,7 @@ final class Kant {
         if (empty($module)) {
             throw new KantException('No Module found');
         }
+        $this->_initModuleConfig($module);
         $controller = $this->controller($dispatchInfo[1], $dispatchInfo[0]);
         if (!$controller) {
             if (empty($controller)) {

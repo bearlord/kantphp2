@@ -36,10 +36,8 @@ final class Cookie {
      * @return object on success
      */
     public static function getInstance($cookieConfig = '') {
-        $config = KantRegistry::get('config');
         if ($cookieConfig == '') {
-            $config = KantRegistry::get('config');
-            $cookieConfig = $config['cookie'];
+            $cookieConfig = KantRegistry::get('config')->reference('cookie');
         }
         if (self::$_cookie == '') {
             self::$_cookie = new self();

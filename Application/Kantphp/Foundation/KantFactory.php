@@ -76,16 +76,6 @@ class KantFactory {
     }
 
     /**
-     * Get dispatch object
-     */
-    public static function getDispatch() {
-        if (!self::$dispatch) {
-            self::$dispatch = Dispatch::getInstance();
-        }
-        return self::$dispatch;
-    }
-
-    /**
      * Get config object
      */
     public static function getConfig() {

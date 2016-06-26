@@ -35,35 +35,6 @@ class Base {
 
     /**
      *
-     * Load system class
-     * 
-     * @param string $classname
-     * @param path $path
-     * @param boolean $initialize
-     */
-    public static function loadSysClass($classname, $path = '', $initialize = false) {
-        static $classes = array();
-        if (!empty($path)) {
-            $path = trim($path, '/') . DIRECTORY_SEPARATOR;
-        }
-        $filepath = KANT_PATH . $path . $classname . '.php';
-        $key = md5($path . $classname);
-        if (file_exists($filepath)) {
-            include_once $filepath;
-            if ($initialize) {
-                if (!empty($classes[$key])) {
-                    return $classes[$key];
-                }
-                $classes[$key] = new $classname;
-            } else {
-                $classes[$key] = true;
-            }
-            return $classes[$key];
-        }
-    }
-
-    /**
-     *
      * Load third-party libary
      * 
      * @param string $classname
@@ -124,8 +95,7 @@ class Base {
      * @param integer $second
      */
     public function redirect($message, $url = 'goback', $second = 3) {
-        $config = KantFactory::getConfig()->reference();
-        $redirectTpl = $config['redirect_tpl'];
+        $redirectTpl = KantRegistry::get('config')->reference('redirect_tpl');
         if ($redirectTpl) {
             include TPL_PATH . $redirectTpl . '.php';
         } else {
@@ -142,7 +112,7 @@ class Base {
     public function getLang() {
         static $lang = null;
         if (empty($lang)) {
-            $config = KantFactory::getConfig()->reference();
+            $config = KantRegistry::get('config')->reference('cookie');
             $lang = !empty($_COOKIE['lang']) ? $_COOKIE['lang'] : $config['lang'];
             if (empty($lang)) {
                 $lang = 'en_US';
@@ -183,8 +153,7 @@ class Base {
     private function _initCache() {
         static $cache = null;
         if (empty($cache)) {
-            $config = KantFactory::getConfig()->reference();
-            $cacheConfig = $config['cache'];
+            $cacheConfig = KantRegistry::get('config')->reference('cache');
             $cacheAdapter = 'default';
             try {
                 $cache = KantFactory::getCache($cacheConfig)->getCache($cacheAdapter);
@@ -204,9 +173,9 @@ class Base {
     private function _initCookie() {
         static $cookie = null;
         if (empty($cookie)) {
-            $config = KantFactory::getConfig()->reference();
+            $cookieConfig = KantFactory::getConfig()->reference('cookie');
             try {
-                $cookie = Cookie\Cookie::getInstance($config['cookie']);
+                $cookie = Cookie\Cookie::getInstance($cookieConfig);
             } catch (RuntimeException $e) {
                 if (!headers_sent()) {
                     header('HTTP/1.1 500 Internal Server Error');
@@ -311,7 +280,7 @@ class Base {
     }
 
     public function widget($widgetname, $method, $data = array(), $return = false) {
-        $dispatchInfo = KantFactory::getConfig()->reference('dispatchInfo');
+        $dispatchInfo = KantRegistry::get('config')->reference('dispatchInfo');
         $module = isset($dispatchInfo['module']) ? ucfirst($dispatchInfo['module']) : '';
         $classname = ucfirst($widgetname) . 'Widget';
         if ($module) {

@@ -166,11 +166,13 @@ class KantConfig {
     }
 
     protected function _merge($arr1, $arr2) {
-        foreach ($arr2 as $key => $value) {
-            if (isset($arr1[$key]) && is_array($value)) {
-                $arr1[$key] = $this->_merge($arr1[$key], $arr2[$key]);
-            } else {
-                $arr1[$key] = $value;
+        if (is_array($arr2) && !empty($arr2)) {
+            foreach ($arr2 as $key => $value) {
+                if (isset($arr1[$key]) && is_array($value)) {
+                    $arr1[$key] = $this->_merge($arr1[$key], $arr2[$key]);
+                } else {
+                    $arr1[$key] = $value;
+                }
             }
         }
         return $arr1;
@@ -182,7 +184,6 @@ class KantConfig {
         } else {
             return $this->_data[$key];
         }
-        
     }
 
 }

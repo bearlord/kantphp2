@@ -9,7 +9,7 @@
 
 namespace Kant\Route;
 
-use Kant\KantFactory;
+use Kant\Registry\KantRegistry;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -27,6 +27,20 @@ class Route {
         'HEAD' => [],
         'OPTIONS' => [],
         '*' => [],
+    ];
+
+    /**
+     * Restful
+     * @var type 
+     */
+    private static $rest = [
+        'index' => ['GET', '', 'index'],
+        'create' => ['GET', '/create', 'create'],
+        'edit' => ['GET', '/:id/edit', 'edit'],
+        'read' => ['GET', '/:id', 'read'],
+        'save' => ['POST', '', 'save'],
+        'update' => ['PUT', '/:id', 'update'],
+        'delete' => ['DELETE', '/:id', 'delete'],
     ];
 
     /**
@@ -55,6 +69,7 @@ class Route {
     }
 
     /**
+     * Pattern filter addtion
      * 
      * Variable rule addtion
      * @param type $name
@@ -65,12 +80,14 @@ class Route {
         return self::setting('pattern', $name, $rule);
     }
 
-    // 添加子域名部署规则
-    public static function domain($domain = '', $rule = '') {
-        return self::setting('domain', $domain, $rule);
-    }
-
-    // 属性设置
+    /**
+     * Attribute setting
+     * 
+     * @param type $var
+     * @param type $name
+     * @param type $value
+     * @return type
+     */
     private static function setting($var, $name = '', $value = '') {
         if (is_array($name)) {
             self::${$var} = self::${$var} + $name;
@@ -82,7 +99,7 @@ class Route {
     }
 
     /**
-     * register get request rule
+     * Register get request rule
      * 
      * @param string/array $rule
      * @param type $route
@@ -91,6 +108,119 @@ class Route {
      */
     public static function get($rule, $route = '', $option = [], $pattern = []) {
         self::rule($rule, $route, 'GET', $option, $pattern);
+    }
+
+    /**
+     * Register post request rule
+     * 
+     * @param type $rule
+     * @param type $route
+     * @param type $option
+     * @param type $pattern
+     */
+    public static function post($rule, $route = '', $option = [], $pattern = []) {
+        self::rule($rule, $route, 'POST', $option, $pattern);
+    }
+
+    /**
+     * Rescource rule
+     * 
+     * @param string $rule
+     * @param type $route
+     * @param type $option
+     * @param type $pattern
+     */
+    public static function resource($rule, $route = '', $option = [], $pattern = []) {
+        if (is_array($rule)) {
+            foreach ($rule as $key => $val) {
+                if (is_array($val)) {
+                    list($val, $option, $pattern) = array_pad($val, 3, []);
+                }
+                self::resource($key, $val, $option, $pattern);
+            }
+        } else {
+            if (strpos($rule, '.')) {
+                // 注册嵌套资源路由
+                $array = explode('.', $rule);
+                $last = array_pop($array);
+                $item = [];
+                foreach ($array as $val) {
+                    $item[] = $val . '/:' . (isset($option['var'][$val]) ? $option['var'][$val] : $val . '_id');
+                }
+                $rule = implode('/', $item) . '/' . $last;
+            }
+            // 注册资源路由
+            foreach (self::$rest as $key => $val) {
+                if ((isset($option['only']) && !in_array($key, $option['only'])) || (isset($option['except']) && in_array($key, $option['except']))) {
+                    continue;
+                }
+                if (strpos($val[1], ':id') && isset($option['var'][$rule])) {
+                    $val[1] = str_replace(':id', ':' . $option['var'][$rule], $val[1]);
+                }
+                $item = ltrim($rule . $val[1], '/');
+                self::rule($item ? $item . '$' : '', $route . '/' . $val[2], $val[0], $option, $pattern);
+            }
+        }
+    }
+
+    /**
+     * Set rule group
+     * 
+     * @access public
+     * @param array $option
+     * @return void
+     */
+    public static function setGroup($name) {
+        self::$group = $name;
+    }
+
+    /**
+     * Set rule option
+     * 
+     * @access public
+     * @param array $option 路由参数
+     * @return void
+     */
+    public static function setOption($option) {
+        self::$option = $option;
+    }
+
+    /**
+     * Register route group
+     * 
+     * @access public
+     * @param string|array $name
+     * @param array|\Closure $routes
+     * @param array $option
+     * @param string $type
+     * @param array $pattern
+     * @return void
+     */
+    public static function group($name, $routes, $option = [], $type = '*', $pattern = []) {
+        if (is_array($name)) {
+            $option = $name;
+            $name = isset($option['name']) ? $option['name'] : '';
+        }
+        $type = strtoupper($type);
+        if (!empty($name)) {
+            if ($routes instanceof \Closure) {
+                self::setGroup($name);
+                call_user_func_array($routes, []);
+                self::setGroup(null);
+                self::$rules[$type][$name]['option'] = $option;
+                self::$rules[$type][$name]['pattern'] = $pattern;
+            } else {
+                self::$rules[$type][$name] = ['routes' => $routes, 'option' => $option, 'pattern' => $pattern];
+            }
+        } else {
+            if ($routes instanceof \Closure) {
+                self::setOption($option);
+                call_user_func_array($routes, []);
+                self::setOption([]);
+            } else {
+                self::rule($routes, '', $type, $option, $pattern);
+            }
+        }
     }
 
     /**
@@ -109,10 +239,6 @@ class Route {
             }
         } else {
             if (is_array($rule)) {
-                if (isset($rule['__domain__'])) {
-                    self::domain($rule['__domain__']);
-                    unset($rule['__domain__']);
-                }
                 if (isset($rule['__pattern__'])) {
                     self::pattern($rule['__pattern__']);
                     unset($rule['__pattern__']);
@@ -171,13 +297,13 @@ class Route {
         if (empty($url)) {
             $url = '/';
         }
-        
+
         if (isset(self::$map[$url])) {
             return self::parseUrl(self::$map[$url], $depr);
         }
-        
+
         $rules = self::$rules[REQUEST_METHOD];
-        
+
         if (!empty(self::$rules['*'])) {
             $rules = array_merge(self::$rules['*'], $rules);
         }
@@ -407,7 +533,7 @@ class Route {
                 if (strpos($action, "?") !== false) {
                     $action = substr($action, 0, strpos($action, "?"));
                 }
-                $urlsuffix = KantFactory::getConfig()->reference('url_suffix');
+                $urlsuffix = KantRegistry::get('config')->reference('url_suffix');
                 if ($urlsuffix) {
                     if (strpos($action, "&") !== false) {
                         $action = substr($action, 0, strpos($action, $urlsuffix));

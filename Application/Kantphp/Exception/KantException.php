@@ -32,8 +32,8 @@ class KantException extends Exception {
      * @return void
      */
     public function __construct($msg = '', $code = 0, Exception $previous = null) {
-        $config = KantRegistry::get('config');
-        if ($config['debug'] == false) {
+        $debug = KantRegistry::get("config")->reference('debug');
+        if ($debug == false) {
             header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
             header("Status: 404 Not Found");
             header("X-Powered-By: KantPHP Framework");
