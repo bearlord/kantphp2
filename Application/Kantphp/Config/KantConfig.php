@@ -29,18 +29,15 @@ class KantConfig {
 
     /**
      * KantConfig provides a property based interface to
-     * an array. The data are read-only unless $allowModifications
-     * is set to true on construction.
+     * an array.
      *
      * KantConfig also implements Countable and Iterator to
      * facilitate easy access to the data.
      *
      * @param  array   $array
-     * @param  boolean $allowModifications
      * @return void
      */
-    public function __construct(array $data = array(), $overwrite = false) {
-        $this->_overwrite = (boolean) $overwrite;
+    public function __construct(array $data = array()) {
         $this->_data = $data;
     }
 
@@ -61,11 +58,92 @@ class KantConfig {
         $name = explode($delimiter, $name);
         $ret = $this->_data;
         foreach ($name as $key) {
-            if (!isset($ret[$key]))
+            if (!isset($ret[$key])) {
                 return $default;
+            }
             $ret = $ret[$key];
         }
         return $ret;
+    }
+
+    /**
+     * Set objects
+     * 
+     * @param type $name
+     * @param type $value
+     * @param type $delimiter
+     * @throws KantException
+     */
+    public function set($name, $value) {
+        if (is_string($name)) {
+            $this->_data[$key] = $value;
+        } elseif (is_array($name)) {
+            if (!empty($name)) {
+                foreach ($name as $key => $val) {
+                    $this->set($key, $value);
+                }
+            }
+        }
+    }
+
+    /**
+     * Load config file
+     * 
+     * @param type $file
+     * @param type $name
+     * @return type
+     */
+    public function load($file, $name) {
+        if (is_file($file)) {
+            return self::set(include $file, $name);
+        }
+    }
+    
+    /**
+     * Defined by Iterator interface
+     *
+     * @return mixed
+     */
+    public function keys() {
+        return array_keys($this->_data);
+    }
+
+    /**
+     * Merge object
+     * 
+     * @param type $config
+     * @return \Kant\Config\KantConfig
+     */
+    public function merge($config) {
+        $this->_data = $this->_merge($this->_data, $config);
+        return $this;
+    }
+
+    protected function _merge($arr1, $arr2) {
+        if (is_array($arr2) && !empty($arr2)) {
+            foreach ($arr2 as $key => $value) {
+                if (isset($arr1[$key]) && is_array($value)) {
+                    $arr1[$key] = $this->_merge($arr1[$key], $arr2[$key]);
+                } else {
+                    $arr1[$key] = $value;
+                }
+            }
+        }
+        return $arr1;
+    }
+
+    /**
+     * Reference
+     * 
+     * @param type $key
+     * @return type
+     */
+    public function reference($key = '') {
+        if ($key == '') {
+            return $this->_data;
+        } else {
+            return $this->_data[$key];
+        }
     }
 
     /**
@@ -76,28 +154,6 @@ class KantConfig {
      */
     public function __get($name) {
         return $this->get($name);
-    }
-
-    public function set($name, $value, $delimiter = '.') {
-        $pos = & $this->_data;
-        if (!is_string($delimiter) || false === strpos($name, $delimiter)) {
-            $key = $name;
-        } else {
-            $name = explode($delimiter, $name);
-            $cnt = count($name);
-            for ($i = 0; $i < $cnt - 1; $i ++) {
-                if (!isset($pos[$name[$i]]))
-                    $pos[$name[$i]] = array();
-                $pos = & $pos[$name[$i]];
-            }
-            $key = $name[$cnt - 1];
-        }
-
-        if (!$this->_overwrite && isset($pos[$key])) {
-            throw new KantException('this name of config is read only');
-        } else {
-            $pos[$key] = $value;
-        }
     }
 
     /**
@@ -131,59 +187,7 @@ class KantConfig {
      * @return void
      */
     public function __unset($name) {
-        if ($this->_allowModifications) {
-            unset($this->_data[$name]);
-        } else {
-            throw new KantException('KantConfig is read only');
-        }
-    }
-
-    /**
-     * Defined by Iterator interface
-     *
-     * @return mixed
-     */
-    public function keys() {
-        return array_keys($this->_data);
-    }
-
-    /**
-     * Prevent any more modifications being made to this instance. Useful
-     * after merge() has been used to merge multiple KantConfig objects
-     * into one object which should then not be modified again.
-     *
-     */
-    public function overwrite($overwrite = null) {
-        if (null === $overwrite)
-            return $this->_overwrite;
-        $this->_overwrite = $overwrite;
-        return $this;
-    }
-
-    public function merge($config) {
-        $this->_data = $this->_merge($this->_data, $config);
-        return $this;
-    }
-
-    protected function _merge($arr1, $arr2) {
-        if (is_array($arr2) && !empty($arr2)) {
-            foreach ($arr2 as $key => $value) {
-                if (isset($arr1[$key]) && is_array($value)) {
-                    $arr1[$key] = $this->_merge($arr1[$key], $arr2[$key]);
-                } else {
-                    $arr1[$key] = $value;
-                }
-            }
-        }
-        return $arr1;
-    }
-
-    public function reference($key = '') {
-        if ($key == '') {
-            return $this->_data;
-        } else {
-            return $this->_data[$key];
-        }
+        unset($this->_data[$name]);
     }
 
 }

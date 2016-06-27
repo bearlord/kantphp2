@@ -54,7 +54,11 @@ class IndexController extends BaseController {
      */
     public function postAction() {
         var_dump($_POST);
-        var_dump($this->post);
+//        var_dump($GLOBALS);
+//        var_dump($HTTP_RAW_POST_DATA);
+        $aa = file_get_contents("php://input");
+        var_dump($aa);
+//        var_dump($this->post);
     }
 
     public function sessionAction() {
@@ -74,6 +78,15 @@ class IndexController extends BaseController {
 
     public function _empty() {
         echo 'empty';
+    }
+    
+    /**
+     * Request
+     */
+    public function requestAction() {
+        var_dump($_COOKIE);
+        $RequestObj = new \Kant\Http\Request($_GET, $_POST, array(), $_COOKIE);
+        var_dump($RequestObj->cookie());
     }
 
 }

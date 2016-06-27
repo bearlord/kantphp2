@@ -1,23 +1,12 @@
 <?php
 
 return array( 
-    'route' => array(
-        'module' => 'demo',
-        'ctrl' => 'index',
-        'act' => 'index',
-        'data' => array(
-            'GET' => array()
-        )
-    ),
-    'route_rules' => array(    
-        '|topic/id,(\d+)|i' => 'blog/detail/index/id,$1',
-        '|cache|i' => 'demo/cache',
-       // '|get/(.+)+|is' => 'demo/index/get/id,$1',
-    ),
+    'route' => array(),
     'path_info_repair' => true,
     'debug' => true,
     'url_suffix' => '.html',
     'redirect_tpl' => 'dispatch/redirect',
+    'default_return_type' => 'json',
     'lang' => 'zh_CN',
     'charset' => 'utf-8',
     'default_timezone' => 'Etc/GMT-8',

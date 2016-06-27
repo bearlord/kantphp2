@@ -98,9 +98,12 @@ final class Kant {
      * Init Config
      */
     private function _initConfig() {
+        //App config
         $appConfig = include CFG_PATH . $this->_environment . DIRECTORY_SEPARATOR . 'Config.php';
+        //Route config
+        $routeConfig = include CFG_PATH . $this->_environment . DIRECTORY_SEPARATOR . 'Route.php';
         self::$configObj = KantFactory::getConfig();
-        self::$configObj->merge($appConfig);
+        self::$configObj->merge($appConfig)->merge(['route' => $routeConfig]);
         self::$_config = self::$configObj->reference();
         KantRegistry::set('environment', $this->_environment);
         KantRegistry::set('config', self::$configObj);
@@ -209,7 +212,7 @@ final class Kant {
         //remove url suffix
         $pathinfo = str_replace(self::$_config['url_suffix'], '', $this->parsePathinfo());
         $pathinfo = trim($pathinfo, '/');
-//        $pathinfo = "demo/cookie/index/a,100/b,200/&c=100";
+        Route::import(self::$_config['route']);
         $dispath = Route::check($pathinfo);
         if ($dispath === false) {
             $dispath = Route::parseUrl($pathinfo);
@@ -357,10 +360,16 @@ final class Kant {
         }
     }
 
+    /**
+     * Build module
+     */
     public function buildModule() {
         //build module
         if (self::$_config['check_app_dir']) {
-            $module = defined('CREATE_MODULE') ? CREATE_MODULE : self::$_config['route']['module'];
+            if (!defined('CREATE_MODULE')) {
+                return;
+            }
+            $module = CREATE_MODULE;
             if (is_dir(MODULE_PATH . $module) == false) {
                 Build::checkDir($module);
             }

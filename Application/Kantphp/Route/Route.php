@@ -99,6 +99,50 @@ class Route {
     }
 
     /**
+     * Improt rule
+     * 
+     * @access public
+     * @param array $rule
+     * @param string $type
+     * @return void
+     */
+    public static function import(array $rule, $type = '*') {
+        if (isset($rule['__pattern__'])) {
+            self::pattern($rule['__pattern__']);
+            unset($rule['__pattern__']);
+        }
+        
+        if (isset($rule['__map__'])) {
+            self::map($rule['__map__']);
+            unset($rule['__map__']);
+        }
+
+        if (isset($rule['__rest__'])) {
+            self::resource($rule['__rest__']);
+            unset($rule['__rest__']);
+        }
+
+        $type = strtoupper($type);
+        foreach ($rule as $key => $val) {
+            if (is_numeric($key)) {
+                $key = array_shift($val);
+            }
+            if (empty($val)) {
+                continue;
+            }
+            if (0 === strpos($key, '[')) {
+                $key = substr($key, 1, -1);
+                $result = ['routes' => $val, 'option' => [], 'pattern' => []];
+            } elseif (is_array($val)) {
+                $result = ['route' => $val[0], 'option' => $val[1], 'pattern' => isset($val[2]) ? $val[2] : []];
+            } else {
+                $result = ['route' => $val, 'option' => [], 'pattern' => []];
+            }
+            self::$rules[$type][$key] = $result;
+        }
+    }
+
+    /**
      * Register get request rule
      * 
      * @param string/array $rule
