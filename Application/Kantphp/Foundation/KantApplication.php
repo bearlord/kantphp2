@@ -74,7 +74,7 @@ final class Kant {
     protected $_outputType = [
         'html' => 'text/html',
         'json' => 'application/json',
-        'jsonp' => 'application/jsonp',
+        'jsonp' => 'application/json',
         'xml' => 'text/xml'
     ];
 
