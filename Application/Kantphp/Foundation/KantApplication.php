@@ -321,21 +321,21 @@ final class Kant {
             }
         }
         $action = isset($this->_dispatchInfo['act']) ? $this->_dispatchInfo['act'] . self::$_config['action_suffix'] : 'Index' . self::$_config['action_suffix'];
-        var_dump($this->_dispatchInfo);
         try {
             if (!preg_match('/^[A-Za-z](\w)*$/', $action)) {
                 throw new ReflectionException();
             }
             $method = new ReflectionMethod($controller, $action);
             if ($method->isPublic() && !$method->isStatic()) {
-                $method->invoke($controller);
+                $data = $method->invoke($controller);
             } else {
                 throw new ReflectionException();
             }
         } catch (ReflectionException $e) {
             $method = new ReflectionMethod($controller, '__call');
-            $method->invokeArgs($controller, array($action, ''));
+            $data = $method->invokeArgs($controller, array($action, ''));
         }
+        return $data;
     }
 
     /**

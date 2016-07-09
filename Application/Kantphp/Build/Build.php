@@ -9,7 +9,6 @@
 
 namespace Kant\Build;
 
-use Kant\Registry\KantRegistry;
 use Kant\KantFactory;
 
 !defined('IN_KANT') && exit('Access Denied');
@@ -51,7 +50,7 @@ class [CONTROLLER]Controller extends BaseController {
     }
 
     public static function buildDirSecure($dirs) {
-        $config = KantRegistry::get('config');
+        $config = KantFactory::getConfig()->get('config');
         $dir_secure_filename = !empty($config['dir_secure_filename']) ? $config['dir_secure_filename'] : 'index.html';
         $files = explode(",", $dir_secure_filename);
         $content = !empty($config['dir_secure_content']) ? $config['dir_secure_content'] : '';
