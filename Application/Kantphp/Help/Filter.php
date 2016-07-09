@@ -85,9 +85,25 @@ class Filter {
                 $string[$key] = self::textval($val);
             }
         }
-        $wu = array('&amp;copy;', '&amp;reg;', '&amp;trade;');
-        $rp = array('&copy;', '&reg;', '&trade;');
         return str_replace($wu, $rp, $string);
+    }
+
+    /**
+     *
+     * Format HTML for security reasons
+     * 
+     * @param string string
+     * @return string string
+     */
+    public static function html($string) {
+        if (!is_array($string)) {
+            $string = is_string($string) ? self::xss($string) : $string;
+        } else {
+            foreach ($string as $key => $val) {
+                $string[$key] = self::html($val);
+            }
+        }
+        return $string;
     }
 
     /**
@@ -103,27 +119,6 @@ class Filter {
         } else {
             foreach ($string as $key => $val) {
                 $string[$key] = stripslashes($val);
-            }
-            return $string;
-        }
-    }
-
-    /**
-     *
-     * Filter SQL
-     *
-     * @param string string
-     * @return string string
-     */
-    public static function stripsql($string) {
-        if (!is_array($string)) {
-            $pattern_arr = array("/ union /i", "/ select /i", "/ update /i", "/ outfile /i", "/ or /i");
-            $replace_arr = array('&nbsp;union&nbsp;', '&nbsp;select&nbsp;', '&nbsp;update&nbsp;', '&nbsp;outfile&nbsp;', '&nbsp;or&nbsp;');
-            $string = preg_replace($pattern_arr, $replace_arr, $string);
-            return $string;
-        } else {
-            foreach ($string as $key => $val) {
-                $string[$key] = self::stripsql($val);
             }
             return $string;
         }
@@ -150,18 +145,6 @@ class Filter {
         $string = str_replace('}', '', $string);
         $string = str_replace('\\', '', $string);
         $string = self::xss($string);
-        return $string;
-    }
-
-    /**
-     *
-     * Format HTML for security reasons
-     * 
-     * @param string string
-     * @return string string
-     */
-    public static function html($string) {
-        $string = self::safereplace($string);
         return $string;
     }
 

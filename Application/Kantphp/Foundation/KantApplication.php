@@ -306,18 +306,22 @@ final class Kant {
     public function module($dispatchInfo) {
         KantRegistry::set('dispatchInfo', $dispatchInfo);
         $this->_dispatchInfo = $dispatchInfo;
-        $module = isset($dispatchInfo[0]) ? ucfirst($dispatchInfo[0]) : null;
-        if (empty($module)) {
+        //module name
+        $moduleName = isset($dispatchInfo[0]) ? ucfirst($dispatchInfo[0]) : null;
+        if (empty($moduleName)) {
             throw new KantException('No Module found');
         }
-        $this->_initModuleConfig($module);
-        $controller = $this->controller($dispatchInfo[1], $dispatchInfo[0]);
+        $this->_initModuleConfig($moduleName);
+        //controller name
+        $controllerName = isset($dispatchInfo[1]) ? ucfirst($dispatchInfo[1]): "Index";
+        $controller = $this->controller($controllerName, $moduleName);
         if (!$controller) {
             if (empty($controller)) {
                 throw new KantException(sprintf("No controller exists:%s", ucfirst($this->_dispatchInfo[1]) . 'Controller'));
             }
         }
         $action = isset($this->_dispatchInfo['act']) ? $this->_dispatchInfo['act'] . self::$_config['action_suffix'] : 'Index' . self::$_config['action_suffix'];
+        var_dump($this->_dispatchInfo);
         try {
             if (!preg_match('/^[A-Za-z](\w)*$/', $action)) {
                 throw new ReflectionException();
