@@ -65,18 +65,18 @@ final class Kant {
     protected $_router;
 
     /**
-     * Path info
-     *
-     * @var string
-     */
-    private $_pathInfo = null;
-
-    /**
      * Dispathc info
      *
      * @var array
      */
     protected $_dispatchInfo = null;
+    
+    protected $_outputType = [
+        'html' => 'text/html',
+        'json' => 'application/json',
+        'jsonp' => 'application/jsonp',
+        'xml' => 'text/xml'
+    ];
 
     /**
      * Constructs
@@ -252,7 +252,27 @@ final class Kant {
             default:
                 throw new KantException('dispatch type not support', 5002);
         }
-        Response::create($data, Response::HTTP_OK)->send();
+        $this->output($data);
+        
+    }
+    
+    /**
+     * Output
+     * 
+     * @param type $data
+     */
+    protected function output($data) {
+        $type = strtolower(self::$_config['default_return_type']);
+        if (in_array($type, array_keys($this->_outputType)) == false) {
+            throw new KantException("Unsupported output type:" . $type);
+        }
+        $classname = "Kant\\Http\\" . ucfirst($type);
+        $OutputObj = new $classname;
+        $method = new ReflectionMethod($OutputObj, 'output');
+        $result = $method->invokeArgs($OutputObj, array($data));
+        Response::create($result, Response::HTTP_OK, [
+            'Content-Type' => $this->_outputType[$type]
+        ])->send();
     }
 
     /**
