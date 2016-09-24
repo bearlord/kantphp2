@@ -61,7 +61,7 @@ class Base {
         static $classes = array();
         if ($module == '') {
             $dispatchInfo = KantRegistry::get('dispatchInfo');
-            $module = isset($dispatchInfo['module']) ? $dispatchInfo['module'] : '';
+            $module = isset($dispatchInfo[0]) ? $dispatchInfo[0] : '';
         }
         $classname = ucfirst($classname) . 'Model';
         if ($module) {
@@ -73,12 +73,12 @@ class Base {
         if (file_exists($filepath)) {
             include_once $filepath;
             if ($initialize) {
-                if (!empty($classes[$key])) {
-                    return $classes[$key];
+                if (empty($classes[$key])) {
+                    $namespace = "$module\\Model\\";
+                    $classname = $namespace . $classname;
+                    $classes[$key] = new $classname;
                 }
-                $namespace = "$module\\Model\\";
-                $classname = $namespace . $classname;
-                $classes[$key] = new $classname;
+                return $classes[$key];
             } else {
                 $classes[$key] = true;
             }

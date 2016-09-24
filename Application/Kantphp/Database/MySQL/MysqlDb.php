@@ -42,6 +42,7 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
         if (!$this->dbh = @$func($this->config['hostname'] . ":" . $this->config['port'], $this->config['username'], $this->config['password'], 1)) {
             throw new KantException(sprintf('Can not connect to MySQL server or cannot use database.%s', mysql_error()));
         }
+        var_dump(get_resource_type($this->dbh));
         if ($this->version() > '4.1') {
             $charset = isset($this->config['charset']) ? $this->config['charset'] : '';
             $serverset = $charset ? "character_set_connection='$charset',character_set_results='$charset',character_set_client=binary" : '';

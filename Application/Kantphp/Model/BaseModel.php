@@ -12,6 +12,7 @@ namespace Kant\Model;
 use Kant\Base;
 use Kant\Registry\KantRegistry;
 use Kant\Exception\KantException;
+use Kant\KantFactory;
 use Kant\Database\Driver;
 
 !defined('IN_KANT') && exit('Access Denied');
