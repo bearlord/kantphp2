@@ -42,10 +42,7 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
         if (!$this->dbh = @$func($this->config['hostname'] . ":" . $this->config['port'], $this->config['username'], $this->config['password'], 1)) {
             throw new KantException(sprintf('Can not connect to MySQL server or cannot use database.%s', mysql_error()));
         }
-        $charset = isset($this->config['charset']) ? $this->config['charset'] : '';
-        $serverset = $charset ? "character_set_connection='$charset',character_set_results='$charset',character_set_client=binary" : '';
-        $serverset .= $this->version() > '5.0.1' ? ((empty($serverset) ? '' : ',') . " sql_mode='' ") : '';
-        $serverset && mysql_query("SET $serverset", $this->dbh);
+        mysql_query(sprintf("SET NAMES \"%s\"", $this->config['charset']), $this->dbh);
         if ($this->config['database'] && !@mysql_select_db($this->config['database'], $this->dbh)) {
             throw new KantException(sprintf('Can not use MySQL server or cannot use database.%s', mysql_error()));
         }
@@ -336,6 +333,38 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
             }
         }
         return $tables;
+    }
+
+    /**
+     * Get Fields
+     * 
+     * @param type $tableName
+     */
+    public function getFields($tableName) {
+        if (strpos($tableName, '.')) {
+            list($dbName, $tableName) = explode('.', $tableName);
+            $tableName = $this->getTable($tablename);
+            $sql = "SHOW COLUMNS FROM {$dbName}.{$tableName}";
+        } else {
+            $tableName = $this->getTable($tableName);
+            $sql = "SHOW COLUMNS FROM {$tableName}";
+        }
+        $row = $this->query($sql);
+        $info = [];
+        if (!empty($row)) {
+            foreach ($row as $key => $val) {
+                $val = array_change_key_case($val, CASE_LOWER);
+                $info[$val['field']] = [
+                    'name' => $val['field'],
+                    'type' => $val['type'],
+                    'notnull' => (bool) ($val['null'] === ''), // not null is empty, null is yes
+                    'default' => $val['default'],
+                    'primary' => (strtolower($val['key']) == 'pri'),
+                    'autoinc' => (strtolower($val['extra']) == 'auto_increment'),
+                ];
+            }
+        }
+        return $info;
     }
 
 }

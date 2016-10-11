@@ -29,6 +29,8 @@ require_once KANT_PATH . 'Database/DbQueryInterface.php';
  */
 class BaseModel extends Base {
 
+    const MODEL_INSERT = 1;
+    const MODEL_UPDATE = 2;
     const EXISTS_VALIDATE = 0;
     const MUST_VALIDATE = 1;
     const VALUE_VALIDATE = 2;
@@ -45,14 +47,16 @@ class BaseModel extends Base {
     protected $primary = 'id';
     //Data
     protected $data;
+    //fields
+    protected $fields = [];
     //Options
-    protected $options;
+    protected $options = [];
     //Method lists
     protected $methods = ['validate', 'token'];
     //Patch validate
     protected $patchValidate = false;
     //Error
-    protected $error;
+    protected $error = "";
 
     /**
      *
@@ -96,6 +100,43 @@ class BaseModel extends Base {
         }
     }
 
+    public function create($data, $type = '') {
+        if (is_object($data)) {
+            $data = get_object_vars($data);
+        }
+        if (empty($data) || !is_array($data)) {
+            $this->error = $this->lang('_DATA_TYPE_INVALID_');
+            return false;
+        }
+        $type = $type ? : (!empty($data[$this->primary]) ? self::MODEL_UPDATE : self::MODEL_INSERT);
+
+        if (isset($this->options['field'])) { // $this->field('field1,field2...')->create()
+            $fields = $this->options['field'];
+            unset($this->options['field']);
+        } elseif ($type == self::MODEL_INSERT && isset($this->insertFields)) {
+            $fields = $this->insertFields;
+        } elseif ($type == self::MODEL_UPDATE && isset($this->updateFields)) {
+            $fields = $this->updateFields;
+        }
+
+        if (isset($fields)) {
+            if (is_string($fields)) {
+                $fields = explode(',', $fields);
+            }
+            foreach ($data as $key => $val) {
+                if (!in_array($key, $fields)) {
+                    unset($data[$key]);
+                }
+            }
+        }
+
+        if ($this->autoValidation($data, $type) ) {
+            return false;
+        }
+        $this->data =   $data;
+        return $data;
+    }
+
     /**
      * Auto Validation
      * 
@@ -137,6 +178,7 @@ class BaseModel extends Base {
                             break;
                         default:
                             if (isset($data[$val[0]])) {
+                                echo 111;
                                 if (false === $this->_validationField($data, $val)) {
                                     return false;
                                 }
@@ -144,8 +186,9 @@ class BaseModel extends Base {
                     }
                 }
             }
-            if (!empty($this->error))
+            if (!empty($this->error)) {
                 return false;
+            }
         }
     }
 
@@ -160,6 +203,7 @@ class BaseModel extends Base {
         if ($this->patchValidate && isset($this->error[$val[0]])) {
             return;
         }
+        var_dump($data);
         if (false === $this->_validationFieldItem($data, $val)) {
             if ($this->patchValidate) {
                 $this->error[$val[0]] = $val[2];
@@ -215,37 +259,19 @@ class BaseModel extends Base {
                 }
                 return true;
             default:  // 检查附加规则
-                return $this->check($data[$val[0]], $val[1], $val[4]);
+                $tempdata = isset($data[$val[0]]) ? $data[$val[0]] : "";
+                return $this->check($tempdata, $val[1], $val[4]);
         }
     }
 
     /**
-     * Validate data using regular
+     * Check
      * 
-     * @access public
-     * @param string $value  
-     * @param string $rule 
-     * @return boolean
+     * @param type $value
+     * @param type $rule
+     * @param type $type
+     * @return type
      */
-    public function regex($value, $rule) {
-        $validate = array(
-            'require' => '/.+/',
-            'email' => '/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/',
-            'url' => '/^http(s?):\/\/(?:[A-za-z0-9-]+\.)+[A-za-z]{2,4}(?:[\/\?#][\/=\?%\-&~`@[\]\':+!\.#\w]*)?$/',
-            'currency' => '/^\d+(\.\d+)?$/',
-            'number' => '/^\d+$/',
-            'zip' => '/^\d{6}$/',
-            'integer' => '/^[-\+]?\d+$/',
-            'double' => '/^[-\+]?\d+(\.\d+)?$/',
-            'english' => '/^[A-Za-z]+$/',
-        );
-        // Check whether there is a built-in regular expression
-        if (isset($validate[strtolower($rule)])) {
-            $rule = $validate[strtolower($rule)];
-        }
-        return preg_match($rule, $value) === 1;
-    }
-
     public function check($value, $rule, $type = 'regex') {
         $type = strtolower(trim($type));
         switch ($type) {
@@ -303,32 +329,73 @@ class BaseModel extends Base {
         }
     }
 
-    public function validation($data, $redirect = false) {
-        if (empty($data)) {
-            return;
+    /**
+     * Validate data using regular
+     * 
+     * @access public
+     * @param string $value  
+     * @param string $rule 
+     * @return boolean
+     */
+    public function regex($value, $rule) {
+        $validate = array(
+            'require' => '/.+/',
+            'email' => '/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/',
+            'url' => '/^http(s?):\/\/(?:[A-za-z0-9-]+\.)+[A-za-z]{2,4}(?:[\/\?#][\/=\?%\-&~`@[\]\':+!\.#\w]*)?$/',
+            'currency' => '/^\d+(\.\d+)?$/',
+            'number' => '/^\d+$/',
+            'zip' => '/^\d{6}$/',
+            'integer' => '/^[-\+]?\d+$/',
+            'double' => '/^[-\+]?\d+(\.\d+)?$/',
+            'english' => '/^[A-Za-z]+$/',
+        );
+        // Check whether there is a built-in regular expression
+        if (isset($validate[strtolower($rule)])) {
+            $rule = $validate[strtolower($rule)];
         }
-        if (is_string($data[0])) {
-            $val = $data;
-            if ($this->check($val[0], $val[1], $val[2]) == false) {
-                if ($redirect) {
-                    $this->redirect($val[3]);
-                }
-                $result['status'] = 'error';
-                $result['message'] = $val[3];
-                return $result;
+        return preg_match($rule, $value) === 1;
+    }
+
+    /**
+     * Get error
+     * @return type
+     */
+    public function getError() {
+        return $this->error;
+    }
+
+    /**
+     * Set Field 
+     * @param type $field
+     * @param type $except
+     * @return 
+     */
+    public function field($field, $except = false) {
+        if (true === $field) {
+            $fields = $this->getDbFields();
+            $field = $fields? : '*';
+        } elseif ($except) {
+            if (is_string($field)) {
+                $field = explode(',', $field);
             }
-        } else {
-            foreach ($data as $key => $val) {
-                if ($this->check($val[0], $val[1], $val[2]) == false) {
-                    if ($redirect) {
-                        $this->redirect($val[3]);
-                    }
-                    $result['status'] = 'error';
-                    $result['message'] = $val[3];
-                    return $result;
-                }
-            }
+            $fields = $this->getDbFields();
+            $field = $fields ? array_diff($fields, $field) : $field;
         }
+        $this->options['field'] = $field;
+        return $this;
+    }
+
+    /**
+     * Get Database Fields
+     * @return boolean
+     */
+    public function getDbFields() {
+        if ($this->fields) {
+            $fields = $this->fields;
+            return $fields;
+        }
+        $fields = $this->db->getFields($this->table);
+        return $fields ? array_keys($fields) : false;
     }
 
     /**
@@ -535,7 +602,6 @@ class BaseModel extends Base {
         unset($this->data[$name]);
     }
 
-    
     /**
      * Magic call
      * 
