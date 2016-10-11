@@ -29,6 +29,10 @@ require_once KANT_PATH . 'Database/DbQueryInterface.php';
  */
 class BaseModel extends Base {
 
+    const EXISTS_VALIDATE = 0;
+    const MUST_VALIDATE = 1;
+    const VALUE_VALIDATE = 2;
+
     //Db config
     private $_dbConfig;
     //Db connection
@@ -39,10 +43,16 @@ class BaseModel extends Base {
     protected $table;
     //Table key
     protected $primary = 'id';
-    //Table field
-    private $_field = array();
-    //Table field filter function
-    protected $fieldFunc = array();
+    //Data
+    protected $data;
+    //Options
+    protected $options;
+    //Method lists
+    protected $methods = ['validate', 'token'];
+    //Patch validate
+    protected $patchValidate = false;
+    //Error
+    protected $error;
 
     /**
      *
@@ -75,7 +85,7 @@ class BaseModel extends Base {
         $this->_dbConfig = $config['database'];
         if (!isset($this->_dbConfig[$this->adapter])) {
             $this->adapter = 'default';
-        }       
+        }
         try {
             $this->db = Driver::getInstance($this->_dbConfig)->getDatabase($this->adapter);
         } catch (KantException $e) {
@@ -83,6 +93,129 @@ class BaseModel extends Base {
                 header('HTTP/1.1 500 Internal Server Error');
             }
             exit('Database Error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Auto Validation
+     * 
+     * @param type $data
+     * @param type $type
+     */
+    protected function autoValidation($data, $type) {
+        if (false === $this->options['validate']) {
+            return true;
+        }
+        if (!empty($this->options['validate'])) {
+            $_validate = $this->options['validate'];
+            unset($this->options['validate']);
+        }
+        if (isset($_validate)) {
+            if ($this->patchValidate) {
+                $this->error = array();
+            }
+            foreach ($_validate as $key => $val) {
+                // array(field,rule,message,condition,type,when,params)
+                if (empty($val[5]) || ( $val[5] == self::MODEL_BOTH && $type < 3 ) || $val[5] == $type) {
+                    if (0 == strpos($val[2], '{%') && strpos($val[2], '}')) {
+                        $val[2] = $this->lang(substr($val[2], 2, -1));
+                    }
+                    $val[3] = isset($val[3]) ? $val[3] : self::EXISTS_VALIDATE;
+                    $val[4] = isset($val[4]) ? $val[4] : 'regex';
+                    switch ($val[3]) {
+                        case self::MUST_VALIDATE:
+                            if (false === $this->_validationField($data, $val)) {
+                                return false;
+                            }
+                            break;
+                        case self::VALUE_VALIDATE:
+                            if ('' != trim($data[$val[0]])) {
+                                if (false === $this->_validationField($data, $val)) {
+                                    return false;
+                                }
+                            }
+                            break;
+                        default:
+                            if (isset($data[$val[0]])) {
+                                if (false === $this->_validationField($data, $val)) {
+                                    return false;
+                                }
+                            }
+                    }
+                }
+            }
+            if (!empty($this->error))
+                return false;
+        }
+    }
+
+    /**
+     * Field Validation
+     * 
+     * @param type $data
+     * @param type $val
+     * @return boolean
+     */
+    protected function _validationField($data, $val) {
+        if ($this->patchValidate && isset($this->error[$val[0]])) {
+            return;
+        }
+        if (false === $this->_validationFieldItem($data, $val)) {
+            if ($this->patchValidate) {
+                $this->error[$val[0]] = $val[2];
+            } else {
+                $this->error = $val[2];
+                return false;
+            }
+        }
+        return;
+    }
+
+    protected function _validationFieldItem($data, $val) {
+        switch (strtolower(trim($val[4]))) {
+            case 'function':
+            case 'callback':
+                $args = isset($val[6]) ? (array) $val[6] : array();
+                if (is_string($val[0]) && strpos($val[0], ',')) {
+                    $val[0] = explode(',', $val[0]);
+                }
+                if (is_array($val[0])) {
+                    // 支持多个字段验证
+                    foreach ($val[0] as $field) {
+                        $_data[$field] = $data[$field];
+                    }
+                    array_unshift($args, $_data);
+                } else {
+                    array_unshift($args, $data[$val[0]]);
+                }
+                if ('function' == $val[4]) {
+                    return call_user_func_array($val[1], $args);
+                } else {
+                    return call_user_func_array(array(&$this, $val[1]), $args);
+                }
+            case 'confirm':
+                return $data[$val[0]] == $data[$val[1]];
+            case 'unique':
+                if (is_string($val[0]) && strpos($val[0], ',')) {
+                    $val[0] = explode(',', $val[0]);
+                }
+                $map = array();
+                if (is_array($val[0])) {
+                    foreach ($val[0] as $field) {
+                        $map[$field] = $data[$field];
+                    }
+                } else {
+                    $map[$val[0]] = $data[$val[0]];
+                }
+                if (!empty($data[$this->primary]) && is_string($this->primary)) {
+                    $map[$this->primary] = array('whereNot', $data[$this->primary]);
+                }
+                if ($this->where($map)->find()) {
+                    return false;
+                }
+                return true;
+            default:  // 检查附加规则
+                return $this->check($data[$val[0]], $val[1], $val[4]);
         }
     }
 
@@ -313,57 +446,6 @@ class BaseModel extends Base {
 
     /**
      *
-     * get post data
-     *
-     * @param post array
-     * @return post array
-     */
-    public function getPost(&$post) {
-        if (!$this->field) {
-            return false;
-        }
-        $result = array();
-        foreach ($this->field as $key) {
-            if (isset($post[$key])) {
-                $result[$key] = $post[$key];
-            }
-        }
-        return $result;
-    }
-
-    /**
-     *
-     * Convert post data
-     *
-     * @param post array
-     * @return post array
-     */
-    private function convertPost(&$post) {
-        if (!$this->fieldFunc) {
-            return $post;
-        }
-        foreach ($this->fieldFunc as $key => $func) {
-            if (!isset($post[$key])) {
-                continue;
-            }
-            $post[$key] = $func($post[$key]);
-        }
-        return $post;
-    }
-
-    /**
-     *
-     * Check post
-     *
-     * @param post array
-     * @param edit boolean
-     */
-    public function checkPost(&$post, $edit = false) {
-        
-    }
-
-    /**
-     *
      * Page list
      *
      * @param select string
@@ -407,8 +489,65 @@ class BaseModel extends Base {
         return $this->db->fetch($result);
     }
 
+    /**
+     * Get last query sqls
+     * 
+     * @return type
+     */
     public function lastSqls() {
         return $this->db->getLastSqls();
+    }
+
+    /**
+     * Magic set
+     * @param type $name
+     * @param type $value
+     */
+    public function __set($name, $value) {
+        $this->data[$name] = $value;
+    }
+
+    /**
+     * Magci get
+     * @param type $name
+     * @return type
+     */
+    public function __get($name) {
+        return $this->data[$name];
+    }
+
+    /**
+     * Magic isset
+     * 
+     * @param type $name
+     * @return type
+     */
+    public function __isset($name) {
+        return isset($this->data[$name]);
+    }
+
+    /**
+     * Magic unset
+     * 
+     * @param type $name
+     */
+    public function __unset($name) {
+        unset($this->data[$name]);
+    }
+
+    
+    /**
+     * Magic call
+     * 
+     * @param type $method
+     * @param type $args
+     * @return \Kant\Model\BaseModel
+     */
+    public function __call($method, $args) {
+        if (in_array(strtolower($method), $this->methods, true)) {
+            $this->options[strtolower($method)] = $args[0];
+            return $this;
+        }
     }
 
 }

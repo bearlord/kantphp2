@@ -231,6 +231,11 @@ abstract class DbQueryAbstract extends Base {
      * @example whereExp(" ? = ? )", 'endtime', 0, 'OR');
      */
     public function whereRegexp($key, $value, $split = 'AND') {
+        if (empty($key)) {
+            return $this;
+        }
+        $where = $this->checkField($key) . " REGEXP " . $this->quote($value);
+        $this->where .= ($this->where ? " $split " : '') . ($kh == '(' ? '(' : '') . $where . ($kh == ')' ? ')' : '');
         return $this;
     }
 

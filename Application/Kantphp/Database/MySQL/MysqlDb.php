@@ -42,14 +42,10 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
         if (!$this->dbh = @$func($this->config['hostname'] . ":" . $this->config['port'], $this->config['username'], $this->config['password'], 1)) {
             throw new KantException(sprintf('Can not connect to MySQL server or cannot use database.%s', mysql_error()));
         }
-        var_dump(get_resource_type($this->dbh));
-        if ($this->version() > '4.1') {
-            $charset = isset($this->config['charset']) ? $this->config['charset'] : '';
-            $serverset = $charset ? "character_set_connection='$charset',character_set_results='$charset',character_set_client=binary" : '';
-            $serverset .= $this->version() > '5.0.1' ? ((empty($serverset) ? '' : ',') . " sql_mode='' ") : '';
-            $serverset && mysql_query("SET $serverset", $this->dbh);
-        }
-
+        $charset = isset($this->config['charset']) ? $this->config['charset'] : '';
+        $serverset = $charset ? "character_set_connection='$charset',character_set_results='$charset',character_set_client=binary" : '';
+        $serverset .= $this->version() > '5.0.1' ? ((empty($serverset) ? '' : ',') . " sql_mode='' ") : '';
+        $serverset && mysql_query("SET $serverset", $this->dbh);
         if ($this->config['database'] && !@mysql_select_db($this->config['database'], $this->dbh)) {
             throw new KantException(sprintf('Can not use MySQL server or cannot use database.%s', mysql_error()));
         }
@@ -86,22 +82,6 @@ class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
             mysql_close($this->dbh);
         }
         $this->dbh = null;
-    }
-
-    /**
-     * Regexp
-     * @param type $key
-     * @param type $type
-     * @param type $value
-     * @param type $split
-     */
-    public function whereRegexp($key, $value, $split = 'AND') {
-        if (empty($key)) {
-            return $this;
-        }
-        $where = $this->checkField($key) . ' REGEXP ' . $this->quote($value);
-        $this->where .= ($this->where ? " $split " : '') . $where;
-        return $this;
     }
 
     /**
