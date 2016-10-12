@@ -118,10 +118,7 @@ final class Cache {
     public function load($cacheName) {
         $object = null;
         if (isset($this->cacheConfig[$cacheName]['type'])) {
-            switch ($this->cacheConfig[$cacheName]['type']) {
-                case 'file' :
-                    $object = new CacheFile();
-                    break;
+            switch ($this->cacheConfig[$cacheName]['type']) {                
                 case 'memcache' :
                     $memcacheConfig = array(
                         'host' => $this->cacheConfig[$cacheName]['hostname'],
@@ -137,12 +134,8 @@ final class Cache {
                     );
                     $object = new CacheRedis($redisConfig);
                     break;
-                case 'baememcache':
-                    $baememcacheConfig = array(
-                        'appid' => $this->cacheConfig[$cacheName]['appid']
-                    );
-                    $object = new CacheBaeMemcache($baememcacheConfig);
-                    break;
+                case 'file' :
+                    $object = new CacheFile();
                 default :
                     $object = new CacheFile();
             }
