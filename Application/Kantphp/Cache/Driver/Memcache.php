@@ -7,19 +7,19 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Cache;
+namespace Kant\Cache\Driver;
 
 !defined('IN_KANT') && exit('Access Denied');
 
 /**
  * Memcache cache
  */
-class CacheMemcache {
+class Memcache {
 
     private $memcache = null;
 
     public function __construct($memcacheConfig) {
-        $this->memcache = new Memcache;
+        $this->memcache = new \Memcache;
         $this->memcache->connect($memcacheConfig['host'], $memcacheConfig['port'], $memcacheConfig['timeout']);
     }
 

@@ -7,14 +7,14 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Cache;
+namespace Kant\Cache\Driver;
 
 !defined('IN_KANT') && exit('Access Denied');
 
 /**
  * Redis cache
  */
-class CacheRedis {
+class Redis {
 
     private $redis = null;
 

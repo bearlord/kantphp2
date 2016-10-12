@@ -9,6 +9,10 @@
 
 namespace Kant\Cache;
 
+use Kant\Cache\Driver\File;
+use Kant\Cache\Driver\Memcache;
+use Kant\Cache\Driver\Redis;
+
 !defined('IN_KANT') && exit('Access Denied');
 
 /**
@@ -118,29 +122,29 @@ final class Cache {
     public function load($cacheName) {
         $object = null;
         if (isset($this->cacheConfig[$cacheName]['type'])) {
-            switch ($this->cacheConfig[$cacheName]['type']) {                
+            switch ($this->cacheConfig[$cacheName]['type']) {
                 case 'memcache' :
                     $memcacheConfig = array(
                         'host' => $this->cacheConfig[$cacheName]['hostname'],
                         'port' => $this->cacheConfig[$cacheName]['port'],
                         'timeout' => $this->cacheConfig[$cacheName]['timeout'] > 0 ? $this->cacheConfig[$cacheName]['timeout'] : 1,
                     );
-                    $object = new CacheMemcache($memcacheConfig);
+                    $object = new Driver\Memcache($memcacheConfig);
                     break;
                 case 'redis':
                     $redisConfig = array(
                         'host' => $this->cacheConfig[$cacheName]['hostname'],
                         'port' => $this->cacheConfig[$cacheName]['port']
                     );
-                    $object = new CacheRedis($redisConfig);
+                    $object = new Redis($redisConfig);
                     break;
                 case 'file' :
-                    $object = new CacheFile();
+                    $object = new File();
                 default :
-                    $object = new CacheFile();
+                    $object = new File();
             }
         } else {
-            $object = new CacheFile();
+            $object = new File();
         }
         return $object;
     }

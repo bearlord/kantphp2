@@ -7,7 +7,7 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Cache;
+namespace Kant\Cache\Driver;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -17,7 +17,7 @@ namespace Kant\Cache;
  * @access public
  * @since version 1.1
  */
-class CacheFile {
+class File {
 
     /**
      * Cache default config
