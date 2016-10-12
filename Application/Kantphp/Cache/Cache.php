@@ -129,7 +129,7 @@ final class Cache {
                         'port' => $this->cacheConfig[$cacheName]['port'],
                         'timeout' => $this->cacheConfig[$cacheName]['timeout'] > 0 ? $this->cacheConfig[$cacheName]['timeout'] : 1,
                     );
-                    $object = new Driver\Memcache($memcacheConfig);
+                    $object = new Memcache($memcacheConfig);
                     break;
                 case 'redis':
                     $redisConfig = array(
