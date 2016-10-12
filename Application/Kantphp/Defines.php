@@ -40,8 +40,8 @@ require_once APP_PATH . 'Function/Common.php';
 
 ini_set('magic_quotes_runtime', 0);
 if (get_magic_quotes_gpc() == false) {
-    array_walk($_POST, "addslashess");
-    array_walk($_GET, "addslashess");
-    array_walk($_COOKIE, "addslashess");
+    array_walk_recursive($_POST, "addslashess");
+    array_walk_recursive($_GET, "addslashess");
+    array_walk_recursive($_COOKIE, "addslashess");
 }
 
