@@ -24,6 +24,7 @@ return array(
     'default_timezone' => 'Etc/GMT-8',
     'charset' => 'utf-8',
     'lock_ex' => '1',
+    'db_fields_cache' => false,
     'cookie' => array(
         'cookie_domain' => '',
         'cookie_path' => '/',

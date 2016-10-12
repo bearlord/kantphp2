@@ -145,7 +145,7 @@ class View extends Base {
         $tpldir = $this->getTplDir($module);
         $tplfile = $tpldir . $ctrl . DIRECTORY_SEPARATOR . $act . '.php';
         if (!file_exists($tplfile)) {
-            $debug = KantRegistry::get('config')->reference('debug');
+            $debug = KantRegistry::get('config')->get('debug');
             if ($debug) {
                 throw new RuntimeException(sprintf("No template: %s", $tplfile));
             } else {
@@ -162,7 +162,7 @@ class View extends Base {
         if ($module == '') {
             $module = isset($this->dispatchInfo['module']) ? strtolower($this->dispatchInfo['module']) : '';
         }
-        $theme = KantRegistry::get('config')->reference('theme');
+        $theme = KantRegistry::get('config')->get('theme');
         if ($module) {
             $tpldir = TPL_PATH . $theme . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR;
         } else {

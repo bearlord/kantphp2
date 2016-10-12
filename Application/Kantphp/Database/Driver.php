@@ -61,7 +61,7 @@ final class Driver {
      */
     public static function getInstance($dbConfig = '') {
         if ($dbConfig == '') {
-            $dbConfig = KantRegistry::get('config')->reference('database');
+            $dbConfig = KantRegistry::get('config')->get('database');
         }
         if (self::$_database == '') {
             self::$_database = new self();

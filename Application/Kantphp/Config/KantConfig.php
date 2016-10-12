@@ -98,7 +98,7 @@ class KantConfig {
             return self::set(include $file, $name);
         }
     }
-    
+
     /**
      * Defined by Iterator interface
      *
@@ -139,11 +139,7 @@ class KantConfig {
      * @return type
      */
     public function reference($key = '') {
-        if ($key == '') {
-            return $this->_data;
-        } else {
-            return $this->_data[$key];
-        }
+        return $this->_data;
     }
 
     /**

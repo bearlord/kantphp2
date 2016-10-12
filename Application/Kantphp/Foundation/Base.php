@@ -95,7 +95,7 @@ class Base {
      * @param integer $second
      */
     public function redirect($message, $url = 'goback', $second = 3) {
-        $redirectTpl = KantRegistry::get('config')->reference('redirect_tpl');
+        $redirectTpl = KantRegistry::get('config')->get('redirect_tpl');
         if ($redirectTpl) {
             include TPL_PATH . $redirectTpl . '.php';
         } else {
@@ -112,8 +112,8 @@ class Base {
     public function getLang() {
         static $lang = null;
         if (empty($lang)) {
-            $config = KantRegistry::get('config')->reference('cookie');
-            $lang = !empty($_COOKIE['lang']) ? $_COOKIE['lang'] : $config['lang'];
+            $lang = KantRegistry::get('config')->get('lang');
+            $lang = !empty($_COOKIE['lang']) ? $_COOKIE['lang'] : $lang;
             if (empty($lang)) {
                 $lang = 'en_US';
             }
@@ -141,7 +141,7 @@ class Base {
             return $language;
         } else {
             $language = $LANG[$language];
-            return $language;
+            return $language;            
         }
     }
 
@@ -153,7 +153,7 @@ class Base {
     private function _initCache() {
         static $cache = null;
         if (empty($cache)) {
-            $cacheConfig = KantRegistry::get('config')->reference('cache');
+            $cacheConfig = KantRegistry::get('config')->get('cache');
             $cacheAdapter = 'default';
             try {
                 $cache = KantFactory::getCache($cacheConfig)->getCache($cacheAdapter);
@@ -173,7 +173,7 @@ class Base {
     private function _initCookie() {
         static $cookie = null;
         if (empty($cookie)) {
-            $cookieConfig = KantFactory::getConfig()->reference('cookie');
+            $cookieConfig = KantFactory::getConfig()->get('cookie');
             try {
                 $cookie = Cookie\Cookie::getInstance($cookieConfig);
             } catch (RuntimeException $e) {
@@ -280,7 +280,7 @@ class Base {
     }
 
     public function widget($widgetname, $method, $data = array(), $return = false) {
-        $dispatchInfo = KantRegistry::get('config')->reference('dispatchInfo');
+        $dispatchInfo = KantRegistry::get('config')->get('dispatchInfo');
         $module = isset($dispatchInfo['module']) ? ucfirst($dispatchInfo['module']) : '';
         $classname = ucfirst($widgetname) . 'Widget';
         if ($module) {

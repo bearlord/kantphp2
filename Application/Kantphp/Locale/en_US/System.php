@@ -30,4 +30,5 @@ $LANG['trustless_httprefer'] = 'Trustless http refer';
 $LANG['invalid_argument'] = 'Invalid argument';
 $LANG['system_warning'] = 'System Warning';
 $LANG['warning'] = 'Warning';
+$LANG['data_type_invalid'] = 'DATA TYPE INVALID'
 ?>

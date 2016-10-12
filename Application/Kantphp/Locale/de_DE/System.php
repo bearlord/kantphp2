@@ -29,4 +29,5 @@ $LANG['no_action'] = 'Action does not exist';
 $LANG['trustless_httprefer'] = 'Trustless http refer';
 $LANG['invalid_argument'] = 'Ungültiges Argument';
 $LANG['system_warning'] = 'System Warning';
+$LANG['data_type_invalid'] = 'Datentyp ungültig'
 ?>

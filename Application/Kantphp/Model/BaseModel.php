@@ -10,7 +10,6 @@
 namespace Kant\Model;
 
 use Kant\Base;
-use Kant\Registry\KantRegistry;
 use Kant\Exception\KantException;
 use Kant\KantFactory;
 use Kant\Database\Driver;
@@ -47,8 +46,10 @@ class BaseModel extends Base {
     protected $primary = 'id';
     //Data
     protected $data;
-    //fields
+    //Fields
     protected $fields = [];
+    //Fields cache name
+    protected $fieldsCacheName;
     //Options
     protected $options = [];
     //Method lists
@@ -57,6 +58,8 @@ class BaseModel extends Base {
     protected $patchValidate = false;
     //Error
     protected $error = "";
+    //Auto check Fields
+    protected $autoCheckFields = true;
 
     /**
      *
@@ -98,14 +101,58 @@ class BaseModel extends Base {
             }
             exit('Database Error: ' . $e->getMessage());
         }
+        if (!empty($this->table) && $this->autoCheckFields) {
+            $this->fieldsCacheName = "fields_" . $this->_dbConfig[$this->adapter]['database'] . "_" . $this->table;
+            $this->_checkTableInfo();
+        }
     }
 
+    /**
+     * Check table infomation
+     */
+    private function _checkTableInfo() {
+        if (empty($this->fields)) {
+            $dbFieldsCache = KantFactory::getConfig()->get('db_fields_cache');
+            if ($dbFieldsCache) {
+                $this->fields = $this->cache->get($this->fieldsCacheName);
+                return;
+            }
+            $this->flushTableInfo();
+        }
+    }
+
+    /**
+     * Flush table infomation and cache
+     */
+    public function flushTableInfo() {
+        $fields = $this->db->getFields($this->table);
+        if (!$fields) { // 无法获取字段信息
+            return false;
+        }
+        $this->fields = array_keys($fields);
+        foreach ($fields as $key => $val) {
+            $type[$key] = $val['type'];
+            $this->fields['_type'] = $type;
+        }
+        $dbFieldsCache = KantFactory::getConfig()->get('db_fields_cache');
+        if ($dbFieldsCache) {
+            $this->cache->set($this->fieldsCacheName, $this->fields);
+        }
+    }
+
+    /**
+     * ORM Create
+     * 
+     * @param type $data
+     * @param type $type
+     * @return boolean
+     */
     public function create($data, $type = '') {
         if (is_object($data)) {
             $data = get_object_vars($data);
         }
         if (empty($data) || !is_array($data)) {
-            $this->error = $this->lang('_DATA_TYPE_INVALID_');
+            $this->error = $this->lang('data_type_invalid');
             return false;
         }
         $type = $type ? : (!empty($data[$this->primary]) ? self::MODEL_UPDATE : self::MODEL_INSERT);
@@ -130,10 +177,10 @@ class BaseModel extends Base {
             }
         }
 
-        if ($this->autoValidation($data, $type) ) {
+        if ($this->autoValidation($data, $type)) {
             return false;
         }
-        $this->data =   $data;
+        $this->data = $data;
         return $data;
     }
 
@@ -203,7 +250,6 @@ class BaseModel extends Base {
         if ($this->patchValidate && isset($this->error[$val[0]])) {
             return;
         }
-        var_dump($data);
         if (false === $this->_validationFieldItem($data, $val)) {
             if ($this->patchValidate) {
                 $this->error[$val[0]] = $val[2];
@@ -483,19 +529,27 @@ class BaseModel extends Base {
      *
      * Save data
      *
-     * @param post array
+     * @param data array
      * @param keyid string
-     * @param check boolean
-     * @param convert boolean
-     *
      * @return keyid integer or boolean true,false
      */
-    public function save($post, $keyid = null) {
-        if (is_array($post) == false) {
-            return;
+    public function save($data = "", $keyid = null) {
+        if (empty($data)) {
+            if (!empty($this->data)) {
+                $data = $this->data;
+                $this->data = array();
+            } else {
+                $this->error = $this->lang("data_type_invalid");
+                return false;
+            }
+        }
+        $data = $this->_facade($data);
+        if (empty($data)) {
+            $this->error = $this->lang("data_type_invalid");
+            return false;
         }
         $this->db->from($this->table);
-        foreach ($post as $k => $v) {
+        foreach ($data as $k => $v) {
             $this->db->set($k, $v);
         }
         // save/update data
@@ -563,6 +617,48 @@ class BaseModel extends Base {
      */
     public function lastSqls() {
         return $this->db->getLastSqls();
+    }
+
+    /**
+     * Facade data
+     * 
+     * @param array $data
+     */
+    private function _facade($data) {
+        if (!empty($this->fields)) {
+            if (!empty($this->options['field'])) {
+                $fields = $this->options['field'];
+                unset($this->options['field']);
+                if (is_string($fields)) {
+                    $fields = explode(',', $fields);
+                }
+            } else {
+                $fields = $this->fields;
+            }
+            foreach ($data as $key => $val) {
+                if (!in_array($key, $fields, true)) {
+                    unset($data[$key]);
+                } elseif (is_scalar($val)) {
+                    $this->_parseType($data, $key);
+                }
+            }
+            return $data;
+        }
+    }
+
+    protected function _parseType(&$data, $key) {
+        if (isset($this->fields['_type'][$key])) {
+            $fieldType = strtolower($this->fields['_type'][$key]);
+            if (false !== strpos($fieldType, 'enum')) {
+                //do nothing
+            } elseif (false === strpos($fieldType, 'bigint') && false !== strpos($fieldType, 'int')) {
+                $data[$key] = intval($data[$key]);
+            } elseif (false !== strpos($fieldType, 'float') || false !== strpos($fieldType, 'double')) {
+                $data[$key] = floatval($data[$key]);
+            } elseif (false !== strpos($fieldType, 'bool')) {
+                $data[$key] = (bool) $data[$key];
+            }
+        }
     }
 
     /**

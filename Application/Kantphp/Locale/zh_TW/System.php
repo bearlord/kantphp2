@@ -31,4 +31,5 @@ $LANG['no_action'] = '方式不存在';
 $LANG['trustless_httprefer'] = '不信任的網頁來源';
 $LANG['invalid_argument'] = '無效的參數';
 $LANG['system_warning'] = '系统警告';
+$LANG['data_type_invalid'] = '數據類型不合法'
 ?>

@@ -133,7 +133,7 @@ final class Kant {
     private function _initSession() {
         static $session = null;
         if (empty($session)) {
-            $sessionConfig = KantFactory::getConfig()->reference('session');
+            $sessionConfig = KantFactory::getConfig()->get('session');
             $sessionAdapter = 'default';
             try {
                 $session = Session\Session::getInstance($sessionConfig)->getSession($sessionAdapter);
