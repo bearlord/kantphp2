@@ -13,6 +13,7 @@ use Kant\Base;
 use Kant\Registry\KantRegistry;
 use Kant\Exception\KantException;
 use Kant\KantFactory;
+use Kant\Hook\Hook;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -119,7 +120,7 @@ class View extends Base {
             include_once $tplfile;
         }
         $content = ob_get_clean();
-        \Kant\Hook\Hook::listen('view_filter', $content);
+        Hook::listen('view_filter', $content);
         return $content;
     }
 
@@ -132,8 +133,8 @@ class View extends Base {
      */
     public function includeTpl($template, $module = '') {
         if (empty($template)) {
-            $ctrl = strtolower($this->dispatchInfo['ctrl']);
-            $act = strtolower($this->dispatchInfo['act']);
+            $ctrl = strtolower($this->dispatchInfo[1]);
+            $act = strtolower($this->dispatchInfo[2]);
         } else {
             list($ctrl, $act) = explode("/", strtolower($template));
         }
@@ -142,7 +143,7 @@ class View extends Base {
         if (!file_exists($tplfile)) {
             $debug = KantRegistry::get('config')->get('debug');
             if ($debug) {
-                throw new RuntimeException(sprintf("No template: %s", $tplfile));
+                throw new \RuntimeException(sprintf("No template: %s", $tplfile));
             } else {
                 $this->redirect($this->lang('system_error'), 'close');
             }
@@ -155,7 +156,7 @@ class View extends Base {
      */
     protected function getTplDir($module = '') {
         if ($module == '') {
-            $module = isset($this->dispatchInfo['module']) ? strtolower($this->dispatchInfo['module']) : '';
+            $module = isset($this->dispatchInfo[0]) ? strtolower($this->dispatchInfo[0]) : '';
         }
         $theme = KantRegistry::get('config')->get('theme');
         if ($module) {

@@ -340,20 +340,22 @@ final class Kant {
                 throw new KantException(sprintf("No controller exists:%s", ucfirst($this->_dispatchInfo[1]) . 'Controller'));
             }
         }
-        $action = isset($this->_dispatchInfo['act']) ? $this->_dispatchInfo['act'] . self::$_config['action_suffix'] : 'Index' . self::$_config['action_suffix'];
+        $action = isset($this->_dispatchInfo[2]) ? $this->_dispatchInfo[2] . self::$_config['action_suffix'] : 'Index' . self::$_config['action_suffix'];
         try {
             if (!preg_match('/^[A-Za-z](\w)*$/', $action)) {
                 throw new ReflectionException();
             }
             $method = new ReflectionMethod($controller, $action);
             if ($method->isPublic() && !$method->isStatic()) {
-                $data = $method->invoke($controller);
+                $request = new Http\Request();
+                $data = $method->invoke($controller, $request);
             } else {
                 throw new ReflectionException();
             }
         } catch (ReflectionException $e) {
             $method = new ReflectionMethod($controller, '__call');
-            $data = $method->invokeArgs($controller, array($action, ''));
+            $request = new Http\Request();
+            $data = $method->invokeArgs($controller, array($action, $request));
         }
         return $data;
     }

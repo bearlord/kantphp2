@@ -296,7 +296,6 @@ class Route {
                     self::resource($rule['__rest__']);
                     unset($rule['__rest__']);
                 }
-
                 foreach ($rule as $key => $val) {
                     if (is_numeric($key)) {
                         $key = array_shift($val);
