@@ -127,7 +127,8 @@ return [
     'token' => [
         'switch' => false,
         'name' => 'hash',
-        'type' => 'md5'
+        'type' => 'md5',
+        'reset' => false
     ],
     'tags' => [
         'app_begin' => [],
