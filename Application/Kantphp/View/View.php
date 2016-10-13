@@ -84,18 +84,10 @@ class View extends Base {
         $config = KantRegistry::get('config')->reference();
         $tpldir = $this->getTplDir();
         if (empty($template)) {
-            $tplfile = $tpldir . strtolower($this->dispatchInfo['ctrl']) . DIRECTORY_SEPARATOR . strtolower($this->dispatchInfo['act']) . $config['template_suffix'];
+            $tplfile = $tpldir . strtolower($this->dispatchInfo[1]) . DIRECTORY_SEPARATOR . strtolower($this->dispatchInfo[2]) . $config['template_suffix'];
         } else {
             $tplfile = $tpldir . $template . $config['template_suffix'];
         }
-//        if (!file_exists($tplfile)) {
-//            if ($config['debug']) {
-////                throw new RuntimeException(sprintf("No template: %s", $tplfile));
-//                throw new KantException(sprintf("No template: %s", $tplfile));
-//            } else {
-//                $this->redirect($this->lang('system_error'), 'close');
-//            }
-//        }
         return $tplfile;
     }
 
@@ -123,8 +115,11 @@ class View extends Base {
         $tplfile = $this->parseTemplate($template);
         ob_start();
         ob_implicit_flush(0);
-        include_once $tplfile;
+        if (file_exists($tplfile)) {
+            include_once $tplfile;
+        }
         $content = ob_get_clean();
+        \Kant\Hook\Hook::listen('view_filter', $content);
         return $content;
     }
 

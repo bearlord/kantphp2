@@ -10,6 +10,7 @@
 namespace Kant\Route;
 
 use Kant\Registry\KantRegistry;
+use Kant\KantFactory;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -111,7 +112,7 @@ class Route {
             self::pattern($rule['__pattern__']);
             unset($rule['__pattern__']);
         }
-        
+
         if (isset($rule['__map__'])) {
             self::map($rule['__map__']);
             unset($rule['__map__']);
@@ -569,37 +570,39 @@ class Route {
             //Normal pathinfo as demo/index/get/a,100/b,101
             $path = explode('/', $pathinfo);
         }
-        if ($path) {
-            $module = array_shift($path);
-            $controller = !empty($path) ? array_shift($path) : null;
-            $action = !empty($path) ? array_shift($path) : null;
-            if ($action) {
-                if (strpos($action, "?") !== false) {
-                    $action = substr($action, 0, strpos($action, "?"));
+
+        $routeConfig = KantFactory::getConfig()->get("route");
+        $module = array_shift($path);
+        $module = !empty($module) ? $module : $routeConfig['module'];
+        $controller = !empty($path) ? array_shift($path) : $routeConfig['ctrl'];
+        $action = !empty($path) ? array_shift($path) : $routeConfig['act'];
+        if ($action) {
+            if (strpos($action, "?") !== false) {
+                $action = substr($action, 0, strpos($action, "?"));
+            }
+            $urlsuffix = KantRegistry::get('config')->get('url_suffix');
+            if ($urlsuffix) {
+                if (strpos($action, "&") !== false) {
+                    $action = substr($action, 0, strpos($action, $urlsuffix));
                 }
-                $urlsuffix = KantRegistry::get('config')->get('url_suffix');
-                if ($urlsuffix) {
-                    if (strpos($action, "&") !== false) {
-                        $action = substr($action, 0, strpos($action, $urlsuffix));
-                    }
-                } else {
-                    if (strpos($action, "&") !== false) {
-                        $action = substr($action, 0, strpos($action, "&"));
-                    }
+            } else {
+                if (strpos($action, "&") !== false) {
+                    $action = substr($action, 0, strpos($action, "&"));
                 }
-                while ($next = array_shift($path)) {
-                    $query = preg_split("/[?&]/", $next);
-                    if (!empty($query)) {
-                        foreach ($query as $key => $val) {
-                            $arr = preg_split("/[,:=-]/", $val, 2);
-                            if (!empty($arr[1])) {
-                                $var[$arr[0]] = urldecode($arr[1]);
-                            }
+            }
+            while ($next = array_shift($path)) {
+                $query = preg_split("/[?&]/", $next);
+                if (!empty($query)) {
+                    foreach ($query as $key => $val) {
+                        $arr = preg_split("/[,:=-]/", $val, 2);
+                        if (!empty($arr[1])) {
+                            $var[$arr[0]] = urldecode($arr[1]);
                         }
                     }
                 }
             }
         }
+
         $route = [$module, $controller, $action];
         return ['route' => $route, 'var' => $var];
     }

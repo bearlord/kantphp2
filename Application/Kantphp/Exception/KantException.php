@@ -38,6 +38,7 @@ class KantException extends Exception {
             header("Status: 404 Not Found");
             header("X-Powered-By: KantPHP Framework");
             echo '404 File Not Found!';
+            exit();
         }
         if (version_compare(PHP_VERSION, '5.3.0', '<')) {
             parent::__construct($msg, (int) $code);

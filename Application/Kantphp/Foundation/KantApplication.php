@@ -327,13 +327,13 @@ final class Kant {
         KantRegistry::set('dispatchInfo', $dispatchInfo);
         $this->_dispatchInfo = $dispatchInfo;
         //module name
-        $moduleName = isset($dispatchInfo[0]) ? ucfirst($dispatchInfo[0]) : null;
+        $moduleName = !empty($dispatchInfo[0]) ? ucfirst($dispatchInfo[0]) : ucfirst(self::$_config['route']['module']);
         if (empty($moduleName)) {
             throw new KantException('No Module found');
         }
         $this->_initModuleConfig($moduleName);
         //controller name
-        $controllerName = isset($dispatchInfo[1]) ? ucfirst($dispatchInfo[1]): "Index";
+        $controllerName = isset($dispatchInfo[1]) ? ucfirst($dispatchInfo[1]): ucfirst(self::$_config['route']['ctrl']);
         $controller = $this->controller($controllerName, $moduleName);
         if (!$controller) {
             if (empty($controller)) {

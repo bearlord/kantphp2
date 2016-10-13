@@ -37,7 +37,6 @@ class [CONTROLLER]Controller extends BaseController {
                 MODULE_PATH . $module . '/',
                 MODULE_PATH . $module . '/Controller/',
                 MODULE_PATH . $module . '/Model/',
-                MODULE_PATH . $module . '/View/',
                 MODULE_PATH . $module . '/Widget/',
             );
             foreach ($dirs as $dir) {

@@ -7,11 +7,15 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 !defined('IN_KANT') && exit('Access Denied');
-return array(
+return [
     'check_app_dir' => true,
     'dir_secure_filename' => 'index.html',
     'dir_secure_content' => 'Powered By KantPHP Framework 2.1',
-    'route' => array(),
+    'route' => [
+        'module' => 'index',
+        'ctrl' =>  'index',
+        'act' => 'index'
+    ],
     'default_return_type' => 'html',
     'path_info_repair' => false,
     'debug' => false,
@@ -25,31 +29,31 @@ return array(
     'charset' => 'utf-8',
     'lock_ex' => '1',
     'db_fields_cache' => false,
-    'cookie' => array(
+    'cookie' => [
         'cookie_domain' => '',
         'cookie_path' => '/',
         'cookie_pre' => 'kantphp_',
         'cookie_ttl' => 0,
         'auth_key' => 'NMa1FcQBE1HHHd4AQyTV'
-    ),
-    'session' => array(
-        'default' => array(
+    ],
+    'session' => [
+        'default' => [
             'type' => 'original',
             'maxlifetime' => 1800,
-        ),
-        'file' => array(
+        ],
+        'file' => [
             'type' => 'file',
             'maxlifetime' => 1800,
             'auth_key' => 'NMa1FcQBE1HHHd4AQyTV',
-        ),
-        'sqlite' => array(
+        ],
+        'sqlite' => [
             'type' => 'sqlite',
             'maxlifetime' => 1800,
             'auth_key' => 'NMa1FcQBE1HHHd4AQyTV',
-        )),
-    'database' => array(
+        ]],
+    'database' => [
         //default configuration
-        'default' => array(
+        'default' => [
             'hostname' => 'localhost',
             'port' => '3306',
             'database' => 'kantphp',
@@ -60,9 +64,9 @@ return array(
             'type' => 'mysql',
             'persistent' => 0,
             'autoconnect' => 1
-        ),
+        ],
         //openshift
-        'openshift' => array(
+        'openshift' => [
             'hostname' => getenv('OPENSHIFT_MYSQL_DB_HOST'),
             'port' => getenv('OPENSHIFT_MYSQL_DB_PORT'),
             'database' => 'mzqltbruzaqbrsxpalti',
@@ -73,9 +77,9 @@ return array(
             'type' => 'mysql',
             'persistent' => 0,
             'autoconnect' => 1
-        ),
+        ],
         //postgresql
-        'pgsql' => array(
+        'pgsql' => [
             'hostname' => 'localhost',
             'port' => '5432',
             'database' => 'bbs',
@@ -86,9 +90,9 @@ return array(
             'type' => 'pdo_pgsql',
             'persistent' => 0,
             'autoconnect' => 1
-        ),
+        ],
         //sqlite
-        'sqlite' => array(
+        'sqlite' => [
             'hostname' => '',
             'port' => '',
             'database' => CACHE_PATH . 'SqliteDb/test.db',
@@ -99,39 +103,36 @@ return array(
             'type' => 'pdo_sqlite',
             'persistent' => 0,
             'autoconnect' => 1
-        )
-    ),
+        ]
+    ],
     //cache config
-    'cache' => array(
+    'cache' => [
         //default file cache type
-        'defalut' => array(
+        'defalut' => [
             'type' => 'file'
-        ),
+        ],
         //memcache type
-        'memcache' => array(
+        'memcache' => [
             'type' => 'memcache',
             'hostname' => 'localhost',
             'port' => 11211
-        ),
+        ],
         //redis cache type
-        'redis' => array(
+        'redis' => [
             'type' => 'redis',
             'hostname' => '127.0.0.1',
             'port' => 6379
-        )
-    ),
-    'tags' => array(
-        'app_begin' => array(
-        ),
-        'app_end' => array(
-        ),
-        'path_info' => array(),
-        'action_begin' => array(),
-        'action_end' => array(),
-        'view_begin' => array(),
-        'view_parse' => array(
-        ),
-        'view_end' => array(),
-    )
-);
+        ]
+    ],
+    'token' => [
+        'switch' => false,
+        'name' => 'hash',
+        'type' => 'md5'
+    ],
+    'tags' => [
+        'app_begin' => [],
+        'app_end' => [],
+        'view_filter' => ['Kant\Component\TokenBuildComponent']
+    ]
+];
 
