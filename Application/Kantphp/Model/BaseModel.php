@@ -88,8 +88,7 @@ class BaseModel extends Base {
      * 
      */
     public function createDbo() {
-        $config = KantFactory::getConfig()->reference();
-        $this->_dbConfig = $config['database'];
+        $this->_dbConfig = KantFactory::getConfig()->get('database');
         if (!isset($this->_dbConfig[$this->adapter])) {
             $this->adapter = 'default';
         }
@@ -176,8 +175,13 @@ class BaseModel extends Base {
                 }
             }
         }
-
+        //Auto validation
         if ($this->autoValidation($data, $type)) {
+            return false;
+        }
+        //Auto check token
+        if(!$this->autoCheckToken($data)) {
+            $this->error = $this->lang("token_error");
             return false;
         }
         $this->data = $data;
@@ -237,6 +241,35 @@ class BaseModel extends Base {
                 return false;
             }
         }
+    }
+    
+    /**
+     * Auto check token
+     * 
+     * @return boolean
+     */
+    protected function autoCheckToken($data) {
+        // token(false)
+        if(isset($this->options['token']) && $this->options['token'] === false) {
+            return true;
+        }
+        $tokenConfig = KantFactory::getConfig()->get('token');
+        if($tokenConfig('switch')){
+            $name   = !empty($tokenConfig['name']) ? $tokenConfig['name'] : "__hash__";
+            if(!isset($data[$name]) || !isset($_SESSION[$name])) {
+                return false;
+            }
+            list($key,$value)  =  explode('_',$data[$name]);
+            if(isset($_SESSION[$name][$key]) && $value && $_SESSION[$name][$key] === $value) { // 防止重复提交
+                unset($_SESSION[$name][$key]);
+                return true;
+            }
+            if($tokenConfig['reset']) {
+                unset($_SESSION[$name][$key]);
+            }
+            return false;
+        }
+        return true;
     }
 
     /**
