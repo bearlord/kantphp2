@@ -30,6 +30,7 @@ class BaseModel extends Base {
 
     const MODEL_INSERT = 1;
     const MODEL_UPDATE = 2;
+    const MODEL_BOTH = 3;      //  包含上面两种方式
     const EXISTS_VALIDATE = 0;
     const MUST_VALIDATE = 1;
     const VALUE_VALIDATE = 2;
@@ -155,7 +156,7 @@ class BaseModel extends Base {
             return false;
         }
         $type = $type ? : (!empty($data[$this->primary]) ? self::MODEL_UPDATE : self::MODEL_INSERT);
-
+        
         if (isset($this->options['field'])) { // $this->field('field1,field2...')->create()
             $fields = $this->options['field'];
             unset($this->options['field']);
@@ -164,10 +165,15 @@ class BaseModel extends Base {
         } elseif ($type == self::MODEL_UPDATE && isset($this->updateFields)) {
             $fields = $this->updateFields;
         }
-
+        
         if (isset($fields)) {
             if (is_string($fields)) {
                 $fields = explode(',', $fields);
+                array_walk($fields, "ctrim");
+            }
+            $tokenConfig = KantFactory::getConfig()->get('token');
+            if($tokenConfig['switch']) {
+                $fields[] = $tokenConfig['name'];
             }
             foreach ($data as $key => $val) {
                 if (!in_array($key, $fields)) {
@@ -180,7 +186,7 @@ class BaseModel extends Base {
             return false;
         }
         //Auto check token
-        if(!$this->autoCheckToken($data)) {
+        if (!$this->autoCheckToken($data)) {
             $this->error = $this->lang("token_error");
             return false;
         }
@@ -229,7 +235,6 @@ class BaseModel extends Base {
                             break;
                         default:
                             if (isset($data[$val[0]])) {
-                                echo 111;
                                 if (false === $this->_validationField($data, $val)) {
                                     return false;
                                 }
@@ -242,7 +247,7 @@ class BaseModel extends Base {
             }
         }
     }
-    
+
     /**
      * Auto check token
      * 
@@ -250,21 +255,21 @@ class BaseModel extends Base {
      */
     protected function autoCheckToken($data) {
         // token(false)
-        if(isset($this->options['token']) && $this->options['token'] === false) {
+        if (isset($this->options['token']) && $this->options['token'] === false) {
             return true;
         }
         $tokenConfig = KantFactory::getConfig()->get('token');
-        if($tokenConfig('switch')){
-            $name   = !empty($tokenConfig['name']) ? $tokenConfig['name'] : "__hash__";
-            if(!isset($data[$name]) || !isset($_SESSION[$name])) {
+        if ($tokenConfig['switch']) {
+            $name = !empty($tokenConfig['name']) ? $tokenConfig['name'] : "__hash__";
+            if (!isset($data[$name]) || !isset($_SESSION[$name])) {
                 return false;
             }
-            list($key,$value)  =  explode('_',$data[$name]);
-            if(isset($_SESSION[$name][$key]) && $value && $_SESSION[$name][$key] === $value) { // 防止重复提交
+            list($key, $value) = explode('_', $data[$name]);
+            if (isset($_SESSION[$name][$key]) && $value && $_SESSION[$name][$key] === $value) {
                 unset($_SESSION[$name][$key]);
                 return true;
             }
-            if($tokenConfig['reset']) {
+            if ($tokenConfig['reset']) {
                 unset($_SESSION[$name][$key]);
             }
             return false;
@@ -333,7 +338,8 @@ class BaseModel extends Base {
                 if (!empty($data[$this->primary]) && is_string($this->primary)) {
                     $map[$this->primary] = array('whereNot', $data[$this->primary]);
                 }
-                if ($this->where($map)->find()) {
+                $row = $this->read("*", $map);
+                if ($this->read("*", $map)) {
                     return false;
                 }
                 return true;

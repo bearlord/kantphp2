@@ -214,4 +214,12 @@ if (!function_exists('data_set')) {
     }
 
 }
+
+if (!file_exists("ctrim")) {
+
+    function ctrim(&$var) {
+        $var = trim($var);
+    }
+
+}
 ?>

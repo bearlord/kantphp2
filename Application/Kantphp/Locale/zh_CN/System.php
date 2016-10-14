@@ -32,5 +32,7 @@ $LANG['trustless_httprefer'] = '不信任的网页来源';
 $LANG['invalid_argument'] = '无效的参数';
 $LANG['system_warning'] = '系统警告';
 $LANG['warning'] = '警告';
-$LANG['data_type_invalid'] = '数据类型不合法'
+$LANG['data_type_invalid'] = '数据类型不合法';
+$LANG['token_error'] = "令牌失效，请重新提交";
+       
 ?>

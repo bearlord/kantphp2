@@ -126,7 +126,7 @@ return [
     ],
     'token' => [
         'switch' => false,
-        'name' => 'hash',
+        'name' => '__hash__',
         'type' => 'md5',
         'reset' => false
     ],
