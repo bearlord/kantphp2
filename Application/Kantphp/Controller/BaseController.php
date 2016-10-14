@@ -51,7 +51,7 @@ class BaseController extends Base {
      */
     protected function initView() {
         if ($this->view == '') {
-            $this->view = new View();
+            $this->view = View::getInstance();
         }
         return $this->view;
     }

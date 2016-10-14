@@ -20,6 +20,7 @@ use Kant\Runtime\Runtime;
 use Kant\Exception\KantException;
 use ReflectionException;
 use ReflectionMethod;
+use Kant\Http\Request;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -347,14 +348,14 @@ final class Kant {
             }
             $method = new ReflectionMethod($controller, $action);
             if ($method->isPublic() && !$method->isStatic()) {
-                $request = new Http\Request();
+                $request = Request::createFromBase(Request::createFromGlobals());
                 $data = $method->invoke($controller, $request);
             } else {
                 throw new ReflectionException();
             }
         } catch (ReflectionException $e) {
             $method = new ReflectionMethod($controller, '__call');
-            $request = new Http\Request();
+            $request = Request::createFromBase(Request::createFromGlobals());
             $data = $method->invokeArgs($controller, array($action, $request));
         }
         return $data;

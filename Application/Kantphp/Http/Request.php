@@ -2561,7 +2561,7 @@ class Request implements ArrayAccess {
      * @param  \Symfony\Component\HttpFoundation\Request  $request
      * @return \Illuminate\Http\Request
      */
-    public static function createFromBase(SymfonyRequest $request) {
+    public static function createFromBase(Request $request) {
         if ($request instanceof static) {
             return $request;
         }

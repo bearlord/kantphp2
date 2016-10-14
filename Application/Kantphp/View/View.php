@@ -28,17 +28,33 @@ class View extends Base {
     /**
      * template theme
      * 
-     * @var type 
+     * @var string 
      */
     protected $theme = 'default';
+    /**
+     *
+     * @var string 
+     */
     protected $templateSuffix = '.php';
 
     /**
      * dispatchInfo
      * 
-     * @var type 
+     * @var string 
      */
     protected $dispatchInfo;
+    /**
+     *
+     * @var object 
+     */
+    private static $_instance;
+
+    public static function getInstance() {
+        if (null === self::$_instance) {
+            self::$_instance = new static();
+        }
+        return self::$_instance;
+    }
 
     /**
      * template variables
