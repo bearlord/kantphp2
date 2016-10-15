@@ -187,7 +187,7 @@ final class Kant {
             Runtime::mark('begin');
         }
         //load common file
-        require_once APP_PATH . 'Common.php';
+        require_once APP_PATH . 'Common/Common.php';
         //Build Module
         $this->buildModule();
         //Logfile initialization
@@ -401,26 +401,6 @@ final class Kant {
                 Build::checkDir($module);
             }
         }
-    }
-
-    /**
-     * Include file
-     * 
-     * @staticvar array $_importFiles
-     * @param type $filename
-     * @return boolean
-     */
-    public static function inclde($filename) {
-        static $files = array();
-        if (!isset($files[$filename])) {
-            if (file_exists($filename)) {
-                require $filename;
-                $files[$filename] = true;
-            } else {
-                $files[$filename] = false;
-            }
-        }
-        return $files[$filename];
     }
 
 }

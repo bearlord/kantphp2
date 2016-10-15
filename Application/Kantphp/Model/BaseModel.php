@@ -182,7 +182,7 @@ class BaseModel extends Base {
             }
         }
         //Auto validation
-        if ($this->autoValidation($data, $type)) {
+        if (!$this->autoValidation($data, $type)) {
             return false;
         }
         //Auto check token
@@ -246,6 +246,7 @@ class BaseModel extends Base {
                 return false;
             }
         }
+        return true;
     }
 
     /**
@@ -338,7 +339,6 @@ class BaseModel extends Base {
                 if (!empty($data[$this->primary]) && is_string($this->primary)) {
                     $map[$this->primary] = array('whereNot', $data[$this->primary]);
                 }
-                $row = $this->read("*", $map);
                 if ($this->read("*", $map)) {
                     return false;
                 }
@@ -384,10 +384,10 @@ class BaseModel extends Base {
             //Verify value's length
             case 'length':
                 $length = mb_strlen($value, 'utf-8');
-                if (strpos($rule, ',')) { // 长度区间
+                if (strpos($rule, ',')) {
                     list($min, $max) = explode(',', $rule);
                     return $length >= $min && $length <= $max;
-                } else {// 指定长度
+                } else {
                     return $length == $rule;
                 }
             //Verify whether value is expired
