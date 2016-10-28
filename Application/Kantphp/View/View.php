@@ -31,6 +31,7 @@ class View extends Base {
      * @var string 
      */
     protected $theme = 'default';
+
     /**
      *
      * @var string 
@@ -43,6 +44,7 @@ class View extends Base {
      * @var string 
      */
     protected $dispatchInfo;
+
     /**
      *
      * @var object 
@@ -147,19 +149,17 @@ class View extends Base {
      * @param type $module
      * @throws RuntimeException
      */
-    public function includeTpl($template, $module = '') {
+    public function layout($template, $module = '') {
         if (empty($template)) {
-            $ctrl = strtolower($this->dispatchInfo[1]);
-            $act = strtolower($this->dispatchInfo[2]);
-        } else {
-            list($ctrl, $act) = explode("/", strtolower($template));
+            return;
         }
+        list($ctrl, $act) = explode("/", strtolower($template));
         $tpldir = $this->getTplDir($module);
         $tplfile = $tpldir . $ctrl . DIRECTORY_SEPARATOR . $act . '.php';
         if (!file_exists($tplfile)) {
             $debug = KantRegistry::get('config')->get('debug');
             if ($debug) {
-                throw new \RuntimeException(sprintf("No template: %s", $tplfile));
+                throw new KantException(sprintf("No template: %s", $tplfile));
             } else {
                 $this->redirect($this->lang('system_error'), 'close');
             }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Kant\Component;
+namespace Kant\Behavior;
 
-class CheckLangComponent {
+class CheckLangBehavior {
 
     public function run() {
         echo 'checklang/run';

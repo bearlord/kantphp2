@@ -133,7 +133,7 @@ return [
     'tags' => [
         'app_begin' => [],
         'app_end' => [],
-        'view_filter' => ['Kant\Component\TokenBuildComponent']
+        'view_filter' => ['Kant\Behavior\TokenBuildBehavior']
     ]
 ];
 

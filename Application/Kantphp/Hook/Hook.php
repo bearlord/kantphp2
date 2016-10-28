@@ -101,10 +101,10 @@ class Hook {
      * @return void
      */
     static public function exec($name, $tag, &$params = NULL) {
-        if ('Component' == substr($name, -9)) {
+        if ('Behavior' == substr($name, -8)) {
             $tag = 'run';
         }
-        $filepath = KANT_PATH . "Component/" . $name . ".php";
+        $filepath = KANT_PATH . "Behavior/" . $name . ".php";
         if (file_exists($filepath)) {
             require_once $filepath;
         }

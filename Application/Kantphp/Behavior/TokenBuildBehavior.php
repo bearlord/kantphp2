@@ -1,9 +1,9 @@
 <?php
 
-namespace Kant\Component;
+namespace Kant\Behavior;
 use Kant\Registry\KantRegistry;
 
-class TokenBuildComponent {
+class TokenBuildBehavior {
 
     /**
      * Run
