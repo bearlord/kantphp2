@@ -187,7 +187,7 @@ final class Kant {
             Runtime::mark('begin');
         }
         //load common file
-        require_once APP_PATH . 'Common/Common.php';
+        require_once APP_PATH . 'Bootstrap.php';
         //Build Module
         $this->buildModule();
         //Logfile initialization
@@ -212,7 +212,6 @@ final class Kant {
     protected function route() {
         //remove url suffix
         $pathinfo = str_replace(self::$_config['url_suffix'], '', $this->parsePathinfo());
-        $pathinfo = trim($pathinfo, '/');
         Route::import(self::$_config['route']);
         $dispath = Route::check($pathinfo);
         if ($dispath === false) {
@@ -239,6 +238,7 @@ final class Kant {
                 header('Location: ' . self::$dispatch['url'], true, self::$dispatch['status']);
                 break;
             case 'module':
+                var_dump(self::$dispatch['module']);
                 $data = self::module(self::$dispatch['module']);
                 break;
             case 'controller':
@@ -334,14 +334,14 @@ final class Kant {
         }
         $this->_initModuleConfig($moduleName);
         //controller name
-        $controllerName = isset($dispatchInfo[1]) ? ucfirst($dispatchInfo[1]): ucfirst(self::$_config['route']['ctrl']);
+        $controllerName = !empty($dispatchInfo[1]) ? ucfirst($dispatchInfo[1]): ucfirst(self::$_config['route']['ctrl']);
         $controller = $this->controller($controllerName, $moduleName);
         if (!$controller) {
             if (empty($controller)) {
                 throw new KantException(sprintf("No controller exists:%s", ucfirst($this->_dispatchInfo[1]) . 'Controller'));
             }
         }
-        $action = isset($this->_dispatchInfo[2]) ? $this->_dispatchInfo[2] . self::$_config['action_suffix'] : 'Index' . self::$_config['action_suffix'];
+        $action = !empty($this->_dispatchInfo[2]) ? $this->_dispatchInfo[2] . self::$_config['action_suffix'] : 'Index' . self::$_config['action_suffix'];
         try {
             if (!preg_match('/^[A-Za-z](\w)*$/', $action)) {
                 throw new ReflectionException();

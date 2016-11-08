@@ -45,7 +45,7 @@ class SessionMysqlModel {
         $sql = sprintf("SELECT * FROM %s WHERE sessionid = '{$sessionid}'", $this->table);
         $row = $this->db->query($sql);
         if ($row) {
-            return $row[0];
+            return $row;
         }
     }
 

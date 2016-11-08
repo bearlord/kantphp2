@@ -9,9 +9,6 @@ namespace Kant\Loader;
 class KantAutoloaderInit {
 
     protected static $_autoCoreClass = array(
-        'Kant\KantDispatch' => 'Foundation/KantDispatch',
-        'Kant\KantRegistry' => 'Foundation/KantRegistry',
-        'Kant\KantException' => 'Foundation/KantException'
     );
 
     /**
