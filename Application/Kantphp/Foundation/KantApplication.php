@@ -139,10 +139,7 @@ final class Kant {
             try {
                 $session = Session\Session::getInstance($sessionConfig)->getSession($sessionAdapter);
             } catch (RuntimeException $e) {
-                if (!headers_sent()) {
-                    header('HTTP/1.1 500 Internal Server Error');
-                }
-                exit('Load Cache Error: ' . $e->getMessage());
+                throw new KantException($e->getMessage());
             }
         }
         return $session;
@@ -238,7 +235,6 @@ final class Kant {
                 header('Location: ' . self::$dispatch['url'], true, self::$dispatch['status']);
                 break;
             case 'module':
-                var_dump(self::$dispatch['module']);
                 $data = self::module(self::$dispatch['module']);
                 break;
             case 'controller':
