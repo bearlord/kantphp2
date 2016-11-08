@@ -9,6 +9,8 @@ namespace Kant\Loader;
 class KantAutoloaderInit {
 
     protected static $_autoCoreClass = array(
+        'Kant\Base' => 'Foundation\Base',
+        'Kant\Object' => 'Foundation\Object'
     );
 
     /**

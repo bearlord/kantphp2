@@ -11,16 +11,11 @@ namespace Kant;
 
 use Kant\Registry\KantRegistry;
 
+
 !defined('IN_KANT') && exit('Access Denied');
 
-class Base {
+class Base extends Object{
 
-    protected $get;
-    protected $post;
-    protected $route;
-    protected $request;
-    protected $environment = 'Development';
-    protected $input;
     //cache
     protected $cache;
     //cookie
@@ -30,7 +25,6 @@ class Base {
     public function __construct() {
         $this->cache = $this->_initCache();
         $this->cookie = $this->_initCookie();
-        $this->input = Help\Input::getInstance();
     }
 
     /**
@@ -47,42 +41,6 @@ class Base {
         if (file_exists($filepath)) {
             include_once $filepath;
             return true;
-        }
-    }
-
-    /**
-     *
-     * Load model
-     *
-     * @param classname string
-     * @param initialize integer[0,1]
-     */
-    public function model($classname, $initialize = 1, $module = '') {
-        static $classes = array();
-        if ($module == '') {
-            $dispatchInfo = KantRegistry::get('dispatchInfo');
-            $module = isset($dispatchInfo[0]) ? $dispatchInfo[0] : '';
-        }
-        $classname = ucfirst($classname) . 'Model';
-        if ($module) {
-            $filepath = APP_PATH . 'Module' . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'Model' . DIRECTORY_SEPARATOR . $classname . '.php';
-        } else {
-            $filepath = APP_PATH . 'Model' . DIRECTORY_SEPARATOR . $classname . '.php';
-        }
-        $key = md5($filepath . $classname);
-        if (file_exists($filepath)) {
-            include_once $filepath;
-            if ($initialize) {
-                if (empty($classes[$key])) {
-                    $namespace = "$module\\Model\\";
-                    $classname = $namespace . $classname;
-                    $classes[$key] = new $classname;
-                }
-                return $classes[$key];
-            } else {
-                $classes[$key] = true;
-            }
-            return $classes[$key];
         }
     }
 
@@ -141,7 +99,7 @@ class Base {
             return $language;
         } else {
             $language = $LANG[$language];
-            return $language;            
+            return $language;
         }
     }
 

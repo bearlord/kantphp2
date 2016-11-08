@@ -24,8 +24,6 @@ use Kant\Session\Session;
 
 !defined('IN_KANT') && exit('Access Denied');
 
-require_once KANT_PATH . '/Foundation/Base.php';
-
 final class Kant {
 
     private static $_instance = null;
@@ -58,7 +56,7 @@ final class Kant {
      */
     protected $dispatchInfo = null;
     
-    protected $_outputType = [
+    protected $outputType = [
         'html' => 'text/html',
         'json' => 'application/json',
         'jsonp' => 'application/javascript',
@@ -243,7 +241,7 @@ final class Kant {
      */
     protected function output($data) {
         $type = strtolower(self::$config['default_return_type']);
-        if (in_array($type, array_keys($this->_outputType)) == false) {
+        if (in_array($type, array_keys($this->outputType)) == false) {
             throw new KantException("Unsupported output type:" . $type);
         }
         $classname = "Kant\\Http\\" . ucfirst($type);
@@ -251,7 +249,7 @@ final class Kant {
         $method = new ReflectionMethod($OutputObj, 'output');
         $result = $method->invokeArgs($OutputObj, array($data));
         Response::create($result, Response::HTTP_OK, [
-            'Content-Type' => $this->_outputType[$type]
+            'Content-Type' => $this->outputType[$type]
         ])->send();
     }
 
