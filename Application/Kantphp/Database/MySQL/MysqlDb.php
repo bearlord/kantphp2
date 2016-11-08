@@ -13,8 +13,6 @@ use Kant\Database\DbQueryAbstract;
 use Kant\Database\DbQueryInterface;
 use Kant\Exception\KantException;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 class MysqlDb extends DbQueryAbstract implements DbQueryInterface {
 
     /**

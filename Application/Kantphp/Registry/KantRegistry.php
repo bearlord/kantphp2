@@ -8,9 +8,8 @@
  */
 
 namespace Kant\Registry;
-use ArrayObject;
 
-!defined('IN_KANT') && exit('Access Denied');
+use ArrayObject;
 
 class KantRegistry extends ArrayObject {
 
@@ -32,7 +31,7 @@ class KantRegistry extends ArrayObject {
 
         return self::$_registry;
     }
-    
+
     /**
      * Unset the default registry instance.
      * Primarily used in tearDown() in unit tests.

@@ -12,8 +12,6 @@ namespace Kant\Route;
 use Kant\Registry\KantRegistry;
 use Kant\KantFactory;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 class Route {
 
     /**

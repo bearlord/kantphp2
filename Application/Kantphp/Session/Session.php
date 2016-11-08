@@ -8,11 +8,10 @@
  */
 
 namespace Kant\Session;
+
 use Kant\Session\File\SessionFile;
 use Kant\Session\Sqlite\SessionSqlite;
 use Kant\Session\Mysql\SessionMysql;
-
-!defined('IN_KANT') && exit('Access Denied');
 
 final class Session {
 

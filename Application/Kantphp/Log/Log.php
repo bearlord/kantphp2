@@ -9,8 +9,6 @@
 
 namespace Kant\Log;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 /**
  * 日志处理类
  */

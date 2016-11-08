@@ -9,8 +9,6 @@
 
 namespace Kant\Cache\Driver;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 /**
  * Memcache cache
  */

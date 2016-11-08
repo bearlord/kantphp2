@@ -9,8 +9,6 @@
 
 namespace Kant\Runtime;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 class Runtime {
 
     protected static $info = array();

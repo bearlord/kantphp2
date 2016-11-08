@@ -14,8 +14,6 @@ use Kant\Registry\KantRegistry;
 use Kant\Exception\KantException;
 use Kant\KantFactory;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 /**
  * View class
  * @access public

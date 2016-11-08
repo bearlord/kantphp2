@@ -14,19 +14,13 @@ use Kant\Exception\KantException;
 use Kant\KantFactory;
 use Kant\Database\Driver;
 
-!defined('IN_KANT') && exit('Access Denied');
-
-require_once KANT_PATH . 'Database/Driver.php';
-require_once KANT_PATH . 'Database/DbQueryAbstract.php';
-require_once KANT_PATH . 'Database/DbQueryInterface.php';
-
 /**
  * Base Model class
  * 
  * @access protected
  * 
  */
-class BaseModel extends Base {
+class Model extends Base {
 
     const MODEL_INSERT = 1;
     const MODEL_UPDATE = 2;
@@ -156,7 +150,7 @@ class BaseModel extends Base {
             return false;
         }
         $type = $type ? : (!empty($data[$this->primary]) ? self::MODEL_UPDATE : self::MODEL_INSERT);
-        
+
         if (isset($this->options['field'])) { // $this->field('field1,field2...')->create()
             $fields = $this->options['field'];
             unset($this->options['field']);
@@ -165,14 +159,14 @@ class BaseModel extends Base {
         } elseif ($type == self::MODEL_UPDATE && isset($this->updateFields)) {
             $fields = $this->updateFields;
         }
-        
+
         if (isset($fields)) {
             if (is_string($fields)) {
                 $fields = explode(',', $fields);
                 array_walk($fields, "ctrim");
             }
             $tokenConfig = KantFactory::getConfig()->get('token');
-            if($tokenConfig['switch']) {
+            if ($tokenConfig['switch']) {
                 $fields[] = $tokenConfig['name'];
             }
             foreach ($data as $key => $val) {
@@ -742,7 +736,7 @@ class BaseModel extends Base {
      * 
      * @param type $method
      * @param type $args
-     * @return \Kant\Model\BaseModel
+     * @return \Kant\Model\Model
      */
     public function __call($method, $args) {
         if (in_array(strtolower($method), $this->methods, true)) {

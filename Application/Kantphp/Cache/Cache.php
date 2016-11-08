@@ -13,8 +13,6 @@ use Kant\Cache\Driver\File;
 use Kant\Cache\Driver\Memcache;
 use Kant\Cache\Driver\Redis;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 /**
  * Cache factory
  * 

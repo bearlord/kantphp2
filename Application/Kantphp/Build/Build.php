@@ -11,8 +11,6 @@ namespace Kant\Build;
 
 use Kant\KantFactory;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 class Build {
 
     protected static $controller = '<?php

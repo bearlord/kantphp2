@@ -14,8 +14,6 @@ use Kant\Log\Log;
 use Kant\KantFactory;
 use Kant\Registry\KantRegistry;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 class KantException extends Exception {
 
     /**

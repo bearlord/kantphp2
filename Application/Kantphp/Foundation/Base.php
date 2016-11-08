@@ -11,10 +11,7 @@ namespace Kant;
 
 use Kant\Registry\KantRegistry;
 
-
-!defined('IN_KANT') && exit('Access Denied');
-
-class Base extends Object{
+class Base extends Object {
 
     //cache
     protected $cache;

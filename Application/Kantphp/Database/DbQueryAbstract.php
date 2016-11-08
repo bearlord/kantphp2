@@ -12,8 +12,6 @@ namespace Kant\Database;
 use Kant\Base;
 use Kant\Exception\KantException;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 /**
  * Database query abstract class
  * 

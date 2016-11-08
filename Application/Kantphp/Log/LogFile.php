@@ -9,8 +9,6 @@
 
 namespace Log;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 class LogFile {
 
     protected $config = array(

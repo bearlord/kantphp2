@@ -11,8 +11,6 @@ namespace Kant\Cookie;
 
 use Kant\Registry\KantRegistry;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 final class Cookie {
 
     private static $_cookie;

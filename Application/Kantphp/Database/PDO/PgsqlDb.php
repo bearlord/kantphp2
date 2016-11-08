@@ -14,8 +14,6 @@ use Kant\Database\DbQueryInterface;
 use Kant\Exception\KantException;
 use PDO;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 /**
  * Postgresql database
  * 

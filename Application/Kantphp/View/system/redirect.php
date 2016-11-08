@@ -1,4 +1,3 @@
-<?php !defined('IN_KANT') && exit('Access Denied'); ?>
 <!DOCTYPE HTML>
 <html>
     <head>

@@ -9,8 +9,6 @@
 
 namespace Kant\Config;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 class KantConfig {
 
     /**

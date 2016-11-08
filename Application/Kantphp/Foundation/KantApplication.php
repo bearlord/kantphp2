@@ -22,8 +22,6 @@ use ReflectionMethod;
 use Kant\Http\Request;
 use Kant\Session\Session;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 final class Kant {
 
     private static $_instance = null;
@@ -55,7 +53,6 @@ final class Kant {
      * @var array
      */
     protected $dispatchInfo = null;
-    
     protected $outputType = [
         'html' => 'text/html',
         'json' => 'application/json',
@@ -231,9 +228,8 @@ final class Kant {
                 throw new KantException('dispatch type not support', 5002);
         }
         $this->output($data);
-        
     }
-    
+
     /**
      * Output
      * 
@@ -311,7 +307,7 @@ final class Kant {
         }
         $this->_initModuleConfig($moduleName);
         //controller name
-        $controllerName = !empty($dispatchInfo[1]) ? ucfirst($dispatchInfo[1]): ucfirst(self::$config['route']['ctrl']);
+        $controllerName = !empty($dispatchInfo[1]) ? ucfirst($dispatchInfo[1]) : ucfirst(self::$config['route']['ctrl']);
         $controller = $this->controller($controllerName, $moduleName);
         if (!$controller) {
             if (empty($controller)) {

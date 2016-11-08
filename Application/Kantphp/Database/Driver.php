@@ -12,8 +12,6 @@ namespace Kant\Database;
 use Kant\Exception\KantException;
 use Kant\Registry\KantRegistry;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 /**
  * Database driver class
  * 

@@ -15,8 +15,6 @@ use Kant\Registry\KantRegistry;
 use Kant\KantFactory;
 use Kant\View\View;
 
-!defined('IN_KANT') && exit('Access Denied');
-
 /**
  * Base Controller 
  * 

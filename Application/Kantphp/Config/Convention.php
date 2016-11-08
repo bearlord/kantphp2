@@ -6,14 +6,13 @@
  * @copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-!defined('IN_KANT') && exit('Access Denied');
 return [
     'check_app_dir' => true,
     'dir_secure_filename' => 'index.html',
     'dir_secure_content' => 'Powered By KantPHP Framework 2.1',
     'route' => [
         'module' => 'index',
-        'ctrl' =>  'index',
+        'ctrl' => 'index',
         'act' => 'index'
     ],
     'default_return_type' => 'html',
