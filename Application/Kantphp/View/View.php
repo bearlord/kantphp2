@@ -13,7 +13,6 @@ use Kant\Base;
 use Kant\Registry\KantRegistry;
 use Kant\Exception\KantException;
 use Kant\KantFactory;
-use Kant\Hook\Hook;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -138,7 +137,6 @@ class View extends Base {
             include_once $tplfile;
         }
         $content = ob_get_clean();
-        Hook::listen('view_filter', $content);
         return $content;
     }
 

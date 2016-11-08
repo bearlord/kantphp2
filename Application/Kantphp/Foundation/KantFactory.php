@@ -11,7 +11,6 @@ namespace Kant;
 
 use Kant\Kant;
 use Kant\Config\KantConfig;
-use Kant\Dispatch\Dispatch;
 use Kant\Route\Route;
 use Kant\Cache\Cache;
 use Kant\Session\Session;

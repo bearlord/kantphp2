@@ -15,12 +15,12 @@ use Kant\Http\Response;
 use Kant\Registry\KantRegistry;
 use Kant\Build\Build;
 use Kant\Log\Log;
-use Kant\Hook\Hook;
 use Kant\Runtime\Runtime;
 use Kant\Exception\KantException;
 use ReflectionException;
 use ReflectionMethod;
 use Kant\Http\Request;
+use Kant\Session\Session;
 
 !defined('IN_KANT') && exit('Access Denied');
 
@@ -137,7 +137,7 @@ final class Kant {
             $sessionConfig = KantFactory::getConfig()->get('session');
             $sessionAdapter = 'default';
             try {
-                $session = Session\Session::getInstance($sessionConfig)->getSession($sessionAdapter);
+                $session = Session::getInstance($sessionConfig)->getSession($sessionAdapter);
             } catch (RuntimeException $e) {
                 throw new KantException($e->getMessage());
             }
@@ -148,7 +148,7 @@ final class Kant {
     /**
      * Singleton instance
      * 
-     * @param type $env
+     * @param type $environment
      * @return type
      */
     public static function getInstance($environment = 'Development') {
@@ -165,10 +165,7 @@ final class Kant {
     public function boot() {
         $this->parpare();
         $this->route();
-        Hook::import(self::$_config['tags']);
-        Hook::listen('app_begin');
         $this->dispatch();
-        Hook::listen('app_end');
         $this->end();
     }
 
