@@ -550,9 +550,10 @@ class Route {
      * 
      * @param type $pathinfo
      */
-    protected static function parseRoute($pathinfo) {
+    protected static function parseRoute($pathinfo) {        
         $route = [null, null, null];
         $var = [];
+        $pathinfo = trim($pathinfo, "/");
         //Special pathinof as demo/index/get/a,100/b,101?c=102&d=103
         if (strpos($pathinfo, "?") !== false) {
             $parse = explode("?", $pathinfo);
