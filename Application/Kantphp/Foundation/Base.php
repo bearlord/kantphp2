@@ -9,6 +9,7 @@
 
 namespace Kant\Foundation;
 
+use Kant\KantFactory;
 use Kant\Registry\KantRegistry;
 use Kant\Cookie\Cookie;
 

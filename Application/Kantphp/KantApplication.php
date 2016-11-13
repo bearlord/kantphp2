@@ -7,9 +7,9 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Foundation;
+namespace Kant;
 
-use Kant\Foundation\KantFactory;
+use Kant\KantFactory;
 use Kant\Route\Route;
 use Kant\Http\Response;
 use Kant\Registry\KantRegistry;
@@ -22,7 +22,7 @@ use ReflectionMethod;
 use Kant\Http\Request;
 use Kant\Session\Session;
 
-final class Kant {
+final class KantApplication {
 
     private static $_instance = null;
     private $_environment = 'Development';

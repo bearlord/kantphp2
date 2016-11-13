@@ -1,6 +1,6 @@
 <?php
 
-namespace Kant;
+namespace Kant\Foundation;
 
 /**
  * Configurable is the interface that should be implemented by classes who support configuring

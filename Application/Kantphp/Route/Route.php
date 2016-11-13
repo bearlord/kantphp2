@@ -10,7 +10,7 @@
 namespace Kant\Route;
 
 use Kant\Registry\KantRegistry;
-use Kant\Foundation\KantFactory;
+use Kant\KantFactory;
 
 class Route {
 

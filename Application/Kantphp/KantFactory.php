@@ -7,9 +7,9 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Foundation;
+namespace Kant;
 
-use Kant\Foundation\Kant;
+use Kant\KantApplication;
 use Kant\Config\KantConfig;
 use Kant\Route\Route;
 use Kant\Cache\Cache;
@@ -69,7 +69,7 @@ class KantFactory {
      */
     public static function getApplication($env) {
         if (!self::$application) {
-            self::$application = Kant::getInstance($env);
+            self::$application = KantApplication::getInstance($env);
         }
         return self::$application;
     }
