@@ -7,9 +7,9 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant;
+namespace Kant\Foundation;
 
-use Kant\KantFactory;
+use Kant\Foundation\KantFactory;
 use Kant\Route\Route;
 use Kant\Http\Response;
 use Kant\Registry\KantRegistry;

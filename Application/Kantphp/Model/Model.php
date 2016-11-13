@@ -9,7 +9,7 @@
 
 namespace Kant\Model;
 
-use Kant\Base;
+use Kant\Foundation\Base;
 use Kant\Exception\KantException;
 use Kant\KantFactory;
 use Kant\Database\Driver;

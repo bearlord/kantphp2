@@ -9,10 +9,9 @@
 
 namespace Kant\Controller;
 
-use Kant\Base;
+use Kant\Foundation\Base;
 use Kant\Exception\KantException;
 use Kant\Registry\KantRegistry;
-use Kant\KantFactory;
 use Kant\View\View;
 
 /**
@@ -22,7 +21,7 @@ use Kant\View\View;
  * @since version 1.0
  * @todo .etc
  */
-class BaseController extends Base {
+class Controller extends Base {
 
     protected $view;
     protected $dispatchInfo;

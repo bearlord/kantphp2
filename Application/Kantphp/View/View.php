@@ -9,10 +9,9 @@
 
 namespace Kant\View;
 
-use Kant\Base;
+use Kant\Foundation\Base;
 use Kant\Registry\KantRegistry;
 use Kant\Exception\KantException;
-use Kant\KantFactory;
 
 /**
  * View class

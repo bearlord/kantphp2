@@ -7,9 +7,10 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant;
+namespace Kant\Foundation;
 
 use Kant\Registry\KantRegistry;
+use Kant\Cookie\Cookie;
 
 class Base extends Object {
 
@@ -113,10 +114,7 @@ class Base extends Object {
             try {
                 $cache = KantFactory::getCache($cacheConfig)->getCache($cacheAdapter);
             } catch (RuntimeException $e) {
-                if (!headers_sent()) {
-                    header('HTTP/1.1 500 Internal Server Error');
-                }
-                exit('Load Cache Error: ' . $e->getMessage());
+                throw  new Exception('Load Cache Error: ' . $e->getMessage());
             }
         }
         return $cache;
@@ -130,12 +128,9 @@ class Base extends Object {
         if (empty($cookie)) {
             $cookieConfig = KantFactory::getConfig()->get('cookie');
             try {
-                $cookie = Cookie\Cookie::getInstance($cookieConfig);
+                $cookie = Cookie::getInstance($cookieConfig);
             } catch (RuntimeException $e) {
-                if (!headers_sent()) {
-                    header('HTTP/1.1 500 Internal Server Error');
-                }
-                exit('Load Cache Error: ' . $e->getMessage());
+                throw  new Exception('Load Cookie Error: ' . $e->getMessage());
             }
             $this->cookie = $cookie;
         }

@@ -94,29 +94,10 @@ final class Driver {
      */
     public function connect($db_name) {
         $dbType = $this->_dbConfig[$db_name]['type'];
-        switch ($this->_dbConfig[$db_name]['type']) {
-            case 'mysql' :
-                require_once KANT_PATH . 'Database/MySQL/MysqlDb.php';
-                $namespace = "Kant\\Database\\MySQL\\";
-                $class = $namespace . 'MysqlDb';
-                break;
-            case 'pdo_mysql' :
-                require_once KANT_PATH . 'Database/PDO/MysqlDb.php';
-                $namespace = "Kant\\Database\\PDO\\";
-                $class = $namespace . 'MysqlDb';
-                break;
-            case 'pdo_sqlite';
-                require_once KANT_PATH . 'Database/PDO/SqliteDb.php';
-                $namespace = "Kant\\Database\\PDO\\";
-                $class = $namespace . 'SqliteDb';
-                break;
-            case 'pdo_pgsql':
-            case 'default':
-                require_once KANT_PATH . 'Database/PDO/PgsqlDb.php';
-                $namespace = "Kant\\Databas\\PDO\\";
-                $class = $namespace . 'PgsqlDb';
-                break;
+        if (empty($dbType)) {
+            throw new \InvalidArgumentException('Underfined db type');
         }
+        $class = "Kant\\Database\\Driver\\" .  ucfirst($dbType);
         if (!class_exists($class)) {
             throw new KantException(sprintf('Unable to load Database Driver: %s', $this->_dbConfig[$db_name]['type']));
         }

@@ -9,7 +9,7 @@
 
 namespace Kant\Database;
 
-use Kant\Base;
+use Kant\Foundation\Base;
 use Kant\Exception\KantException;
 
 /**
@@ -552,6 +552,7 @@ abstract class DbQueryAbstract extends Base {
         if (!$this->from) {
             throw new KantException('Invalid SQL: FROM(DELETE)');
         }
+        $sql = "";
         switch ($type) {
             case 'SELECT':
                 $sql = "SELECT " . ($getCountSql ? "COUNT(*) as count" : ($this->select ? $this->select : "*")) .
