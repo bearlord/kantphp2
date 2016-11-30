@@ -12,6 +12,7 @@ namespace Kant;
 use Kant\KantApplication;
 use Kant\Config\KantConfig;
 use Kant\Route\Route;
+use Kant\Registry\KantRegistry;
 use Kant\Cache\Cache;
 use Kant\Session\Session;
 use Kant\Pathinfo\Pathinfo;
@@ -99,8 +100,9 @@ class KantFactory {
     /**
      * Get cache object
      */
-    public static function getCache($config) {
+    public static function getCache() {
         if (!self::$cache) {
+            $config = KantRegistry::get('config')->get('cache.default');
             self::$cache = Cache::getInstance($config);
         }
         return self::$cache;
@@ -112,7 +114,8 @@ class KantFactory {
      */
     public static function getSession() {
         if (!self::$session) {
-            self::$session = Session::getInstance();
+            $config = KantRegistry::get('config')->get('session.default');
+            self::$session = Session::getInstance($config);
         }
         return self::$session;
     }

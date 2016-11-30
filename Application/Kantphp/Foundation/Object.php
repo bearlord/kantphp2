@@ -13,6 +13,10 @@ class Object {
         $this->init();
     }
 
+    public function init() {
+        
+    }
+
     /**
      * Configures an object with the initial property values.
      * @param object $object the object to be configured

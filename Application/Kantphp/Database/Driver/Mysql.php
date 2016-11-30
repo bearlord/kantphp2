@@ -9,8 +9,7 @@
 
 namespace Kant\Database\Driver;
 
-use Kant\Database\DbQueryAbstract;
-use Kant\Database\DbQueryInterface;
+use Kant\Database\ActiveQuery;
 use Kant\Exception\KantException;
 use PDO;
 
@@ -21,7 +20,7 @@ use PDO;
  * @since version 1.1
  * 
  */
-class Mysql extends DbQueryAbstract implements DbQueryInterface {
+class Mysql extends ActiveQuery {
 
     /**
      *

@@ -61,7 +61,7 @@ class Controller extends Base {
             } elseif (file_exists($this->view->parseTemplate())) {
                 $this->display();
             } else {
-                throw new KantException(sprintf("No action exists:%s", ucfirst($dispatchInfo['act']) . 'Action'));
+                throw new KantException(sprintf("No action exists:%s", ucfirst($dispatchInfo[2]) . 'Action'));
             }
         } else {
             throw new KantException("Method not exists");

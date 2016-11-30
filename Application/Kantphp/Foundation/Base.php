@@ -9,6 +9,7 @@
 
 namespace Kant\Foundation;
 
+use Kant\Foundation\Object;
 use Kant\KantFactory;
 use Kant\Registry\KantRegistry;
 use Kant\Cookie\Cookie;
@@ -22,7 +23,7 @@ class Base extends Object {
     protected $session;
 
     public function __construct() {
-        $this->cache = $this->_initCache();
+        $this->cache = KantFactory::getCache();
         $this->cookie = $this->_initCookie();
     }
 
@@ -103,25 +104,6 @@ class Base extends Object {
     }
 
     /**
-     * Initialize cache driver;
-     * 
-     * @return type
-     */
-    private function _initCache() {
-        static $cache = null;
-        if (empty($cache)) {
-            $cacheConfig = KantRegistry::get('config')->get('cache');
-            $cacheAdapter = 'default';
-            try {
-                $cache = KantFactory::getCache($cacheConfig)->getCache($cacheAdapter);
-            } catch (RuntimeException $e) {
-                throw  new Exception('Load Cache Error: ' . $e->getMessage());
-            }
-        }
-        return $cache;
-    }
-
-    /**
      * Load Cookie
      */
     private function _initCookie() {
@@ -131,7 +113,7 @@ class Base extends Object {
             try {
                 $cookie = Cookie::getInstance($cookieConfig);
             } catch (RuntimeException $e) {
-                throw  new Exception('Load Cookie Error: ' . $e->getMessage());
+                throw new Exception('Load Cookie Error: ' . $e->getMessage());
             }
             $this->cookie = $cookie;
         }
