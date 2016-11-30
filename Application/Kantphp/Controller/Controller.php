@@ -9,7 +9,7 @@
 
 namespace Kant\Controller;
 
-use Kant\Foundation\Base;
+use Kant\Foundation\Component;
 use Kant\Exception\KantException;
 use Kant\Registry\KantRegistry;
 use Kant\View\View;
@@ -21,7 +21,11 @@ use Kant\View\View;
  * @since version 1.0
  * @todo .etc
  */
-class Controller extends Base {
+class Controller extends Component {
+
+    use \Kant\Traits\UrlTrait,
+        \Kant\Traits\LangTrait,
+        \Kant\Traits\WidgetTrait;
 
     protected $view;
     protected $dispatchInfo;
@@ -32,12 +36,15 @@ class Controller extends Base {
     public function __construct() {
         parent::__construct();
         $this->initView();
-        if (method_exists($this, '_initialize')) {
-            $this->_initialize();
+        if (method_exists($this, 'initialize')) {
+            $this->initialize();
         }
     }
 
-    protected function _initialize() {
+    /**
+     * initialize
+     */
+    protected function initialize() {
         
     }
 

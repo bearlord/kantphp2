@@ -11,8 +11,6 @@ namespace Kant\Foundation;
 
 use Kant\Foundation\Object;
 use Kant\KantFactory;
-use Kant\Registry\KantRegistry;
-use Kant\Cookie\Cookie;
 
 class Base extends Object {
 
@@ -20,30 +18,10 @@ class Base extends Object {
     protected $cache;
     //cookie
     protected $cookie;
-    protected $session;
 
     public function __construct() {
         $this->cache = KantFactory::getCache();
-        $this->cookie = $this->_initCookie();
-    }
-
-    
-
-    /**
-     * Load Cookie
-     */
-    private function _initCookie() {
-        static $cookie = null;
-        if (empty($cookie)) {
-            $cookieConfig = KantFactory::getConfig()->get('cookie');
-            try {
-                $cookie = Cookie::getInstance($cookieConfig);
-            } catch (RuntimeException $e) {
-                throw new Exception('Load Cookie Error: ' . $e->getMessage());
-            }
-            $this->cookie = $cookie;
-        }
-        return $cookie;
+        $this->cookie = KantFactory::getCookie();
     }
 
 }

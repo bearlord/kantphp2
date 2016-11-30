@@ -12,53 +12,26 @@ namespace Kant;
 use Kant\KantApplication;
 use Kant\Config\KantConfig;
 use Kant\Route\Route;
-use Kant\Registry\KantRegistry;
 use Kant\Cache\Cache;
 use Kant\Session\Session;
+use Kant\Cookie\Cookie;
 use Kant\Pathinfo\Pathinfo;
 
 class KantFactory {
-
+    
     /**
-     * Global application object
-     */
-    public static $application = null;
-
-    /**
-     * Dispatch object
+     * Object container
      * 
      */
-    public static $dispatch = null;
-
-    /**
-     * Config object
-     * 
-     */
-    public static $config = null;
-
-    /**
-     * Route object
-     * 
-     */
-    public static $route = null;
-
-    /**
-     * Cache object
-     * 
-     */
-    public static $cache = null;
-
-    /**
-     * Session object
-     * 
-     */
-    public static $session = null;
-
-    /**
-     *
-     * Pathinfo object
-     */
-    public static $pathinfo = null;
+    public static $container = [
+        'application' => '',
+        'config' => '',
+        'route' => '',
+        'cache' => '',
+        'session' => '',
+        'cookie' => '',
+        'pathinfo' => ''        
+    ];
 
     /**
      * Get a application object.
@@ -69,43 +42,43 @@ class KantFactory {
      * @return object
      */
     public static function getApplication($env) {
-        if (!self::$application) {
-            self::$application = KantApplication::getInstance($env);
+        if (!self::$container['application']) {
+            self::$container['application'] = KantApplication::getInstance($env);
         }
-        return self::$application;
+        return self::$container['application'];
     }
 
     /**
      * Get config object
      */
     public static function getConfig() {
-        if (!self::$config) {
+        if (!self::$container['config']) {
             //Core configuration
             $coreConfig = include KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php';
-            self::$config = new KantConfig($coreConfig);
+            self::$container['config'] = new KantConfig($coreConfig);
         }
-        return self::$config;
+        return self::$container['config'];
     }
 
     /**
      * Get config object
      */
     public static function getRoute() {
-        if (!self::$route) {
-            self::$route = Route::getInstance();
+        if (!self::$container['route']) {
+            self::$container['route'] = Route::getInstance();
         }
-        return self::$route;
+        return self::$container['route'];
     }
 
     /**
      * Get cache object
      */
     public static function getCache() {
-        if (!self::$cache) {
+        if (!self::$container['cache']) {
             $config = self::getConfig()->get('cache.default');
-            self::$cache = Cache::getInstance($config);
+            self::$container['cache'] = Cache::getInstance($config);
         }
-        return self::$cache;
+        return self::$container['cache'];
     }
 
     /**
@@ -113,21 +86,32 @@ class KantFactory {
      * 
      */
     public static function getSession() {
-        if (!self::$session) {
+        if (!self::$container['session']) {
             $config = self::getConfig()->get('session.default');
-            self::$session = Session::getInstance($config);
+            self::$container['session'] = Session::getInstance($config);
         }
-        return self::$session;
+        return self::$container['session'];
     }
+    
+    /**
+     * Get cookie object
+     */
+    public static function getCookie() {
+        if (!self::$container['cookie']) {
+            $config = self::getConfig()->get('cookie');
+            self::$container['cookie'] = Session::getInstance($config);
+        }
+        return self::$container['cookie'];
+    } 
 
     /**
      * Get Pathinfo object
      */
     public static function getPathInfo() {
-        if (!self::$pathinfo) {
-            self::$pathinfo = Pathinfo::getInstance();
+        if (!self::$container['pathinfo']) {
+            self::$container['pathinfo'] = Pathinfo::getInstance();
         }
-        return self::$pathinfo;
+        return self::$container['pathinfo'];
     }
 
 }

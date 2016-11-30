@@ -12,7 +12,6 @@ namespace Kant\Exception;
 use Exception;
 use Kant\Log\Log;
 use Kant\KantFactory;
-use Kant\Registry\KantRegistry;
 
 class KantException extends Exception {
 
@@ -30,7 +29,7 @@ class KantException extends Exception {
      * @return void
      */
     public function __construct($msg = '', $code = 0, Exception $previous = null) {
-        $debug = KantRegistry::get("config")->get('debug');
+        $debug = KantFactory::getConfig()->get('debug');
         if ($debug == false) {
             header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
             header("Status: 404 Not Found");

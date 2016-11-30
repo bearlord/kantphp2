@@ -43,7 +43,6 @@ final class Cookie {
         if (self::$_cookie == '') {
             self::$_cookie = new self($config);
         }
-
         return self::$_cookie;
     }
 

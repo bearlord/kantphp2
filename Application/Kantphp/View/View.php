@@ -9,7 +9,7 @@
 
 namespace Kant\View;
 
-use Kant\Foundation\Base;
+use Kant\Foundation\Component;
 use Kant\Registry\KantRegistry;
 use Kant\KantFactory;
 use Kant\Exception\KantException;
@@ -20,7 +20,7 @@ use Kant\Exception\KantException;
  * @version 1.1
  * @since version 1.0 
  */
-class View extends Base {
+class View extends Component {
 
     /**
      * template theme

@@ -9,7 +9,7 @@ use Kant\KantFactory;
  *
  * @author Administrator
  */
-class WidgetTrait {
+trait WidgetTrait {
 
     /**
      * Widget

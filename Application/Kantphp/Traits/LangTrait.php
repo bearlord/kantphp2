@@ -3,7 +3,7 @@
 namespace Kant\Traits;
 use Kant\KantFactory;
 
-class LangTrait {
+trait LangTrait {
 
     /**
      * Get current user defined language
