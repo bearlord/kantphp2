@@ -11,6 +11,7 @@ namespace Kant\View;
 
 use Kant\Foundation\Base;
 use Kant\Registry\KantRegistry;
+use Kant\KantFactory;
 use Kant\Exception\KantException;
 
 /**
@@ -96,12 +97,12 @@ class View extends Base {
         if (is_file($template)) {
             return $template;
         }
-        $config = KantRegistry::get('config')->reference();
+        $suffix = KantFactory::getConfig()->get("template_suffix");
         $tpldir = $this->getTplDir();
         if (empty($template)) {
-            $tplfile = $tpldir . strtolower($this->dispatchInfo[1]) . DIRECTORY_SEPARATOR . strtolower($this->dispatchInfo[2]) . $config['template_suffix'];
+            $tplfile = $tpldir . strtolower($this->dispatchInfo[1]) . DIRECTORY_SEPARATOR . strtolower($this->dispatchInfo[2]) . $suffix;
         } else {
-            $tplfile = $tpldir . $template . $config['template_suffix'];
+            $tplfile = $tpldir . $template . $suffix;
         }
         return $tplfile;
     }
@@ -169,7 +170,7 @@ class View extends Base {
         if ($module == '') {
             $module = isset($this->dispatchInfo[0]) ? strtolower($this->dispatchInfo[0]) : '';
         }
-        $theme = KantRegistry::get('config')->get('theme');
+        $theme = KantFactory::getConfig()->get('theme');
         if ($module) {
             $tpldir = TPL_PATH . $theme . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR;
         } else {

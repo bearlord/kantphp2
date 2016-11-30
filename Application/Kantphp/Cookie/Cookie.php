@@ -9,7 +9,7 @@
 
 namespace Kant\Cookie;
 
-use Kant\Registry\KantRegistry;
+use Kant\KantFactory;
 
 final class Cookie {
 
@@ -18,12 +18,18 @@ final class Cookie {
     /**
      *
      * @example: 
-     * array('cookie_domain' => '','cookie_path' => '/','cookie_pre' => 'kantphp_','cookie_ttl' => 0)
+     * 
      */
-    private $_cookieConfig = array();
+    protected $cookieConfig = ['cookie_domain' => '', 'cookie_path' => '/', 'cookie_pre' => 'kantphp_', 'cookie_ttl' => 0];
 
-    public function __construct() {
-        
+    public function __construct($config = "") {
+        if ($config == '') {
+            $this->cookieConfig = KantFactory::getConfig()->get('cookie');
+        } else {
+            if ($config != $this->cookieConfig) {
+                $this->cookieConfig = array_merge($config, $this->cookieConfig);
+            }
+        }
     }
 
     /**
@@ -33,16 +39,11 @@ final class Cookie {
      * @param cache_config string
      * @return object on success
      */
-    public static function getInstance($cookieConfig = '') {
-        if ($cookieConfig == '') {
-            $cookieConfig = KantRegistry::get('config')->get('cookie');
-        }
+    public static function getInstance($config = '') {
         if (self::$_cookie == '') {
-            self::$_cookie = new self();
+            self::$_cookie = new self($config);
         }
-        if ($cookieConfig != '' && $cookieConfig != self::$_cookie->_cookieConfig) {
-            self::$_cookie->_cookieConfig = array_merge($cookieConfig, self::$_cookie->_cookieConfig);
-        }
+
         return self::$_cookie;
     }
 
@@ -56,9 +57,9 @@ final class Cookie {
      * @param expiry boolean
      * @return string
      */
-    private function _sysAutch($string, $operation = 'DECODE', $key = '', $expiry = 0) {
+    private function hash($string, $operation = 'DECODE', $key = '', $expiry = 0) {
         $ckey_length = 4;
-        $key = sha1($key ? $key : $this->_cookieConfig['auth_key']);
+        $key = sha1($key ? $key : $this->cookieConfig['auth_key']);
         // 密匙a会参与加解密
         $keya = sha1(substr($key, 0, 20));
         // 密匙b会用来做数据完整性验证
@@ -126,20 +127,20 @@ final class Cookie {
      */
     public function set($var, $value = '', $time = 0) {
         //If $time exists,set cookie time is $time,and if $time is null,set cookie time expired
-        $time = $time > 0 ? (time() + $time) : ($value == '' ? time() - 31536000 : $this->_cookieConfig['cookie_ttl']);
+        $time = $time > 0 ? (time() + $time) : ($value == '' ? time() - 31536000 : $this->cookieConfig['cookie_ttl']);
         $s = $_SERVER['SERVER_PORT'] == '443' ? 1 : 0;
-        $var = $this->_cookieConfig['cookie_pre'] . $var;
+        $var = $this->cookieConfig['cookie_pre'] . $var;
         if (is_array($value)) {
             foreach ($value as $k => $v) {
-                setcookie($var . '[' . $k . ']', self::_sysAutch($v, 'ENCODE'), $time, $this->_cookieConfig['cookie_path'], $this->_cookieConfig['cookie_domain'], $s);
+                setcookie($var . '[' . $k . ']', $this->hash($v, 'ENCODE'), $time, $this->cookieConfig['cookie_path'], $this->cookieConfig['cookie_domain'], $s);
             }
         } else {
             if (isset($_COOKIE[$var]) && is_array($_COOKIE[$var])) {
                 foreach ($_COOKIE[$var] as $k => $v) {
-                    setcookie($var . '[' . $k . ']', !empty($value) ? self::_sysAutch($value, 'ENCODE') : '', $time, $this->_cookieConfig['cookie_path'], $this->_cookieConfig['cookie_domain'], $s);
+                    setcookie($var . '[' . $k . ']', !empty($value) ? $this->hash($value, 'ENCODE') : '', $time, $this->cookieConfig['cookie_path'], $this->cookieConfig['cookie_domain'], $s);
                 }
             } else {
-                setcookie($var, !empty($value) ? self::_sysAutch($value, 'ENCODE') : '', $time, $this->_cookieConfig['cookie_path'], $this->_cookieConfig['cookie_domain'], $s);
+                setcookie($var, !empty($value) ? $this->hash($value, 'ENCODE') : '', $time, $this->cookieConfig['cookie_path'], $this->cookieConfig['cookie_domain'], $s);
             }
         }
     }
@@ -152,14 +153,14 @@ final class Cookie {
      * @return type
      */
     public function get($var, $default = '') {
-        $var = $this->_cookieConfig['cookie_pre'] . $var;
+        $var = $this->cookieConfig['cookie_pre'] . $var;
         if (isset($_COOKIE[$var])) {
             if (is_array($_COOKIE[$var])) {
                 foreach ($_COOKIE[$var] as $k => $v) {
-                    $cookie[$var][$k] = self::_sysAutch($v, 'DECODE');
+                    $cookie[$var][$k] = $this->hash($v, 'DECODE');
                 }
             } else {
-                $cookie[$var] = self::_sysAutch($_COOKIE[$var], 'DECODE');
+                $cookie[$var] = $this->hash($_COOKIE[$var], 'DECODE');
             }
             return $cookie[$var];
         } else {

@@ -80,16 +80,22 @@ final class KantApplication {
      * Init Config
      */
     private function _initConfig() {
-        //App config
+        /**
+         * App config
+         */
         $appConfig = include CFG_PATH . $this->_environment . DIRECTORY_SEPARATOR . 'Config.php';
-        //Route config
+        /**
+         * Route config
+         */
         $routeConfig = include CFG_PATH . $this->_environment . DIRECTORY_SEPARATOR . 'Route.php';
-        self::$configObj = KantFactory::getConfig();
-        self::$configObj->merge($appConfig)->merge(['route' => $routeConfig]);
-        self::$config = self::$configObj->reference();
-        KantRegistry::set('environment', $this->_environment);
-        KantRegistry::set('config', self::$configObj);
-        KantRegistry::set('config_path', CFG_PATH . $this->_environment . DIRECTORY_SEPARATOR);
+        /**
+         * Merge app and route config
+         */
+        KantFactory::getConfig()->merge($appConfig)->merge(['route' => $routeConfig]);
+        KantFactory::getConfig()->set([
+            'environment' => $this->_environment,
+            'config_path' => CFG_PATH . $this->_environment . DIRECTORY_SEPARATOR         
+        ]);
     }
 
     /**
@@ -102,8 +108,7 @@ final class KantApplication {
             return false;
         }
         $moduleConfig = include $configFilePath;
-        self::$configObj->merge($moduleConfig);
-        self::$config = self::$configObj->reference();
+        KantFactory::getConfig()->merge($moduleConfig);
     }
 
     /**
@@ -155,8 +160,8 @@ final class KantApplication {
      */
     protected function parpare() {
         //Default timezone
-        date_default_timezone_set(self::$config['default_timezone']);
-        if (self::$config['debug']) {
+        date_default_timezone_set(KantFactory::getConfig()->get('default_timezone'));
+        if (KantFactory::getConfig()->get('debug')) {
             ini_set('display_errors', 1);
             error_reporting(E_ALL);
             Runtime::mark('begin');
@@ -176,7 +181,7 @@ final class KantApplication {
      * End
      */
     protected function end() {
-        if (self::$config['debug']) {
+        if (KantFactory::getConfig()->get('debug')) {
             Runtime::mark('end');
         }
     }
@@ -186,8 +191,8 @@ final class KantApplication {
      */
     protected function route() {
         //remove url suffix
-        $pathinfo = str_replace(self::$config['url_suffix'], '', $this->parsePathinfo());
-        Route::import(self::$config['route']);
+        $pathinfo = str_replace(KantFactory::getConfig()->get('url_suffix'), '', $this->parsePathinfo());
+        Route::import(KantFactory::getConfig()->get('route'));
         $dispath = Route::check($pathinfo);
         if ($dispath === false) {
             $dispath = Route::parseUrl($pathinfo);
@@ -236,7 +241,7 @@ final class KantApplication {
      * @param type $data
      */
     protected function output($data) {
-        $type = strtolower(self::$config['default_return_type']);
+        $type = strtolower(KantFactory::getConfig()->get('default_return_type'));
         if (in_array($type, array_keys($this->outputType)) == false) {
             throw new KantException("Unsupported output type:" . $type);
         }
@@ -301,20 +306,20 @@ final class KantApplication {
         KantRegistry::set('dispatchInfo', $dispatchInfo);
         $this->dispatchInfo = $dispatchInfo;
         //module name
-        $moduleName = !empty($dispatchInfo[0]) ? ucfirst($dispatchInfo[0]) : ucfirst(self::$config['route']['module']);
+        $moduleName = !empty($dispatchInfo[0]) ? ucfirst($dispatchInfo[0]) : ucfirst(KantFactory::getConfig()->get('route.module'));
         if (empty($moduleName)) {
             throw new KantException('No Module found');
         }
         $this->_initModuleConfig($moduleName);
         //controller name
-        $controllerName = !empty($dispatchInfo[1]) ? ucfirst($dispatchInfo[1]) : ucfirst(self::$config['route']['ctrl']);
+        $controllerName = !empty($dispatchInfo[1]) ? ucfirst($dispatchInfo[1]) : ucfirst(KantFactory::getConfig()->get('route.ctrl'));
         $controller = $this->controller($controllerName, $moduleName);
         if (!$controller) {
             if (empty($controller)) {
                 throw new KantException(sprintf("No controller exists:%s", ucfirst($this->dispatchInfo[1]) . 'Controller'));
             }
         }
-        $action = !empty($this->dispatchInfo[2]) ? $this->dispatchInfo[2] . self::$config['action_suffix'] : 'Index' . self::$config['action_suffix'];
+        $action = !empty($this->dispatchInfo[2]) ? $this->dispatchInfo[2] . KantFactory::getConfig()->get('action_suffix') : 'Index' . KantFactory::getConfig()->get('action_suffix');
         try {
             if (!preg_match('/^[A-Za-z](\w)*$/', $action)) {
                 throw new ReflectionException();
@@ -365,7 +370,7 @@ final class KantApplication {
      */
     public function buildModule() {
         //build module
-        if (self::$config['check_app_dir']) {
+        if (KantFactory::getConfig()->get('check_app_dir')) {
             if (!defined('CREATE_MODULE')) {
                 return;
             }

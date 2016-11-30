@@ -578,7 +578,7 @@ class Route {
             if (strpos($action, "?") !== false) {
                 $action = substr($action, 0, strpos($action, "?"));
             }
-            $urlsuffix = KantRegistry::get('config')->get('url_suffix');
+            $urlsuffix = KantFactory::getConfig()->get('url_suffix');
             if ($urlsuffix) {
                 if (strpos($action, "&") !== false) {
                     $action = substr($action, 0, strpos($action, $urlsuffix));

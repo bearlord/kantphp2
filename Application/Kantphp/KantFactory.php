@@ -102,7 +102,7 @@ class KantFactory {
      */
     public static function getCache() {
         if (!self::$cache) {
-            $config = KantRegistry::get('config')->get('cache.default');
+            $config = self::getConfig()->get('cache.default');
             self::$cache = Cache::getInstance($config);
         }
         return self::$cache;
@@ -114,7 +114,7 @@ class KantFactory {
      */
     public static function getSession() {
         if (!self::$session) {
-            $config = KantRegistry::get('config')->get('session.default');
+            $config = self::getConfig()->get('session.default');
             self::$session = Session::getInstance($config);
         }
         return self::$session;

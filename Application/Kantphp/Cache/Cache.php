@@ -36,7 +36,7 @@ final class Cache {
      */
     protected $cacheConfig = array(
         //default file cache type
-        'defalut' => [
+        'default' => [
             'type' => 'file',
         ],
         //memcache type

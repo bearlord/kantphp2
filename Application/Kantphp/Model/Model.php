@@ -9,9 +9,11 @@
 
 namespace Kant\Model;
 
+use Kant\Foundation\Component;
 use Kant\Exception\KantException;
 use Kant\KantFactory;
 use Kant\Database\Driver;
+use BadMethodCallException;
 
 /**
  * Base Model class
@@ -19,7 +21,7 @@ use Kant\Database\Driver;
  * @access protected
  * 
  */
-class Model {
+class Model extends Component {
 
     const MODEL_INSERT = 1;
     const MODEL_UPDATE = 2;
@@ -28,29 +30,53 @@ class Model {
     const MUST_VALIDATE = 1;
     const VALUE_VALIDATE = 2;
 
-    //Db config
+    /**
+     * Db config
+     */
     private $_dbConfig;
-    //Db connection
+    /**
+     * Db connection
+     */
     protected $db = '';
-    //Db setting
+    /**
+     * Db setting
+     */
     protected $adapter = 'default';
-    //Table name
+    /**
+     * Table name
+     */
     protected $table;
-    //Table key
+    /**
+     * Table key
+     */
     protected $primary = 'id';
-    //Data
+    /**
+     * Data
+     */
     protected $data;
-    //Fields
+    /**
+     * Fields
+     */
     protected $fields = [];
-    //Fields cache name
+    /**
+     * Fields cache name
+     */
     protected $fieldsCacheName;
-    //Options
+    /**
+     * Options
+     */
     protected $options = [];
-    //Method lists
+    /**
+     * Method lists
+     */
     protected $methods = ['validate', 'token'];
-    //Patch validate
+    /**
+     * Patch validate
+     */
     protected $patchValidate = false;
-    //Error
+    /**
+     * Error
+     */
     protected $error = "";
     //Auto check Fields
     protected $autoCheckFields = true;
@@ -611,6 +637,18 @@ class Model {
     }
 
     /**
+     * Makes sure that the behaviors declared in [[behaviors()]] are attached to this component.
+     */
+    public function ensureBehaviors() {
+        if ($this->_behaviors === null) {
+            $this->_behaviors = [];
+            foreach ($this->behaviors() as $name => $behavior) {
+                $this->attachBehaviorInternal($name, $behavior);
+            }
+        }
+    }
+
+    /**
      * Facade data
      * 
      * @param array $data
@@ -659,11 +697,14 @@ class Model {
      * @param type $args
      * @return \Kant\Model\Model
      */
-    public function __call($method, $args) {
-        if (in_array(strtolower($method), $this->methods, true)) {
-            $this->options[strtolower($method)] = $args[0];
-            return $this;
+    public function __call($method, $params) {
+        $this->ensureBehaviors();
+        foreach ($this->_behaviors as $object) {
+            if ($object->hasMethod($method)) {
+                return call_user_func_array([$object, $method], $params);
+            }
         }
+        throw new BadMethodCallException('Calling unknown method: ' . get_class($this) . "::$method()");
     }
 
     /**
@@ -671,7 +712,7 @@ class Model {
      * This method is overridden so that attributes and related objects can be accessed like properties.
      *
      * @param string $name property name
-     * @throws \yii\base\InvalidParamException if relation name is wrong
+     * @throws \InvalidParamException if relation name is wrong
      * @return mixed property value
      * @see getAttribute()
      */
@@ -769,7 +810,7 @@ class Model {
         if ($this->hasAttribute($name)) {
             $this->_attributes[$name] = $value;
         } else {
-            throw new InvalidParamException(get_class($this) . ' has no attribute named "' . $name . '".');
+            throw new BadMethodCallException(get_class($this) . ' has no attribute named "' . $name . '".');
         }
     }
 

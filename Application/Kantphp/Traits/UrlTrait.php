@@ -1,20 +1,10 @@
 <?php
 
 namespace Kant\Traits;
+use Kant\KantFactory;
 
-use Kant\Registry\KantRegistry;
+trait UrlTrait {
 
-class Common {
-
-    /**
-     * 
-     * Format Rest URL
-     *
-     * @param string $url
-     * @param array $vars
-     * @param string $suffix
-     * @return string
-     */
     public function url($url = '', $vars = '', $suffix = true) {
         $originalparams = array();
         $config = KantFactory::getConfig()->reference();
@@ -91,54 +81,13 @@ class Common {
      * @param integer $second
      */
     public function redirect($message, $url = 'goback', $second = 3) {
-        $redirectTpl = KantRegistry::get('config')->get('redirect_tpl');
+        $redirectTpl = KantFactory::getConfig()->get('redirect_tpl');
         if ($redirectTpl) {
             include TPL_PATH . $redirectTpl . '.php';
         } else {
             include KANT_PATH . 'View' . DIRECTORY_SEPARATOR . 'system/redirect.php';
         }
         exit();
-    }
-
-    /**
-     * Get current user defined language
-     * 
-     * @return
-     */
-    public function getLang() {
-        static $lang = null;
-        if (empty($lang)) {
-            $lang = KantRegistry::get('config')->get('lang');
-            $lang = !empty($_COOKIE['lang']) ? $_COOKIE['lang'] : $lang;
-            if (empty($lang)) {
-                $lang = 'en_US';
-            }
-        }
-        return $lang;
-    }
-
-    /**
-     * Language localization
-     * 
-     * @staticvar array $LANG
-     * @param string $language
-     * @return array
-     */
-    public function lang($language = 'no_language') {
-        static $LANG = array();
-        if (!$LANG) {
-            $lang = $this->getLang();
-            require KANT_PATH . 'Locale' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . 'System.php';
-            if (file_exists(APP_PATH . 'Locale' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . 'App.php')) {
-                require APP_PATH . 'Locale' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . 'App.php';
-            }
-        }
-        if (!array_key_exists($language, $LANG)) {
-            return $language;
-        } else {
-            $language = $LANG[$language];
-            return $language;
-        }
     }
 
 }

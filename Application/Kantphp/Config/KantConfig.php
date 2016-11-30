@@ -72,9 +72,9 @@ class KantConfig {
      * @param type $delimiter
      * @throws KantException
      */
-    public function set($name, $value) {
+    public function set($name, $value = "") {
         if (is_string($name)) {
-            $this->_data[$key] = $value;
+            $this->_data[$name] = $value;
         } elseif (is_array($name)) {
             if (!empty($name)) {
                 foreach ($name as $key => $val) {
