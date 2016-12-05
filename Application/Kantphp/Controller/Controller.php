@@ -60,6 +60,13 @@ class Controller extends Component {
         return $this->view;
     }
 
+    /**
+     * Magic call
+     * 
+     * @param type $method
+     * @param type $args
+     * @throws KantException
+     */
     public function __call($method, $args) {
         $dispatchInfo = KantRegistry::get('dispatchInfo');
         if (0 === strcasecmp($method, strtolower($dispatchInfo[2]) . "Action")) {

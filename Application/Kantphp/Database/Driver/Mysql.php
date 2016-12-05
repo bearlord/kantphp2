@@ -9,7 +9,7 @@
 
 namespace Kant\Database\Driver;
 
-use Kant\Database\ActiveQuery;
+use Kant\Database\Query;
 use Kant\Exception\KantException;
 use PDO;
 
@@ -20,15 +20,9 @@ use PDO;
  * @since version 1.1
  * 
  */
-class Mysql extends ActiveQuery {
-
-    /**
-     *
-     * Open database connection
-     *
-     * @param config
-     */
-    public function open($config) {
+class Mysql extends Query {
+    
+    public function __construct(array $config = []) {
         $this->config = $config;
         if ($config['autoconnect'] == 1) {
             $this->_connect();
@@ -69,7 +63,6 @@ class Mysql extends ActiveQuery {
         } catch (PDOException $e) {
             throw new KantException(sprintf('Can not connect to MySQL server or cannot use database.%s', $e->getMessage()));
         }
-        var_dump($this->dbh);
         $this->dbh->exec(sprintf("SET NAMES \"%s\"", $this->config['charset']));
         $this->database = $this->config['database'];
     }

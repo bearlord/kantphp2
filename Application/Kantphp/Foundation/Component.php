@@ -198,6 +198,18 @@ class Component extends Object {
     }
 
     /**
+     * Handle dynamic static method calls into the method.
+     *
+     * @param  string  $method
+     * @param  array  $parameters
+     * @return mixed
+     */
+    public function __callStatic($method, $parameters) {
+        $instance = new static;
+        return call_user_func_array([$instance, $method], $parameters);
+    }
+    
+    /**
      * This method is called after the object is created by cloning an existing one.
      * It removes all behaviors because they are attached to the old object.
      */

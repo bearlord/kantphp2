@@ -10,7 +10,8 @@
 namespace Kant\Database;
 
 use Kant\Exception\KantException;
-use Kant\Registry\KantRegistry;
+use Kant\KantFactory;
+use InvalidArgumentException;
 
 /**
  * Database driver class
@@ -39,50 +40,21 @@ final class Driver {
      * Database list
      *
      */
-    private $_dbList = array();
-
-    /**
-     *
-     * Construct
-     *
-     */
-    public function __construct() {
-        
-    }
+    protected $dbo;
 
     /**
      *
      * Get instantce of the final object
      *
-     * @param string $dbConfig
+     * @param string $config
      * @return object on success
      */
-    public static function getInstance($dbConfig = '') {
-        if ($dbConfig == '') {
-            $dbConfig = KantRegistry::get('config')->get('database');
+    public static function connect($config = '') {
+        $name = md5(serialize($config));
+        if (self::$_database[$name] == '') {
+            self::$_database[$name] = (new self())->connect($config);
         }
-        if (self::$_database == '') {
-            self::$_database = new self();
-        }
-        if ($dbConfig != '' && $dbConfig != self::$_database->_dbConfig) {
-            self::$_database->_dbConfig = array_merge($dbConfig, self::$_database->_dbConfig);
-        }
-        return self::$_database;
-    }
-
-    /**
-     *
-     * Get instance of the _database config
-     *
-     * @param String db_name
-     * @return resource a _database link identifier on success, or false on
-     * failure.
-     */
-    public function getDatabase($db_name) {
-        if (!isset($this->_dbList[$db_name]) || !is_object($this->_dbList[$db_name])) {
-            $this->_dbList[$db_name] = $this->connect($db_name);
-        }
-        return $this->_dbList[$db_name];
+        return self::$_database[$name];
     }
 
     /**
@@ -92,30 +64,77 @@ final class Driver {
      * @param db_name string
      * @return object on success
      */
-    public function connect($db_name) {
-        $dbType = $this->_dbConfig[$db_name]['type'];
+    public function connectInternal($config = "") {
+        $options = $this->parseConfig($config);
+        $dbType = $options['type'];
         if (empty($dbType)) {
-            throw new \InvalidArgumentException('Underfined db type');
+            throw new InvalidArgumentException('Underfined db type');
         }
-        $class = "Kant\\Database\\Driver\\" .  ucfirst($dbType);
+        $class = "Kant\\Database\\Driver\\" . ucfirst($dbType);
         if (!class_exists($class)) {
-            throw new KantException(sprintf('Unable to load Database Driver: %s', $this->_dbConfig[$db_name]['type']));
+            throw new KantException(sprintf('Unable to load Database Driver: %s', $options['type']));
         }
-        $object = new $class;
-        $object->open($this->_dbConfig[$db_name]);
-        $object->dbTablepre = $this->_dbConfig[$db_name]['tablepre'];
-        return $object;
+        $this->dbo = new $class;
+        $this->dbo->open($options);
+        $this->dbo->dbTablepre = $options['tablepre'];
+        return $this->dbo;
+    }
+
+    /**
+     * Parse Config
+     * 
+     * @param array/string $config
+     * @return array/string
+     */
+    protected function parseConfig($config = "") {
+        if ($config == '') {
+            $config = KantFactory::getConfig()->get('database.default');
+        } elseif (is_string($config) && false === strpos($config, '/')) {
+            $config = KantFactory::getConfig()->get('database.' . $config);
+        }
+        
+        if (is_string($config)) {
+            return $this->parseDsn($config);
+        } else {
+            return $config;
+        }
+    }
+    
+    /**
+     * Parse DSN config
+     * 
+     * @param array $config
+     */
+    protected function parseDsn($str) {
+        $info = parse_url($str);
+        if (!$info) {
+            return [];
+        }
+        $dsn = [
+            'type'     => $info['scheme'],
+            'username' => isset($info['user']) ? $info['user'] : '',
+            'password' => isset($info['pass']) ? $info['pass'] : '',
+            'hostname' => isset($info['host']) ? $info['host'] : '',
+            'hostport' => isset($info['port']) ? $info['port'] : '',
+            'database' => !empty($info['path']) ? ltrim($info['path'], '/') : '',
+            'charset'  => isset($info['fragment']) ? $info['fragment'] : 'utf8',
+        ];
+
+        if (isset($info['query'])) {
+            parse_str($info['query'], $dsn['params']);
+        } else {
+            $dsn['params'] = [];
+        }
+        return $dsn;
     }
 
     /**
      *
-     * Close _database connection
+     * Close database connection
      *
      */
     protected function close() {
-        foreach ($this->_dbList as $db) {
-            $db->close();
-        }
+        $this->dbo->close();
     }
 
     /**

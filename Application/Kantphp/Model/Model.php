@@ -34,46 +34,57 @@ class Model extends Component {
      * Db config
      */
     private $_dbConfig;
+
     /**
      * Db connection
      */
     protected $db = '';
+
     /**
      * Db setting
      */
     protected $adapter = 'default';
+
     /**
      * Table name
      */
     protected $table;
+
     /**
      * Table key
      */
     protected $primary = 'id';
+
     /**
      * Data
      */
     protected $data;
+
     /**
      * Fields
      */
     protected $fields = [];
+
     /**
      * Fields cache name
      */
     protected $fieldsCacheName;
+
     /**
      * Options
      */
     protected $options = [];
+
     /**
      * Method lists
      */
     protected $methods = ['validate', 'token'];
+
     /**
      * Patch validate
      */
     protected $patchValidate = false;
+
     /**
      * Error
      */
@@ -116,17 +127,14 @@ class Model extends Component {
      * 
      */
     public function createDbo() {
-        $this->_dbConfig = KantFactory::getConfig()->get('database');
-        if (!isset($this->_dbConfig[$this->adapter])) {
-            $this->adapter = 'default';
-        }
+        $this->_dbConfig = KantFactory::getConfig()->get('database.' . $this->adapter);
         try {
-            $this->db = Driver::getInstance($this->_dbConfig)->getDatabase($this->adapter);
+            $this->db = Driver::connect($this->_dbConfig);
         } catch (KantException $e) {
             throw new KantException('Database Error: ' . $e->getMessage());
         }
         if (!empty($this->table) && $this->autoCheckFields) {
-            $this->fieldsCacheName = "fields_" . $this->_dbConfig[$this->adapter]['database'] . "_" . $this->table;
+            $this->fieldsCacheName = "fields_" . $this->_dbConfig['database'] . "_" . $this->table;
             $this->_checkTableInfo();
         }
     }
@@ -690,12 +698,18 @@ class Model extends Component {
         }
     }
 
+    
     /**
-     * Magic call
-     * 
-     * @param type $method
-     * @param type $args
-     * @return \Kant\Model\Model
+     * Calls the named method which is not a class method.
+     *
+     * This method will check if any attached behavior has
+     * the named method and will execute it if available.
+     *
+     * Do not call this method directly as it is a PHP magic method that
+     * will be implicitly called when an unknown method is being invoked.
+     * @param string $method the method name
+     * @param array $params method parameters
+     * @return mixed the method return value
      */
     public function __call($method, $params) {
         $this->ensureBehaviors();
@@ -704,7 +718,19 @@ class Model extends Component {
                 return call_user_func_array([$object, $method], $params);
             }
         }
-        throw new BadMethodCallException('Calling unknown method: ' . get_class($this) . "::$method()");
+        return call_user_func_array([$this->db, $method], $params);
+    }
+
+
+    /**
+     * Handle dynamic static method calls into the method.
+     *
+     * @param  string  $method
+     * @param  array  $parameters
+     * @return mixed
+     */
+    public function __callStatic($method, $parameters) {
+        parent::__callStatic($method, $parameters);
     }
 
     /**
