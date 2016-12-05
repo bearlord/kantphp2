@@ -20,7 +20,6 @@ class Base extends Object {
     protected $cookie;
 
     public function __construct() {
-        $this->cache = KantFactory::getCache();
         $this->cookie = KantFactory::getCookie();
     }
 

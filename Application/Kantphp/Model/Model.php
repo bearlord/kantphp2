@@ -14,6 +14,7 @@ use Kant\Exception\KantException;
 use Kant\KantFactory;
 use Kant\Database\Driver;
 use BadMethodCallException;
+use Kant\Cache\Cache;
 
 /**
  * Base Model class
@@ -129,7 +130,7 @@ class Model extends Component {
     public function createDbo() {
         $this->_dbConfig = KantFactory::getConfig()->get('database.' . $this->adapter);
         try {
-            $this->db = Driver::connect($this->_dbConfig);
+            $this->db  = Driver::connect($this->_dbConfig);
         } catch (KantException $e) {
             throw new KantException('Database Error: ' . $e->getMessage());
         }
@@ -146,7 +147,7 @@ class Model extends Component {
         if (empty($this->fields)) {
             $fieldsCache = KantFactory::getConfig()->get('db_fields_cache');
             if ($fieldsCache) {
-                $this->fields = KantFactory::getCache()->get($this->fieldsCacheName);
+                $this->fields = Cache::get($this->fieldsCacheName);
                 return;
             }
             $this->flushTableInfo();
@@ -168,7 +169,7 @@ class Model extends Component {
         }
         $fieldsCache = KantFactory::getConfig()->get('db_fields_cache');
         if ($fieldsCache) {
-            KantFactory::getCache()->set($this->fieldsCacheName, $this->fields);
+            Cache::set($this->fieldsCacheName, $this->fields);
         }
     }
 

@@ -12,6 +12,7 @@ namespace Kant\Database\Driver;
 use Kant\Database\Query;
 use Kant\Exception\KantException;
 use PDO;
+use Kant\Cache\Cache;
 
 /**
  * Mysql database
@@ -107,10 +108,9 @@ class Mysql extends Query {
      */
     public function query($sql, $fetchMode = PDO::FETCH_ASSOC) {
         $rows = null;
-        $cacheSqlMd5 = 'sql_' . md5($sql);
         if ($this->ttl) {
             $this->clearFields();
-            $rows = $this->cache->get($cacheSqlMd5);
+            $rows = Cache::get($sql);
             if (!empty($rows)) {
                 return $rows;
             }
@@ -122,10 +122,11 @@ class Mysql extends Query {
         $sth->execute();
         $rows = $sth->fetchAll($fetchMode);
         if ($this->ttl) {
-            $this->cache->set($cacheSqlMd5, $rows, $this->ttl);
+            Cache::set($sql, $rows, $this->ttl);
         } else {
-            $this->cache->delete($cacheSqlMd5);
+            Cache::delete($sql);
         }
+        return $rows;
         $this->sqls[] = $sql;
         $this->queryCount++;
         $this->clearFields();

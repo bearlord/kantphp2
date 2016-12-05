@@ -21,6 +21,7 @@ use ReflectionException;
 use ReflectionMethod;
 use Kant\Http\Request;
 use Kant\Session\Session;
+use Kant\Cache\Cache;
 
 final class KantApplication {
 
@@ -74,6 +75,7 @@ final class KantApplication {
     private function _init() {
         $this->_initConfig();
         $this->_initSession();
+        Cache::platform();
     }
 
     /**

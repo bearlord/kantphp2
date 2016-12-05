@@ -29,11 +29,18 @@ class Query extends Component {
      * @var string the database table prefix
      */
     protected $tablepre;
-    
+
     /**
      * @var string database name 
      */
     protected $database;
+    
+    /**
+     *
+     * @var array sqls
+     */
+    protected $sqls = array();
+    protected $queryCount;
 
     /**
      * @var array the columns being selected. For example, `['id', 'name']`.
@@ -106,11 +113,10 @@ class Query extends Component {
      * For example, `[':name' => 'Dan', ':age' => 31]`.
      */
     public $params = [];
-    
     protected $ttl = 0;
 
     public function getTable($table) {
         return $this->tablepre . $table;
     }
-    
+
 }

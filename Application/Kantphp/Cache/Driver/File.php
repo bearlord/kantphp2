@@ -85,7 +85,6 @@ class File {
      * @return  mixed on success or false
      */
     public function set($name, $value, $expire = null) {
-
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
@@ -164,6 +163,10 @@ class File {
             }
         }
         return true;
+    }
+
+    private function unlink($path) {
+        return is_file($path) && unlink($path);
     }
 
 }
