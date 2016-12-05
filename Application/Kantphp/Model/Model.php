@@ -729,7 +729,7 @@ class Model extends Component {
      * @param  array  $parameters
      * @return mixed
      */
-    public function __callStatic($method, $parameters) {
+    public static function __callStatic($method, $parameters) {
         parent::__callStatic($method, $parameters);
     }
 

@@ -2,7 +2,7 @@
 
 namespace Kant\Database;
 
-class QueryTrait {
+Trait QueryTrait {
 
     /**
      * @var string|array query condition. This refers to the WHERE clause in a SQL statement.

@@ -11,6 +11,7 @@ namespace Kant\Foundation;
 
 use Kant\Foundation\Object;
 use Kant\Exception\UnknownMethodException;
+use Kant\Exception\UnknownPropertyException;
 
 class Component extends Object {
 
@@ -204,7 +205,7 @@ class Component extends Object {
      * @param  array  $parameters
      * @return mixed
      */
-    public function __callStatic($method, $parameters) {
+    public static function __callStatic($method, $parameters) {
         $instance = new static;
         return call_user_func_array([$instance, $method], $parameters);
     }

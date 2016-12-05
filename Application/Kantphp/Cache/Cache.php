@@ -9,6 +9,7 @@
 
 namespace Kant\Cache;
 
+use Kant\KantFactory;
 use Kant\Cache\Driver\File;
 use Kant\Cache\Driver\Memcache;
 use Kant\Cache\Driver\Redis;
@@ -29,56 +30,21 @@ final class Cache {
      */
     private static $_cache;
 
-    /**
-     *
-     * Cache config
-     *
-     */
-    protected $cacheConfig = array(
-        //default file cache type
-        'default' => [
-            'type' => 'file',
-        ],
-        //memcache type
-        'memcache' => [
-            'type' => 'memcache',
-            'hostname' => 'localhost',
-            'port' => 11211,
-            'timeout' => 0,
-        ],
-        //redis cache type
-        'redis' => [
-            'type' => 'redis',
-            'hostname' => '127.0.0.1',
-            'port' => 6379
-        ]
-    );
-
-    /**
-     *
-     * Construct
-     *
-     */
-    public function __construct($config = '') {
-        if ($config == '') {
-            $config = $this->cacheConfig['default'];
-        }
-        $this->connect($config);
-    }
-
-    /**
-     *
-     * Get instantce of the final object
-     * @static
-     *
-     * @param cache_config string
-     * @return object on success
-     */
-    public static function getInstance($config = '') {
+    public static function platform($config = "") {
+        $options = self::parseConfig($config);
         if (self::$_cache == '') {
-            self::$_cache = new self($config);
+            self::$_cache = (new self())->connect($options);
         }
         return self::$_cache;
+    }
+
+    public static function parseConfig($config = "") {
+        if ($config == "") {
+            $config = KantFactory::getConfig()->get('cache.default');
+        } elseif (is_string($config)) {
+            $config = KantFactory::getConfig()->get('cache.' . $config);
+        }
+        return $config;
     }
 
     /**
@@ -88,29 +54,38 @@ final class Cache {
      * @param cache_name string
      * @return object on success
      */
-    public function connect($config) {
-        switch ($config['type']) {
+    public function connect($options) {
+        switch ($options['type']) {
             case 'memcache':
-                $memcacheConfig = array(
-                    'host' => $config['hostname'],
-                    'port' => $config['port'],
-                    'timeout' => $config['timeout'] > 0 ? $config['timeout'] : 1,
-                );
-                $object = new Memcache($memcacheConfig);
+                $object = new Memcache([
+                    'host' => $options['hostname'],
+                    'port' => $options['port'],
+                    'timeout' => $options['timeout'] > 0 ? $options['timeout'] : 1,
+                ]);
                 break;
             case 'redis':
-                $redisConfig = array(
-                        'host' => $config['hostname'],
-                        'port' => $config['port']
-                    );
-                    $object = new Redis($redisConfig);
-                    break;
+                $object = new Redis([
+                    'host' => $options['hostname'],
+                    'port' => $options['port']
+                ]);
+                break;
             case 'file':
             case 'default':
                 $object = new File();
                 break;
         }
         return $object;
+    }
+
+    /**
+     * Dynamically pass methods to the default connection.
+     *
+     * @param  string  $method
+     * @param  array   $parameters
+     * @return mixed
+     */
+    public static function __callStatic($method, $parameters) {
+        return call_user_func_array([self::$_cache, $method], $parameters);
     }
 
 }

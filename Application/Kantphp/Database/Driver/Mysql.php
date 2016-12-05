@@ -21,21 +21,19 @@ use PDO;
  * 
  */
 class Mysql extends Query {
-    
-    public function __construct(array $config = []) {
-        $this->config = $config;
-        if ($config['autoconnect'] == 1) {
-            $this->_connect();
-        }
-    }
 
+    public function __construct($config = array()) {
+        parent::__construct($config);
+        $this->tablepre = $this->options['tablepre'];
+        
+    }
     /**
      *
      * Creates a PDO object and connects to the database.
      *
      * @return void
      */
-    private function _connect() {
+    public function connect() {    
         if ($this->dbh) {
             return;
         }
@@ -47,24 +45,23 @@ class Mysql extends Query {
         if (!extension_loaded('pdo_mysql')) {
             throw new KantException('The PDO_MYSQL extension is required for this adapter but the extension is not loaded');
         }
-
-        $dsn = sprintf("mysql:host=%s;dbname=%s", $this->config['hostname'], $this->config['database']);
+        $dsn = sprintf("mysql:host=%s;dbname=%s", $this->options['hostname'], $this->options['database']);
         //Request a persistent connection, rather than creating a new connection.
-        if (isset($this->config['persistent']) && $this->config['persistent'] == true) {
-            $options = array(PDO::ATTR_PERSISTENT => true);
+        if (isset($this->options['persistent']) && $this->options['persistent'] == true) {
+            $extraoptions[PDO::ATTR_PERSISTENT] = true;
         } else {
-            $options = null;
+            $extraoptions = [];
         }
 //        $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8"; 
         try {
-            $this->dbh = new PDO($dsn, $this->config['username'], $this->config['password'], $options);
+            $this->dbh = new PDO($dsn, $this->options['username'], $this->options['password'], $extraoptions);
             // always use exceptions.
             $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
             throw new KantException(sprintf('Can not connect to MySQL server or cannot use database.%s', $e->getMessage()));
         }
-        $this->dbh->exec(sprintf("SET NAMES \"%s\"", $this->config['charset']));
-        $this->database = $this->config['database'];
+        $this->dbh->exec(sprintf("SET NAMES \"%s\"", $this->options['charset']));
+        return $this->dbh;
     }
 
     /**
@@ -85,7 +82,7 @@ class Mysql extends Query {
      */
     public function execute($sql) {
         if (!is_object($this->dbh)) {
-            $this->_connect();
+            $this->connect();
         }
         try {
             $sth = $this->dbh->prepare($sql);
@@ -119,7 +116,7 @@ class Mysql extends Query {
             }
         }
         if (!is_resource($this->dbh)) {
-            $this->_connect();
+            $this->connect();
         }
         $sth = $this->dbh->prepare($sql);
         $sth->execute();

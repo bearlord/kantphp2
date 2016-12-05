@@ -10,9 +10,30 @@ namespace Kant\Database;
 
 use Kant\Foundation\Component;
 
-class Query extends Component implements QueryInterface {
-    
+class Query extends Component {
+
     use QueryTrait;
+
+    /**
+     *
+     * @var array 
+     */
+    protected $options;
+
+    /**
+     * @var object the database handle
+     */
+    protected $dbh;
+
+    /**
+     * @var string the database table prefix
+     */
+    protected $tablepre;
+    
+    /**
+     * @var string database name 
+     */
+    protected $database;
 
     /**
      * @var array the columns being selected. For example, `['id', 'name']`.
@@ -85,5 +106,11 @@ class Query extends Component implements QueryInterface {
      * For example, `[':name' => 'Dan', ':age' => 31]`.
      */
     public $params = [];
+    
+    protected $ttl = 0;
 
+    public function getTable($table) {
+        return $this->tablepre . $table;
+    }
+    
 }

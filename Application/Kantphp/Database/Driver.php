@@ -52,7 +52,7 @@ final class Driver {
     public static function connect($config = '') {
         $name = md5(serialize($config));
         if (self::$_database[$name] == '') {
-            self::$_database[$name] = (new self())->connect($config);
+            self::$_database[$name] = (new self())->connectInternal($config);
         }
         return self::$_database[$name];
     }
@@ -65,18 +65,15 @@ final class Driver {
      * @return object on success
      */
     public function connectInternal($config = "") {
-        $options = $this->parseConfig($config);
-        $dbType = $options['type'];
-        if (empty($dbType)) {
+        $options = $this->parseConfig($config);        
+        if (empty($options['type'])) {
             throw new InvalidArgumentException('Underfined db type');
         }
-        $class = "Kant\\Database\\Driver\\" . ucfirst($dbType);
+        $class = "Kant\\Database\\Driver\\" . ucfirst($options['type']);
         if (!class_exists($class)) {
             throw new KantException(sprintf('Unable to load Database Driver: %s', $options['type']));
         }
-        $this->dbo = new $class;
-        $this->dbo->open($options);
-        $this->dbo->dbTablepre = $options['tablepre'];
+        $this->dbo = new $class(['options' => $options]);
         return $this->dbo;
     }
 
@@ -103,7 +100,7 @@ final class Driver {
     /**
      * Parse DSN config
      * 
-     * @param array $config
+     * @param array $str
      */
     protected function parseDsn($str) {
         $info = parse_url($str);
@@ -134,7 +131,7 @@ final class Driver {
      *
      */
     protected function close() {
-        $this->dbo->close();
+//        $this->dbo->close();
     }
 
     /**

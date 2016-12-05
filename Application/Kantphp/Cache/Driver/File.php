@@ -17,17 +17,14 @@ namespace Kant\Cache\Driver;
  */
 class File {
 
-    /**
-     * Cache default config
-     *
-     */
-    protected $_setting = array(
-        /* Cache file suffix */
-        'suf' => '.php',
-        /* Cache format：array，serialize，null(string) */
-        'type' => 'array',
-        'lock_ex' => true
-    );
+    protected $options = [
+        'expire' => 0,
+        'cache_subdir' => false,
+        'prefix' => '',
+        'path' => CACHE_PATH . 'CacheData/',
+        'data_compress' => false,
+        'lock_ex' => false
+    ];
 
     /**
      * Cache path
@@ -41,9 +38,40 @@ class File {
      *
      * @param setting array
      */
-    public function __construct($setting = '') {
-        $this->getSetting($setting);
-        $this->filepath = CACHE_PATH . 'CacheData/';
+    public function __construct($options = '') {
+        if (!empty($options)) {
+            $this->options = array_merge($this->options, $options);
+        }
+        if (substr($this->options['path'], -1) != DIRECTORY_SEPARATOR) {
+            $this->options['path'] .= DIRECTORY_SEPARATOR;
+        }
+        $this->init();
+    }
+
+    private function init() {
+        if (!is_dir($this->options['path'])) {
+            if (mkdir($this->options['path'], 0755, true)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected function getCacheKey($name) {
+        $name = md5($name);
+        if ($this->options['cache_subdir']) {
+            // 使用子目录
+            $name = substr($name, 0, 2) . DS . substr($name, 2);
+        }
+        if ($this->options['prefix']) {
+            $name = $this->options['prefix'] . DS . $name;
+        }
+        $filename = $this->options['path'] . $name . '.php';
+        $dir = dirname($filename);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        return $filename;
     }
 
     /**
@@ -56,30 +84,23 @@ class File {
      * @param type 	string
      * @return  mixed on success or false
      */
-    public function set($name, $data, $expire = 0) {
-        $filename = $this->filepath . $name . $this->_setting['suf'];
-        if (!is_dir($this->filepath)) {
-            mkdir($this->filepath, 0777, true);
-        }
-        if ($this->_setting['type'] == 'array') {
-            $data = "<?php\nreturn " . var_export($data, true) . ";\n?>";
-        } elseif ($this->_setting['type'] == 'serialize') {
-            $data = serialize($data);
-        }
-        if ($this->_setting['lock_ex']) {
-            $file_size = file_put_contents($filename, $data, LOCK_EX) && $this->setExpire($name, $expire);
-        } else {
-            $file_size = file_put_contents($filename, $data) && $this->setExpire($name, $expire);
-        }
-        return $file_size ? $file_size : 'false';
-    }
+    public function set($name, $value, $expire = null) {
 
-    public function setExpire($name, $expire = 0) {
-        $filename = $this->filepath . $name . '_expire' . $this->_setting['suf'];
-        $expire = ($expire == 0) ? $expire : (time() + $expire);
-        $data = "<?php\nreturn " . var_export($expire, true) . ";\n?>";
-        $file_size = file_put_contents($filename, $data, LOCK_EX);
-        return $file_size ? $file_size : 'false';
+        if (is_null($expire)) {
+            $expire = $this->options['expire'];
+        }
+        $filename = $this->getCacheKey($name);
+        $data = serialize($value);
+        if ($this->options['data_compress'] && function_exists('gzcompress')) {
+            $data = gzcompress($data, 3);
+        }
+        $data = "<?php\n//" . sprintf('%012d', $expire) . $data . "\n?>";
+        if ($this->options['lock_ex']) {
+            $result = file_put_contents($filename, $data, LOCK_EX);
+        } else {
+            $result = file_put_contents($filename, $data);
+        }
+        return $result ? $result : 'false';
     }
 
     /**
@@ -92,30 +113,26 @@ class File {
      * @return mixed
      */
     public function get($name) {
-        if (($this->getExpire($name) > 0) && $this->getExpire($name) < time()) {
-            $this->delete($name) && $this->deleteExpire($name);
-            return;
+        $filename = $this->getCacheKey($name);
+        if (!is_file($filename)) {
+            return $default;
         }
-        $filename = $this->filepath . $name . $this->_setting['suf'];
-        if (!file_exists($filename)) {
-            return false;
-        } else {
-            if ($this->_setting['type'] == 'array') {
-                $data = @require($filename);
-            } elseif ($this->_setting['type'] == 'serialize') {
-                $data = unserialize(file_get_contents($filename));
+        $content = file_get_contents($filename);
+        if (false !== $content) {
+            $expire = (int) substr($content, 8, 12);
+            if (0 != $expire && $_SERVER['REQUEST_TIME'] > filemtime($filename) + $expire) {
+                $this->unlink($filename);
+                return $default;
             }
-            return $data;
-        }
-    }
-
-    public function getExpire($name) {
-        $filename = $this->filepath . $name . '_expire' . $this->_setting['suf'];
-        if (!file_exists($filename)) {
-            return false;
+            $content = substr($content, 20, -3);
+            if ($this->options['data_compress'] && function_exists('gzcompress')) {
+                //启用数据压缩
+                $content = gzuncompress($content);
+            }
+            $content = unserialize($content);
+            return $content;
         } else {
-            $data = @require($filename);
-            return $data;
+            return $default;
         }
     }
 
@@ -129,61 +146,26 @@ class File {
      * @return bool
      */
     public function delete($name) {
-        $this->deleteExpire($name);
-        $filename = $this->filepath . $name . $this->_setting['suf'];
-        if (file_exists($filename)) {
-            return @unlink($filename) ? true : false;
-        } else {
-            return false;
-        }
-    }
-
-    public function deleteExpire($name) {
-        $filename = $this->filepath . $name . '_expire' . $this->_setting['suf'];
-        if (file_exists($filename)) {
-            return @unlink($filename) ? true : false;
-        } else {
-            return false;
-        }
+        return $this->unlink($this->getCacheKey($name));
     }
 
     /**
-     *
-     * Get user defined setting
-     *
-     * @param setting array
+     * Flush cache
+     * 
+     * @return boolean
      */
-    private function getSetting($setting = '') {
-        if ($setting) {
-            $this->_setting = array_merge($this->_setting, $setting);
+    public function flush() {
+        $files = (array) glob($this->options['path'] . ($this->options['prefix'] ? $this->options['prefix'] . DIRECTORY_SEPARATOR : '') . '*');
+        foreach ($files as $path) {
+            if (is_dir($path)) {
+                array_map('unlink', glob($path . '/*.php'));
+            } else {
+                unlink($path);
+            }
         }
-    }
-
-    /**
-     *
-     * Cache info
-     *
-     * @param name string
-     * @param setting string
-     * @param type string
-     */
-    public function cacheInfo($name) {
-        $filename = $this->filepath . $name . $this->_setting['suf'];
-        if (file_exists($filename)) {
-            $res['filename'] = $name . $this->_setting['suf'];
-            $res['filepath'] = $this->filepath;
-            $res['filectime'] = filectime($filename);
-            $res['filemtime'] = filemtime($filename);
-            $res['filesize'] = filesize($filename);
-            return $res;
-        } else {
-            return false;
-        }
+        return true;
     }
 
 }
 
-/**
- * 2013-05-23 modified
- */
 ?>
