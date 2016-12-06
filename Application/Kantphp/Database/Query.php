@@ -9,38 +9,30 @@
 namespace Kant\Database;
 
 use Kant\Foundation\Component;
+use Kant\Database\QueryInterface;
 
-class Query extends Component {
+class Query extends Component implements QueryInterface {
 
     use QueryTrait;
 
     /**
-     *
-     * @var array 
-     */
-    protected $options;
-
-    /**
-     * @var object the database handle
+     * @var string the database table prefix
      */
     protected $dbh;
 
     /**
-     * @var string the database table prefix
+     * @var string model 
      */
-    protected $tablepre;
-
-    /**
-     * @var string database name 
-     */
-    protected $database;
+    protected $model;
     
+    protected $table;
+
     /**
      *
      * @var array sqls
      */
-    protected $sqls = array();
-    protected $queryCount;
+//    protected $sqls = array();
+//    protected $queryCount;
 
     /**
      * @var array the columns being selected. For example, `['id', 'name']`.
@@ -115,8 +107,45 @@ class Query extends Component {
     public $params = [];
     protected $ttl = 0;
 
+    /**
+     * Get Table
+     * 
+     * @param type $table
+     * @return type
+     */
     public function getTable($table) {
         return $this->tablepre . $table;
+    }
+
+    public function createCommand($db = null) {
+        if ($db === null) {
+            $db = Yii::$app->getDb();
+        }
+        list ($sql, $params) = $db->getQueryBuilder()->build($this);
+
+        return $db->createCommand($sql, $params);
+    }
+
+    public function all($db = null) {
+        ;
+    }
+
+    public function one($db = null) {
+        ;
+    }
+
+    public function count($q = '*', $db = null) {
+        ;
+    }
+
+    public function exists($db = null) {
+        ;
+    }
+
+    public function find($id) {
+        $res = $this->dbh->query("SELECT VERSION()");
+        var_dump($res);
+        return $id + 10000;
     }
 
 }

@@ -13,12 +13,6 @@ use Kant\Exception\KantException;
 use Kant\KantFactory;
 use InvalidArgumentException;
 
-/**
- * Database driver class
- * 
- * @access private
- * @final
- */
 final class Driver {
 
     /**
@@ -65,15 +59,15 @@ final class Driver {
      * @return object on success
      */
     public function connectInternal($config = "") {
-        $options = $this->parseConfig($config);        
+        $options = $this->parseConfig($config);
         if (empty($options['type'])) {
             throw new InvalidArgumentException('Underfined db type');
         }
         $class = "Kant\\Database\\Driver\\" . ucfirst($options['type']);
         if (!class_exists($class)) {
             throw new KantException(sprintf('Unable to load Database Driver: %s', $options['type']));
-        }
-        $this->dbo = new $class(['options' => $options]);
+        }       
+        $this->dbo = new $class($options);
         return $this->dbo;
     }
 
@@ -89,14 +83,14 @@ final class Driver {
         } elseif (is_string($config) && false === strpos($config, '/')) {
             $config = KantFactory::getConfig()->get('database.' . $config);
         }
-        
+
         if (is_string($config)) {
             return $this->parseDsn($config);
         } else {
             return $config;
         }
     }
-    
+
     /**
      * Parse DSN config
      * 
@@ -108,13 +102,13 @@ final class Driver {
             return [];
         }
         $dsn = [
-            'type'     => $info['scheme'],
+            'type' => $info['scheme'],
             'username' => isset($info['user']) ? $info['user'] : '',
             'password' => isset($info['pass']) ? $info['pass'] : '',
             'hostname' => isset($info['host']) ? $info['host'] : '',
             'hostport' => isset($info['port']) ? $info['port'] : '',
             'database' => !empty($info['path']) ? ltrim($info['path'], '/') : '',
-            'charset'  => isset($info['fragment']) ? $info['fragment'] : 'utf8',
+            'charset' => isset($info['fragment']) ? $info['fragment'] : 'utf8',
         ];
 
         if (isset($info['query'])) {
@@ -131,7 +125,7 @@ final class Driver {
      *
      */
     protected function close() {
-//        $this->dbo->close();
+        $this->dbo->close();
     }
 
     /**

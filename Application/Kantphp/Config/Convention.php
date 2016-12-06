@@ -107,7 +107,7 @@ return [
     //cache config
     'cache' => [
         //default file cache type
-        'default' => [
+        'file' => [
             'type' => 'file'
         ],
         //memcache type

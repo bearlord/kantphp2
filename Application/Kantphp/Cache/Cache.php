@@ -40,7 +40,7 @@ final class Cache {
 
     public static function parseConfig($config = "") {
         if ($config == "") {
-            $config = KantFactory::getConfig()->get('cache.default');
+            $config = KantFactory::getConfig()->get('cache.file');
         } elseif (is_string($config)) {
             $config = KantFactory::getConfig()->get('cache.' . $config);
         }

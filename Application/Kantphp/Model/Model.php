@@ -37,6 +37,12 @@ class Model extends Component {
     private $_dbConfig;
 
     /**
+     *
+     * @var array database link pool
+     */
+    protected static $pools = [];
+
+    /**
      * Db connection
      */
     protected $db = '';
@@ -50,6 +56,11 @@ class Model extends Component {
      * Table name
      */
     protected $table;
+
+    /**
+     * Class
+     */
+    protected $class;
 
     /**
      * Table key
@@ -108,36 +119,42 @@ class Model extends Component {
         } else {
             $this->data = $data;
         }
-        $this->getDbo();
+        $this->class = get_called_class();
     }
 
     /**
-     *
-     * Get a database object.
-     * 
+     * Database instance
+     * @return object
      */
-    public function getDbo() {
-        if ($this->db == '') {
-            $this->createDbo();
-        }
-    }
+    public function db() {
+        $model = $this->class;
+        if (!isset(self::$pools[$model])) {
+            $this->_dbConfig = KantFactory::getConfig()->get('database.' . $this->adapter);
+            try {
+//                $query = Driver::connect($this->_dbConfig)->getQuery($this->table, $model);
+                $query = new \Kant\Database\Query([
+                    'dbh' => Driver::connect($this->_dbConfig),
+                    'table' => $this->_dbConfig['tablepre'] . $this->table,
+                    'model' => $model
+                ]);
+            } catch (KantException $e) {
+                throw new KantException('Database Error: ' . $e->getMessage());
+            }
+            /*
+              if (!empty($this->table)) {
+              $query->setTable($this->table);
+              } else {
+              $query->name($this->name);
+              }
 
-    /**
-     * 
-     * Create an database object
-     * 
-     */
-    public function createDbo() {
-        $this->_dbConfig = KantFactory::getConfig()->get('database.' . $this->adapter);
-        try {
-            $this->db  = Driver::connect($this->_dbConfig);
-        } catch (KantException $e) {
-            throw new KantException('Database Error: ' . $e->getMessage());
+              if (!empty($this->pk)) {
+              $query->pk($this->pk);
+              }
+             */
+            self::$pools[$model] = $query;
         }
-        if (!empty($this->table) && $this->autoCheckFields) {
-            $this->fieldsCacheName = "fields_" . $this->_dbConfig['database'] . "_" . $this->table;
-            $this->_checkTableInfo();
-        }
+        // 返回当前模型的数据库查询对象
+        return self::$pools[$model];
     }
 
     /**
@@ -564,14 +581,14 @@ class Model extends Component {
      * @param total boolean
      * @return result array
      */
-    public function find($select = "*", $where = null, $orderby = null, $start = 0, $offset = 10, $total = false) {
-        $result = array(0, '');
-        $result[0] = $this->db->from($this->table)->select($select)->where($where)->orderby($orderby)->limit($start, $offset)->fetch();
-        if ($total) {
-            $result[1] = $this->db->from($this->table)->where($where)->count();
-        }
-        return $result;
-    }
+//    public function find($select = "*", $where = null, $orderby = null, $start = 0, $offset = 10, $total = false) {
+//        $result = array(0, '');
+//        $result[0] = $this->db->from($this->table)->select($select)->where($where)->orderby($orderby)->limit($start, $offset)->fetch();
+//        if ($total) {
+//            $result[1] = $this->db->from($this->table)->where($where)->count();
+//        }
+//        return $result;
+//    }
 
     /**
      *
@@ -638,21 +655,16 @@ class Model extends Component {
     }
 
     /**
-     * Database instance
-     * @return object
-     */
-    public function db() {
-        return $this->db;
-    }
-
-    /**
      * Makes sure that the behaviors declared in [[behaviors()]] are attached to this component.
      */
     public function ensureBehaviors() {
         if ($this->_behaviors === null) {
             $this->_behaviors = [];
-            foreach ($this->behaviors() as $name => $behavior) {
-                $this->attachBehaviorInternal($name, $behavior);
+            $behaviors = $this->behaviors();
+            if (!empty($behaviors)) {
+                foreach ($this->behaviors() as $name => $behavior) {
+                    $this->attachBehaviorInternal($name, $behavior);
+                }
             }
         }
     }
@@ -699,7 +711,6 @@ class Model extends Component {
         }
     }
 
-    
     /**
      * Calls the named method which is not a class method.
      *
@@ -713,25 +724,41 @@ class Model extends Component {
      * @return mixed the method return value
      */
     public function __call($method, $params) {
+        var_dump($method);
+        var_dump($this->db());
         $this->ensureBehaviors();
         foreach ($this->_behaviors as $object) {
             if ($object->hasMethod($method)) {
                 return call_user_func_array([$object, $method], $params);
             }
         }
-        return call_user_func_array([$this->db, $method], $params);
-    }
 
+        return call_user_func_array([$this->db(), $method], $params);
+    }
 
     /**
      * Handle dynamic static method calls into the method.
      *
      * @param  string  $method
-     * @param  array  $parameters
+     * @param  array  $params
      * @return mixed
      */
-    public static function __callStatic($method, $parameters) {
-        parent::__callStatic($method, $parameters);
+    public static function __callStatic($method, $params) {
+        $query = self::getDb();
+        return call_user_func_array([$query, $method], $params);
+    }
+
+    /**
+     * Static method get db instance
+     * 
+     * @return object
+     */
+    protected static function getDb() {
+        $model = get_called_class();
+        if (!isset(self::$pools[$model])) {
+            self::$pools[$model] = (new static())->db();
+        }
+        return self::$pools[$model];
     }
 
     /**

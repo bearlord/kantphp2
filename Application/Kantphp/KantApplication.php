@@ -75,7 +75,7 @@ final class KantApplication {
     private function _init() {
         $this->_initConfig();
         $this->_initSession();
-        Cache::platform();
+        Cache::platform("file");
     }
 
     /**
@@ -132,7 +132,7 @@ final class KantApplication {
         }
         return $session;
     }
-
+    
     /**
      * Singleton instance
      * 

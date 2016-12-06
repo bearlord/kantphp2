@@ -9,7 +9,7 @@
 
 namespace Kant\Database\Driver;
 
-use Kant\Database\Query;
+use Kant\Database\Connection;
 use Kant\Exception\KantException;
 use PDO;
 use Kant\Cache\Cache;
@@ -21,13 +21,13 @@ use Kant\Cache\Cache;
  * @since version 1.1
  * 
  */
-class Mysql extends Query {
+class Mysql extends Connection{
 
-    public function __construct($config = array()) {
-        parent::__construct($config);
-        $this->tablepre = $this->options['tablepre'];
-        
+    public function __construct($options = array()) {
+        parent::__construct($options);
+        $this->connect();
     }
+
     /**
      *
      * Creates a PDO object and connects to the database.
@@ -91,10 +91,10 @@ class Mysql extends Query {
         } catch (PDOException $e) {
             throw new KantException(sprintf("MySQL Query Error:%s,Error Code:%s", $sql, $this->dbh->errorCode()));
         }
-        $this->numRows = $this->dbh->rowCount();
-        $this->sqls[] = $sql;
-        $this->queryCount++;
-        $this->clearFields();
+        $this->numRows = $sth->rowCount();
+//        $this->sqls[] = $sql;
+//        $this->queryCount++;
+//        $this->clearFields();
         return $this->numRows;
     }
 

@@ -10,6 +10,7 @@
 namespace Kant\Foundation;
 
 use Kant\Foundation\Object;
+use Kant\Exception\InvalidCallException;
 use Kant\Exception\UnknownMethodException;
 use Kant\Exception\UnknownPropertyException;
 
@@ -18,12 +19,12 @@ class Component extends Object {
     /**
      * @var array the attached event handlers (event name => handlers)
      */
-    private $_events = [];
+    protected $_events = [];
 
     /**
      * @var Behavior[]|null the attached behaviors (behavior name => behavior). This is `null` when not initialized.
      */
-    private $_behaviors;
+    protected $_behaviors;
 
     /**
      * Returns the value of a component property.
@@ -48,9 +49,11 @@ class Component extends Object {
         } else {
             // behavior property
             $this->ensureBehaviors();
-            foreach ($this->_behaviors as $behavior) {
-                if ($behavior->canGetProperty($name)) {
-                    return $behavior->$name;
+            if (!empty($this->_behaviors)) {
+                foreach ($this->_behaviors as $behavior) {
+                    if ($behavior->canGetProperty($name)) {
+                        return $behavior->$name;
+                    }
                 }
             }
         }
@@ -99,11 +102,13 @@ class Component extends Object {
         } else {
             // behavior property
             $this->ensureBehaviors();
-            foreach ($this->_behaviors as $behavior) {
-                if ($behavior->canSetProperty($name)) {
-                    $behavior->$name = $value;
+            if (!empty($this->_behaviors)) {
+                foreach ($this->_behaviors as $behavior) {
+                    if ($behavior->canSetProperty($name)) {
+                        $behavior->$name = $value;
 
-                    return;
+                        return;
+                    }
                 }
             }
         }
@@ -209,7 +214,7 @@ class Component extends Object {
         $instance = new static;
         return call_user_func_array([$instance, $method], $parameters);
     }
-    
+
     /**
      * This method is called after the object is created by cloning an existing one.
      * It removes all behaviors because they are attached to the old object.
