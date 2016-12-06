@@ -13,7 +13,7 @@ use Kant\Exception\KantException;
 use Kant\KantFactory;
 use InvalidArgumentException;
 
-final class Driver {
+final class Db {
 
     /**
      *
@@ -63,7 +63,7 @@ final class Driver {
         if (empty($options['type'])) {
             throw new InvalidArgumentException('Underfined db type');
         }
-        $class = "Kant\\Database\\Driver\\" . ucfirst($options['type']);
+        $class = "Kant\\Database\\" . ucfirst($options['type']) . "\\Connection";
         if (!class_exists($class)) {
             throw new KantException(sprintf('Unable to load Database Driver: %s', $options['type']));
         }       

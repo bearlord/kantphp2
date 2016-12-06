@@ -7,7 +7,7 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Database\Driver;
+namespace Kant\Database\Sqlite;
 
 use Kant\Database\DbQueryAbstract;
 use Kant\Database\DbQueryInterface;

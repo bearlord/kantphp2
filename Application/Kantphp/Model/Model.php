@@ -12,7 +12,8 @@ namespace Kant\Model;
 use Kant\Foundation\Component;
 use Kant\Exception\KantException;
 use Kant\KantFactory;
-use Kant\Database\Driver;
+use Kant\Database\Db;
+use Kant\Database\Query;
 use BadMethodCallException;
 use Kant\Cache\Cache;
 
@@ -132,25 +133,14 @@ class Model extends Component {
             $this->_dbConfig = KantFactory::getConfig()->get('database.' . $this->adapter);
             try {
 //                $query = Driver::connect($this->_dbConfig)->getQuery($this->table, $model);
-                $query = new \Kant\Database\Query([
-                    'dbh' => Driver::connect($this->_dbConfig),
+                $query = new Query([
+                    'dbh' => Db::connect($this->_dbConfig),
                     'table' => $this->_dbConfig['tablepre'] . $this->table,
                     'model' => $model
                 ]);
             } catch (KantException $e) {
                 throw new KantException('Database Error: ' . $e->getMessage());
             }
-            /*
-              if (!empty($this->table)) {
-              $query->setTable($this->table);
-              } else {
-              $query->name($this->name);
-              }
-
-              if (!empty($this->pk)) {
-              $query->pk($this->pk);
-              }
-             */
             self::$pools[$model] = $query;
         }
         // 返回当前模型的数据库查询对象

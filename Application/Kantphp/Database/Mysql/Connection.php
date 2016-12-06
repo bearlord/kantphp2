@@ -7,33 +7,24 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Database\Driver;
+namespace Kant\Database\Mysql;
 
-use Kant\Database\DbQueryAbstract;
-use Kant\Database\DbQueryInterface;
 use Kant\Exception\KantException;
 use PDO;
+use Kant\Cache\Cache;
 
 /**
- * Postgresql database
+ * Mysql database
  * 
  * @access public
  * @since version 1.1
  * 
  */
-class Pgsql extends DbQueryAbstract implements DbQueryInterface {
+class Connection extends \Kant\Database\Connection{
 
-    /**
-     *
-     * Open database connection
-     *
-     * @param config
-     */
-    public function open($config) {
-        $this->config = $config;
-        if ($config['autoconnect'] == 1) {
-            $this->_connect();
-        }
+    public function __construct($options = array()) {
+        parent::__construct($options);
+        $this->connect();
     }
 
     /**
@@ -42,7 +33,7 @@ class Pgsql extends DbQueryAbstract implements DbQueryInterface {
      *
      * @return void
      */
-    private function _connect() {
+    public function connect() {    
         if ($this->dbh) {
             return;
         }
@@ -51,27 +42,26 @@ class Pgsql extends DbQueryAbstract implements DbQueryInterface {
             throw new KantException('The PDO extension is required for this adapter but the extension is not loaded');
         }
         // check for PDO_PGSQL extension
-        if (!extension_loaded('pdo_pgsql')) {
-            throw new KantException('The PDO_PGSQL extension is required for this adapter but the extension is not loaded');
+        if (!extension_loaded('pdo_mysql')) {
+            throw new KantException('The PDO_MYSQL extension is required for this adapter but the extension is not loaded');
         }
-
-        $dsn = sprintf("%s:host=%s;dbname=%s", $this->config['type'], $this->config['hostname'], $this->config['database']);
-
+        $dsn = sprintf("mysql:host=%s;dbname=%s", $this->options['hostname'], $this->options['database']);
         //Request a persistent connection, rather than creating a new connection.
-        if (isset($this->config['persistent']) && $this->config['persistent'] == true) {
-            $options = array(PDO::ATTR_PERSISTENT => true);
+        if (isset($this->options['persistent']) && $this->options['persistent'] == true) {
+            $extraoptions[PDO::ATTR_PERSISTENT] = true;
         } else {
-            $options = null;
+            $extraoptions = [];
         }
+//        $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8"; 
         try {
-            $this->dbh = new PDO($dsn, $this->config['username'], $this->config['password'], $options);
+            $this->dbh = new PDO($dsn, $this->options['username'], $this->options['password'], $extraoptions);
             // always use exceptions.
             $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            throw new KantException(sprintf('Can not connect to PostgreSQL server or cannot use database.%s', $e->getMessage()));
+            throw new KantException(sprintf('Can not connect to MySQL server or cannot use database.%s', $e->getMessage()));
         }
-        $this->dbh->dispatch(sprintf("SET NAMES \"%s\"", $this->config['charset']));
-        $this->database = $this->config['database'];
+        $this->dbh->exec(sprintf("SET NAMES \"%s\"", $this->options['charset']));
+        return $this->dbh;
     }
 
     /**
@@ -92,18 +82,18 @@ class Pgsql extends DbQueryAbstract implements DbQueryInterface {
      */
     public function execute($sql) {
         if (!is_object($this->dbh)) {
-            $this->_connect();
+            $this->connect();
         }
         try {
             $sth = $this->dbh->prepare($sql);
             $sth->execute();
         } catch (PDOException $e) {
-            throw new KantException(sprintf('PostgreSQL Query Error:%s,Error Code:%s', $sql, $this->dbh->errorCode()));
+            throw new KantException(sprintf("MySQL Query Error:%s,Error Code:%s", $sql, $this->dbh->errorCode()));
         }
-        $this->numRows = $this->dbh->rowCount();
-        $this->sqls[] = $sql;
-        $this->queryCount++;
-        $this->clearFields();
+        $this->numRows = $sth->rowCount();
+//        $this->sqls[] = $sql;
+//        $this->queryCount++;
+//        $this->clearFields();
         return $this->numRows;
     }
 
@@ -117,25 +107,25 @@ class Pgsql extends DbQueryAbstract implements DbQueryInterface {
      */
     public function query($sql, $fetchMode = PDO::FETCH_ASSOC) {
         $rows = null;
-        $cacheSqlMd5 = 'sql_' . md5($sql);
         if ($this->ttl) {
             $this->clearFields();
-            $rows = $this->cache->get($cacheSqlMd5);
+            $rows = Cache::get($sql);
             if (!empty($rows)) {
                 return $rows;
             }
         }
         if (!is_resource($this->dbh)) {
-            $this->_connect();
+            $this->connect();
         }
         $sth = $this->dbh->prepare($sql);
         $sth->execute();
         $rows = $sth->fetchAll($fetchMode);
         if ($this->ttl) {
-            $this->cache->set($cacheSqlMd5, $rows, $this->ttl);
+            Cache::set($sql, $rows, $this->ttl);
         } else {
-            $this->cache->delete($cacheSqlMd5);
+            Cache::delete($sql);
         }
+        return $rows;
         $this->sqls[] = $sql;
         $this->queryCount++;
         $this->clearFields();
@@ -148,12 +138,7 @@ class Pgsql extends DbQueryAbstract implements DbQueryInterface {
      * @return type
      */
     public function lastInsertId($primaryKey = null) {
-        $sequenceName = $this->getTable($this->table);
-        if ($primaryKey) {
-            $sequenceName .= "_$primaryKey";
-        }
-        $sequenceName .= '_seq';
-        return $this->dbh->lastInsertId($sequenceName);
+        return $this->dbh->lastInsertId();
     }
 
     /**
@@ -165,7 +150,7 @@ class Pgsql extends DbQueryAbstract implements DbQueryInterface {
      * @return array
      */
     public function fetch($fetchMode = PDO::FETCH_ASSOC) {
-        $sql = $this->bluidSql("SELECT");
+        $sql = $this->bluidSql("SELECTE");
         $result = $this->query($sql, $fetchMode);
         return $result;
     }
@@ -295,9 +280,69 @@ class Pgsql extends DbQueryAbstract implements DbQueryInterface {
      * @return
      */
     public function cloneTable($table, $newTable) {
-        $sql = "CREATE TABLE  $newTable(LIKE $table INCLUDING INDEXES)";
+        $sql = "CREATE TABLE  $newTable(LIKE $table)";
         $result = $this->execute($sql);
         return $result;
+    }
+
+    /**
+     * Determine whether table exists
+     * 
+     * @param string $table
+     * @return boolean
+     */
+    public function tableExists($table) {
+        $tables = $this->listTables();
+        return in_array($table, $tables) ? true : false;
+    }
+
+    /**
+     * List tables
+     * 
+     * @return
+     */
+    public function listTables() {
+        $tables = array();
+        $row = $this->query("SHOW TABLES");
+        if (!empty($row)) {
+            foreach ($row as $val) {
+                $val = array_values($val);
+                $tables[] = $val[0];
+            }
+        }
+        return $tables;
+    }
+    
+    /**
+     * Get Fields
+     * 
+     * @param type $tableName
+     */
+    public function getFields($tableName) {
+        if (strpos($tableName, '.')) {
+            list($dbName, $tableName) = explode('.', $tableName);
+            $tableName = $this->getTable($tablename);
+            $sql = "SHOW COLUMNS FROM {$dbName}.{$tableName}";
+        } else {
+            $tableName = $this->getTable($tableName);
+            $sql = "SHOW COLUMNS FROM {$tableName}";
+        }
+        $row = $this->query($sql);
+        $info = [];
+        if (!empty($row)) {
+            foreach ($row as $key => $val) {
+                $val = array_change_key_case($val, CASE_LOWER);
+                $info[$val['field']] = [
+                    'name' => $val['field'],
+                    'type' => $val['type'],
+                    'notnull' => (bool) ($val['null'] === ''), // not null is empty, null is yes
+                    'default' => $val['default'],
+                    'primary' => (strtolower($val['key']) == 'pri'),
+                    'autoinc' => (strtolower($val['extra']) == 'auto_increment'),
+                ];
+            }
+        }
+        return $info;
     }
 
 }

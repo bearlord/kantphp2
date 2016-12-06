@@ -7,7 +7,7 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Database\Driver;
+namespace Kant\Database\Pgsql;
 
 use Kant\Database\Connection;
 use Kant\Exception\KantException;
@@ -21,7 +21,7 @@ use Kant\Cache\Cache;
  * @since version 1.1
  * 
  */
-class Mysql extends Connection{
+class Connection extends Connection{
 
     public function __construct($options = array()) {
         parent::__construct($options);
