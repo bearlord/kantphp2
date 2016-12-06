@@ -132,7 +132,6 @@ class Model extends Component {
         if (!isset(self::$pools[$model])) {
             $this->_dbConfig = KantFactory::getConfig()->get('database.' . $this->adapter);
             try {
-//                $query = Driver::connect($this->_dbConfig)->getQuery($this->table, $model);
                 $query = new Query([
                     'dbh' => Db::connect($this->_dbConfig),
                     'table' => $this->_dbConfig['tablepre'] . $this->table,
