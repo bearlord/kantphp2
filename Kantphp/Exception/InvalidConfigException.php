@@ -9,18 +9,18 @@
 
 namespace Kant\Exception;
 use Kant\Exception\KantException;
-
 /**
- * InvalidCallException represents an exception caused by calling a method in a wrong way.
+ * InvalidConfigException represents an exception caused by incorrect object configuration.
  *
  */
-class InvalidCallException extends KantException {
-
+class InvalidConfigException extends KantException
+{
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName() {
-        return 'Invalid Call';
+    public function getName()
+    {
+        return 'Invalid Configuration';
     }
-
 }
+

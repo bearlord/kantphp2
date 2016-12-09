@@ -1,0 +1,129 @@
+[ 2016-12-09T22:01:20+08:00 ] 127.0.0.1 /favicon.ico
+ERR: File does not exists:D:\wampstack\apache2\htdocs\kantphp\v2\kantphp2\Application\Module/Favicon.ico/Controller/IndexController.php
+[ 2016-12-09T22:18:38+08:00 ] 127.0.0.1 /index/test/model
+ERR: Connection::dsn cannot be empty.
+[ 2016-12-09T22:22:05+08:00 ] 127.0.0.1 /index/test/model
+ERR: Connection::dsn cannot be empty.
+[ 2016-12-09T22:22:06+08:00 ] 127.0.0.1 /index/test/model
+ERR: Connection::dsn cannot be empty.
+[ 2016-12-09T22:22:06+08:00 ] 127.0.0.1 /index/test/model
+ERR: Connection::dsn cannot be empty.
+[ 2016-12-09T22:22:06+08:00 ] 127.0.0.1 /index/test/model
+ERR: Connection::dsn cannot be empty.
+[ 2016-12-09T22:22:06+08:00 ] 127.0.0.1 /index/test/model
+ERR: Connection::dsn cannot be empty.
+[ 2016-12-09T22:22:07+08:00 ] 127.0.0.1 /index/test/model
+ERR: Connection::dsn cannot be empty.
+[ 2016-12-09T22:22:07+08:00 ] 127.0.0.1 /index/test/model
+ERR: Connection::dsn cannot be empty.
+[ 2016-12-09T22:22:07+08:00 ] 127.0.0.1 /index/test/model
+ERR: Connection::dsn cannot be empty.
+[ 2016-12-09T22:22:07+08:00 ] 127.0.0.1 /index/test/model
+ERR: Connection::dsn cannot be empty.
+[ 2016-12-09T22:30:05+08:00 ] 127.0.0.1 /index/test/model
+ERR: Connection::dsn cannot be empty.
+[ 2016-12-09T22:30:30+08:00 ] 127.0.0.1 /index/test/model
+ERR: Setting unknown property: Kant\Database\Connection::hostname
+[ 2016-12-09T22:32:25+08:00 ] 127.0.0.1 /index/test/model
+ERR: Setting unknown property: Kant\Database\Connection::db
+[ 2016-12-09T22:32:26+08:00 ] 127.0.0.1 /index/test/model
+ERR: Setting unknown property: Kant\Database\Connection::db
+[ 2016-12-09T22:32:27+08:00 ] 127.0.0.1 /index/test/model
+ERR: Setting unknown property: Kant\Database\Connection::db
+[ 2016-12-09T22:34:05+08:00 ] 127.0.0.1 /index/test/model
+ERR: Setting unknown property: Kant\Database\Connection::hostname
+[ 2016-12-09T22:34:25+08:00 ] 127.0.0.1 /index/test/model
+ERR: Setting unknown property: Kant\Database\Connection::hostname
+[ 2016-12-09T22:41:20+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:41:20+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:51:05+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:54:20+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:54:46+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:55:11+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:55:49+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:57:57+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:57:58+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:57:58+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:57:59+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:57:59+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:57:59+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:57:59+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:57:59+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:00+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:00+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:00+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:00+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:00+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:00+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:00+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:00+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:00+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:01+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:02+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:03+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:03+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `user` LIMIT 10
+[ 2016-12-09T22:58:24+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.%user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `%user` LIMIT 10
+[ 2016-12-09T22:59:05+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'kantphp.kant_user' doesn't exist
+The SQL being executed was: SELECT `id`, `name` FROM `kant_user` LIMIT 10
+[ 2016-12-09T22:59:33+08:00 ] 127.0.0.1 /index/test/model
+ERR: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id' in 'field list'
+The SQL being executed was: SELECT `id`, `name` FROM `kant_posts` LIMIT 10

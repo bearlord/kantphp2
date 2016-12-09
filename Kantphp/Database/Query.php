@@ -1,15 +1,17 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Database;
 
 use Kant\Foundation\Component;
 use Kant\Database\QueryInterface;
+use Kant\KantFactory;
 
 /**
  * Query represents a SELECT SQL statement in a way that is independent of DBMS.
@@ -55,13 +57,6 @@ class Query extends Component implements QueryInterface {
      */
     protected $model;
     protected $table;
-
-    /**
-     *
-     * @var array sqls
-     */
-//    protected $sqls = array();
-//    protected $queryCount;
 
     /**
      * @var array the columns being selected. For example, `['id', 'name']`.
@@ -154,7 +149,8 @@ class Query extends Component implements QueryInterface {
      */
     public function createCommand($db = null) {
         if ($db === null) {
-            $db = $this->db;
+            $config = KantFactory::getConfig()->get("database.default");
+            $db = new Connection($config);
         }
         list ($sql, $params) = $db->getQueryBuilder()->build($this);
 

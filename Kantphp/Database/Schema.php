@@ -571,7 +571,7 @@ abstract class Schema extends Object {
             return $e;
         }
 
-        $exceptionClass = '\yii\db\Exception';
+        $exceptionClass = \Kant\Database\Exception::class;
         foreach ($this->exceptionMap as $error => $class) {
             if (strpos($e->getMessage(), $error) !== false) {
                 $exceptionClass = $class;

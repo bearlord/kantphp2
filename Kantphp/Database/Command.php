@@ -837,15 +837,11 @@ class Command extends Component {
                 return $result;
             }
         }
-        
-        $result = call_user_func_array([$this->pdoStatement, $method], (array) $fetchMode);
-        return $result;
 
         $this->prepare(true);
 
         $token = $rawSql;
         try {
-            Yii::beginProfile($token, 'yii\db\Command::query');
 
             $this->pdoStatement->execute();
 
@@ -858,16 +854,12 @@ class Command extends Component {
                 $result = call_user_func_array([$this->pdoStatement, $method], (array) $fetchMode);
                 $this->pdoStatement->closeCursor();
             }
-
-            Yii::endProfile($token, 'yii\db\Command::query');
         } catch (\Exception $e) {
-            Yii::endProfile($token, 'yii\db\Command::query');
             throw $this->db->getSchema()->convertException($e, $rawSql);
         }
 
-        if (isset($cache, $cacheKey, $info)) {
-            $cache->set($cacheKey, [$result], $info[1], $info[2]);
-            Yii::trace('Saved query result in cache', 'yii\db\Command::query');
+        if (isset($cacheKey)) {
+            Cache::set($cacheKey, $result);
         }
 
         return $result;
