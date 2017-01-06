@@ -59,44 +59,21 @@ return [
             'charset' => 'utf8',
             'tablePrefix' => 'kant_'
         ],
-        //openshift
-        'openshift' => [
-            'hostname' => getenv('OPENSHIFT_MYSQL_DB_HOST'),
-            'port' => getenv('OPENSHIFT_MYSQL_DB_PORT'),
-            'database' => 'mzqltbruzaqbrsxpalti',
-            'username' => getenv('OPENSHIFT_MYSQL_DB_USERNAME'),
-            'password' => getenv('OPENSHIFT_MYSQL_DB_PASSWORD'),
-            'tablepre' => 'kant_',
-            'charset' => 'utf8',
-            'type' => 'mysql',
-            'persistent' => 0,
-            'autoconnect' => 1
-        ],
         //postgresql
         'pgsql' => [
-            'hostname' => 'localhost',
-            'port' => '5432',
-            'database' => 'bbs',
+            'dsn' => 'pgsql:host=localhost;port=5432;dbname=mydatabase',
             'username' => 'root',
-            'password' => 'root',
-            'tablepre' => 'bbs_',
-            'charset' => 'UTF-8',
-            'type' => 'pdo_pgsql',
-            'persistent' => 0,
-            'autoconnect' => 1
+            'password' => '123456',
+            'charset' => 'utf8',
+            'tablePrefix' => 'kant_'
         ],
         //sqlite
         'sqlite' => [
-            'hostname' => '',
-            'port' => '',
-            'database' => CACHE_PATH . 'SqliteDb/test.db',
-            'username' => '',
-            'password' => '',
-            'tablepre' => 'test_',
-            'charset' => 'UTF-8',
-            'type' => 'pdo_sqlite',
-            'persistent' => 0,
-            'autoconnect' => 1
+            'dsn' => CACHE_PATH . 'SqliteDb/test.db',
+            'username' => 'root',
+            'password' => '123456',
+            'charset' => 'utf8',
+            'tablePrefix' => 'kant_'
         ]
     ],
     //cache config

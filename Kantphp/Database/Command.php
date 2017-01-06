@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
+ */
+
 namespace Kant\Database;
 
 use Kant\Foundation\Component;
@@ -852,6 +859,7 @@ class Command extends Component {
                     $fetchMode = $this->fetchMode;
                 }
                 $result = call_user_func_array([$this->pdoStatement, $method], (array) $fetchMode);
+                var_dump($rawSql);
                 $this->pdoStatement->closeCursor();
             }
         } catch (\Exception $e) {

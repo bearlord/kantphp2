@@ -23,7 +23,7 @@ use Kant\Http\Request;
 use Kant\Session\Session;
 use Kant\Cache\Cache;
 
-final class KantApplication {
+class KantApplication extends Di\ServiceLocator {
 
     private static $_instance = null;
     private $_environment = 'Development';
@@ -65,38 +65,32 @@ final class KantApplication {
      * Constructs
      */
     public function __construct($environment) {
-        $this->_environment = $environment;
-        $this->_init();
-    }
-
-    /**
-     * Init
-     */
-    private function _init() {
-        $this->_initConfig();
+        Kant::$app = $this;
+        $this->_initConfig($environment);
         $this->_initSession();
-        Cache::platform("file");
+        Cache::platform();
+        $this->setDb();
     }
 
     /**
      * Init Config
      */
-    private function _initConfig() {
+    private function _initConfig($environment) {
         /**
          * App config
          */
-        $appConfig = include CFG_PATH . $this->_environment . DIRECTORY_SEPARATOR . 'Config.php';
+        $appConfig = include CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php';
         /**
          * Route config
          */
-        $routeConfig = include CFG_PATH . $this->_environment . DIRECTORY_SEPARATOR . 'Route.php';
+        $routeConfig = include CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Route.php';
         /**
          * Merge app and route config
          */
         KantFactory::getConfig()->merge($appConfig)->merge(['route' => $routeConfig]);
         KantFactory::getConfig()->set([
-            'environment' => $this->_environment,
-            'config_path' => CFG_PATH . $this->_environment . DIRECTORY_SEPARATOR         
+            'environment' => $environment,
+            'config_path' => CFG_PATH . $environment . DIRECTORY_SEPARATOR
         ]);
     }
 
@@ -132,7 +126,7 @@ final class KantApplication {
         }
         return $session;
     }
-    
+
     /**
      * Singleton instance
      * 
@@ -381,6 +375,24 @@ final class KantApplication {
                 Build::checkDir($module);
             }
         }
+    }
+
+    /**
+     * Set the database connection component.
+     */
+    public function setDb() {
+        $dbConfig = KantFactory::getConfig()->get('database.default');
+        $this->set('db', array_merge([
+            'class' => 'Kant\Database\Connection'
+        ], $dbConfig));
+    }
+
+    /**
+     * Returns the database connection component.
+     * @return \Kant\Database\Connection the database connection.
+     */
+    public function getDb() {
+        return $this->get('db');
     }
 
 }

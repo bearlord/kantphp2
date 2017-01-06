@@ -88,7 +88,6 @@ class QueryBuilder extends Object
             $this->buildGroupBy($query->groupBy),
             $this->buildHaving($query->having, $params),
         ];
-
         $sql = implode($this->separator, array_filter($clauses));
         $sql = $this->buildOrderByAndLimit($sql, $query->orderBy, $query->limit, $query->offset);
 

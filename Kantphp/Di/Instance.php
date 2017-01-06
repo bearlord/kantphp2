@@ -1,0 +1,115 @@
+<?php
+/**
+ * @link http://www.Kantframework.com/
+ * @copyright Copyright (c) 2008 Kant Software LLC
+ * @license http://www.Kantframework.com/license/
+ */
+
+namespace Kant\Di;
+
+use Kant;
+use Kant\Exception\InvalidConfigException;
+
+/**
+ * Instance represents a reference to a named object in a dependency injection (DI) container or a service locator.
+ *
+ * You may use [[get()]] to obtain the actual object referenced by [[id]].
+ *
+ * Instance is mainly used in two places:
+ *
+ * - When configuring a dependency injection container, you use Instance to reference a class name, interface name
+ *   or alias name. The reference can later be resolved into the actual object by the container.
+ * - In classes which use service locator to obtain dependent objects.
+ *
+ */
+class Instance
+{
+    /**
+     * @var string the component ID, class name, interface name or alias name
+     */
+    public $id;
+
+
+    /**
+     * Constructor.
+     * @param string $id the component ID
+     */
+    protected function __construct($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * Creates a new Instance object.
+     * @param string $id the component ID
+     * @return Instance the new Instance object.
+     */
+    public static function of($id)
+    {
+        return new static($id);
+    }
+
+    /**
+     * Resolves the specified reference into the actual object and makes sure it is of the specified type.
+     *
+     * The reference may be specified as a string or an Instance object. If the former,
+     * it will be treated as a component ID, a class/interface name or an alias, depending on the container type.
+     *
+     * If you do not specify a container, the method will first try `Kant::$app` followed by `Kant::$container`.
+     *`
+     *
+     * @param object|string|array|static $reference an object or a reference to the desired object.
+     * You may specify a reference in terms of a component ID or an Instance object.
+     * You may also pass in a configuration array for creating the object.
+     * If the "class" value is not specified in the configuration array, it will use the value of `$type`.
+     * @param string $type the class/interface name to be checked. If null, type check will not be performed.
+     * @param ServiceLocator|Container $container the container. This will be passed to [[get()]].
+     * @return object the object referenced by the Instance, or `$reference` itself if it is an object.
+     * @throws InvalidConfigException if the reference is invalid
+     */
+    public static function ensure($reference, $type = null, $container = null)
+    {
+        if (is_array($reference)) {
+            $class = isset($reference['class']) ? $reference['class'] : $type;
+            if (!$container instanceof Container) {
+                $container = Kant::$container;
+            }
+            unset($reference['class']);
+            return $container->get($class, [], $reference);
+        } elseif (empty($reference)) {
+            throw new InvalidConfigException('The required component is not specified.');
+        }
+
+        if (is_string($reference)) {
+            $reference = new static($reference);
+        } elseif ($type === null || $reference instanceof $type) {
+            return $reference;
+        }
+
+        if ($reference instanceof self) {
+            $component = $reference->get($container);
+            if ($type === null || $component instanceof $type) {
+                return $component;
+            } else {
+                throw new InvalidConfigException('"' . $reference->id . '" refers to a ' . get_class($component) . " component. $type is expected.");
+            }
+        }
+
+        $valueType = is_object($reference) ? get_class($reference) : gettype($reference);
+        throw new InvalidConfigException("Invalid data type: $valueType. $type is expected.");
+    }
+
+    /**
+     * Returns the actual object referenced by this Instance object.
+     * @param ServiceLocator|Container $container the container used to locate the referenced object.
+     * If null, the method will first try `Kant::$app` then `Kant::$container`.
+     * @return object the actual object referenced by this Instance object.
+     */
+    public function get($container = null)
+    {
+        if ($container) {
+            return $container->get($this->id);
+        }
+        return Kant::$container->get($this->id);
+    }
+}

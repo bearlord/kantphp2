@@ -149,8 +149,7 @@ class Query extends Component implements QueryInterface {
      */
     public function createCommand($db = null) {
         if ($db === null) {
-            $config = KantFactory::getConfig()->get("database.default");
-            $db = new Connection($config);
+            $db = KantFactory::getDb();
         }
         list ($sql, $params) = $db->getQueryBuilder()->build($this);
 
@@ -165,7 +164,64 @@ class Query extends Component implements QueryInterface {
      * @return $this a prepared query instance which will be used by [[QueryBuilder]] to build the SQL
      */
     public function prepare($builder) {
-        return $this;
+        // NOTE: because the same ActiveQuery may be used to build different SQL statements
+        // (e.g. by ActiveDataProvider, one for count query, the other for row data query,
+        // it is important to make sure the same ActiveQuery can be used to build SQL statements
+        // multiple times.
+        if (!empty($this->joinWith)) {
+            $this->buildJoinWith();
+            $this->joinWith = null;    // clean it up to avoid issue https://github.com/yiisoft/yii2/issues/2687
+        }
+
+        if (empty($this->from)) {
+            /* @var $modelClass ActiveRecord */
+            $modelClass = $this->modelClass;
+            $tableName = $modelClass::tableName();
+            $this->from = [$tableName];
+        }
+
+        if (empty($this->select) && !empty($this->join)) {
+            list(, $alias) = $this->getQueryTableName($this);
+            $this->select = ["$alias.*"];
+        }
+
+        if ($this->primaryModel === null) {
+            // eager loading
+            $query = Query::create($this);
+        } else {
+            // lazy loading of a relation
+            $where = $this->where;
+
+            if ($this->via instanceof self) {
+                // via junction table
+                $viaModels = $this->via->findJunctionRows([$this->primaryModel]);
+                $this->filterByModels($viaModels);
+            } elseif (is_array($this->via)) {
+                // via relation
+                /* @var $viaQuery ActiveQuery */
+                list($viaName, $viaQuery) = $this->via;
+                if ($viaQuery->multiple) {
+                    $viaModels = $viaQuery->all();
+                    $this->primaryModel->populateRelation($viaName, $viaModels);
+                } else {
+                    $model = $viaQuery->one();
+                    $this->primaryModel->populateRelation($viaName, $model);
+                    $viaModels = $model === null ? [] : [$model];
+                }
+                $this->filterByModels($viaModels);
+            } else {
+                $this->filterByModels([$this->primaryModel]);
+            }
+
+            $query = Query::create($this);
+            $this->where = $where;
+        }
+
+        if (!empty($this->on)) {
+            $query->andWhere($this->on);
+        }
+
+        return $query;
     }
 
     /**
@@ -428,7 +484,7 @@ class Query extends Component implements QueryInterface {
      * When the columns are specified as an array, you may also use array keys as the column aliases (if a column
      * does not need alias, do not use a string key).
      *
-     * Starting from version 2.0.1, you may also select sub-queries as columns by specifying each such column
+     * You may also select sub-queries as columns by specifying each such column
      * as a `Query` instance representing the sub-query.
      *
      * @param string $option additional option that should be appended to the 'SELECT' keyword. For example,

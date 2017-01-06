@@ -15,10 +15,11 @@ use Kant\Route\Route;
 use Kant\Cache\Cache;
 use Kant\Session\Session;
 use Kant\Cookie\Cookie;
+use Kant\Database\Connection;
 use Kant\Pathinfo\Pathinfo;
 
 class KantFactory {
-    
+
     /**
      * Object container
      * 
@@ -30,7 +31,8 @@ class KantFactory {
         'cache' => '',
         'session' => '',
         'cookie' => '',
-        'pathinfo' => ''        
+        'db' => '',
+        'pathinfo' => ''
     ];
 
     /**
@@ -92,17 +94,25 @@ class KantFactory {
         }
         return self::$container['session'];
     }
-    
+
     /**
      * Get cookie object
      */
     public static function getCookie() {
         if (!self::$container['cookie']) {
             $config = self::getConfig()->get('cookie');
-            self::$container['cookie'] = Session::getInstance($config);
+            self::$container['cookie'] = Cookie::getInstance($config);
         }
         return self::$container['cookie'];
-    } 
+    }
+
+    public static function getDb() {
+        if (!self::$container['db']) {
+            $config = self::getConfig()->get("database.default");
+            self::$container['db'] = new Connection($config);
+        }
+        return self::$container['db'];
+    }
 
     /**
      * Get Pathinfo object

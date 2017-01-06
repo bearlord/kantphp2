@@ -9,6 +9,7 @@
 
 namespace Kant\Database;
 
+use Kant\Kant;
 use Kant\Foundation\Object;
 use Kant\Database\QueryBuilder;
 
@@ -53,7 +54,7 @@ abstract class Schema extends Object {
      * If left part is found in DB error message exception class from the right part is used.
      */
     public $exceptionMap = [
-        'SQLSTATE[23' => 'yii\db\IntegrityException',
+        'SQLSTATE[23' => 'Kant\db\IntegrityException',
     ];
 
     /**
@@ -77,11 +78,11 @@ abstract class Schema extends Object {
     private $_builder;
 
     /**
-     * @return \yii\db\ColumnSchema
-     * @throws \yii\base\InvalidConfigException
+     * @return \Kant\Database\ColumnSchema
+     * @throws \Kant\Foundation\InvalidConfigException
      */
     protected function createColumnSchema() {
-        return Yii::createObject('yii\db\ColumnSchema');
+        return Kant::createObject('Kant\Database\ColumnSchema');
     }
 
     /**
@@ -107,7 +108,7 @@ abstract class Schema extends Object {
 
         if ($db->enableSchemaCache && !in_array($name, $db->schemaCacheExclude, true)) {
             /* @var $cache Cache */
-            $cache = is_string($db->schemaCache) ? Yii::$app->get($db->schemaCache, false) : $db->schemaCache;
+            $cache = is_string($db->schemaCache) ? Kant::$app->get($db->schemaCache, false) : $db->schemaCache;
             if ($cache instanceof Cache) {
                 $key = $this->getCacheKey($name);
                 if ($refresh || ($table = $cache->get($key)) === false) {
@@ -246,7 +247,7 @@ abstract class Schema extends Object {
      */
     public function refresh() {
         /* @var $cache Cache */
-        $cache = is_string($this->db->schemaCache) ? Yii::$app->get($this->db->schemaCache, false) : $this->db->schemaCache;
+        $cache = is_string($this->db->schemaCache) ? Kant::$app->get($this->db->schemaCache, false) : $this->db->schemaCache;
         if ($this->db->enableSchemaCache && $cache instanceof Cache) {
             TagDependency::invalidate($cache, $this->getCacheTag());
         }
@@ -265,7 +266,7 @@ abstract class Schema extends Object {
         unset($this->_tables[$name]);
         $this->_tableNames = [];
         /* @var $cache Cache */
-        $cache = is_string($this->db->schemaCache) ? Yii::$app->get($this->db->schemaCache, false) : $this->db->schemaCache;
+        $cache = is_string($this->db->schemaCache) ? Kant::$app->get($this->db->schemaCache, false) : $this->db->schemaCache;
         if ($this->db->enableSchemaCache && $cache instanceof Cache) {
             $cache->delete($this->getCacheKey($name));
         }
