@@ -68,9 +68,6 @@ use Kant\Exception\InvalidConfigException;
  * marks a relation as inverse of another relation and [[onCondition()]] which adds a condition that
  * is to be added to relational query join condition.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @author Carsten Brandt <mail@cebe.cc>
- * @since 2.0
  */
 class ActiveQuery extends Query implements ActiveQueryInterface {
 

@@ -28,13 +28,13 @@ use Kant\Helper\StringHelper;
  * In this example, Active Record is providing an object-oriented interface for accessing data stored in the database.
  * But Active Record provides much more functionality than this.
  *
- * To declare an ActiveRecord class you need to extend [[\yii\db\ActiveRecord]] and
+ * To declare an ActiveRecord class you need to extend [[\Kant\Database\ActiveRecord]] and
  * implement the `tableName` method:
  *
  * ```php
  * <?php
  *
- * class Customer extends \yii\db\ActiveRecord
+ * class Customer extends \Kant\Database\ActiveRecord
  * {
  *     public static function tableName()
  *     {
@@ -410,7 +410,7 @@ class ActiveRecord extends BaseActiveRecord{
      */
     public function insert($runValidation = true, $attributes = null) {
         if ($runValidation && !$this->validate($attributes)) {
-            Yii::info('Model not inserted due to validation error.', __METHOD__);
+            Log::write('Model not inserted due to validation error.', Log::ERR);
             return false;
         }
 
@@ -514,7 +514,7 @@ class ActiveRecord extends BaseActiveRecord{
      */
     public function update($runValidation = true, $attributeNames = null) {
         if ($runValidation && !$this->validate($attributeNames)) {
-            Yii::info('Model not updated due to validation error.', __METHOD__);
+            Log::write('Model not updated due to validation error.', Log::ERR);
             return false;
         }
 

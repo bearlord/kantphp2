@@ -1,6 +1,0 @@
-<head>
-    
-</head>
-<form>
-    
-</form>

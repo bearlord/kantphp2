@@ -4,8 +4,7 @@ namespace Kant\Support;
 
 use ArrayAccess;
 
-class Arr
-{
+class Arr {
 
     /**
      * Determine whether the given value is array accessible.
@@ -13,8 +12,7 @@ class Arr
      * @param  mixed  $value
      * @return bool
      */
-    public static function accessible($value)
-    {
+    public static function accessible($value) {
         return is_array($value) || $value instanceof ArrayAccess;
     }
 
@@ -26,8 +24,7 @@ class Arr
      * @param  mixed   $value
      * @return array
      */
-    public static function add($array, $key, $value)
-    {
+    public static function add($array, $key, $value) {
         if (is_null(static::get($array, $key))) {
             static::set($array, $key, $value);
         }
@@ -44,8 +41,7 @@ class Arr
      *
      * @deprecated since version 5.2.
      */
-    public static function build($array, callable $callback)
-    {
+    public static function build($array, callable $callback) {
         $results = [];
 
         foreach ($array as $key => $value) {
@@ -63,14 +59,13 @@ class Arr
      * @param  array  $array
      * @return array
      */
-    public static function collapse($array)
-    {
+    public static function collapse($array) {
         $results = [];
 
         foreach ($array as $values) {
             if ($values instanceof Collection) {
                 $values = $values->all();
-            } elseif (! is_array($values)) {
+            } elseif (!is_array($values)) {
                 continue;
             }
 
@@ -86,8 +81,7 @@ class Arr
      * @param  array  $array
      * @return array
      */
-    public static function divide($array)
-    {
+    public static function divide($array) {
         return [array_keys($array), array_values($array)];
     }
 
@@ -98,15 +92,14 @@ class Arr
      * @param  string  $prepend
      * @return array
      */
-    public static function dot($array, $prepend = '')
-    {
+    public static function dot($array, $prepend = '') {
         $results = [];
 
         foreach ($array as $key => $value) {
             if (is_array($value)) {
-                $results = array_merge($results, static::dot($value, $prepend.$key.'.'));
+                $results = array_merge($results, static::dot($value, $prepend . $key . '.'));
             } else {
-                $results[$prepend.$key] = $value;
+                $results[$prepend . $key] = $value;
             }
         }
 
@@ -120,8 +113,7 @@ class Arr
      * @param  array|string  $keys
      * @return array
      */
-    public static function except($array, $keys)
-    {
+    public static function except($array, $keys) {
         static::forget($array, $keys);
 
         return $array;
@@ -134,8 +126,7 @@ class Arr
      * @param  string|int  $key
      * @return bool
      */
-    public static function exists($array, $key)
-    {
+    public static function exists($array, $key) {
         if ($array instanceof ArrayAccess) {
             return $array->offsetExists($key);
         }
@@ -151,8 +142,7 @@ class Arr
      * @param  mixed  $default
      * @return mixed
      */
-    public static function first($array, callable $callback = null, $default = null)
-    {
+    public static function first($array, callable $callback = null, $default = null) {
         if (is_null($callback)) {
             return empty($array) ? value($default) : reset($array);
         }
@@ -174,8 +164,7 @@ class Arr
      * @param  mixed  $default
      * @return mixed
      */
-    public static function last($array, callable $callback = null, $default = null)
-    {
+    public static function last($array, callable $callback = null, $default = null) {
         if (is_null($callback)) {
             return empty($array) ? value($default) : end($array);
         }
@@ -190,8 +179,7 @@ class Arr
      * @param  int  $depth
      * @return array
      */
-    public static function flatten($array, $depth = INF)
-    {
+    public static function flatten($array, $depth = INF) {
         $result = [];
 
         foreach ($array as $item) {
@@ -220,8 +208,7 @@ class Arr
      * @param  array|string  $keys
      * @return void
      */
-    public static function forget(&$array, $keys)
-    {
+    public static function forget(&$array, $keys) {
         $original = &$array;
 
         $keys = (array) $keys;
@@ -258,9 +245,8 @@ class Arr
      * @param  mixed   $default
      * @return mixed
      */
-    public static function get($array, $key, $default = null)
-    {
-        if (! static::accessible($array)) {
+    public static function get($array, $key, $default = null) {
+        if (!static::accessible($array)) {
             return value($default);
         }
 
@@ -290,9 +276,8 @@ class Arr
      * @param  string  $key
      * @return bool
      */
-    public static function has($array, $key)
-    {
-        if (! $array) {
+    public static function has($array, $key) {
+        if (!$array) {
             return false;
         }
 
@@ -323,8 +308,7 @@ class Arr
      * @param  array  $array
      * @return bool
      */
-    public static function isAssoc(array $array)
-    {
+    public static function isAssoc(array $array) {
         $keys = array_keys($array);
 
         return array_keys($keys) !== $keys;
@@ -337,8 +321,7 @@ class Arr
      * @param  array|string  $keys
      * @return array
      */
-    public static function only($array, $keys)
-    {
+    public static function only($array, $keys) {
         return array_intersect_key($array, array_flip((array) $keys));
     }
 
@@ -350,8 +333,7 @@ class Arr
      * @param  string|array|null  $key
      * @return array
      */
-    public static function pluck($array, $value, $key = null)
-    {
+    public static function pluck($array, $value, $key = null) {
         $results = [];
 
         list($value, $key) = static::explodePluckParameters($value, $key);
@@ -381,8 +363,7 @@ class Arr
      * @param  string|array|null  $key
      * @return array
      */
-    protected static function explodePluckParameters($value, $key)
-    {
+    protected static function explodePluckParameters($value, $key) {
         $value = is_string($value) ? explode('.', $value) : $value;
 
         $key = is_null($key) || is_array($key) ? $key : explode('.', $key);
@@ -398,8 +379,7 @@ class Arr
      * @param  mixed  $key
      * @return array
      */
-    public static function prepend($array, $value, $key = null)
-    {
+    public static function prepend($array, $value, $key = null) {
         if (is_null($key)) {
             array_unshift($array, $value);
         } else {
@@ -417,8 +397,7 @@ class Arr
      * @param  mixed   $default
      * @return mixed
      */
-    public static function pull(&$array, $key, $default = null)
-    {
+    public static function pull(&$array, $key, $default = null) {
         $value = static::get($array, $key, $default);
 
         static::forget($array, $key);
@@ -436,8 +415,7 @@ class Arr
      * @param  mixed   $value
      * @return array
      */
-    public static function set(&$array, $key, $value)
-    {
+    public static function set(&$array, $key, $value) {
         if (is_null($key)) {
             return $array = $value;
         }
@@ -450,7 +428,7 @@ class Arr
             // If the key doesn't exist at this depth, we will just create an empty array
             // to hold the next value, allowing us to create the arrays to hold final
             // values at the correct depth. Then we'll keep digging into the array.
-            if (! isset($array[$key]) || ! is_array($array[$key])) {
+            if (!isset($array[$key]) || !is_array($array[$key])) {
                 $array[$key] = [];
             }
 
@@ -469,8 +447,7 @@ class Arr
      * @param  callable  $callback
      * @return array
      */
-    public static function sort($array, callable $callback)
-    {
+    public static function sort($array, callable $callback) {
         return Collection::make($array)->sortBy($callback)->all();
     }
 
@@ -480,8 +457,7 @@ class Arr
      * @param  array  $array
      * @return array
      */
-    public static function sortRecursive($array)
-    {
+    public static function sortRecursive($array) {
         foreach ($array as &$value) {
             if (is_array($value)) {
                 $value = static::sortRecursive($value);
@@ -504,8 +480,7 @@ class Arr
      * @param  callable  $callback
      * @return array
      */
-    public static function where($array, callable $callback)
-    {
+    public static function where($array, callable $callback) {
         $filtered = [];
 
         foreach ($array as $key => $value) {
@@ -516,4 +491,5 @@ class Arr
 
         return $filtered;
     }
+
 }

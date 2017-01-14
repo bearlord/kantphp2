@@ -10,6 +10,7 @@
 namespace Kant\Database;
 
 use Kant\Model\Model;
+use Kant\Model\ModelEvent;
 
 /**
  * ActiveRecord is the base class for classes representing relational data in terms of objects.
@@ -879,10 +880,11 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface {
      */
     public function beforeSave($insert)
     {
-        $event = new ModelEvent;
-        $this->trigger($insert ? self::EVENT_BEFORE_INSERT : self::EVENT_BEFORE_UPDATE, $event);
-
-        return $event->isValid;
+        return true;
+//        $event = new \Kant\Model\ModelEvent;
+//        $this->trigger($insert ? self::EVENT_BEFORE_INSERT : self::EVENT_BEFORE_UPDATE, $event);
+//
+//        return $event->isValid;
     }
 
     /**
@@ -901,9 +903,10 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface {
      */
     public function afterSave($insert, $changedAttributes)
     {
-        $this->trigger($insert ? self::EVENT_AFTER_INSERT : self::EVENT_AFTER_UPDATE, new AfterSaveEvent([
-            'changedAttributes' => $changedAttributes,
-        ]));
+        return true;
+//        $this->trigger($insert ? self::EVENT_AFTER_INSERT : self::EVENT_AFTER_UPDATE, new AfterSaveEvent([
+//            'changedAttributes' => $changedAttributes,
+//        ]));
     }
 
     /**

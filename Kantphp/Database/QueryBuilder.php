@@ -9,6 +9,7 @@
 
 namespace Kant\Database;
 use Kant\Foundation\Object;
+use Kant\Helper\ArrayHelper;
 
 class QueryBuilder extends Object
 {

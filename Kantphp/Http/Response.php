@@ -74,7 +74,7 @@ class Response
     protected static $instance;
 
     /**
-     * @var \Symfony\Component\HttpFoundation\ResponseHeaderBag
+     * @var \Kant\Http\ResponseHeaderBag
      */
     public $headers;
 

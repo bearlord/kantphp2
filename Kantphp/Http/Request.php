@@ -1,12 +1,20 @@
 <?php
 
+/**
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
+ */
+
 namespace Kant\Http;
 
+use Kant\Foundation\Arrayable;
 use ArrayAccess;
 use Kant\Support\Str;
 use Kant\Support\Arr;
 
-class Request implements ArrayAccess {
+class Request implements Arrayable, ArrayAccess {
 
     const HEADER_FORWARDED = 'forwarded';
     const HEADER_CLIENT_IP = 'client_ip';
@@ -90,49 +98,49 @@ class Request implements ArrayAccess {
     /**
      * Custom parameters.
      *
-     * @var \Symfony\Component\HttpFoundation\ParameterBag
+     * @var \Kant\Http\ParameterBag
      */
     public $attributes;
 
     /**
      * Request body parameters ($_POST).
      *
-     * @var \Symfony\Component\HttpFoundation\ParameterBag
+     * @var \Kant\Http\ParameterBag
      */
     public $request;
 
     /**
      * Query string parameters ($_GET).
      *
-     * @var \Symfony\Component\HttpFoundation\ParameterBag
+     * @var \Kant\Http\ParameterBag
      */
     public $query;
 
     /**
      * Server and execution environment parameters ($_SERVER).
      *
-     * @var \Symfony\Component\HttpFoundation\ServerBag
+     * @var \Kant\Http\ServerBag
      */
     public $server;
 
     /**
      * Uploaded files ($_FILES).
      *
-     * @var \Symfony\Component\HttpFoundation\FileBag
+     * @var \Kant\Http\FileBag
      */
     public $files;
 
     /**
      * Cookies ($_COOKIE).
      *
-     * @var \Symfony\Component\HttpFoundation\ParameterBag
+     * @var \Kant\Http\ParameterBag
      */
     public $cookies;
 
     /**
      * Headers (taken from the $_SERVER).
      *
-     * @var \Symfony\Component\HttpFoundation\HeaderBag
+     * @var \Kant\Http\HeaderBag
      */
     public $headers;
 
@@ -192,7 +200,7 @@ class Request implements ArrayAccess {
     protected $format;
 
     /**
-     * @var \Symfony\Component\HttpFoundation\Session\SessionInterface
+     * @var \Kant\Http\Session\SessionInterface
      */
     protected $session;
 
@@ -1862,7 +1870,7 @@ class Request implements ArrayAccess {
     public static function capture() {
         static::enableHttpMethodParameterOverride();
 
-        return static::createFromBase(SymfonyRequest::createFromGlobals());
+        return static::createFromBase(Request::createFromGlobals());
     }
 
     /**
@@ -2226,7 +2234,7 @@ class Request implements ArrayAccess {
      *
      * @param  string  $key
      * @param  mixed  $default
-     * @return \Symfony\Component\HttpFoundation\File\UploadedFile|array|null
+     * @return \Kant\Http\File\UploadedFile|array|null
      */
     public function file($key = null, $default = null) {
 //        return data_get($this->allFiles(), $key, $default);
@@ -2401,7 +2409,7 @@ class Request implements ArrayAccess {
     /**
      * Get the input source for the request.
      *
-     * @return \Symfony\Component\HttpFoundation\ParameterBag
+     * @return \Kant\Http\ParameterBag
      */
     protected function getInputSource() {
         if ($this->isJson()) {
@@ -2562,8 +2570,8 @@ class Request implements ArrayAccess {
     /**
      * Create an Illuminate request from a Symfony instance.
      *
-     * @param  \Symfony\Component\HttpFoundation\Request  $request
-     * @return \Illuminate\Http\Request
+     * @param  Request  $request
+     * @return Request
      */
     public static function createFromBase(Request $request) {
         if ($request instanceof static) {
@@ -2692,11 +2700,27 @@ class Request implements ArrayAccess {
     }
 
     /**
+     * Returns the list of fields that should be returned by default by [[toArray()]] when no specific fields are specified.
+     *
+     * A field is a named element in the returned array by [[toArray()]].
+     */
+    public function fields() {
+        
+    }
+
+    /**
+     * Returns the list of additional fields that can be returned by [[toArray()]] in addition to those listed in [[fields()]].
+     */
+    public function extraFields() {
+        
+    }
+
+    /**
      * Get all of the input and files for the request.
      *
      * @return array
      */
-    public function toArray() {
+    public function toArray(array $fields = [], array $expand = [], $recursive = true) {
         return $this->all();
     }
 

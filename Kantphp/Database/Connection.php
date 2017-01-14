@@ -9,6 +9,7 @@
 
 namespace Kant\Database;
 
+use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Exception\KantException;
 use Kant\KantFactory;
@@ -218,12 +219,12 @@ class Connection extends Component {
     /**
      * @var array mapping between PDO driver names and [[Schema]] classes.
      * The keys of the array are PDO driver names while the values the corresponding
-     * schema class name or configuration. Please refer to [[Yii::createObject()]] for
+     * schema class name or configuration. Please refer to [[Kant::createObject()]] for
      * details on how to specify a configuration.
      *
      * This property is mainly used by [[getSchema()]] when fetching the database schema information.
      * You normally do not need to set this property unless you want to use your own
-     * [[Schema]] class to support DBMS that is not supported by Yii.
+     * [[Schema]] class to support DBMS that is not supported.
      */
     protected $schemaMap = [
         'pgsql' => \Kant\Database\Pgsql\Schema::class,
@@ -545,8 +546,8 @@ class Connection extends Component {
         }
 
         if ($duration === 0 || $duration > 0) {
-            if (is_string($this->queryCache) && Yii::$app) {
-                $cache = Yii::$app->get($this->queryCache, false);
+            if (is_string($this->queryCache) && Kant::$app) {
+                $cache = Kant::$app->get($this->queryCache, false);
             } else {
                 $cache = $this->queryCache;
             }
@@ -595,7 +596,7 @@ class Connection extends Component {
      */
     public function close() {
         if ($this->pdo !== null) {
-            Yii::trace('Closing DB connection: ' . $this->dsn, __METHOD__);
+            Kant::trace('Closing DB connection: ' . $this->dsn, __METHOD__);
             $this->pdo = null;
             $this->_schema = null;
             $this->_transaction = null;
@@ -634,7 +635,7 @@ class Connection extends Component {
 
         $dsn = $this->dsn;
         if (strncmp('sqlite:@', $dsn, 8) === 0) {
-            $dsn = 'sqlite:' . Yii::getAlias(substr($dsn, 7));
+            $dsn = 'sqlite:' . Kant::getAlias(substr($dsn, 7));
         }
         return new $pdoClass($dsn, $this->username, $this->password, $this->attributes);
     }
@@ -939,7 +940,7 @@ class Connection extends Component {
             $sharedConfig['class'] = get_class($this);
         }
 
-        $cache = is_string($this->serverStatusCache) ? Yii::$app->get($this->serverStatusCache, false) : $this->serverStatusCache;
+        $cache = is_string($this->serverStatusCache) ? Kant::$app->get($this->serverStatusCache, false) : $this->serverStatusCache;
 
         shuffle($pool);
 
@@ -956,13 +957,13 @@ class Connection extends Component {
             }
 
             /* @var $db Connection */
-            $db = Yii::createObject($config);
+            $db = Kant::createObject($config);
 
             try {
                 $db->open();
                 return $db;
             } catch (\Exception $e) {
-                Yii::warning("Connection ({$config['dsn']}) failed: " . $e->getMessage(), __METHOD__);
+                Kant::warning("Connection ({$config['dsn']}) failed: " . $e->getMessage(), __METHOD__);
                 if ($cache instanceof Cache) {
                     // mark this server as dead and only retry it after the specified interval
                     $cache->set($key, 1, $this->serverRetryInterval);

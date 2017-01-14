@@ -13,5 +13,5 @@ define('KANT_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
 require_once KANT_PATH . 'Defines.php';
 require_once KANT_PATH . 'Loader/Autoload.php';
 
-Kant\Kant::$container = new \Kant\Di\Container();
+\Kant\Kant::$container = new \Kant\Di\Container();
 

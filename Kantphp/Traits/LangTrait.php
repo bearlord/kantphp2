@@ -1,6 +1,7 @@
 <?php
 
 namespace Kant\Traits;
+
 use Kant\KantFactory;
 
 trait LangTrait {

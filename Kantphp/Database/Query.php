@@ -9,6 +9,7 @@
 
 namespace Kant\Database;
 
+use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Database\QueryInterface;
 use Kant\KantFactory;
@@ -129,17 +130,6 @@ class Query extends Component implements QueryInterface {
      * For example, `[':name' => 'Dan', ':age' => 31]`.
      */
     public $params = [];
-    protected $ttl = 0;
-
-    /**
-     * Get Table
-     * 
-     * @param type $table
-     * @return type
-     */
-    public function getTable($table) {
-        return $this->tablepre . $table;
-    }
 
     /**
      * Creates a DB command that can be used to execute this query.
@@ -164,64 +154,7 @@ class Query extends Component implements QueryInterface {
      * @return $this a prepared query instance which will be used by [[QueryBuilder]] to build the SQL
      */
     public function prepare($builder) {
-        // NOTE: because the same ActiveQuery may be used to build different SQL statements
-        // (e.g. by ActiveDataProvider, one for count query, the other for row data query,
-        // it is important to make sure the same ActiveQuery can be used to build SQL statements
-        // multiple times.
-        if (!empty($this->joinWith)) {
-            $this->buildJoinWith();
-            $this->joinWith = null;    // clean it up to avoid issue https://github.com/yiisoft/yii2/issues/2687
-        }
-
-        if (empty($this->from)) {
-            /* @var $modelClass ActiveRecord */
-            $modelClass = $this->modelClass;
-            $tableName = $modelClass::tableName();
-            $this->from = [$tableName];
-        }
-
-        if (empty($this->select) && !empty($this->join)) {
-            list(, $alias) = $this->getQueryTableName($this);
-            $this->select = ["$alias.*"];
-        }
-
-        if ($this->primaryModel === null) {
-            // eager loading
-            $query = Query::create($this);
-        } else {
-            // lazy loading of a relation
-            $where = $this->where;
-
-            if ($this->via instanceof self) {
-                // via junction table
-                $viaModels = $this->via->findJunctionRows([$this->primaryModel]);
-                $this->filterByModels($viaModels);
-            } elseif (is_array($this->via)) {
-                // via relation
-                /* @var $viaQuery ActiveQuery */
-                list($viaName, $viaQuery) = $this->via;
-                if ($viaQuery->multiple) {
-                    $viaModels = $viaQuery->all();
-                    $this->primaryModel->populateRelation($viaName, $viaModels);
-                } else {
-                    $model = $viaQuery->one();
-                    $this->primaryModel->populateRelation($viaName, $model);
-                    $viaModels = $model === null ? [] : [$model];
-                }
-                $this->filterByModels($viaModels);
-            } else {
-                $this->filterByModels([$this->primaryModel]);
-            }
-
-            $query = Query::create($this);
-            $this->where = $where;
-        }
-
-        if (!empty($this->on)) {
-            $query->andWhere($this->on);
-        }
-
-        return $query;
+        return $this;
     }
 
     /**
@@ -246,7 +179,7 @@ class Query extends Component implements QueryInterface {
      * and can be traversed to retrieve the data in batches.
      */
     public function batch($batchSize = 100, $db = null) {
-        return Yii::createObject([
+        return Kant::createObject([
                     'class' => BatchQueryResult::className(),
                     'query' => $this,
                     'batchSize' => $batchSize,
@@ -272,7 +205,7 @@ class Query extends Component implements QueryInterface {
      * and can be traversed to retrieve the data in batches.
      */
     public function each($batchSize = 100, $db = null) {
-        return Yii::createObject([
+        return Kant::createObject([
                     'class' => BatchQueryResult::className(),
                     'query' => $this,
                     'batchSize' => $batchSize,
