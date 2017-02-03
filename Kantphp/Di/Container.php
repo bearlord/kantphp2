@@ -3,7 +3,7 @@
 /**
  * @package KantPHP
  * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -488,4 +488,14 @@ class Container extends Component {
         return $args;
     }
 
+    /**
+     * Register an existing instance as shared in the container.
+     *
+     * @param  string  $class
+     * @param  mixed   $instance
+     * @return void
+     */
+    public function instance($class, $instance) {
+        $this->_singletons[$class] = $instance;
+    }
 }

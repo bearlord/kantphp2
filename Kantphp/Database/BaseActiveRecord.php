@@ -3,7 +3,7 @@
 /**
  * @package KantPHP
  * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -15,7 +15,7 @@ use Kant\Model\ModelEvent;
 /**
  * ActiveRecord is the base class for classes representing relational data in terms of objects.
  *
- * See [[\yii\db\ActiveRecord]] for a concrete implementation.
+ * See [[\Kant\Db\ActiveRecord]] for a concrete implementation.
  *
  * @property array $dirtyAttributes The changed attribute values (name-value pairs). This property is
  * read-only.

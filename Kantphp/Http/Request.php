@@ -3,7 +3,7 @@
 /**
  * @package KantPHP
  * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -321,7 +321,7 @@ class Request implements Arrayable, ArrayAccess {
             'SERVER_NAME' => 'localhost',
             'SERVER_PORT' => 80,
             'HTTP_HOST' => 'localhost',
-            'HTTP_USER_AGENT' => 'Symfony/3.X',
+            'HTTP_USER_AGENT' => '',
             'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'HTTP_ACCEPT_LANGUAGE' => 'en-us,en;q=0.5',
             'HTTP_ACCEPT_CHARSET' => 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',

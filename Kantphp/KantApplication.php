@@ -3,12 +3,14 @@
 /**
  * @package KantPHP
  * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant;
 
+use Kant\Di\ServiceLocator;
+use Kant\Helper\ArrayHelper;
 use Kant\KantFactory;
 use Kant\Route\Route;
 use Kant\Http\Response;
@@ -25,10 +27,9 @@ use Kant\Cache\Cache;
 use InvalidArgumentException;
 use ReflectionParameter;
 
-class KantApplication extends Di\ServiceLocator {
+class KantApplication extends ServiceLocator {
 
     private static $_instance = null;
-    private $_environment = 'Development';
 
     /**
      * defined dispath
@@ -68,8 +69,8 @@ class KantApplication extends Di\ServiceLocator {
      */
     public function __construct($environment) {
         Kant::$app = $this;
-        $this->_initConfig($environment);
-        $this->_initSession();
+        $this->initConfig($environment);
+        $this->initSession();
         Cache::platform();
         $this->setDb();
     }
@@ -77,23 +78,17 @@ class KantApplication extends Di\ServiceLocator {
     /**
      * Init Config
      */
-    private function _initConfig($environment) {
-        /**
-         * App config
-         */
-        $appConfig = include CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php';
-        /**
-         * Route config
-         */
-        $routeConfig = include CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Route.php';
-        /**
-         * Merge app and route config
-         */
-        KantFactory::getConfig()->merge($appConfig)->merge(['route' => $routeConfig]);
-        KantFactory::getConfig()->set([
-            'environment' => $environment,
-            'config_path' => CFG_PATH . $environment . DIRECTORY_SEPARATOR
-        ]);
+    protected function initConfig($environment) {
+        $appConfig = ArrayHelper::merge(
+                        require KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php', 
+                        require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php', 
+                        require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Route.php', 
+                        [
+                            'environment' => $environment,
+                            'config_path' => CFG_PATH . $environment . DIRECTORY_SEPARATOR
+                        ]
+        );
+        KantFactory::getConfig()->merge($appConfig);
     }
 
     /**
@@ -102,11 +97,9 @@ class KantApplication extends Di\ServiceLocator {
      */
     private function _initModuleConfig($module) {
         $configFilePath = MODULE_PATH . $module . DIRECTORY_SEPARATOR . 'Config.php';
-        if (!file_exists($configFilePath)) {
-            return false;
+        if (file_exists($configFilePath)) {
+            KantFactory::getConfig()->merge(require $configFilePath);
         }
-        $moduleConfig = include $configFilePath;
-        KantFactory::getConfig()->merge($moduleConfig);
     }
 
     /**
@@ -115,18 +108,8 @@ class KantApplication extends Di\ServiceLocator {
      * @staticvar type $session
      * @return type
      */
-    private function _initSession() {
-        static $session = null;
-        if (empty($session)) {
-            $sessionConfig = KantFactory::getConfig()->get('session');
-            $sessionAdapter = 'default';
-            try {
-                $session = Session::getInstance($sessionConfig)->getSession($sessionAdapter);
-            } catch (RuntimeException $e) {
-                throw new KantException($e->getMessage());
-            }
-        }
-        return $session;
+    protected function initSession() {
+        return KantFactory::getSession()->getSession('default');
     }
 
     /**
@@ -146,8 +129,8 @@ class KantApplication extends Di\ServiceLocator {
      * Boot
      * 
      */
-    public function boot() {
-        $this->parpare();
+    public function run() {
+        $this->parpareInit();
         $this->route();
         $this->dispatch();
         $this->end();
@@ -156,9 +139,9 @@ class KantApplication extends Di\ServiceLocator {
     /**
      * Parpare
      */
-    protected function parpare() {
+    protected function parpareInit() {
         //Default timezone
-        date_default_timezone_set(KantFactory::getConfig()->get('default_timezone'));
+        $this->setTimeZone(KantFactory::getConfig()->get('timezone'));
         if (KantFactory::getConfig()->get('debug')) {
             ini_set('display_errors', 1);
             error_reporting(E_ALL);
@@ -173,6 +156,29 @@ class KantApplication extends Di\ServiceLocator {
             'type' => 'File',
             'log_path' => LOG_PATH
         ));
+    }
+
+    /**
+     * Returns the time zone used by this application.
+     * This is a simple wrapper of PHP function date_default_timezone_get().
+     * If time zone is not configured in php.ini or application config,
+     * it will be set to UTC by default.
+     * @return string the time zone used by this application.
+     * @see http://php.net/manual/en/function.date-default-timezone-get.php
+     */
+    public function getTimeZone() {
+        return date_default_timezone_get();
+    }
+
+    /**
+     * Sets the time zone used by this application.
+     * This is a simple wrapper of PHP function date_default_timezone_set().
+     * Refer to the [php manual](http://www.php.net/manual/en/timezones.php) for available timezones.
+     * @param string $value the time zone used by this application.
+     * @see http://php.net/manual/en/function.date-default-timezone-set.php
+     */
+    public function setTimeZone($value) {
+        date_default_timezone_set($value);
     }
 
     /**
@@ -319,6 +325,8 @@ class KantApplication extends Di\ServiceLocator {
         }
         $action = !empty($this->dispatchInfo[2]) ? $this->dispatchInfo[2] . KantFactory::getConfig()->get('action_suffix') : 'Index' . KantFactory::getConfig()->get('action_suffix');
 
+
+        Kant::$container->instance('Kant\Http\Request', Request::capture());
         $data = $this->callClass($controller . "@" . $action);
 
         return $data;
@@ -367,10 +375,12 @@ class KantApplication extends Di\ServiceLocator {
      * Set the database connection component.
      */
     public function setDb() {
-        $dbConfig = KantFactory::getConfig()->get('database.default');
-        $this->set('db', array_merge([
-            'class' => 'Kant\Database\Connection'
-                        ], $dbConfig));
+        $dbConfig = KantFactory::getConfig()->get('database');
+        foreach ($dbConfig as $key => $config) {
+            $this->set($key, array_merge([
+                'class' => 'Kant\Database\Connection'
+                            ], $config));
+        }
     }
 
     /**
@@ -491,7 +501,9 @@ class KantApplication extends Di\ServiceLocator {
         if (is_null($method)) {
             throw new InvalidArgumentException('Method not provided.');
         }
-        return $this->call([$this->make($segments[0]), $method], $parameters);
+//        return $this->call([$this->make($segments[0]), $method], $parameters);
+
+        return $this->call([Kant::$container->get($segments[0]), $method], $parameters);
     }
 
     /**

@@ -3,7 +3,7 @@
 /**
  * @package KantPHP
  * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -31,17 +31,14 @@ final class Session {
     /**
      * Get instantce of the final object
      * 
-     * @param type $sessionConfig
+     * @param type $config
      */
-    public static function getInstance($sessionConfig = '') {
-        if ($sessionConfig == '') {
-            $sessionConfig = require_once CFG_PATH . 'Session.php';
-        }
+    public static function getInstance($config) {
         if (self::$_session == '') {
             self::$_session = new self();
         }
-        if ($sessionConfig != '' && $sessionConfig != self::$_session->_sessionConfig) {
-            self::$_session->_sessionConfig = array_merge($sessionConfig, self::$_session->_sessionConfig);
+        if ($config != '' && $config != self::$_session->_sessionConfig) {
+            self::$_session->_sessionConfig = array_merge($config, self::$_session->_sessionConfig);
         }
         return self::$_session;
     }

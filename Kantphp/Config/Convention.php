@@ -3,7 +3,7 @@
 /**
  * @package KantPHP
  * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 return [
@@ -17,14 +17,14 @@ return [
     ],
     'default_return_type' => 'html',
     'path_info_repair' => false,
-    'debug' => false,
+    'debug' => true,
     'url_suffix' => '.html',
     'theme' => 'default',
     'template_suffix' => ".php",
     'action_suffix' => 'Action',
     'redirect_tpl' => 'dispatch/redirect',
     'lang' => 'zh_CN',
-    'default_timezone' => 'Etc/GMT-8',
+    'timezone' => 'Etc/GMT-8',
     'charset' => 'utf-8',
     'lock_ex' => '1',
     'db_fields_cache' => false,
@@ -52,7 +52,7 @@ return [
         ]],
     'database' => [
         //default configuration
-        'default' => [
+        'db' => [
             'dsn' => 'mysql:host=localhost;dbname=kantphp',
             'username' => 'root',
             'password' => '123456',

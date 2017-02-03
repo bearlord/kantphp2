@@ -3,7 +3,7 @@
 /**
  * @package KantPHP
  * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 - 2015 KantPHP Studio, All rights reserved.
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -55,9 +55,7 @@ class KantFactory {
      */
     public static function getConfig() {
         if (!self::$container['config']) {
-            //Core configuration
-            $coreConfig = include KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php';
-            self::$container['config'] = new KantConfig($coreConfig);
+            self::$container['config'] = new KantConfig();
         }
         return self::$container['config'];
     }
