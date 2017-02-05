@@ -1,9 +1,10 @@
 <?php
 
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Kant Software LLC
- * @license http://www.yiiframework.com/license/
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\I18n;
@@ -104,7 +105,7 @@ class PhpMessageSource extends MessageSource {
         $fallbackMessageFile = $this->getMessageFilePath($category, $fallbackLanguage);
         $fallbackMessages = $this->loadMessagesFromFile($fallbackMessageFile);
 
-        if ( $messages === null && $fallbackMessages === null && $fallbackLanguage !== $this->sourceLanguage && $fallbackLanguage !== substr($this->sourceLanguage, 0, 2)) {
+        if ($messages === null && $fallbackMessages === null && $fallbackLanguage !== $this->sourceLanguage && $fallbackLanguage !== substr($this->sourceLanguage, 0, 2)) {
             "The message file for category '$category' does not exist: $originalMessageFile "
                     . "Fallback file does not exist as well: $fallbackMessageFile";
 //            Kant::error("The message file for category '$category' does not exist: $originalMessageFile "

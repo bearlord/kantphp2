@@ -1,8 +1,10 @@
 <?php
+
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace yii\i18n;
@@ -43,19 +45,17 @@ use yii\base\NotSupportedException;
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
-class MessageFormatter extends Component
-{
+class MessageFormatter extends Component {
+
     private $_errorCode = 0;
     private $_errorMessage = '';
-
 
     /**
      * Get the error code from the last operation
      * @link http://php.net/manual/en/messageformatter.geterrorcode.php
      * @return string Code of the last error.
      */
-    public function getErrorCode()
-    {
+    public function getErrorCode() {
         return $this->_errorCode;
     }
 
@@ -64,8 +64,7 @@ class MessageFormatter extends Component
      * @link http://php.net/manual/en/messageformatter.geterrormessage.php
      * @return string Description of the last error.
      */
-    public function getErrorMessage()
-    {
+    public function getErrorMessage() {
         return $this->_errorMessage;
     }
 
@@ -81,8 +80,7 @@ class MessageFormatter extends Component
      * @param string $language The locale to use for formatting locale-dependent parts
      * @return string|boolean The formatted pattern string or `FALSE` if an error occurred
      */
-    public function format($pattern, $params, $language)
-    {
+    public function format($pattern, $params, $language) {
         $this->_errorCode = 0;
         $this->_errorMessage = '';
 
@@ -144,8 +142,7 @@ class MessageFormatter extends Component
      * @return array|boolean An array containing items extracted, or `FALSE` on error.
      * @throws \yii\base\NotSupportedException when PHP intl extension is not installed.
      */
-    public function parse($pattern, $message, $language)
-    {
+    public function parse($pattern, $message, $language) {
         $this->_errorCode = 0;
         $this->_errorMessage = '';
 
@@ -206,8 +203,7 @@ class MessageFormatter extends Component
      * @param array $map
      * @return string The pattern string with placeholders replaced.
      */
-    private function replaceNamedArguments($pattern, $givenParams, &$resultingParams = [], &$map = [])
-    {
+    private function replaceNamedArguments($pattern, $givenParams, &$resultingParams = [], &$map = []) {
         if (($tokens = self::tokenizePattern($pattern)) === false) {
             return false;
         }
@@ -261,8 +257,7 @@ class MessageFormatter extends Component
      * @param string $locale The locale to use for formatting locale-dependent parts
      * @return string|boolean The formatted pattern string or `FALSE` if an error occurred
      */
-    protected function fallbackFormat($pattern, $args, $locale)
-    {
+    protected function fallbackFormat($pattern, $args, $locale) {
         if (($tokens = self::tokenizePattern($pattern)) === false) {
             $this->_errorCode = -1;
             $this->_errorMessage = 'Message pattern is invalid.';
@@ -288,8 +283,7 @@ class MessageFormatter extends Component
      * @param string $pattern patter to tokenize
      * @return array|boolean array of tokens or false on failure
      */
-    private static function tokenizePattern($pattern)
-    {
+    private static function tokenizePattern($pattern) {
         $charset = Yii::$app ? Yii::$app->charset : 'UTF-8';
         $depth = 1;
         if (($start = $pos = mb_strpos($pattern, '{', 0, $charset)) === false) {
@@ -334,8 +328,7 @@ class MessageFormatter extends Component
      * @return boolean|string parsed token or false on failure
      * @throws \yii\base\NotSupportedException when unsupported formatting is used.
      */
-    private function parseToken($token, $args, $locale)
-    {
+    private function parseToken($token, $args, $locale) {
         // parsing pattern based on ICU grammar:
         // http://icu-project.org/apiref/icu4c/classMessageFormat.html#details
         $charset = Yii::$app ? Yii::$app->charset : 'UTF-8';
@@ -370,8 +363,8 @@ class MessageFormatter extends Component
                 return $arg;
             case 'select':
                 /* http://icu-project.org/apiref/icu4c/classicu_1_1SelectFormat.html
-                selectStyle = (selector '{' message '}')+
-                */
+                  selectStyle = (selector '{' message '}')+
+                 */
                 if (!isset($token[2])) {
                     return false;
                 }
@@ -393,13 +386,13 @@ class MessageFormatter extends Component
                 break;
             case 'plural':
                 /* http://icu-project.org/apiref/icu4c/classicu_1_1PluralFormat.html
-                pluralStyle = [offsetValue] (selector '{' message '}')+
-                offsetValue = "offset:" number
-                selector = explicitValue | keyword
-                explicitValue = '=' number  // adjacent, no white space in between
-                keyword = [^[[:Pattern_Syntax:][:Pattern_White_Space:]]]+
-                message: see MessageFormat
-                */
+                  pluralStyle = [offsetValue] (selector '{' message '}')+
+                  offsetValue = "offset:" number
+                  selector = explicitValue | keyword
+                  explicitValue = '=' number  // adjacent, no white space in between
+                  keyword = [^[[:Pattern_Syntax:][:Pattern_White_Space:]]]+
+                  message: see MessageFormat
+                 */
                 if (!isset($token[2])) {
                     return false;
                 }
@@ -418,8 +411,8 @@ class MessageFormatter extends Component
                         $selector = trim(mb_substr($selector, $pos + 1, mb_strlen($selector, $charset), $charset));
                     }
                     if ($message === false && $selector === 'other' ||
-                        $selector[0] === '=' && (int) mb_substr($selector, 1, mb_strlen($selector, $charset), $charset) === $arg ||
-                        $selector === 'one' && $arg - $offset == 1
+                            $selector[0] === '=' && (int) mb_substr($selector, 1, mb_strlen($selector, $charset), $charset) === $arg ||
+                            $selector === 'one' && $arg - $offset == 1
                     ) {
                         $message = implode(',', str_replace('#', $arg - $offset, $plural[$i]));
                     }
@@ -432,4 +425,5 @@ class MessageFormatter extends Component
 
         return false;
     }
+
 }

@@ -9,8 +9,6 @@
 
 namespace Kant\Helper;
 
-use Kant\Kant;
-
 /**
  * BaseInflector provides concrete implementation for [[Inflector]].
  *

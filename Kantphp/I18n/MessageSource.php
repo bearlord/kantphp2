@@ -1,8 +1,10 @@
 <?php
+
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\I18n;
@@ -20,8 +22,8 @@ use Kant\Foundation\Component;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class MessageSource extends Component
-{
+class MessageSource extends Component {
+
     /**
      * @event MissingTranslationEvent an event that is triggered when a message translation is not found.
      */
@@ -32,20 +34,18 @@ class MessageSource extends Component
      * Defaults to false, meaning translation is only performed when source and target languages are different.
      */
     public $forceTranslation = false;
+
     /**
      * @var string the language that the original messages are in. If not set, it will use the value of
      * [[\yii\base\Application::sourceLanguage]].
      */
     public $sourceLanguage;
-
     private $_messages = [];
-
 
     /**
      * Initializes this component.
      */
-    public function init()
-    {
+    public function init() {
         parent::init();
         if ($this->sourceLanguage === null) {
             $this->sourceLanguage = Kant::$app->sourceLanguage;
@@ -62,8 +62,7 @@ class MessageSource extends Component
      * @return array the loaded messages. The keys are original messages, and the values
      * are translated messages.
      */
-    protected function loadMessages($category, $language)
-    {
+    protected function loadMessages($category, $language) {
         return [];
     }
 
@@ -81,8 +80,7 @@ class MessageSource extends Component
      * @param string $language the target language
      * @return string|boolean the translated message or false if translation wasn't found or isn't required
      */
-    public function translate($category, $message, $language)
-    {
+    public function translate($category, $message, $language) {
         if ($this->forceTranslation || $language !== $this->sourceLanguage) {
             return $this->translateMessage($category, $message, $language);
         } else {
@@ -100,8 +98,7 @@ class MessageSource extends Component
      * @param string $language the target language.
      * @return string|boolean the translated message or false if translation wasn't found.
      */
-    protected function translateMessage($category, $message, $language)
-    {
+    protected function translateMessage($category, $message, $language) {
         $key = $language . '/' . $category;
         if (!isset($this->_messages[$key])) {
             $this->_messages[$key] = $this->loadMessages($category, $language);
@@ -122,4 +119,5 @@ class MessageSource extends Component
 
         return $this->_messages[$key][$message] = false;
     }
+
 }
