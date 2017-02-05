@@ -9,6 +9,6 @@ include dirname(APP_PATH) . '/Kantphp/Framework.php';
 
 define("CREATE_MODULE", "Index");
 
-KantApplication::getInstance('Development')->boot();
+KantApplication::getInstance('Development')->run();
 
 ?>
