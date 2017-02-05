@@ -9,6 +9,7 @@
 
 namespace Kant;
 
+use Kant\Foundation\Component;
 use Kant\Di\ServiceLocator;
 use Kant\Helper\ArrayHelper;
 use Kant\KantFactory;
@@ -22,7 +23,6 @@ use Kant\Exception\KantException;
 use ReflectionException;
 use ReflectionMethod;
 use Kant\Http\Request;
-use Kant\Session\Session;
 use Kant\Cache\Cache;
 use InvalidArgumentException;
 use ReflectionParameter;
@@ -38,18 +38,19 @@ class KantApplication extends ServiceLocator {
     private static $dispatch = [];
 
     /**
-     * Run time config
-     *
-     * @var Kant_Config
+     * @var string the language that is meant to be used for end users. It is recommended that you
+     * use [IETF language tags](http://en.wikipedia.org/wiki/IETF_language_tag). For example, `en` stands
+     * for English, while `en-US` stands for English (United States).
+     * @see sourceLanguage
      */
-    public static $configObj;
-
+    public $language = 'zh-CN';
+    
     /**
-     * Run time config's reference, for better performance
-     *
-     * @var array
+     * @var string the language that the application is written in. This mainly refers to
+     * the language that the messages and view files are written in.
+     * @see language
      */
-    protected static $config;
+    public $sourceLanguage = 'zh-CN';
 
     /**
      * Dispathc info
@@ -67,9 +68,10 @@ class KantApplication extends ServiceLocator {
     /**
      * Constructs
      */
-    public function __construct($environment) {
+    public function __construct($env) {
         Kant::$app = $this;
-        $this->initConfig($environment);
+        $config = $this->initConfig($env);
+        $this->preInit($config);
         $this->initSession();
         Cache::platform();
         $this->setDb();
@@ -80,15 +82,12 @@ class KantApplication extends ServiceLocator {
      */
     protected function initConfig($environment) {
         $appConfig = ArrayHelper::merge(
-                        require KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php', 
-                        require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php', 
-                        require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Route.php', 
-                        [
-                            'environment' => $environment,
-                            'config_path' => CFG_PATH . $environment . DIRECTORY_SEPARATOR
+                        require KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php', require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php', require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Route.php', [
+                    'environment' => $environment,
+                    'config_path' => CFG_PATH . $environment . DIRECTORY_SEPARATOR
                         ]
         );
-        KantFactory::getConfig()->merge($appConfig);
+        return KantFactory::getConfig()->merge($appConfig)->reference();
     }
 
     /**
@@ -109,7 +108,7 @@ class KantApplication extends ServiceLocator {
      * @return type
      */
     protected function initSession() {
-        return KantFactory::getSession()->getSession('default');
+        return KantFactory::getSession();
     }
 
     /**
@@ -130,7 +129,6 @@ class KantApplication extends ServiceLocator {
      * 
      */
     public function run() {
-        $this->parpareInit();
         $this->route();
         $this->dispatch();
         $this->end();
@@ -139,10 +137,25 @@ class KantApplication extends ServiceLocator {
     /**
      * Parpare
      */
-    protected function parpareInit() {
-        //Default timezone
-        $this->setTimeZone(KantFactory::getConfig()->get('timezone'));
-        if (KantFactory::getConfig()->get('debug')) {
+    protected function preInit($config) {
+        //set default timezone
+        if (isset($config['timeZone'])) {
+            $this->setTimeZone($config['timeZone']);
+        } elseif (!ini_get('date.timezone')) {
+            $this->setTimeZone('UTC');
+        }
+        $this->language = $config['language'];
+        // merge core components with custom components
+        foreach ($this->coreComponents() as $id => $component) {
+            if (!isset($components['components'][$id])) {
+                $components['components'][$id] = $component;
+            } elseif (is_array($config['components'][$id]) && !isset($components['components'][$id]['class'])) {
+                $components['components'][$id]['class'] = $component['class'];
+            }
+        }
+        Component::__construct($components);
+
+        if ($config['debug']) {
             ini_set('display_errors', 1);
             error_reporting(E_ALL);
             Runtime::mark('begin');
@@ -157,6 +170,25 @@ class KantApplication extends ServiceLocator {
             'log_path' => LOG_PATH
         ));
     }
+
+    /**
+     * set the language that is meant to be used for end users. It is recommended that you
+     * use [IETF language tags](http://en.wikipedia.org/wiki/IETF_language_tag). For example, `en` stands
+     * for English, while `en-US` stands for English (United States).
+     * 
+     */
+    public function setLanguage($value) {
+        $this->language = $value;
+    }
+    
+    /**
+     * get the language that is meant to be used for end users.
+     * @return string
+     */
+    public function getLanguage() {
+        return $this->language;
+    }
+
 
     /**
      * Returns the time zone used by this application.
@@ -372,6 +404,16 @@ class KantApplication extends ServiceLocator {
     }
 
     /**
+     * Returns the configuration of core application components.
+     * @see set()
+     */
+    public function coreComponents() {
+        return [
+            'i18n' => ['class' => 'Kant\I18n\I18N'],
+        ];
+    }
+
+    /**
      * Set the database connection component.
      */
     public function setDb() {
@@ -389,6 +431,14 @@ class KantApplication extends ServiceLocator {
      */
     public function getDb() {
         return $this->get('db');
+    }
+
+    /**
+     * Returns the internationalization (i18n) component
+     * @return \yii\i18n\I18N the internationalization application component.
+     */
+    public function getI18n() {
+        return $this->get('i18n');
     }
 
     /**

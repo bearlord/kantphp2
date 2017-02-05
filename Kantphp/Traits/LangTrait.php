@@ -14,7 +14,7 @@ trait LangTrait {
     public function getLang() {
         static $lang = null;
         if (empty($lang)) {
-            $lang = !empty($_COOKIE['lang']) ? $_COOKIE['lang'] : KantFactory::getConfig()->get('lang');
+            $lang = !empty($_COOKIE['language']) ? $_COOKIE['language'] : KantFactory::getConfig()->get('language');
             if (empty($lang)) {
                 $lang = 'en_US';
             }

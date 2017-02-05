@@ -23,7 +23,7 @@ return [
     'template_suffix' => ".php",
     'action_suffix' => 'Action',
     'redirect_tpl' => 'dispatch/redirect',
-    'lang' => 'zh_CN',
+    'language' => 'zh-CN',
     'timezone' => 'Etc/GMT-8',
     'charset' => 'utf-8',
     'lock_ex' => '1',

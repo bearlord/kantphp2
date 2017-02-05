@@ -7,9 +7,9 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Session\Sqlite;
+namespace Kant\Session\Driver\Sqlite;
 
-use Kant\Session\Sqlite\SessionSqliteModel;
+use Kant\Session\Driver\Sqlite\SessionSqliteModel;
 
 class SessionSqlite {
 

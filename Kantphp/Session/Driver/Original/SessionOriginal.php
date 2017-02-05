@@ -7,7 +7,7 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Session;
+namespace Kant\Session\Driver\Original;
 
 class SessionOriginal {
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Kant\Session\Mysql;
+namespace Kant\Session\Driver\Mysql;
 
 use Kant\Exception\KantException;
 use PDO;

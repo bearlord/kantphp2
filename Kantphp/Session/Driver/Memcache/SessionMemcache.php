@@ -7,34 +7,35 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Session\File;
+namespace Kant\Driver\Session;
 
 use Kant\Secure\Crypt\Crypt_AES;
 
 /**
- * Session File
+ * Session Memcache
  * 
  * @access private
  * @static
  * @version 1.1
  * @since version 1.1
  */
-class SessionFile {
+class SessionMemcache {
 
-    private $_sessionPath;
     protected $sidpre = 'sess_';
     //Session setting: gc_maxlifetime, auth_key;
     private $_setting;
+    //Session Model
+    private $_sessM;
 
     public function __construct($setting) {
         $this->_setting = $setting;
-        $this->_sessionPath = CACHE_PATH . 'Session' . DIRECTORY_SEPARATOR . 'SessionFile' . DIRECTORY_SEPARATOR;
-        $this->_setSessionModule();
+        require_once KANT_PATH . 'Session/Sqlite/SessionSqliteModel.php';
+        $this->_sessM = new SessionSqliteModel();
+        self::_setSessionModule();
     }
 
     /**
      * Set Session Module
-     * 
      */
     private function _setSessionModule() {
         session_module_name('user');
@@ -45,22 +46,10 @@ class SessionFile {
         session_start();
     }
 
-    /**
-     * Open SESSION
-     * 
-     * @static
-     * @return boolean
-     */
     public function open() {
         return true;
     }
 
-    /**
-     * Close Session
-     * 
-     * @static
-     * @return type
-     */
     public function close() {
         $maxlifetime = $this->_setting['maxlifetime'] ? $this->_setting['maxlifetime'] : ini_get('session.gc_maxlifetime');
         return self::gc($maxlifetime);
@@ -69,58 +58,53 @@ class SessionFile {
     /**
      * READ SESSION
      * 
-     * @static
      * @param string $sid
      * @return string
      */
     public function read($sid) {
-        $file = $this->_sessionPath . $this->sidpre . $sid;
-        if (file_exists($file)) {
-            $data = file_get_contents($this->_sessionPath . 'sess_' . $sid);
+        $sessionid = $this->sidpre . $sid;
+        $row = $this->model->readSession($sessionid);
+        if ($row) {
+            $data = $row[0]['data'];
             return $data;
         }
     }
 
     /**
-     * Write SESSION
+     * Write Session
      * 
-     * @static
      * @param string $sid
      * @param string $data
      * @return boolean
      */
     public function write($sid, $data) {
-        $file = $this->_sessionPath . 'sess_' . $sid;
-        $file_size = file_put_contents($file, $data, LOCK_EX);
-        return $file_size ? $file_size : 'false';
+        $sessionid = $this->sidpre . $sid;
+        $exist = $this->model->readSession($sessionid);
+        if (!$exist) {
+            $row = $this->model->saveSession(array(
+                'sessionid' => $sessionid,
+                'data' => $data,
+                'lastvisit' => time(),
+                'ip' => get_client_ip()
+            ));
+        } else {
+            $row = $this->model->saveSession(array(
+                'data' => $data,
+                'lastvisit' => time(),
+                'ip' => get_client_ip()
+                    ), $sessionid);
+        }
+        return $row;
     }
 
-    /**
-     * Destory SESSION
-     * 
-     * @param string $sid
-     * @return boolean
-     */
     public function destroy($sid) {
-        $file = $this->_sessionPath . 'sess_' . $sid;
-        if (file_exists($file)) {
-            unlink($file);
-        }
+        $this->_sessM->delete($sid);
         return true;
     }
 
-    /**
-     *  Session Garbage Collector
-     * 
-     * @param type $maxlifetime
-     * @return boolean
-     */
     public function gc($maxlifetime) {
-        foreach (glob($this->_sessionPath . 'sess_') as $file) {
-            if (filemtime($file) < time() - $maxlifetime && file_exists($file)) {
-                unlink($file);
-            }
-        }
+        $expiretime = time() - $maxlifetime;
+        $this->_sessM->deleteExpire($expiretime);
         return true;
     }
 

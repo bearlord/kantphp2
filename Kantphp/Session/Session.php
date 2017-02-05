@@ -16,7 +16,6 @@ use Kant\Session\Mysql\SessionMysql;
 final class Session {
 
     private static $_session;
-    private $_sessionConfig = array();
 
     /**
      * Session List
@@ -28,60 +27,40 @@ final class Session {
         
     }
 
+    public static function platform($config = "") {
+        $options = self::parseConfig($config);
+        if (self::$_cache == '') {
+            self::$_cache = (new self())->connect($options);
+        }
+        return self::$_cache;
+    }
+
+    public static function parseConfig($config = "") {
+        if ($config == "") {
+            $config = KantFactory::getConfig()->get('session.original');
+        } elseif (is_string($config)) {
+            $config = KantFactory::getConfig()->get('session.' . $config);
+        }
+        return $config;
+    }
+
     /**
      * Get instantce of the final object
      * 
      * @param type $config
      */
     public static function getInstance($config) {
+        $options = self::parseConfig($config);
         if (self::$_session == '') {
-            self::$_session = new self();
-        }
-        if ($config != '' && $config != self::$_session->_sessionConfig) {
-            self::$_session->_sessionConfig = array_merge($config, self::$_session->_sessionConfig);
+            self::$_session = (new self())->load($options);
         }
         return self::$_session;
     }
 
-    /**
-     * Get instance of the cache sessionConfig
-     * 
-     * @param type $sessionName
-     * @return type
-     */
-    public function getSession($sessionName) {
-        if (!isset($this->sessionList[$sessionName]) || !is_object($this->sessionList[$sessionName])) {
-            $this->sessionList[$sessionName] = $this->load($sessionName);
-        }
-        return $this->sessionList[$sessionName];
-    }
-
-    public function load($sessionName) {
-        $object = null;
-        if (isset($this->_sessionConfig[$sessionName]['type'])) {
-            switch ($this->_sessionConfig[$sessionName]['type']) {
-                case 'original':
-                    require_once KANT_PATH . 'Session/Original/SessionOriginal.php';
-                    $object = new SessionOriginal($this->_sessionConfig[$sessionName]);
-                    break;
-                case 'file':
-                    require_once KANT_PATH . 'Session/File/SessionFile.php';
-                    $object = new SessionFile($this->_sessionConfig[$sessionName]);
-                    break;
-                case 'sqlite':
-                    require_once KANT_PATH . 'Session/Sqlite/SessionSqlite.php';
-                    $object = new SessionSqlite($this->_sessionConfig[$sessionName]);
-                    break;
-                case 'mysql':
-                    require_once KANT_PATH . 'Session/Mysql/SessionMysql.php';
-                    $object = new SessionMysql($this->_sessionConfig[$sessionName]);
-                    break;
-                case 'memcache':
-                    break;
-                default :
-                    break;
-            }
-        }
+    public function load($options) {
+        $type = ucfirst($options['type']);
+        $class = "\\Kant\\Session\\Driver\\{$type}\\Session{$type}";
+        $object = new $class($options);
         return $object;
     }
 

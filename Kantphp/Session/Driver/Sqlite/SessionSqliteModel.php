@@ -1,6 +1,6 @@
 <?php
 
-namespace Kant\Session\Sqlite;
+namespace Kant\Session\Driver\Sqlite;
 
 use Kant\Exception\KantException;
 use PDO;
