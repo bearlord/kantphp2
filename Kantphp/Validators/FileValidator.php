@@ -7,9 +7,9 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
-use Yii;
+use Kant\Kant;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\web\JsExpression;
@@ -23,8 +23,6 @@ use yii\helpers\FileHelper;
  *
  * @property integer $sizeLimit The size limit for uploaded files. This property is read-only.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class FileValidator extends Validator {
 
@@ -108,7 +106,7 @@ class FileValidator extends Validator {
      * - {file}: the uploaded file name
      * - {limit}: the maximum size allowed (see [[getSizeLimit()]])
      * - {formattedLimit}: the maximum size formatted
-     *   with [[\yii\i18n\Formatter::asShortSize()|Formatter::asShortSize()]]
+     *   with [[\Kant\i18n\Formatter::asShortSize()|Formatter::asShortSize()]]
      */
     public $tooBig;
 
@@ -120,7 +118,7 @@ class FileValidator extends Validator {
      * - {file}: the uploaded file name
      * - {limit}: the value of [[minSize]]
      * - {formattedLimit}: the value of [[minSize]] formatted
-     *   with [[\yii\i18n\Formatter::asShortSize()|Formatter::asShortSize()]
+     *   with [[\Kant\i18n\Formatter::asShortSize()|Formatter::asShortSize()]
      */
     public $tooSmall;
 
@@ -160,22 +158,22 @@ class FileValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = Yii::t('yii', 'File upload failed.');
+            $this->message = Kant::t('yii', 'File upload failed.');
         }
         if ($this->uploadRequired === null) {
-            $this->uploadRequired = Yii::t('yii', 'Please upload a file.');
+            $this->uploadRequired = Kant::t('yii', 'Please upload a file.');
         }
         if ($this->tooMany === null) {
-            $this->tooMany = Yii::t('yii', 'You can upload at most {limit, number} {limit, plural, one{file} other{files}}.');
+            $this->tooMany = Kant::t('yii', 'You can upload at most {limit, number} {limit, plural, one{file} other{files}}.');
         }
         if ($this->wrongExtension === null) {
-            $this->wrongExtension = Yii::t('yii', 'Only files with these extensions are allowed: {extensions}.');
+            $this->wrongExtension = Kant::t('yii', 'Only files with these extensions are allowed: {extensions}.');
         }
         if ($this->tooBig === null) {
-            $this->tooBig = Yii::t('yii', 'The file "{file}" is too big. Its size cannot exceed {formattedLimit}.');
+            $this->tooBig = Kant::t('yii', 'The file "{file}" is too big. Its size cannot exceed {formattedLimit}.');
         }
         if ($this->tooSmall === null) {
-            $this->tooSmall = Yii::t('yii', 'The file "{file}" is too small. Its size cannot be smaller than {formattedLimit}.');
+            $this->tooSmall = Kant::t('yii', 'The file "{file}" is too small. Its size cannot be smaller than {formattedLimit}.');
         }
         if (!is_array($this->extensions)) {
             $this->extensions = preg_split('/[\s,]+/', strtolower($this->extensions), -1, PREG_SPLIT_NO_EMPTY);
@@ -183,7 +181,7 @@ class FileValidator extends Validator {
             $this->extensions = array_map('strtolower', $this->extensions);
         }
         if ($this->wrongMimeType === null) {
-            $this->wrongMimeType = Yii::t('yii', 'Only files with these MIME types are allowed: {mimeTypes}.');
+            $this->wrongMimeType = Kant::t('yii', 'Only files with these MIME types are allowed: {mimeTypes}.');
         }
         if (!is_array($this->mimeTypes)) {
             $this->mimeTypes = preg_split('/[\s,]+/', strtolower($this->mimeTypes), -1, PREG_SPLIT_NO_EMPTY);
@@ -389,7 +387,7 @@ class FileValidator extends Validator {
 
     /**
      * Returns the client side validation options.
-     * @param \yii\base\Model $model the model being validated
+     * @param \Kant\Model\Model $model the model being validated
      * @param string $attribute the attribute name being validated
      * @return array the client side validation options
      */
@@ -476,9 +474,9 @@ class FileValidator extends Validator {
      *
      * @param UploadedFile $file
      * @return boolean whether the $file mimeType is allowed
-     * @throws \yii\base\InvalidConfigException
+     * @throws \Kant\base\InvalidConfigException
      * @see mimeTypes
-     * @since 2.0.8
+    .8
      */
     protected function validateMimeType($file) {
         $fileMimeType = FileHelper::getMimeType($file->tempName);

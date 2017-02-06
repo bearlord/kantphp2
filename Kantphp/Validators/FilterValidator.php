@@ -7,7 +7,7 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
 use yii\base\InvalidConfigException;
 
@@ -30,8 +30,6 @@ use yii\base\InvalidConfigException;
  *
  * To specify the filter, set [[filter]] property to be the callback.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class FilterValidator extends Validator {
 

@@ -7,7 +7,7 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
 /**
  * InlineValidator represents a validator which is defined as a method in the object being validated.
@@ -21,8 +21,6 @@ namespace yii\validators;
  * where `$attribute` refers to the name of the attribute being validated, while `$params`
  * is an array representing the additional parameters supplied in the validation rule.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class InlineValidator extends Validator {
 

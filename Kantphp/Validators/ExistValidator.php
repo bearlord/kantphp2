@@ -7,9 +7,9 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
-use Yii;
+use Kant\Kant;
 use yii\base\InvalidConfigException;
 
 /**
@@ -35,9 +35,6 @@ use yii\base\InvalidConfigException;
  * // a1 needs to exist by checking the existence of both a2 and a3 (using a1 value)
  * ['a1', 'exist', 'targetAttribute' => ['a2', 'a1' => 'a3']]
  * ```
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class ExistValidator extends Validator {
 
@@ -60,9 +57,9 @@ class ExistValidator extends Validator {
 
     /**
      * @var string|array|\Closure additional filter to be applied to the DB query used to check the existence of the attribute value.
-     * This can be a string or an array representing the additional query condition (refer to [[\yii\db\Query::where()]]
+     * This can be a string or an array representing the additional query condition (refer to [[\Kant\db\Query::where()]]
      * on the format of query condition), or an anonymous function with the signature `function ($query)`, where `$query`
-     * is the [[\yii\db\Query|Query]] object that you can modify in the function.
+     * is the [[\Kant\db\Query|Query]] object that you can modify in the function.
      */
     public $filter;
 
@@ -77,7 +74,7 @@ class ExistValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = Yii::t('yii', '{attribute} is invalid.');
+            $this->message = Kant::t('yii', '{attribute} is invalid.');
         }
     }
 
@@ -102,7 +99,7 @@ class ExistValidator extends Validator {
         if (!$this->allowArray) {
             foreach ($params as $value) {
                 if (is_array($value)) {
-                    $this->addError($model, $attribute, Yii::t('yii', '{attribute} is invalid.'));
+                    $this->addError($model, $attribute, Kant::t('yii', '{attribute} is invalid.'));
 
                     return;
                 }
@@ -148,10 +145,10 @@ class ExistValidator extends Validator {
      * Creates a query instance with the given condition.
      * @param string $targetClass the target AR class
      * @param mixed $condition query condition
-     * @return \yii\db\ActiveQueryInterface the query instance
+     * @return \Kant\db\ActiveQueryInterface the query instance
      */
     protected function createQuery($targetClass, $condition) {
-        /* @var $targetClass \yii\db\ActiveRecordInterface */
+        /* @var $targetClass \Kant\db\ActiveRecordInterface */
         $query = $targetClass::find()->andWhere($condition);
         if ($this->filter instanceof \Closure) {
             call_user_func($this->filter, $query);

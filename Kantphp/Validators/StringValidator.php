@@ -7,17 +7,15 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
-use Yii;
+use Kant\Kant;
 
 /**
  * StringValidator validates that the attribute value is of certain length.
  *
  * Note, this validator should only be used with string-typed attributes.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class StringValidator extends Validator {
 
@@ -70,7 +68,7 @@ class StringValidator extends Validator {
 
     /**
      * @var string the encoding of the string value to be validated (e.g. 'UTF-8').
-     * If this property is not set, [[\yii\base\Application::charset]] will be used.
+     * If this property is not set, [[\Kant\base\Application::charset]] will be used.
      */
     public $encoding;
 
@@ -92,16 +90,16 @@ class StringValidator extends Validator {
             $this->encoding = Yii::$app->charset;
         }
         if ($this->message === null) {
-            $this->message = Yii::t('yii', '{attribute} must be a string.');
+            $this->message = Kant::t('yii', '{attribute} must be a string.');
         }
         if ($this->min !== null && $this->tooShort === null) {
-            $this->tooShort = Yii::t('yii', '{attribute} should contain at least {min, number} {min, plural, one{character} other{characters}}.');
+            $this->tooShort = Kant::t('yii', '{attribute} should contain at least {min, number} {min, plural, one{character} other{characters}}.');
         }
         if ($this->max !== null && $this->tooLong === null) {
-            $this->tooLong = Yii::t('yii', '{attribute} should contain at most {max, number} {max, plural, one{character} other{characters}}.');
+            $this->tooLong = Kant::t('yii', '{attribute} should contain at most {max, number} {max, plural, one{character} other{characters}}.');
         }
         if ($this->length !== null && $this->notEqual === null) {
-            $this->notEqual = Yii::t('yii', '{attribute} should contain {length, number} {length, plural, one{character} other{characters}}.');
+            $this->notEqual = Kant::t('yii', '{attribute} should contain {length, number} {length, plural, one{character} other{characters}}.');
         }
     }
 

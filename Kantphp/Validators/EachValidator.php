@@ -7,10 +7,10 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
 use yii\base\InvalidConfigException;
-use Yii;
+use Kant\Kant;
 use yii\base\Model;
 
 /**
@@ -36,9 +36,6 @@ use yii\base\Model;
  *
  * > Note: EachValidator is meant to be used only in basic cases, you should consider usage of tabular input,
  *   using several models for the more complex case.
- *
- * @author Paul Klimov <klimov.paul@gmail.com>
- * @since 2.0.4
  */
 class EachValidator extends Validator {
 
@@ -75,7 +72,7 @@ class EachValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = Yii::t('yii', '{attribute} is invalid.');
+            $this->message = Kant::t('yii', '{attribute} is invalid.');
         }
     }
 
@@ -94,7 +91,7 @@ class EachValidator extends Validator {
     /**
      * Creates validator object based on the validation rule specified in [[rule]].
      * @param Model|null $model model in which context validator should be created.
-     * @throws \yii\base\InvalidConfigException
+     * @throws \Kant\base\InvalidConfigException
      * @return Validator validator instance
      */
     private function createEmbeddedValidator($model) {

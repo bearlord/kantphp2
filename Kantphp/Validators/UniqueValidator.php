@@ -7,9 +7,9 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
-use Yii;
+use Kant\Kant;
 use yii\db\ActiveRecordInterface;
 use yii\helpers\Inflector;
 
@@ -34,8 +34,6 @@ use yii\helpers\Inflector;
  * ['a1', 'unique', 'targetAttribute' => ['a2', 'a1' => 'a3']]
  * ```
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class UniqueValidator extends Validator {
 
@@ -58,9 +56,9 @@ class UniqueValidator extends Validator {
 
     /**
      * @var string|array|\Closure additional filter to be applied to the DB query used to check the uniqueness of the attribute value.
-     * This can be a string or an array representing the additional query condition (refer to [[\yii\db\Query::where()]]
+     * This can be a string or an array representing the additional query condition (refer to [[\Kant\db\Query::where()]]
      * on the format of query condition), or an anonymous function with the signature `function ($query)`, where `$query`
-     * is the [[\yii\db\Query|Query]] object that you can modify in the function.
+     * is the [[\Kant\db\Query|Query]] object that you can modify in the function.
      */
     public $filter;
 
@@ -70,7 +68,7 @@ class UniqueValidator extends Validator {
      * - `{attributes}`: the labels of the attributes being validated.
      * - `{values}`: the values of the attributes being validated.
      *
-     * @since 2.0.9
+    .9
      */
     public $comboNotUnique;
 
@@ -80,10 +78,10 @@ class UniqueValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = Yii::t('yii', '{attribute} "{value}" has already been taken.');
+            $this->message = Kant::t('yii', '{attribute} "{value}" has already been taken.');
         }
         if ($this->comboNotUnique === null) {
-            $this->comboNotUnique = Yii::t('yii', 'The combination {values} of {attributes} has already been taken.');
+            $this->comboNotUnique = Kant::t('yii', 'The combination {values} of {attributes} has already been taken.');
         }
     }
 
@@ -106,7 +104,7 @@ class UniqueValidator extends Validator {
 
         foreach ($params as $value) {
             if (is_array($value)) {
-                $this->addError($model, $attribute, Yii::t('yii', '{attribute} is invalid.'));
+                $this->addError($model, $attribute, Kant::t('yii', '{attribute} is invalid.'));
 
                 return;
             }
@@ -158,7 +156,7 @@ class UniqueValidator extends Validator {
 
     /**
      * Builds and adds [[comboNotUnique]] error message to the specified model attribute.
-     * @param \yii\base\Model $model the data model.
+     * @param \Kant\Model\Model $model the data model.
      * @param string $attribute the name of the attribute.
      */
     private function addComboNotUniqueError($model, $attribute) {

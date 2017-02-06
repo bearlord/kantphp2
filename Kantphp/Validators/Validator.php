@@ -26,7 +26,7 @@ use Kant\KantFactory;
  * be referenced using short names. They are listed as follows:
  *
  * - `boolean`: [[BooleanValidator]]
- * - `captcha`: [[\yii\captcha\CaptchaValidator]]
+ * - `captcha`: [[\Kant\captcha\CaptchaValidator]]
  * - `compare`: [[CompareValidator]]
  * - `date`: [[DateValidator]]
  * - `default`: [[DefaultValueValidator]]
@@ -48,8 +48,6 @@ use Kant\KantFactory;
  * - `url`: [[UrlValidator]]
  * - `ip`: [[IpValidator]]
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class Validator extends Component {
 
@@ -194,7 +192,7 @@ class Validator extends Component {
      * Creates a validator object.
      * @param mixed $type the validator type. This can be a built-in validator name,
      * a method name of the model class, an anonymous function, or a validator class name.
-     * @param \yii\base\Model $model the data model to be validated.
+     * @param \Kant\Model\Model $model the data model to be validated.
      * @param array|string $attributes list of attributes to be validated. This can be either an array of
      * the attribute names or a string of comma-separated attribute names.
      * @param array $params initial values to be applied to the validator properties
@@ -233,7 +231,7 @@ class Validator extends Component {
 
     /**
      * Validates the specified object.
-     * @param \yii\base\Model $model the data model being validated
+     * @param \Kant\Model\Model $model the data model being validated
      * @param array|null $attributes the list of attributes to be validated.
      * Note that if an attribute is not associated with the validator, or is is prefixed with `!` char - it will be
      * ignored. If this parameter is null, every attribute listed in [[attributes]] will be validated.
@@ -267,7 +265,7 @@ class Validator extends Component {
     /**
      * Validates a single attribute.
      * Child classes must implement this method to provide the actual validation logic.
-     * @param \yii\base\Model $model the data model to be validated
+     * @param \Kant\Model\Model $model the data model to be validated
      * @param string $attribute the name of the attribute to be validated.
      */
     public function validateAttribute($model, $attribute) {
@@ -291,7 +289,7 @@ class Validator extends Component {
         }
 
         list($message, $params) = $result;
-        $params['attribute'] = Yii::t('yii', 'the input value');
+        $params['attribute'] = Kant::t('yii', 'the input value');
         if (is_array($value)) {
             $params['value'] = 'array()';
         } elseif (is_object($value)) {
@@ -338,13 +336,13 @@ class Validator extends Component {
      * - `error`: the jQuery selector of the error tag under the context of the container
      * - `status`: status of the input field, 0: empty, not entered before, 1: validated, 2: pending validation, 3: validating
      *
-     * @param \yii\base\Model $model the data model being validated
+     * @param \Kant\Model\Model $model the data model being validated
      * @param string $attribute the name of the attribute to be validated.
-     * @param \yii\web\View $view the view object that is going to be used to render views or view files
+     * @param \Kant\web\View $view the view object that is going to be used to render views or view files
      * containing a model form with this validator applied.
      * @return string the client-side validation script. Null if the validator does not support
      * client-side validation.
-     * @see \yii\widgets\ActiveForm::enableClientValidation
+     * @see \Kant\widgets\ActiveForm::enableClientValidation
      */
     public function clientValidateAttribute($model, $attribute, $view) {
         return null;
@@ -368,7 +366,7 @@ class Validator extends Component {
     /**
      * Adds an error about the specified attribute to the model object.
      * This is a helper method that performs message selection and internationalization.
-     * @param \yii\base\Model $model the data model being validated
+     * @param \Kant\Model\Model $model the data model being validated
      * @param string $attribute the attribute being validated
      * @param string $message the error message
      * @param array $params values for the placeholders in the error message

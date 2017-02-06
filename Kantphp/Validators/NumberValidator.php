@@ -7,9 +7,9 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
-use Yii;
+use Kant\Kant;
 use yii\web\JsExpression;
 use yii\helpers\Json;
 
@@ -20,8 +20,6 @@ use yii\helpers\Json;
  * Optionally, you may configure the [[max]] and [[min]] properties to ensure the number
  * is within certain range.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class NumberValidator extends Validator {
 
@@ -69,13 +67,13 @@ class NumberValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = $this->integerOnly ? Yii::t('yii', '{attribute} must be an integer.') : Yii::t('yii', '{attribute} must be a number.');
+            $this->message = $this->integerOnly ? Kant::t('yii', '{attribute} must be an integer.') : Kant::t('yii', '{attribute} must be a number.');
         }
         if ($this->min !== null && $this->tooSmall === null) {
-            $this->tooSmall = Yii::t('yii', '{attribute} must be no less than {min}.');
+            $this->tooSmall = Kant::t('yii', '{attribute} must be no less than {min}.');
         }
         if ($this->max !== null && $this->tooBig === null) {
-            $this->tooBig = Yii::t('yii', '{attribute} must be no greater than {max}.');
+            $this->tooBig = Kant::t('yii', '{attribute} must be no greater than {max}.');
         }
     }
 
@@ -105,7 +103,7 @@ class NumberValidator extends Validator {
      */
     protected function validateValue($value) {
         if (is_array($value) || is_object($value)) {
-            return [Yii::t('yii', '{attribute} is invalid.'), []];
+            return [Kant::t('yii', '{attribute} is invalid.'), []];
         }
         $pattern = $this->integerOnly ? $this->integerPattern : $this->numberPattern;
         if (!preg_match($pattern, "$value")) {

@@ -7,9 +7,9 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
-use Yii;
+use Kant\Kant;
 use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 
@@ -20,8 +20,6 @@ use yii\helpers\ArrayHelper;
  * If the [[not]] property is set true, the validator will ensure the attribute value
  * is NOT among the specified range.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class RangeValidator extends Validator {
 
@@ -64,7 +62,7 @@ class RangeValidator extends Validator {
             throw new InvalidConfigException('The "range" property must be set.');
         }
         if ($this->message === null) {
-            $this->message = Yii::t('yii', '{attribute} is invalid.');
+            $this->message = Kant::t('yii', '{attribute} is invalid.');
         }
     }
 

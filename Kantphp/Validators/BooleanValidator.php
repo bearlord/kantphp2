@@ -7,9 +7,9 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
-use Yii;
+use Kant\Kant;
 
 /**
  * BooleanValidator checks if the attribute value is a boolean value.
@@ -17,8 +17,6 @@ use Yii;
  * Possible boolean values can be configured via the [[trueValue]] and [[falseValue]] properties.
  * And the comparison can be either [[strict]] or not.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class BooleanValidator extends Validator {
 
@@ -45,7 +43,7 @@ class BooleanValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = Yii::t('yii', '{attribute} must be either "{true}" or "{false}".');
+            $this->message = Kant::t('yii', '{attribute} must be either "{true}" or "{false}".');
         }
     }
 

@@ -7,9 +7,9 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
-use Yii;
+use Kant\Kant;
 use yii\base\InvalidConfigException;
 use yii\helpers\Html;
 use yii\web\JsExpression;
@@ -20,8 +20,6 @@ use yii\helpers\Json;
  *
  * If the [[not]] property is set true, the validator will ensure the attribute value do NOT match the [[pattern]].
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class RegularExpressionValidator extends Validator {
 
@@ -45,7 +43,7 @@ class RegularExpressionValidator extends Validator {
             throw new InvalidConfigException('The "pattern" property must be set.');
         }
         if ($this->message === null) {
-            $this->message = Yii::t('yii', '{attribute} is invalid.');
+            $this->message = Kant::t('yii', '{attribute} is invalid.');
         }
     }
 

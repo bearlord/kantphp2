@@ -14,8 +14,6 @@ use Kant\Kant;
 /**
  * RequiredValidator validates that the specified attribute does not have null or empty value.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class RequiredValidator extends Validator {
 

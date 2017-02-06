@@ -7,15 +7,13 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
 use yii\web\AssetBundle;
 
 /**
  * This asset bundle provides the javascript files for client validation.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class ValidationAsset extends AssetBundle {
 
@@ -24,7 +22,7 @@ class ValidationAsset extends AssetBundle {
         'yii.validation.js',
     ];
     public $depends = [
-        'yii\web\YiiAsset',
+        'yii\web\KantAsset',
     ];
 
 }

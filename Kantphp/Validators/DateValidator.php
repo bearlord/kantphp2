@@ -7,12 +7,12 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
 use DateTime;
 use IntlDateFormatter;
-use Yii;
-use yii\base\InvalidConfigException;
+use Kant\Kant;
+use Kant\Exception\InvalidConfigException;
 use yii\helpers\FormatConverter;
 
 /**
@@ -29,30 +29,26 @@ use yii\helpers\FormatConverter;
  * property and the target timeZone will be UTC when [[timestampAttributeFormat]] is `null` (exporting as UNIX timestamp)
  * or [[timestampAttributeTimeZone]] otherwise. If you want to avoid the time zone conversion, make sure that [[timeZone]] and
  * [[timestampAttributeTimeZone]] are the same.
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @author Carsten Brandt <mail@cebe.cc>
- * @since 2.0
  */
 class DateValidator extends Validator {
 
     /**
      * Constant for specifying the validation [[type]] as a date value, used for validation with intl short format.
-     * @since 2.0.8
+    .8
      * @see type
      */
     const TYPE_DATE = 'date';
 
     /**
      * Constant for specifying the validation [[type]] as a datetime value, used for validation with intl short format.
-     * @since 2.0.8
+    .8
      * @see type
      */
     const TYPE_DATETIME = 'datetime';
 
     /**
      * Constant for specifying the validation [[type]] as a time value, used for validation with intl short format.
-     * @since 2.0.8
+    .8
      * @see type
      */
     const TYPE_TIME = 'time';
@@ -70,7 +66,7 @@ class DateValidator extends Validator {
      * - [[TYPE_DATETIME]] - for validating datetime values, that contain a date part as well as a time part.
      * - [[TYPE_TIME]] - for validating time values, that contain no date information.
      *
-     * @since 2.0.8
+    .8
      */
     public $type = self::TYPE_DATE;
 
@@ -81,13 +77,13 @@ class DateValidator extends Validator {
      * Alternatively this can be a string prefixed with `php:` representing a format that can be recognized by the PHP Datetime class.
      * Please refer to <http://php.net/manual/en/datetime.createfromformat.php> on supported formats.
      *
-     * If this property is not set, the default value will be obtained from `Yii::$app->formatter->dateFormat`, see [[\yii\i18n\Formatter::dateFormat]] for details.
+     * If this property is not set, the default value will be obtained from `Yii::$app->formatter->dateFormat`, see [[\Kant\i18n\Formatter::dateFormat]] for details.
      * Since version 2.0.8 the default value will be determined from different formats of the formatter class,
      * dependent on the value of [[type]]:
      *
-     * - if type is [[TYPE_DATE]], the default value will be taken from [[\yii\i18n\Formatter::dateFormat]],
-     * - if type is [[TYPE_DATETIME]], it will be taken from [[\yii\i18n\Formatter::datetimeFormat]],
-     * - and if type is [[TYPE_TIME]], it will be [[\yii\i18n\Formatter::timeFormat]].
+     * - if type is [[TYPE_DATE]], the default value will be taken from [[\Kant\i18n\Formatter::dateFormat]],
+     * - if type is [[TYPE_DATETIME]], it will be taken from [[\Kant\i18n\Formatter::datetimeFormat]],
+     * - and if type is [[TYPE_TIME]], it will be [[\Kant\i18n\Formatter::timeFormat]].
      *
      * Here are some example values:
      *
@@ -110,8 +106,8 @@ class DateValidator extends Validator {
     /**
      * @var string the locale ID that is used to localize the date parsing.
      * This is only effective when the [PHP intl extension](http://php.net/manual/en/book.intl.php) is installed.
-     * If not set, the locale of the [[\yii\base\Application::formatter|formatter]] will be used.
-     * See also [[\yii\i18n\Formatter::locale]].
+     * If not set, the locale of the [[\Kant\base\Application::formatter|formatter]] will be used.
+     * See also [[\Kant\i18n\Formatter::locale]].
      */
     public $locale;
 
@@ -120,7 +116,7 @@ class DateValidator extends Validator {
      * This can be any value that may be passed to [date_default_timezone_set()](http://www.php.net/manual/en/function.date-default-timezone-set.php)
      * e.g. `UTC`, `Europe/Berlin` or `America/Chicago`.
      * Refer to the [php manual](http://www.php.net/manual/en/timezones.php) for available timezones.
-     * If this property is not set, [[\yii\base\Application::timeZone]] will be used.
+     * If this property is not set, [[\Kant\base\Application::timeZone]] will be used.
      */
     public $timeZone;
 
@@ -144,7 +140,7 @@ class DateValidator extends Validator {
      * If [[timestampAttribute]] is not set, this property will be ignored.
      * @see format
      * @see timestampAttribute
-     * @since 2.0.4
+    .4
      */
     public $timestampAttributeFormat;
 
@@ -157,7 +153,7 @@ class DateValidator extends Validator {
      *
      * If [[timestampAttributeFormat]] is not set, this property will be ignored.
      * @see timestampAttributeFormat
-     * @since 2.0.4
+    .4
      */
     public $timestampAttributeTimeZone = 'UTC';
 
@@ -166,7 +162,7 @@ class DateValidator extends Validator {
      * This can be a unix timestamp or a string representing a date time value.
      * If this property is a string, [[format]] will be used to parse it.
      * @see tooBig for the customized message used when the date is too big.
-     * @since 2.0.4
+    .4
      */
     public $max;
 
@@ -175,33 +171,33 @@ class DateValidator extends Validator {
      * This can be a unix timestamp or a string representing a date time value.
      * If this property is a string, [[format]] will be used to parse it.
      * @see tooSmall for the customized message used when the date is too small.
-     * @since 2.0.4
+    .4
      */
     public $min;
 
     /**
      * @var string user-defined error message used when the value is bigger than [[max]].
-     * @since 2.0.4
+    .4
      */
     public $tooBig;
 
     /**
      * @var string user-defined error message used when the value is smaller than [[min]].
-     * @since 2.0.4
+    .4
      */
     public $tooSmall;
 
     /**
      * @var string user friendly value of upper limit to display in the error message.
      * If this property is null, the value of [[max]] will be used (before parsing).
-     * @since 2.0.4
+    .4
      */
     public $maxString;
 
     /**
      * @var string user friendly value of lower limit to display in the error message.
      * If this property is null, the value of [[min]] will be used (before parsing).
-     * @since 2.0.4
+    .4
      */
     public $minString;
 
@@ -221,7 +217,7 @@ class DateValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = Yii::t('yii', 'The format of {attribute} is invalid.');
+            $this->message = Kant::t('yii', 'The format of {attribute} is invalid.');
         }
         if ($this->format === null) {
             if ($this->type === self::TYPE_DATE) {
@@ -241,10 +237,10 @@ class DateValidator extends Validator {
             $this->timeZone = Yii::$app->timeZone;
         }
         if ($this->min !== null && $this->tooSmall === null) {
-            $this->tooSmall = Yii::t('yii', '{attribute} must be no less than {min}.');
+            $this->tooSmall = Kant::t('yii', '{attribute} must be no less than {min}.');
         }
         if ($this->max !== null && $this->tooBig === null) {
-            $this->tooBig = Yii::t('yii', '{attribute} must be no greater than {max}.');
+            $this->tooBig = Kant::t('yii', '{attribute} must be no greater than {max}.');
         }
         if ($this->maxString === null) {
             $this->maxString = (string) $this->max;

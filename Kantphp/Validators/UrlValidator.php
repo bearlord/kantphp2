@@ -7,9 +7,9 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
-use Yii;
+use Kant\Kant;
 use yii\base\InvalidConfigException;
 use yii\web\JsExpression;
 use yii\helpers\Json;
@@ -20,8 +20,6 @@ use yii\helpers\Json;
  * Note that this validator only checks if the URL scheme and host part are correct.
  * It does not check the remaining parts of a URL.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class UrlValidator extends Validator {
 
@@ -62,7 +60,7 @@ class UrlValidator extends Validator {
             throw new InvalidConfigException('In order to use IDN validation intl extension must be installed and enabled.');
         }
         if ($this->message === null) {
-            $this->message = Yii::t('yii', '{attribute} is not a valid URL.');
+            $this->message = Kant::t('yii', '{attribute} is not a valid URL.');
         }
     }
 

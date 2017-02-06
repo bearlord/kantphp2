@@ -7,16 +7,14 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
-use Yii;
+use Kant\Kant;
 use yii\web\UploadedFile;
 
 /**
  * ImageValidator verifies if an attribute is receiving a valid image.
  *
- * @author Taras Gudz <gudz.taras@gmail.com>
- * @since 2.0
  */
 class ImageValidator extends FileValidator {
 
@@ -104,19 +102,19 @@ class ImageValidator extends FileValidator {
         parent::init();
 
         if ($this->notImage === null) {
-            $this->notImage = Yii::t('yii', 'The file "{file}" is not an image.');
+            $this->notImage = Kant::t('yii', 'The file "{file}" is not an image.');
         }
         if ($this->underWidth === null) {
-            $this->underWidth = Yii::t('yii', 'The image "{file}" is too small. The width cannot be smaller than {limit, number} {limit, plural, one{pixel} other{pixels}}.');
+            $this->underWidth = Kant::t('yii', 'The image "{file}" is too small. The width cannot be smaller than {limit, number} {limit, plural, one{pixel} other{pixels}}.');
         }
         if ($this->underHeight === null) {
-            $this->underHeight = Yii::t('yii', 'The image "{file}" is too small. The height cannot be smaller than {limit, number} {limit, plural, one{pixel} other{pixels}}.');
+            $this->underHeight = Kant::t('yii', 'The image "{file}" is too small. The height cannot be smaller than {limit, number} {limit, plural, one{pixel} other{pixels}}.');
         }
         if ($this->overWidth === null) {
-            $this->overWidth = Yii::t('yii', 'The image "{file}" is too large. The width cannot be larger than {limit, number} {limit, plural, one{pixel} other{pixels}}.');
+            $this->overWidth = Kant::t('yii', 'The image "{file}" is too large. The width cannot be larger than {limit, number} {limit, plural, one{pixel} other{pixels}}.');
         }
         if ($this->overHeight === null) {
-            $this->overHeight = Yii::t('yii', 'The image "{file}" is too large. The height cannot be larger than {limit, number} {limit, plural, one{pixel} other{pixels}}.');
+            $this->overHeight = Kant::t('yii', 'The image "{file}" is too large. The height cannot be larger than {limit, number} {limit, plural, one{pixel} other{pixels}}.');
         }
     }
 

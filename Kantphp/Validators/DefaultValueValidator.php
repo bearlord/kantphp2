@@ -7,7 +7,7 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\validators;
+namespace Kant\Validators;
 
 /**
  * DefaultValueValidator sets the attribute to be the specified default value.
@@ -15,8 +15,6 @@ namespace yii\validators;
  * DefaultValueValidator is not really a validator. It is provided mainly to allow
  * specifying attribute default values when they are empty.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
  */
 class DefaultValueValidator extends Validator {
 
