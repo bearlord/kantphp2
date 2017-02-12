@@ -73,9 +73,8 @@ class KantFactory {
     /**
      * Get cache object
      */
-    public static function getCache() {
+    public static function getCache($config) {
         if (!self::$container['cache']) {
-            $config = self::getConfig()->get('cache.default');
             self::$container['cache'] = Cache::getInstance($config);
         }
         return self::$container['cache'];

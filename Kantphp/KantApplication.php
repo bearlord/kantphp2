@@ -165,7 +165,9 @@ class KantApplication extends ServiceLocator {
         } elseif (!ini_get('date.timezone')) {
             $this->setTimeZone('UTC');
         }
+        
         $this->setLanguage($config['language']);
+        
         // merge core components with custom components
         foreach ($this->coreComponents() as $id => $component) {
             if (!isset($components['components'][$id])) {
@@ -362,24 +364,25 @@ class KantApplication extends ServiceLocator {
     public function module($dispatchInfo) {
         KantRegistry::set('dispatchInfo', $dispatchInfo);
         $this->dispatchInfo = $dispatchInfo;
+        
         //module name
-        $moduleName = !empty($dispatchInfo[0]) ? ucfirst($dispatchInfo[0]) : ucfirst(KantFactory::getConfig()->get('route.module'));
+        $moduleName = ucfirst($dispatchInfo[0]) ?: ucfirst(KantFactory::getConfig()->get('route.module'));
         if (empty($moduleName)) {
             throw new KantException('No Module found');
         }
         $this->_initModuleConfig($moduleName);
+        
         //controller name
-        $controllerName = !empty($dispatchInfo[1]) ? ucfirst($dispatchInfo[1]) : ucfirst(KantFactory::getConfig()->get('route.ctrl'));
+        $controllerName = ucfirst($dispatchInfo[1]) ?: ucfirst(KantFactory::getConfig()->get('route.ctrl'));
         $controller = $this->controller($controllerName, $moduleName);
         if (!$controller) {
             if (empty($controller)) {
                 throw new KantException(sprintf("No controller exists:%s", ucfirst($this->dispatchInfo[1]) . 'Controller'));
             }
         }
-        $action = !empty($this->dispatchInfo[2]) ? $this->dispatchInfo[2] . KantFactory::getConfig()->get('action_suffix') : 'Index' . KantFactory::getConfig()->get('action_suffix');
-
-        $data = $this->callClass($controller . "@" . $action);
-
+        //action name
+        $action = $this->dispatchInfo[2] ?: 'Index';
+        $data = $this->callClass($controller . "@" . $action . KantFactory::getConfig()->get('action_suffix'));
         return $data;
     }
 
