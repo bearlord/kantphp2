@@ -380,7 +380,7 @@ class KantApplication extends ServiceLocator {
             }
         }
         //action name
-        $action = $this->dispatchInfo[2] ?: 'Index';
+        $action = $this->dispatchInfo[2] ?: ucfirst(KantFactory::getConfig()->get('route.act'));
         $data = $this->callClass($controller . "@" . $action . KantFactory::getConfig()->get('action_suffix'));
         return $data;
     }
@@ -394,13 +394,13 @@ class KantApplication extends ServiceLocator {
      */
     protected function controller($controller, $module) {
         $controller = ucfirst($controller) . "Controller";
-        $filepath = APP_PATH . "Module/" . $module . "/Controller/$controller.php";
+        $filepath = APP_PATH . "Module{$module}/Controller{$controller}.php";
         if (!file_exists($filepath)) {
             throw new KantException(sprintf("File does not exists:%s", $filepath));
         }
         include $filepath;
         
-        $namespace = "App\\$module\\Controller\\";
+        $namespace = "App\\{$module}\\Controller\\";
         $controller = $namespace . $controller;
         return $controller;
     }
