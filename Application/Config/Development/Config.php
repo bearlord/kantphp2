@@ -7,7 +7,7 @@ return [
     ],
     'database' => [
         //default configuration
-        'default' => [
+        'db' => [
             'dsn' => 'mysql:host=localhost;dbname=kantphp',
             'username' => 'root',
             'password' => '123456',

@@ -85,9 +85,8 @@ class KantFactory {
      * Get session object
      * 
      */
-    public static function getSession() {
+    public static function getSession($config) {
         if (!self::$container['session']) {
-            $config = self::getConfig()->get('session.default');
             self::$container['session'] = Session::getInstance($config);
         }
         return self::$container['session'];

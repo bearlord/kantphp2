@@ -13,7 +13,7 @@ class IndexController extends Controller {
     }
     
     public function modelAction() {
-        $PostsModel = new \App\Index\Model\PostsModel();
+        $PostsModel = new \App\Index\Model\Posts();
         $PostsModel->a = "100";
         echo $PostsModel->a;
     }

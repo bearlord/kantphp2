@@ -31,9 +31,8 @@ class Cache {
     private static $_cache;
 
     public static function platform($config = "") {
-        $options = self::parseConfig($config);
         if (self::$_cache == '') {
-            self::$_cache = (new self())->connect($options);
+            self::$_cache = (new self())->connect($config);
         }
         return self::$_cache;
     }

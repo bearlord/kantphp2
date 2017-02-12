@@ -74,8 +74,9 @@ class KantApplication extends ServiceLocator {
         $config = $this->initConfig($env);
         $this->preInit($config);
         
-        $this->initSession();
-        Cache::platform();
+        $this->initSession($config['session']);
+        $this->initCache($config['cache']);
+        
         $this->setDb();
     }
 
@@ -109,8 +110,18 @@ class KantApplication extends ServiceLocator {
      * @staticvar type $session
      * @return type
      */
-    protected function initSession() {
-        return KantFactory::getSession();
+    protected function initSession($config) {
+        return KantFactory::getSession($config);
+    }
+    
+    /**
+     * Initialize cache
+     * 
+     * @param type $config
+     * @return type
+     */
+    protected function initCache($config) {
+        return Cache::platform($config);
     }
 
     /**

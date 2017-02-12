@@ -127,3 +127,11 @@ The SQL being executed was: SELECT `id`, `name` FROM `kant_user` LIMIT 10
 [ 2016-12-09T22:59:33+08:00 ] 127.0.0.1 /index/test/model
 ERR: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id' in 'field list'
 The SQL being executed was: SELECT `id`, `name` FROM `kant_posts` LIMIT 10
+[ 2016-12-09T23:19:02+08:00 ] 127.0.0.1 /index/test/model
+ERR: Getting unknown property: App\Index\Model\PostsModel::pdo
+[ 2016-12-09T23:19:51+08:00 ] 127.0.0.1 /index/test/model
+ERR: Connection::dsn cannot be empty.
+[ 2016-12-09T23:20:17+08:00 ] 127.0.0.1 /index/test/model
+ERR: Connection::dsn cannot be empty.
+[ 2016-12-09T23:22:22+08:00 ] 127.0.0.1 /index/test/model
+ERR: Calling unknown method: Kant\Database\Query::findOne()

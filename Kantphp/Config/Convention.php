@@ -35,23 +35,26 @@ return [
         'cookie_ttl' => 0,
         'auth_key' => 'NMa1FcQBE1HHHd4AQyTV'
     ],
+    /**
+      -- file --
+
+      'type' => 'file',
+      'maxlifetime' => 1800,
+      'auth_key' => 'NMa1FcQBE1HHHd4AQyTV',
+
+      -- sqlite --
+
+      'type' => 'sqlite',
+      'maxlifetime' => 1800,
+      'auth_key' => 'NMa1FcQBE1HHHd4AQyTV',
+
+     */
     'session' => [
-        'default' => [
-            'type' => 'original',
-            'maxlifetime' => 1800,
-        ],
-        'file' => [
-            'type' => 'file',
-            'maxlifetime' => 1800,
-            'auth_key' => 'NMa1FcQBE1HHHd4AQyTV',
-        ],
-        'sqlite' => [
-            'type' => 'sqlite',
-            'maxlifetime' => 1800,
-            'auth_key' => 'NMa1FcQBE1HHHd4AQyTV',
-        ]],
+        'type' => 'original',
+        'maxlifetime' => 1800,
+    ],
     'database' => [
-        //default configuration
+//default configuration
         'db' => [
             'dsn' => 'mysql:host=localhost;dbname=kantphp',
             'username' => 'root',
@@ -77,23 +80,22 @@ return [
         ]
     ],
     //cache config
+    /*
+     * memcache type
+
+      'type' => 'memcache',
+      'hostname' => 'localhost',
+      'port' => 11211
+
+      redis cache type
+
+      'type' => 'redis',
+      'hostname' => '127.0.0.1',
+      'port' => 6379
+
+     */
     'cache' => [
-        //default file cache type
-        'file' => [
-            'type' => 'file'
-        ],
-        //memcache type
-        'memcache' => [
-            'type' => 'memcache',
-            'hostname' => 'localhost',
-            'port' => 11211
-        ],
-        //redis cache type
-        'redis' => [
-            'type' => 'redis',
-            'hostname' => '127.0.0.1',
-            'port' => 6379
-        ]
+        'type' => 'file'
     ],
     'token' => [
         'switch' => false,
