@@ -497,5 +497,6 @@ class Container extends Component {
      */
     public function instance($class, $instance) {
         $this->_singletons[$class] = $instance;
+        return $instance;
     }
 }

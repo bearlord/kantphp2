@@ -9,7 +9,6 @@
 
 namespace Kant\Route;
 
-use Kant\Registry\KantRegistry;
 use Kant\KantFactory;
 
 class Route {
@@ -550,7 +549,7 @@ class Route {
      * 
      * @param type $pathinfo
      */
-    protected static function parseRoute($pathinfo) {        
+    protected static function parseRoute($pathinfo) {
         $route = [null, null, null];
         $var = [];
         $pathinfo = trim($pathinfo, "/");

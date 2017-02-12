@@ -70,8 +70,10 @@ class KantApplication extends ServiceLocator {
      */
     public function __construct($env) {
         Kant::$app = $this;
+        
         $config = $this->initConfig($env);
         $this->preInit($config);
+        
         $this->initSession();
         Cache::platform();
         $this->setDb();
@@ -129,8 +131,16 @@ class KantApplication extends ServiceLocator {
      * 
      */
     public function run() {
-        $this->route();
-        $this->dispatch();
+        $type = strtolower(KantFactory::getConfig()->get('default_return_type'));
+        
+        $request = Kant::$container->instance('Kant\Http\Request', Request::capture());
+        $data = $this->dispatch($this->route($request->path()));
+            
+        $result = $this->parseData($data, $type);
+        Response::create($result, Response::HTTP_OK, [
+            'Content-Type' => $this->outputType[$type]
+        ])->send(); 
+        
         $this->end();
     }
 
@@ -144,7 +154,7 @@ class KantApplication extends ServiceLocator {
         } elseif (!ini_get('date.timezone')) {
             $this->setTimeZone('UTC');
         }
-        $this->language = $config['language'];
+        $this->setLanguage($config['language']);
         // merge core components with custom components
         foreach ($this->coreComponents() as $id => $component) {
             if (!isset($components['components'][$id])) {
@@ -162,8 +172,7 @@ class KantApplication extends ServiceLocator {
         }
         //load common file
         require_once APP_PATH . 'Bootstrap.php';
-        //Build Module
-        $this->buildModule();
+        
         //Logfile initialization
         Log::init(array(
             'type' => 'File',
@@ -225,15 +234,16 @@ class KantApplication extends ServiceLocator {
     /**
      * Route
      */
-    protected function route() {
+    protected function route($path) {
         //remove url suffix
-        $pathinfo = str_replace(KantFactory::getConfig()->get('url_suffix'), '', $this->parsePathinfo());
+        $pathinfo = str_replace(KantFactory::getConfig()->get('url_suffix'), '', $path);
+        
         Route::import(KantFactory::getConfig()->get('route'));
         $dispath = Route::check($pathinfo);
         if ($dispath === false) {
             $dispath = Route::parseUrl($pathinfo);
         }
-        self::$dispatch = $dispath;
+        return $dispath;
     }
 
     /**
@@ -247,37 +257,39 @@ class KantApplication extends ServiceLocator {
     /**
      * Dispatch
      */
-    protected function dispatch() {
+    protected function dispatch($dispatch) {
         $data = [];
-        switch (self::$dispatch['type']) {
+        switch ($dispatch['type']) {
             case 'redirect':
-                header('Location: ' . self::$dispatch['url'], true, self::$dispatch['status']);
+                header('Location: ' . $dispatch['url'], true, $dispatch['status']);
                 break;
             case 'module':
-                $data = self::module(self::$dispatch['module']);
+                $data = self::module($dispatch['module']);
                 break;
             case 'controller':
-                $data = Loader::action(self::$dispatch['controller'], self::$dispatch['params']);
+                $data = Loader::action($dispatch['controller'], $dispatch['params']);
                 break;
             case 'method':
-                $data = self::invokeMethod(self::$dispatch['method'], self::$dispatch['params']);
+                $data = self::invokeMethod($dispatch['method'], $dispatch['params']);
                 break;
             case 'function':
-                $data = self::invokeFunction(self::$dispatch['function'], self::$dispatch['params']);
+                $data = self::invokeFunction($dispatch['function'], $dispatch['params']);
                 break;
             default:
                 throw new KantException('dispatch type not support', 5002);
         }
-        $this->output($data);
+        return $data;
     }
 
     /**
-     * Output
+     * Parse Data
      * 
      * @param type $data
+     * @param type $type
+     * @return type
+     * @throws KantException
      */
-    protected function output($data) {
-        $type = strtolower(KantFactory::getConfig()->get('default_return_type'));
+    protected function parseData($data, $type) {     
         if (in_array($type, array_keys($this->outputType)) == false) {
             throw new KantException("Unsupported output type:" . $type);
         }
@@ -285,9 +297,7 @@ class KantApplication extends ServiceLocator {
         $OutputObj = new $classname;
         $method = new ReflectionMethod($OutputObj, 'output');
         $result = $method->invokeArgs($OutputObj, array($data));
-        Response::create($result, Response::HTTP_OK, [
-            'Content-Type' => $this->outputType[$type]
-        ])->send();
+        return $result;
     }
 
     /**
@@ -357,8 +367,6 @@ class KantApplication extends ServiceLocator {
         }
         $action = !empty($this->dispatchInfo[2]) ? $this->dispatchInfo[2] . KantFactory::getConfig()->get('action_suffix') : 'Index' . KantFactory::getConfig()->get('action_suffix');
 
-
-        Kant::$container->instance('Kant\Http\Request', Request::capture());
         $data = $this->callClass($controller . "@" . $action);
 
         return $data;
@@ -385,22 +393,6 @@ class KantApplication extends ServiceLocator {
         $namespace = "App\\$module\\Controller\\";
         $controller = $namespace . $controller;
         return $controller;
-    }
-
-    /**
-     * Build module
-     */
-    public function buildModule() {
-        //build module
-        if (KantFactory::getConfig()->get('check_app_dir')) {
-            if (!defined('CREATE_MODULE')) {
-                return;
-            }
-            $module = CREATE_MODULE;
-            if (is_dir(MODULE_PATH . $module) == false) {
-                Build::checkDir($module);
-            }
-        }
     }
 
     /**
