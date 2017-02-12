@@ -44,7 +44,7 @@ class KantApplication extends ServiceLocator {
      * @see sourceLanguage
      */
     public $language = 'zh-CN';
-    
+
     /**
      * @var string the language that the application is written in. This mainly refers to
      * the language that the messages and view files are written in.
@@ -70,13 +70,13 @@ class KantApplication extends ServiceLocator {
      */
     public function __construct($env) {
         Kant::$app = $this;
-        
+
         $config = $this->initConfig($env);
         $this->preInit($config);
-        
+
         $this->initSession($config['session']);
         $this->initCache($config['cache']);
-        
+
         $this->setDb();
     }
 
@@ -113,7 +113,7 @@ class KantApplication extends ServiceLocator {
     protected function initSession($config) {
         return KantFactory::getSession($config);
     }
-    
+
     /**
      * Initialize cache
      * 
@@ -143,15 +143,15 @@ class KantApplication extends ServiceLocator {
      */
     public function run() {
         $type = strtolower(KantFactory::getConfig()->get('default_return_type'));
-        
+
         $request = Kant::$container->instance('Kant\Http\Request', Request::capture());
         $data = $this->dispatch($this->route($request->path()));
-            
+
         $result = $this->parseData($data, $type);
         Response::create($result, Response::HTTP_OK, [
             'Content-Type' => $this->outputType[$type]
-        ])->send(); 
-        
+        ])->send();
+
         $this->end();
     }
 
@@ -165,9 +165,9 @@ class KantApplication extends ServiceLocator {
         } elseif (!ini_get('date.timezone')) {
             $this->setTimeZone('UTC');
         }
-        
+
         $this->setLanguage($config['language']);
-        
+
         // merge core components with custom components
         foreach ($this->coreComponents() as $id => $component) {
             if (!isset($components['components'][$id])) {
@@ -185,7 +185,7 @@ class KantApplication extends ServiceLocator {
         }
         //load common file
         require_once APP_PATH . 'Bootstrap.php';
-        
+
         //Logfile initialization
         Log::init(array(
             'type' => 'File',
@@ -202,7 +202,7 @@ class KantApplication extends ServiceLocator {
     public function setLanguage($value) {
         $this->language = $value;
     }
-    
+
     /**
      * get the language that is meant to be used for end users.
      * @return string
@@ -210,7 +210,6 @@ class KantApplication extends ServiceLocator {
     public function getLanguage() {
         return $this->language;
     }
-
 
     /**
      * Returns the time zone used by this application.
@@ -250,7 +249,7 @@ class KantApplication extends ServiceLocator {
     protected function route($path) {
         //remove url suffix
         $pathinfo = str_replace(KantFactory::getConfig()->get('url_suffix'), '', $path);
-        
+
         Route::import(KantFactory::getConfig()->get('route'));
         $dispath = Route::check($pathinfo);
         if ($dispath === false) {
@@ -302,7 +301,7 @@ class KantApplication extends ServiceLocator {
      * @return type
      * @throws KantException
      */
-    protected function parseData($data, $type) {     
+    protected function parseData($data, $type) {
         if (in_array($type, array_keys($this->outputType)) == false) {
             throw new KantException("Unsupported output type:" . $type);
         }
@@ -364,14 +363,14 @@ class KantApplication extends ServiceLocator {
     public function module($dispatchInfo) {
         KantRegistry::set('dispatchInfo', $dispatchInfo);
         $this->dispatchInfo = $dispatchInfo;
-        
+
         //module name
         $moduleName = ucfirst($dispatchInfo[0]) ?: ucfirst(KantFactory::getConfig()->get('route.module'));
         if (empty($moduleName)) {
             throw new KantException('No Module found');
         }
         $this->_initModuleConfig($moduleName);
-        
+
         //controller name
         $controllerName = ucfirst($dispatchInfo[1]) ?: ucfirst(KantFactory::getConfig()->get('route.ctrl'));
         $controller = $this->controller($controllerName, $moduleName);
@@ -393,17 +392,14 @@ class KantApplication extends ServiceLocator {
      * @return boolean|array|\classname
      * @throws KantException
      */
-    protected function controller($controller = '', $module) {
-        if (empty($controller)) {
-            $controller = ucfirst($this->dispatchInfo[1]) . 'Controller';
-        } else {
-            $controller = ucfirst($controller) . "Controller";
-        }
+    protected function controller($controller, $module) {
+        $controller = ucfirst($controller) . "Controller";
         $filepath = APP_PATH . "Module/" . $module . "/Controller/$controller.php";
         if (!file_exists($filepath)) {
             throw new KantException(sprintf("File does not exists:%s", $filepath));
         }
         include $filepath;
+        
         $namespace = "App\\$module\\Controller\\";
         $controller = $namespace . $controller;
         return $controller;
