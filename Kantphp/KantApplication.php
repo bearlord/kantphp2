@@ -32,12 +32,6 @@ class KantApplication extends ServiceLocator {
     private static $_instance = null;
 
     /**
-     * defined dispath
-     * @var array 
-     */
-    private static $dispatch = [];
-
-    /**
      * @var string the language that is meant to be used for end users. It is recommended that you
      * use [IETF language tags](http://en.wikipedia.org/wiki/IETF_language_tag). For example, `en` stands
      * for English, while `en-US` stands for English (United States).
@@ -394,7 +388,7 @@ class KantApplication extends ServiceLocator {
      */
     protected function controller($controller, $module) {
         $controller = ucfirst($controller) . "Controller";
-        $filepath = APP_PATH . "Module{$module}/Controller{$controller}.php";
+        $filepath = APP_PATH . "Module/{$module}/Controller/{$controller}.php";
         if (!file_exists($filepath)) {
             throw new KantException(sprintf("File does not exists:%s", $filepath));
         }

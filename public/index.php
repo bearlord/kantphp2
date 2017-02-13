@@ -7,8 +7,6 @@ define('APP_PATH', dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'Applicati
 
 include dirname(APP_PATH) . '/Kantphp/Framework.php';
 
-define("CREATE_MODULE", "Index");
-
 KantApplication::getInstance('Development')->run();
 
 ?>

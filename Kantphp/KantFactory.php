@@ -36,21 +36,6 @@ class KantFactory {
     ];
 
     /**
-     * Get a application object.
-     * 
-     * Returns the global object, only creating it if it doesn't already exist.
-     * 
-     * @param string $env
-     * @return object
-     */
-    public static function getApplication($env) {
-        if (!self::$container['application']) {
-            self::$container['application'] = KantApplication::getInstance($env);
-        }
-        return self::$container['application'];
-    }
-
-    /**
      * Get config object
      */
     public static function getConfig() {

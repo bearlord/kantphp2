@@ -7,11 +7,12 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\i18n;
+namespace Kant\I18n;
 
-use Yii;
-use yii\base\Component;
-use yii\base\NotSupportedException;
+use Kant;
+use Kant\KantFactory;
+use Kant\Foundation\Component;
+use Kant\Exception\NotSupportedException;
 
 /**
  * MessageFormatter allows formatting messages via [ICU message format](http://userguide.icu-project.org/formatparse/messages)
@@ -41,9 +42,6 @@ use yii\base\NotSupportedException;
  * @property string $errorCode Code of the last error. This property is read-only.
  * @property string $errorMessage Description of the last error. This property is read-only.
  *
- * @author Alexander Makarov <sam@rmcreative.ru>
- * @author Carsten Brandt <mail@cebe.cc>
- * @since 2.0
  */
 class MessageFormatter extends Component {
 
@@ -92,7 +90,7 @@ class MessageFormatter extends Component {
             return $this->fallbackFormat($pattern, $params, $language);
         }
 
-        // replace named arguments (https://github.com/yiisoft/yii2/issues/9678)
+        // replace named arguments
         $newParams = [];
         $pattern = $this->replaceNamedArguments($pattern, $params, $newParams);
         $params = $newParams;
@@ -140,7 +138,7 @@ class MessageFormatter extends Component {
      * @param string $message The message to parse, conforming to the pattern.
      * @param string $language The locale to use for formatting locale-dependent parts
      * @return array|boolean An array containing items extracted, or `FALSE` on error.
-     * @throws \yii\base\NotSupportedException when PHP intl extension is not installed.
+     * @throws Kant\Exception\NotSupportedException when PHP intl extension is not installed.
      */
     public function parse($pattern, $message, $language) {
         $this->_errorCode = 0;
@@ -284,7 +282,7 @@ class MessageFormatter extends Component {
      * @return array|boolean array of tokens or false on failure
      */
     private static function tokenizePattern($pattern) {
-        $charset = Yii::$app ? Yii::$app->charset : 'UTF-8';
+        $charset = KantFactory::getConfig()->get('charset') ?: 'UTF-8';
         $depth = 1;
         if (($start = $pos = mb_strpos($pattern, '{', 0, $charset)) === false) {
             return [$pattern];
@@ -326,12 +324,12 @@ class MessageFormatter extends Component {
      * @param array $args arguments to replace
      * @param string $locale the locale
      * @return boolean|string parsed token or false on failure
-     * @throws \yii\base\NotSupportedException when unsupported formatting is used.
+     * @throws Kant\Exception\NotSupportedException when unsupported formatting is used.
      */
     private function parseToken($token, $args, $locale) {
         // parsing pattern based on ICU grammar:
         // http://icu-project.org/apiref/icu4c/classMessageFormat.html#details
-        $charset = Yii::$app ? Yii::$app->charset : 'UTF-8';
+        $charset = KantFactory::getConfig()->get('charset') ?: 'UTF-8';
         $param = trim($token[0]);
         if (isset($args[$param])) {
             $arg = $args[$param];
