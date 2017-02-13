@@ -16,7 +16,6 @@ use Kant\KantFactory;
 use Kant\Route\Route;
 use Kant\Http\Response;
 use Kant\Registry\KantRegistry;
-use Kant\Build\Build;
 use Kant\Log\Log;
 use Kant\Runtime\Runtime;
 use Kant\Exception\KantException;
@@ -132,20 +131,23 @@ class KantApplication extends ServiceLocator {
     }
 
     /**
-     * Boot
+     *
+     * Runs the application.
+     * This is the main entrance of an application.
      * 
      */
     public function run() {
         $type = strtolower(KantFactory::getConfig()->get('default_return_type'));
 
         $request = Kant::$container->instance('Kant\Http\Request', Request::capture());
+        $response = Kant::$container->instance('Kant\Http\Response', Response::create("", Response::HTTP_OK, [
+                    'Content-Type' => $this->outputType[$type]
+        ]));
+
         $data = $this->dispatch($this->route($request->path()));
-
         $result = $this->parseData($data, $type);
-        Response::create($result, Response::HTTP_OK, [
-            'Content-Type' => $this->outputType[$type]
-        ])->send();
 
+        $response->setContent($result)->send();
         $this->end();
     }
 
@@ -393,7 +395,7 @@ class KantApplication extends ServiceLocator {
             throw new KantException(sprintf("File does not exists:%s", $filepath));
         }
         include $filepath;
-        
+
         $namespace = "App\\{$module}\\Controller\\";
         $controller = $namespace . $controller;
         return $controller;
