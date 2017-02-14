@@ -95,7 +95,6 @@ class View extends Component {
      * @param mixed $value
      */
     public function __set($key, $value) {
-        $this->$key = $value;
         $this->params[$key] = $value;
     }
 
