@@ -31,11 +31,11 @@ class View extends Component {
     protected $theme = 'default';
 
     /**
-     * dispatchInfo
+     * dispatcher
      *
      * @var string
      */
-    protected $dispatchInfo;
+    protected $dispatcher;
 
     /**
      * template variables
@@ -71,7 +71,7 @@ class View extends Component {
      */
     public function __construct() {
         parent::__construct();
-        $this->dispatchInfo = KantRegistry::get('dispatchInfo');
+        $this->dispatcher = KantRegistry::get('dispatcher');
     }
 
     /**
@@ -150,7 +150,7 @@ class View extends Component {
         $ext = KantFactory::getConfig()->get("view.ext");
         $viewPath = $this->getViewPath();
         if (empty($view)) {
-            $viewFile = $viewPath . strtolower($this->dispatchInfo[1]) . DIRECTORY_SEPARATOR . strtolower($this->dispatchInfo[2]) . $ext;
+            $viewFile = $viewPath . strtolower($this->dispatcher[1]) . DIRECTORY_SEPARATOR . strtolower($this->dispatcher[2]) . $ext;
         } else {
             $viewFile = $viewPath . $view . $ext;
         }
@@ -214,7 +214,7 @@ class View extends Component {
      */
     protected function getViewPath($module = '') {
         if ($module == '') {
-            $module = isset($this->dispatchInfo[0]) ? strtolower($this->dispatchInfo[0]) : '';
+            $module = isset($this->dispatcher[0]) ? strtolower($this->dispatcher[0]) : '';
         }
         $theme = KantFactory::getConfig()->get('view.theme');
         if ($module) {

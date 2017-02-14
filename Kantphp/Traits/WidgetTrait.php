@@ -22,8 +22,8 @@ trait WidgetTrait {
      * @throws KantException
      */
     public function widget($widgetname, $method, $data = array(), $return = false) {
-        $dispatchInfo = KantFactory::getConfig()->get('dispatchInfo');
-        $module = isset($dispatchInfo['module']) ? ucfirst($dispatchInfo['module']) : '';
+        $dispatcher = KantFactory::getConfig()->get('dispatcher');
+        $module = isset($dispatcher['module']) ? ucfirst($dispatcher['module']) : '';
         $classname = ucfirst($widgetname) . 'Widget';
         if ($module) {
             $filepath = APP_PATH . 'Module' . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'Widget' . DIRECTORY_SEPARATOR . $classname . '.php';

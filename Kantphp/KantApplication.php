@@ -50,7 +50,7 @@ class KantApplication extends ServiceLocator {
      *
      * @var array
      */
-    protected $dispatchInfo = null;
+    protected $dispatcher = null;
     protected $outputType = [
         'html' => 'text/html',
         'json' => 'application/json',
@@ -356,27 +356,27 @@ class KantApplication extends ServiceLocator {
      * @throws KantException
      * @throws ReflectionException
      */
-    public function module($dispatchInfo) {
-        KantRegistry::set('dispatchInfo', $dispatchInfo);
-        $this->dispatchInfo = $dispatchInfo;
+    public function module($dispatcher) {
+        KantRegistry::set('dispatcher', $dispatcher);
+        $this->dispatcher = $dispatcher;
 
         //module name
-        $moduleName = ucfirst($dispatchInfo[0]) ?: ucfirst(KantFactory::getConfig()->get('route.module'));
+        $moduleName = ucfirst($dispatcher[0]) ?: ucfirst(KantFactory::getConfig()->get('route.module'));
         if (empty($moduleName)) {
             throw new KantException('No Module found');
         }
         $this->_initModuleConfig($moduleName);
 
         //controller name
-        $controllerName = ucfirst($dispatchInfo[1]) ?: ucfirst(KantFactory::getConfig()->get('route.ctrl'));
+        $controllerName = ucfirst($dispatcher[1]) ?: ucfirst(KantFactory::getConfig()->get('route.ctrl'));
         $controller = $this->controller($controllerName, $moduleName);
         if (!$controller) {
             if (empty($controller)) {
-                throw new KantException(sprintf("No controller exists:%s", ucfirst($this->dispatchInfo[1]) . 'Controller'));
+                throw new KantException(sprintf("No controller exists:%s", ucfirst($this->dispatcher[1]) . 'Controller'));
             }
         }
         //action name
-        $action = $this->dispatchInfo[2] ?: ucfirst(KantFactory::getConfig()->get('route.act'));
+        $action = $this->dispatcher[2] ?: ucfirst(KantFactory::getConfig()->get('route.act'));
         $data = $this->callClass($controller . "@" . $action . KantFactory::getConfig()->get('action_suffix'));
         return $data;
     }

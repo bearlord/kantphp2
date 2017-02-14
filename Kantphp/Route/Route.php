@@ -560,7 +560,7 @@ class Route {
             if (!empty($parse[1])) {
                 parse_str($parse[1], $query);
                 foreach ($query as $key => $val) {
-                    $dispatchInfo[$key] = urldecode($val);
+                    $dispatcher[$key] = urldecode($val);
                 }
             }
         } else {

@@ -37,7 +37,7 @@ class Controller extends Component {
      *
      * @var type 
      */
-    protected $dispatchInfo;
+    protected $dispatcher;
     
     /**
      * Layout
@@ -87,14 +87,14 @@ class Controller extends Component {
      * @throws KantException
      */
     public function __call($method, $args) {
-        $dispatchInfo = KantRegistry::get('dispatchInfo');
-        if (0 === strcasecmp($method, strtolower($dispatchInfo[2]) . "Action")) {
+        $dispatcher = KantRegistry::get('dispatcher');
+        if (0 === strcasecmp($method, strtolower($dispatcher[2]) . "Action")) {
             if (method_exists($this, '_empty')) {
                 $this->_empty($method, $args);
             } elseif (file_exists($this->view->findViewFile())) {
                 $this->display();
             } else {
-                throw new KantException(sprintf("No action exists:%s", ucfirst($dispatchInfo[2]) . 'Action'));
+                throw new KantException(sprintf("No action exists:%s", ucfirst($dispatcher[2]) . 'Action'));
             }
         } else {
             throw new KantException("Method not exists");
