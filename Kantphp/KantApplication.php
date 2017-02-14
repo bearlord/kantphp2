@@ -137,7 +137,7 @@ class KantApplication extends ServiceLocator {
      * 
      */
     public function run() {
-        $type = strtolower(KantFactory::getConfig()->get('default_return_type'));
+        $type = strtolower(KantFactory::getConfig()->get('return_type'));
 
         $request = Kant::$container->instance('Kant\Http\Request', Request::capture());
         $response = Kant::$container->instance('Kant\Http\Response', Response::create("", Response::HTTP_OK, [
@@ -156,8 +156,8 @@ class KantApplication extends ServiceLocator {
      */
     protected function preInit($config) {
         //set default timezone
-        if (isset($config['timeZone'])) {
-            $this->setTimeZone($config['timeZone']);
+        if (isset($config['timezone'])) {
+            $this->setTimeZone($config['timezone']);
         } elseif (!ini_get('date.timezone')) {
             $this->setTimeZone('UTC');
         }

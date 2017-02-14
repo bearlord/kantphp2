@@ -7,27 +7,25 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 return [
-    'check_app_dir' => true,
-    'dir_secure_filename' => 'index.html',
-    'dir_secure_content' => 'Powered By KantPHP Framework 2.1',
-    'route' => [
-        'module' => 'index',
-        'ctrl' => 'index',
-        'act' => 'index'
-    ],
-    'default_return_type' => 'html',
-    'path_info_repair' => false,
+    'return_type' => 'html',
+    'pathinfo_repair' => false,
     'debug' => true,
     'url_suffix' => '.html',
-    'theme' => 'default',
-    'template_suffix' => ".php",
     'action_suffix' => 'Action',
     'redirect_tpl' => 'dispatch/redirect',
     'language' => 'zh-CN',
     'timezone' => 'Etc/GMT-8',
     'charset' => 'utf-8',
-    'lock_ex' => '1',
     'db_fields_cache' => false,
+    'route' => [
+        'module' => 'index',
+        'ctrl' => 'index',
+        'act' => 'index'
+    ],
+    'view' => [
+        'theme' => 'default',
+        'ext' => ".php",
+    ],
     'cookie' => [
         'cookie_domain' => '',
         'cookie_path' => '/',
@@ -54,7 +52,7 @@ return [
         'maxlifetime' => 1800,
     ],
     'database' => [
-//default configuration
+        //default configuration
         'db' => [
             'dsn' => 'mysql:host=localhost;dbname=kantphp',
             'username' => 'root',

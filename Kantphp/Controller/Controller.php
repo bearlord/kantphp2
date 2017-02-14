@@ -27,8 +27,24 @@ class Controller extends Component {
         \Kant\Traits\LangTrait,
         \Kant\Traits\WidgetTrait;
 
+    /**
+     *
+     * @var type 
+     */
     protected $view;
+    
+    /**
+     *
+     * @var type 
+     */
     protected $dispatchInfo;
+    
+    /**
+     * Layout
+     */
+    
+    public $layout = 'main';
+
 
     /**
      * Construct
@@ -55,7 +71,10 @@ class Controller extends Component {
      */
     protected function initView() {
         if ($this->view == '') {
-            $this->view = View::getInstance();
+            $this->view = \Kant\Kant::createObject([
+                'class' => 'Kant\\View\\View',
+                'layout' => $this->layout
+            ]);
         }
         return $this->view;
     }
@@ -72,7 +91,7 @@ class Controller extends Component {
         if (0 === strcasecmp($method, strtolower($dispatchInfo[2]) . "Action")) {
             if (method_exists($this, '_empty')) {
                 $this->_empty($method, $args);
-            } elseif (file_exists($this->view->parseTemplate())) {
+            } elseif (file_exists($this->view->findViewFile())) {
                 $this->display();
             } else {
                 throw new KantException(sprintf("No action exists:%s", ucfirst($dispatchInfo[2]) . 'Action'));
