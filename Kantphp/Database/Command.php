@@ -846,7 +846,6 @@ class Command extends Component {
                     $fetchMode = $this->fetchMode;
                 }
                 $result = call_user_func_array([$this->pdoStatement, $method], (array) $fetchMode);
-                var_dump($rawSql);
                 $this->pdoStatement->closeCursor();
             }
         } catch (\Exception $e) {

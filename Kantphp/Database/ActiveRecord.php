@@ -271,7 +271,7 @@ class ActiveRecord extends BaseActiveRecord{
      * @return string the table name
      */
     public static function tableName() {
-        $class = StringHelper::basename(get_called_class());
+        $class = strtolower(StringHelper::basename(get_called_class()));
         if (false !== strpos($class, "Model")) {
             $class = strtolower(str_replace("Model", "", $class));
         }

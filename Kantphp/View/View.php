@@ -128,9 +128,9 @@ class View extends Component {
      *
      * @param type $view
      */
-    public function render($view = "", $params = []) {
-        $layoutFile = $this->findLayoutFile();
+    public function render($view = "", $params = []) {       
         $content = $this->fetch($view, $params);
+        $layoutFile = $this->findLayoutFile();
         if ($layoutFile !== false) {
             return $this->renderFile($layoutFile, ['content' => $content]);
         } else {

@@ -73,7 +73,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface {
 
     use ActiveQueryTrait;
 
-use ActiveRelationTrait;
+    use ActiveRelationTrait;
 
     /**
      * @event Event an event that is triggered when the query is initialized via [[init()]].
@@ -289,7 +289,7 @@ use ActiveRelationTrait;
         $row = parent::one($db);
         if ($row !== false) {
             $models = $this->populate([$row]);
-            return reset($models) ? : null;
+            return reset($models) ?: null;
         } else {
             return null;
         }

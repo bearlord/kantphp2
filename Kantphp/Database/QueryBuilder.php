@@ -8,11 +8,12 @@
  */
 
 namespace Kant\Database;
+
 use Kant\Foundation\Object;
 use Kant\Helper\ArrayHelper;
 
-class QueryBuilder extends Object
-{
+class QueryBuilder extends Object {
+
     /**
      * The prefix for automatically generated query binding parameters.
      */
@@ -22,11 +23,13 @@ class QueryBuilder extends Object
      * @var Connection the database connection.
      */
     public $db;
+
     /**
      * @var string the separator between different fragments of a SQL statement.
      * Defaults to an empty space. This is mainly used by [[build()]] when generating a SQL statement.
      */
     public $separator = ' ';
+
     /**
      * @var array the abstract column types mapped to physical column types.
      * This is mainly used to support creating/modifying tables using DB-independent data type specifications.
@@ -54,14 +57,12 @@ class QueryBuilder extends Object
         'NOT EXISTS' => 'buildExistsCondition',
     ];
 
-
     /**
      * Constructor.
      * @param Connection $connection the database connection.
      * @param array $config name-value pairs that will be used to initialize the object properties
      */
-    public function __construct($connection, $config = [])
-    {
+    public function __construct($connection, $config = []) {
         $this->db = $connection;
         parent::__construct($config);
     }
@@ -75,8 +76,7 @@ class QueryBuilder extends Object
      * parameters to be bound to the SQL statement (the second array element). The parameters returned
      * include those provided in `$params`.
      */
-    public function build($query, $params = [])
-    {
+    public function build($query, $params = []) {
         $query = $query->prepare($this);
 
         $params = empty($params) ? $query->params : array_merge($params, $query->params);
@@ -134,8 +134,7 @@ class QueryBuilder extends Object
      * They should be bound to the DB command later.
      * @return string the INSERT SQL
      */
-    public function insert($table, $columns, &$params)
-    {
+    public function insert($table, $columns, &$params) {
         $schema = $this->db->getSchema();
         if (($tableSchema = $schema->getTableSchema($table)) !== null) {
             $columnSchemas = $tableSchema->columns;
@@ -159,8 +158,8 @@ class QueryBuilder extends Object
         }
 
         return 'INSERT INTO ' . $schema->quoteTableName($table)
-            . (!empty($names) ? ' (' . implode(', ', $names) . ')' : '')
-            . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : ' DEFAULT VALUES');
+                . (!empty($names) ? ' (' . implode(', ', $names) . ')' : '')
+                . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : ' DEFAULT VALUES');
     }
 
     /**
@@ -184,8 +183,7 @@ class QueryBuilder extends Object
      * @param array $rows the rows to be batch inserted into the table
      * @return string the batch INSERT SQL statement
      */
-    public function batchInsert($table, $columns, $rows)
-    {
+    public function batchInsert($table, $columns, $rows) {
         if (empty($rows)) {
             return '';
         }
@@ -221,7 +219,7 @@ class QueryBuilder extends Object
         }
 
         return 'INSERT INTO ' . $schema->quoteTableName($table)
-        . ' (' . implode(', ', $columns) . ') VALUES ' . implode(', ', $values);
+                . ' (' . implode(', ', $columns) . ') VALUES ' . implode(', ', $values);
     }
 
     /**
@@ -243,8 +241,7 @@ class QueryBuilder extends Object
      * so that they can be bound to the DB command later.
      * @return string the UPDATE SQL
      */
-    public function update($table, $columns, $condition, &$params)
-    {
+    public function update($table, $columns, $condition, &$params) {
         if (($tableSchema = $this->db->getTableSchema($table)) !== null) {
             $columnSchemas = $tableSchema->columns;
         } else {
@@ -288,8 +285,7 @@ class QueryBuilder extends Object
      * so that they can be bound to the DB command later.
      * @return string the DELETE SQL
      */
-    public function delete($table, $condition, &$params)
-    {
+    public function delete($table, $condition, &$params) {
         $sql = 'DELETE FROM ' . $this->db->quoteTableName($table);
         $where = $this->buildWhere($condition, $params);
 
@@ -322,8 +318,7 @@ class QueryBuilder extends Object
      * @param string $options additional SQL fragment that will be appended to the generated SQL.
      * @return string the SQL statement for creating a new DB table.
      */
-    public function createTable($table, $columns, $options = null)
-    {
+    public function createTable($table, $columns, $options = null) {
         $cols = [];
         foreach ($columns as $name => $type) {
             if (is_string($name)) {
@@ -343,8 +338,7 @@ class QueryBuilder extends Object
      * @param string $newName the new table name. The name will be properly quoted by the method.
      * @return string the SQL statement for renaming a DB table.
      */
-    public function renameTable($oldName, $newName)
-    {
+    public function renameTable($oldName, $newName) {
         return 'RENAME TABLE ' . $this->db->quoteTableName($oldName) . ' TO ' . $this->db->quoteTableName($newName);
     }
 
@@ -353,8 +347,7 @@ class QueryBuilder extends Object
      * @param string $table the table to be dropped. The name will be properly quoted by the method.
      * @return string the SQL statement for dropping a DB table.
      */
-    public function dropTable($table)
-    {
+    public function dropTable($table) {
         return 'DROP TABLE ' . $this->db->quoteTableName($table);
     }
 
@@ -365,8 +358,7 @@ class QueryBuilder extends Object
      * @param string|array $columns comma separated string or array of columns that the primary key will consist of.
      * @return string the SQL statement for adding a primary key constraint to an existing table.
      */
-    public function addPrimaryKey($name, $table, $columns)
-    {
+    public function addPrimaryKey($name, $table, $columns) {
         if (is_string($columns)) {
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
         }
@@ -376,8 +368,8 @@ class QueryBuilder extends Object
         }
 
         return 'ALTER TABLE ' . $this->db->quoteTableName($table) . ' ADD CONSTRAINT '
-            . $this->db->quoteColumnName($name) . '  PRIMARY KEY ('
-            . implode(', ', $columns). ' )';
+                . $this->db->quoteColumnName($name) . '  PRIMARY KEY ('
+                . implode(', ', $columns) . ' )';
     }
 
     /**
@@ -386,10 +378,9 @@ class QueryBuilder extends Object
      * @param string $table the table that the primary key constraint will be removed from.
      * @return string the SQL statement for removing a primary key constraint from an existing table.
      */
-    public function dropPrimaryKey($name, $table)
-    {
+    public function dropPrimaryKey($name, $table) {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table)
-            . ' DROP CONSTRAINT ' . $this->db->quoteColumnName($name);
+                . ' DROP CONSTRAINT ' . $this->db->quoteColumnName($name);
     }
 
     /**
@@ -397,8 +388,7 @@ class QueryBuilder extends Object
      * @param string $table the table to be truncated. The name will be properly quoted by the method.
      * @return string the SQL statement for truncating a DB table.
      */
-    public function truncateTable($table)
-    {
+    public function truncateTable($table) {
         return 'TRUNCATE TABLE ' . $this->db->quoteTableName($table);
     }
 
@@ -411,11 +401,10 @@ class QueryBuilder extends Object
      * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become 'varchar(255) not null'.
      * @return string the SQL statement for adding a new column.
      */
-    public function addColumn($table, $column, $type)
-    {
+    public function addColumn($table, $column, $type) {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table)
-            . ' ADD ' . $this->db->quoteColumnName($column) . ' '
-            . $this->getColumnType($type);
+                . ' ADD ' . $this->db->quoteColumnName($column) . ' '
+                . $this->getColumnType($type);
     }
 
     /**
@@ -424,10 +413,9 @@ class QueryBuilder extends Object
      * @param string $column the name of the column to be dropped. The name will be properly quoted by the method.
      * @return string the SQL statement for dropping a DB column.
      */
-    public function dropColumn($table, $column)
-    {
+    public function dropColumn($table, $column) {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table)
-            . ' DROP COLUMN ' . $this->db->quoteColumnName($column);
+                . ' DROP COLUMN ' . $this->db->quoteColumnName($column);
     }
 
     /**
@@ -437,11 +425,10 @@ class QueryBuilder extends Object
      * @param string $newName the new name of the column. The name will be properly quoted by the method.
      * @return string the SQL statement for renaming a DB column.
      */
-    public function renameColumn($table, $oldName, $newName)
-    {
+    public function renameColumn($table, $oldName, $newName) {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table)
-            . ' RENAME COLUMN ' . $this->db->quoteColumnName($oldName)
-            . ' TO ' . $this->db->quoteColumnName($newName);
+                . ' RENAME COLUMN ' . $this->db->quoteColumnName($oldName)
+                . ' TO ' . $this->db->quoteColumnName($newName);
     }
 
     /**
@@ -454,12 +441,11 @@ class QueryBuilder extends Object
      * will become 'varchar(255) not null'.
      * @return string the SQL statement for changing the definition of a column.
      */
-    public function alterColumn($table, $column, $type)
-    {
+    public function alterColumn($table, $column, $type) {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table) . ' CHANGE '
-            . $this->db->quoteColumnName($column) . ' '
-            . $this->db->quoteColumnName($column) . ' '
-            . $this->getColumnType($type);
+                . $this->db->quoteColumnName($column) . ' '
+                . $this->db->quoteColumnName($column) . ' '
+                . $this->getColumnType($type);
     }
 
     /**
@@ -476,13 +462,12 @@ class QueryBuilder extends Object
      * @param string $update the ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION, SET DEFAULT, SET NULL
      * @return string the SQL statement for adding a foreign key constraint to an existing table.
      */
-    public function addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete = null, $update = null)
-    {
+    public function addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete = null, $update = null) {
         $sql = 'ALTER TABLE ' . $this->db->quoteTableName($table)
-            . ' ADD CONSTRAINT ' . $this->db->quoteColumnName($name)
-            . ' FOREIGN KEY (' . $this->buildColumns($columns) . ')'
-            . ' REFERENCES ' . $this->db->quoteTableName($refTable)
-            . ' (' . $this->buildColumns($refColumns) . ')';
+                . ' ADD CONSTRAINT ' . $this->db->quoteColumnName($name)
+                . ' FOREIGN KEY (' . $this->buildColumns($columns) . ')'
+                . ' REFERENCES ' . $this->db->quoteTableName($refTable)
+                . ' (' . $this->buildColumns($refColumns) . ')';
         if ($delete !== null) {
             $sql .= ' ON DELETE ' . $delete;
         }
@@ -499,10 +484,9 @@ class QueryBuilder extends Object
      * @param string $table the table whose foreign is to be dropped. The name will be properly quoted by the method.
      * @return string the SQL statement for dropping a foreign key constraint.
      */
-    public function dropForeignKey($name, $table)
-    {
+    public function dropForeignKey($name, $table) {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table)
-            . ' DROP CONSTRAINT ' . $this->db->quoteColumnName($name);
+                . ' DROP CONSTRAINT ' . $this->db->quoteColumnName($name);
     }
 
     /**
@@ -515,12 +499,11 @@ class QueryBuilder extends Object
      * @param boolean $unique whether to add UNIQUE constraint on the created index.
      * @return string the SQL statement for creating a new index.
      */
-    public function createIndex($name, $table, $columns, $unique = false)
-    {
+    public function createIndex($name, $table, $columns, $unique = false) {
         return ($unique ? 'CREATE UNIQUE INDEX ' : 'CREATE INDEX ')
-            . $this->db->quoteTableName($name) . ' ON '
-            . $this->db->quoteTableName($table)
-            . ' (' . $this->buildColumns($columns) . ')';
+                . $this->db->quoteTableName($name) . ' ON '
+                . $this->db->quoteTableName($table)
+                . ' (' . $this->buildColumns($columns) . ')';
     }
 
     /**
@@ -529,8 +512,7 @@ class QueryBuilder extends Object
      * @param string $table the table whose index is to be dropped. The name will be properly quoted by the method.
      * @return string the SQL statement for dropping an index.
      */
-    public function dropIndex($name, $table)
-    {
+    public function dropIndex($name, $table) {
         return 'DROP INDEX ' . $this->db->quoteTableName($name) . ' ON ' . $this->db->quoteTableName($table);
     }
 
@@ -544,8 +526,7 @@ class QueryBuilder extends Object
      * @return string the SQL statement for resetting sequence
      * @throws NotSupportedException if this is not supported by the underlying DBMS
      */
-    public function resetSequence($table, $value = null)
-    {
+    public function resetSequence($table, $value = null) {
         throw new NotSupportedException($this->db->getDriverName() . ' does not support resetting sequence.');
     }
 
@@ -557,8 +538,7 @@ class QueryBuilder extends Object
      * @return string the SQL statement for checking integrity
      * @throws NotSupportedException if this is not supported by the underlying DBMS
      */
-    public function checkIntegrity($check = true, $schema = '', $table = '')
-    {
+    public function checkIntegrity($check = true, $schema = '', $table = '') {
         throw new NotSupportedException($this->db->getDriverName() . ' does not support enabling/disabling integrity check.');
     }
 
@@ -571,8 +551,7 @@ class QueryBuilder extends Object
      * @return string the SQL statement for adding comment on column
      * @since 2.0.8
      */
-    public function addCommentOnColumn($table, $column, $comment)
-    {
+    public function addCommentOnColumn($table, $column, $comment) {
 
         return 'COMMENT ON COLUMN ' . $this->db->quoteTableName($table) . '.' . $this->db->quoteColumnName($column) . ' IS ' . $this->db->quoteValue($comment);
     }
@@ -585,8 +564,7 @@ class QueryBuilder extends Object
      * @return string the SQL statement for adding comment on table
      * @since 2.0.8
      */
-    public function addCommentOnTable($table, $comment)
-    {
+    public function addCommentOnTable($table, $comment) {
         return 'COMMENT ON TABLE ' . $this->db->quoteTableName($table) . ' IS ' . $this->db->quoteValue($comment);
     }
 
@@ -598,8 +576,7 @@ class QueryBuilder extends Object
      * @return string the SQL statement for adding comment on column
      * @since 2.0.8
      */
-    public function dropCommentFromColumn($table, $column)
-    {
+    public function dropCommentFromColumn($table, $column) {
         return 'COMMENT ON COLUMN ' . $this->db->quoteTableName($table) . '.' . $this->db->quoteColumnName($column) . ' IS NULL';
     }
 
@@ -610,8 +587,7 @@ class QueryBuilder extends Object
      * @return string the SQL statement for adding comment on column
      * @since 2.0.8
      */
-    public function dropCommentFromTable($table)
-    {
+    public function dropCommentFromTable($table) {
         return 'COMMENT ON TABLE ' . $this->db->quoteTableName($table) . ' IS NULL';
     }
 
@@ -654,8 +630,7 @@ class QueryBuilder extends Object
      * @param string|ColumnSchemaBuilder $type abstract column type
      * @return string physical column type.
      */
-    public function getColumnType($type)
-    {
+    public function getColumnType($type) {
         if ($type instanceof ColumnSchemaBuilder) {
             $type = $type->__toString();
         }
@@ -682,8 +657,7 @@ class QueryBuilder extends Object
      * @param string $selectOption
      * @return string the SELECT clause built from [[Query::$select]].
      */
-    public function buildSelect($columns, &$params, $distinct = false, $selectOption = null)
-    {
+    public function buildSelect($columns, &$params, $distinct = false, $selectOption = null) {
         $select = $distinct ? 'SELECT DISTINCT' : 'SELECT';
         if ($selectOption !== null) {
             $select .= ' ' . $selectOption;
@@ -726,8 +700,7 @@ class QueryBuilder extends Object
      * @param array $params the binding parameters to be populated
      * @return string the FROM clause built from [[Query::$from]].
      */
-    public function buildFrom($tables, &$params)
-    {
+    public function buildFrom($tables, &$params) {
         if (empty($tables)) {
             return '';
         }
@@ -743,8 +716,7 @@ class QueryBuilder extends Object
      * @return string the JOIN clause built from [[Query::$join]].
      * @throws Exception if the $joins parameter is not in proper format
      */
-    public function buildJoin($joins, &$params)
-    {
+    public function buildJoin($joins, &$params) {
         if (empty($joins)) {
             return '';
         }
@@ -776,8 +748,7 @@ class QueryBuilder extends Object
      * @param array $params
      * @return array
      */
-    private function quoteTableNames($tables, &$params)
-    {
+    private function quoteTableNames($tables, &$params) {
         foreach ($tables as $i => $table) {
             if ($table instanceof Query) {
                 list($sql, $params) = $this->build($table, $params);
@@ -803,8 +774,7 @@ class QueryBuilder extends Object
      * @param array $params the binding parameters to be populated
      * @return string the WHERE clause built from [[Query::$where]].
      */
-    public function buildWhere($condition, &$params)
-    {
+    public function buildWhere($condition, &$params) {
         $where = $this->buildCondition($condition, $params);
 
         return $where === '' ? '' : 'WHERE ' . $where;
@@ -814,8 +784,7 @@ class QueryBuilder extends Object
      * @param array $columns
      * @return string the GROUP BY clause
      */
-    public function buildGroupBy($columns)
-    {
+    public function buildGroupBy($columns) {
         if (empty($columns)) {
             return '';
         }
@@ -834,8 +803,7 @@ class QueryBuilder extends Object
      * @param array $params the binding parameters to be populated
      * @return string the HAVING clause built from [[Query::$having]].
      */
-    public function buildHaving($condition, &$params)
-    {
+    public function buildHaving($condition, &$params) {
         $having = $this->buildCondition($condition, $params);
 
         return $having === '' ? '' : 'HAVING ' . $having;
@@ -849,8 +817,7 @@ class QueryBuilder extends Object
      * @param integer $offset the offset number. See [[Query::offset]] for more details.
      * @return string the SQL completed with ORDER BY/LIMIT/OFFSET (if any)
      */
-    public function buildOrderByAndLimit($sql, $orderBy, $limit, $offset)
-    {
+    public function buildOrderByAndLimit($sql, $orderBy, $limit, $offset) {
         $orderBy = $this->buildOrderBy($orderBy);
         if ($orderBy !== '') {
             $sql .= $this->separator . $orderBy;
@@ -866,8 +833,7 @@ class QueryBuilder extends Object
      * @param array $columns
      * @return string the ORDER BY clause built from [[Query::$orderBy]].
      */
-    public function buildOrderBy($columns)
-    {
+    public function buildOrderBy($columns) {
         if (empty($columns)) {
             return '';
         }
@@ -888,8 +854,7 @@ class QueryBuilder extends Object
      * @param integer $offset
      * @return string the LIMIT and OFFSET clauses
      */
-    public function buildLimit($limit, $offset)
-    {
+    public function buildLimit($limit, $offset) {
         $sql = '';
         if ($this->hasLimit($limit)) {
             $sql = 'LIMIT ' . $limit;
@@ -906,8 +871,7 @@ class QueryBuilder extends Object
      * @param mixed $limit the given limit
      * @return boolean whether the limit is effective
      */
-    protected function hasLimit($limit)
-    {
+    protected function hasLimit($limit) {
         return ctype_digit((string) $limit);
     }
 
@@ -916,8 +880,7 @@ class QueryBuilder extends Object
      * @param mixed $offset the given offset
      * @return boolean whether the offset is effective
      */
-    protected function hasOffset($offset)
-    {
+    protected function hasOffset($offset) {
         $offset = (string) $offset;
         return ctype_digit($offset) && $offset !== '0';
     }
@@ -927,8 +890,7 @@ class QueryBuilder extends Object
      * @param array $params the binding parameters to be populated
      * @return string the UNION clause built from [[Query::$union]].
      */
-    public function buildUnion($unions, &$params)
-    {
+    public function buildUnion($unions, &$params) {
         if (empty($unions)) {
             return '';
         }
@@ -953,8 +915,7 @@ class QueryBuilder extends Object
      * @param string|array $columns the columns to be processed
      * @return string the processing result
      */
-    public function buildColumns($columns)
-    {
+    public function buildColumns($columns) {
         if (!is_array($columns)) {
             if (strpos($columns, '(') !== false) {
                 return $columns;
@@ -980,8 +941,7 @@ class QueryBuilder extends Object
      * @param array $params the binding parameters to be populated
      * @return string the generated SQL expression
      */
-    public function buildCondition($condition, &$params)
-    {
+    public function buildCondition($condition, &$params) {
         if ($condition instanceof Expression) {
             foreach ($condition->params as $n => $v) {
                 $params[$n] = $v;
@@ -1013,8 +973,7 @@ class QueryBuilder extends Object
      * @param array $params the binding parameters to be populated
      * @return string the generated SQL expression
      */
-    public function buildHashCondition($condition, &$params)
-    {
+    public function buildHashCondition($condition, &$params) {
         $parts = [];
         foreach ($condition as $column => $value) {
             if (ArrayHelper::isTraversable($value) || $value instanceof Query) {
@@ -1048,8 +1007,7 @@ class QueryBuilder extends Object
      * @param array $params the binding parameters to be populated
      * @return string the generated SQL expression
      */
-    public function buildAndCondition($operator, $operands, &$params)
-    {
+    public function buildAndCondition($operator, $operands, &$params) {
         $parts = [];
         foreach ($operands as $operand) {
             if (is_array($operand)) {
@@ -1080,8 +1038,7 @@ class QueryBuilder extends Object
      * @return string the generated SQL expression
      * @throws InvalidParamException if wrong number of operands have been given.
      */
-    public function buildNotCondition($operator, $operands, &$params)
-    {
+    public function buildNotCondition($operator, $operands, &$params) {
         if (count($operands) !== 1) {
             throw new InvalidParamException("Operator '$operator' requires exactly one operand.");
         }
@@ -1106,8 +1063,7 @@ class QueryBuilder extends Object
      * @return string the generated SQL expression
      * @throws InvalidParamException if wrong number of operands have been given.
      */
-    public function buildBetweenCondition($operator, $operands, &$params)
-    {
+    public function buildBetweenCondition($operator, $operands, &$params) {
         if (!isset($operands[0], $operands[1], $operands[2])) {
             throw new InvalidParamException("Operator '$operator' requires three operands.");
         }
@@ -1151,8 +1107,7 @@ class QueryBuilder extends Object
      * @return string the generated SQL expression
      * @throws Exception if wrong number of operands have been given.
      */
-    public function buildInCondition($operator, $operands, &$params)
-    {
+    public function buildInCondition($operator, $operands, &$params) {
         if (!isset($operands[0], $operands[1])) {
             throw new Exception("Operator '$operator' requires two operands.");
         }
@@ -1222,8 +1177,7 @@ class QueryBuilder extends Object
      * @param array $params
      * @return string SQL
      */
-    protected function buildSubqueryInCondition($operator, $columns, $values, &$params)
-    {
+    protected function buildSubqueryInCondition($operator, $columns, $values, &$params) {
         list($sql, $params) = $this->build($values, $params);
         if (is_array($columns)) {
             foreach ($columns as $i => $col) {
@@ -1249,8 +1203,7 @@ class QueryBuilder extends Object
      * @param array $params
      * @return string SQL
      */
-    protected function buildCompositeInCondition($operator, $columns, $values, &$params)
-    {
+    protected function buildCompositeInCondition($operator, $columns, $values, &$params) {
         $vss = [];
         foreach ($values as $value) {
             $vs = [];
@@ -1298,8 +1251,7 @@ class QueryBuilder extends Object
      * @return string the generated SQL expression
      * @throws InvalidParamException if wrong number of operands have been given.
      */
-    public function buildLikeCondition($operator, $operands, &$params)
-    {
+    public function buildLikeCondition($operator, $operands, &$params) {
         if (!isset($operands[0], $operands[1])) {
             throw new InvalidParamException("Operator '$operator' requires two operands.");
         }
@@ -1353,8 +1305,7 @@ class QueryBuilder extends Object
      * @return string the generated SQL expression
      * @throws InvalidParamException if the operand is not a [[Query]] object.
      */
-    public function buildExistsCondition($operator, $operands, &$params)
-    {
+    public function buildExistsCondition($operator, $operands, &$params) {
         if ($operands[0] instanceof Query) {
             list($sql, $params) = $this->build($operands[0], $params);
             return "$operator ($sql)";
@@ -1371,8 +1322,7 @@ class QueryBuilder extends Object
      * @return string the generated SQL expression
      * @throws InvalidParamException if wrong number of operands have been given.
      */
-    public function buildSimpleCondition($operator, $operands, &$params)
-    {
+    public function buildSimpleCondition($operator, $operands, &$params) {
         if (count($operands) !== 2) {
             throw new InvalidParamException("Operator '$operator' requires two operands.");
         }
@@ -1406,8 +1356,8 @@ class QueryBuilder extends Object
      * @return string the SELECT EXISTS() SQL statement.
      * @since 2.0.8
      */
-    public function selectExists($rawSql)
-    {
+    public function selectExists($rawSql) {
         return 'SELECT EXISTS(' . $rawSql . ')';
     }
+
 }

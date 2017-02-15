@@ -9,7 +9,6 @@
 
 namespace Kant\Database\Pgsql;
 
-use Kant\Database\Connection;
 use Kant\Exception\KantException;
 use PDO;
 use Kant\Cache\Cache;
@@ -21,7 +20,7 @@ use Kant\Cache\Cache;
  * @since version 1.1
  * 
  */
-class Connection extends Connection{
+class Connection extends \Kant\Database\Connection{
 
     public function __construct($options = array()) {
         parent::__construct($options);
@@ -43,10 +42,10 @@ class Connection extends Connection{
             throw new KantException('The PDO extension is required for this adapter but the extension is not loaded');
         }
         // check for PDO_PGSQL extension
-        if (!extension_loaded('pdo_mysql')) {
-            throw new KantException('The PDO_MYSQL extension is required for this adapter but the extension is not loaded');
+        if (!extension_loaded('pdo_pgsql')) {
+            throw new KantException('The PDO_PGSQL extension is required for this adapter but the extension is not loaded');
         }
-        $dsn = sprintf("mysql:host=%s;dbname=%s", $this->options['hostname'], $this->options['database']);
+        $dsn = sprintf("pgsql:host=%s;dbname=%s;port=5432;", $this->options['hostname'], $this->options['database'], $this->options['port']);
         //Request a persistent connection, rather than creating a new connection.
         if (isset($this->options['persistent']) && $this->options['persistent'] == true) {
             $extraoptions[PDO::ATTR_PERSISTENT] = true;
@@ -59,7 +58,7 @@ class Connection extends Connection{
             // always use exceptions.
             $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            throw new KantException(sprintf('Can not connect to MySQL server or cannot use database.%s', $e->getMessage()));
+            throw new KantException(sprintf('Can not connect to PostgreSQL server or cannot use database.%s', $e->getMessage()));
         }
         $this->dbh->exec(sprintf("SET NAMES \"%s\"", $this->options['charset']));
         return $this->dbh;
