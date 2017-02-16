@@ -139,7 +139,7 @@ class Query extends Component implements QueryInterface {
      */
     public function createCommand($db = null) {
         if ($db === null) {
-            $db = KantFactory::getDb();
+            $db = Kant::$app->getDb();
         }
         list ($sql, $params) = $db->getQueryBuilder()->build($this);
 

@@ -64,17 +64,6 @@ class KantFactory {
         return self::$container['session'];
     }
 
-    /**
-     * Get cookie object
-     */
-    public static function getCookie() {
-        if (!self::$container['cookie']) {
-            $config = self::getConfig()->get('cookie');
-            self::$container['cookie'] = Cookie::getInstance($config);
-        }
-        return self::$container['cookie'];
-    }
-
     public static function getDb() {
         if (!self::$container['db']) {
             $config = self::getConfig()->get("database.default");
