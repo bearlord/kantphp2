@@ -64,7 +64,6 @@ class Connection extends Component {
      * Static instance of factory mode
      *
      */
-    private static $_database;
     public $options;
     protected $numRows = 0;
     protected $ttl;
@@ -835,7 +834,8 @@ class Connection extends Component {
      */
     public function quoteSql($sql) {
         return preg_replace_callback(
-                '/(\\{\\{(%?[\w\-\. ]+%?)\\}\\}|\\[\\[([\w\-\. ]+)\\]\\])/', function ($matches) {
+//                '/(\\{\\{(%?[\w\-\. ]+%?)\\}\\}|\\[\\[([\w\-\. ]+)\\]\\])/', function ($matches) {
+                '#(\{\{(%?[\w\-\. ]+%?)\}\}|\[\[([\w\-\. ]+)\]\])#', function ($matches) {
             if (isset($matches[3])) {
                 return $this->quoteColumnName($matches[3]);
             } else {

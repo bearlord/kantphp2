@@ -7,22 +7,28 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Session\Driver\Mysql;
+namespace Kant\Driver\Session;
 
-use Kant\Session\Mysql\Driver\SessionMysqlModel;
-
-class SessionMysql {
+/**
+ * Session Memcache
+ * 
+ * @access private
+ * @static
+ * @version 1.1
+ * @since version 1.1
+ */
+class Session {
 
     protected $sidpre = 'sess_';
     //Session setting: gc_maxlifetime, auth_key;
     private $_setting;
     //Session Model
-    protected $model;
+    private $_sessM;
 
     public function __construct($setting) {
         $this->_setting = $setting;
-        require_once KANT_PATH . 'Session/Mysql/SessionMysqlModel.php';
-        $this->model = new SessionMysqlModel();
+        require_once KANT_PATH . 'Session/Sqlite/SessionSqliteModel.php';
+        $this->_sessM = new SessionSqliteModel();
         self::_setSessionModule();
     }
 
@@ -90,14 +96,13 @@ class SessionMysql {
     }
 
     public function destroy($sid) {
-        $sessionid = $this->sidpre . $sid;
-        $this->model->readSession($sessionid);
+        $this->_sessM->delete($sid);
         return true;
     }
 
     public function gc($maxlifetime) {
         $expiretime = time() - $maxlifetime;
-        $this->model->deleteExpire($expiretime);
+        $this->_sessM->deleteExpire($expiretime);
         return true;
     }
 

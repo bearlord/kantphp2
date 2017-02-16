@@ -106,7 +106,7 @@ class Kant {
      *
      * ```php
      * $username = 'Alexander';
-     * echo \Yii::t('app', 'Hello, {username}!', ['username' => $username]);
+     * echo Kant\Kant:t('app', 'Hello, {username}!', ['username' => $username]);
      * ```
      *
      * Further formatting of message parameters is supported using the [PHP intl extensions](http://www.php.net/manual/en/intro.intl.php)

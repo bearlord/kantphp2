@@ -5,7 +5,7 @@ namespace Kant\Session\Driver\Sqlite;
 use Kant\Exception\KantException;
 use PDO;
 
-class SessionSqliteModel {
+class Model {
 
     protected $adapter = 'session_db';
     protected $table = 'session';

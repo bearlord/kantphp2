@@ -5,7 +5,7 @@ namespace Kant\Session\Driver\Mysql;
 use Kant\Exception\KantException;
 use PDO;
 
-class SessionMysqlModel {
+class Model {
 
     protected $table = 'session';
     protected $primary = 'sessionid';

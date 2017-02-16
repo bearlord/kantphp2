@@ -67,8 +67,9 @@ class KantApplication extends ServiceLocator {
         $config = $this->initConfig($env);
         $this->preInit($config);
 
-        $this->initSession($config['session']);
-        $this->initCache($config['cache']);
+        $this->setSession($config['session']);
+        $this->setCache($config['cache']);
+        $this->setCookie($config['cookie']);
 
         $this->setDb();
     }
@@ -78,9 +79,12 @@ class KantApplication extends ServiceLocator {
      */
     protected function initConfig($environment) {
         $appConfig = ArrayHelper::merge(
-                        require KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php', require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php', require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Route.php', [
-                    'environment' => $environment,
-                    'config_path' => CFG_PATH . $environment . DIRECTORY_SEPARATOR
+                        require KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php', 
+                        require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php', 
+                        require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Route.php', 
+                        [
+                            'environment' => $environment,
+                            'config_path' => CFG_PATH . $environment . DIRECTORY_SEPARATOR
                         ]
         );
         return KantFactory::getConfig()->merge($appConfig)->reference();
@@ -90,7 +94,7 @@ class KantApplication extends ServiceLocator {
      * Init Module Config;
      * @param type $module
      */
-    private function _initModuleConfig($module) {
+    protected function setModuleConfig($module) {
         $configFilePath = MODULE_PATH . $module . DIRECTORY_SEPARATOR . 'Config.php';
         if (file_exists($configFilePath)) {
             KantFactory::getConfig()->merge(require $configFilePath);
@@ -103,18 +107,25 @@ class KantApplication extends ServiceLocator {
      * @staticvar type $session
      * @return type
      */
-    protected function initSession($config) {
+    protected function setSession($config) {
         return KantFactory::getSession($config);
     }
 
     /**
-     * Initialize cache
+     * Register cache
      * 
      * @param type $config
      * @return type
      */
-    protected function initCache($config) {
-        return Cache::platform($config);
+    protected function setCache($config) {
+        return $this->set('cache', Cache::instance($config));
+    }
+    
+    /**
+     * Register Cookie
+     */
+    protected function setCookie($config) {
+        $this->set('cookie', ['class' => Cookie\Cookie::class, 'config' => $config]);
     }
 
     /**
@@ -172,6 +183,7 @@ class KantApplication extends ServiceLocator {
                 $components['components'][$id]['class'] = $component['class'];
             }
         }
+
         Component::__construct($components);
 
         if ($config['debug']) {
@@ -365,7 +377,7 @@ class KantApplication extends ServiceLocator {
         if (empty($moduleName)) {
             throw new KantException('No Module found');
         }
-        $this->_initModuleConfig($moduleName);
+        $this->setModuleConfig($moduleName);
 
         //controller name
         $controllerName = ucfirst($dispatcher[1]) ?: ucfirst(KantFactory::getConfig()->get('route.ctrl'));

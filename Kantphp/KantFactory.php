@@ -9,8 +9,7 @@
 
 namespace Kant;
 
-use Kant\KantApplication;
-use Kant\Config\KantConfig;
+use Kant\Config\Config;
 use Kant\Route\Route;
 use Kant\Cache\Cache;
 use Kant\Session\Session;
@@ -28,7 +27,6 @@ class KantFactory {
         'application' => '',
         'config' => '',
         'route' => '',
-        'cache' => '',
         'session' => '',
         'cookie' => '',
         'db' => '',
@@ -40,7 +38,7 @@ class KantFactory {
      */
     public static function getConfig() {
         if (!self::$container['config']) {
-            self::$container['config'] = new KantConfig();
+            self::$container['config'] = new Config();
         }
         return self::$container['config'];
     }
@@ -53,16 +51,6 @@ class KantFactory {
             self::$container['route'] = Route::getInstance();
         }
         return self::$container['route'];
-    }
-
-    /**
-     * Get cache object
-     */
-    public static function getCache($config) {
-        if (!self::$container['cache']) {
-            self::$container['cache'] = Cache::getInstance($config);
-        }
-        return self::$container['cache'];
     }
 
     /**

@@ -9,10 +9,6 @@
 
 namespace Kant\Session;
 
-use Kant\Session\File\SessionFile;
-use Kant\Session\Sqlite\SessionSqlite;
-use Kant\Session\Mysql\SessionMysql;
-
 final class Session {
 
     private static $_session;
@@ -25,23 +21,6 @@ final class Session {
 
     public function __construct() {
         
-    }
-
-    public static function platform($config = "") {
-        $options = self::parseConfig($config);
-        if (self::$_cache == '') {
-            self::$_cache = (new self())->connect($options);
-        }
-        return self::$_cache;
-    }
-
-    public static function parseConfig($config = "") {
-        if ($config == "") {
-            $config = KantFactory::getConfig()->get('session.original');
-        } elseif (is_string($config)) {
-            $config = KantFactory::getConfig()->get('session.' . $config);
-        }
-        return $config;
     }
 
     /**
@@ -57,9 +36,18 @@ final class Session {
         return self::$_session;
     }
 
+    public static function parseConfig($config = "") {
+        if ($config == "") {
+            $config = KantFactory::getConfig()->get('session.original');
+        } elseif (is_string($config)) {
+            $config = KantFactory::getConfig()->get('session.' . $config);
+        }
+        return $config;
+    }
+
     public function load($options) {
         $type = ucfirst($options['type']);
-        $class = "\\Kant\\Session\\Driver\\{$type}\\Session{$type}";
+        $class = "\\Kant\\Session\\Driver\\{$type}\\Session";
         $object = new $class($options);
         return $object;
     }

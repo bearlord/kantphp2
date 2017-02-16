@@ -29,21 +29,12 @@ class Cache {
      *
      */
     private static $_cache;
-
-    public static function platform($config = "") {
+    
+    public static function instance($config = "") {
         if (self::$_cache == '') {
             self::$_cache = (new self())->connect($config);
         }
         return self::$_cache;
-    }
-
-    public static function parseConfig($config = "") {
-        if ($config == "") {
-            $config = KantFactory::getConfig()->get('cache.file');
-        } elseif (is_string($config)) {
-            $config = KantFactory::getConfig()->get('cache.' . $config);
-        }
-        return $config;
     }
 
     /**
@@ -54,25 +45,11 @@ class Cache {
      * @return object on success
      */
     public function connect($options) {
-        switch ($options['type']) {
-            case 'memcache':
-                $object = new Memcache([
-                    'host' => $options['hostname'],
-                    'port' => $options['port'],
-                    'timeout' => $options['timeout'] > 0 ? $options['timeout'] : 1,
-                ]);
-                break;
-            case 'redis':
-                $object = new Redis([
-                    'host' => $options['hostname'],
-                    'port' => $options['port']
-                ]);
-                break;
-            case 'file':
-            case 'default':
-                $object = new File();
-                break;
+        if (!empty($options['timeout'])) {
+            $options['timeout'] = $options['timeout'] ?: 1;
         }
+        $type = 'Kant\\Cache\\Driver\\' . ucfirst($options['type']);
+        $object = new $type($options);
         return $object;
     }
 

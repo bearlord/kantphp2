@@ -128,6 +128,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface {
      * @return array|ActiveRecord[] the query results. If the query results in nothing, an empty array will be returned.
      */
     public function all($db = null) {
+        $rows = $this->createCommand($db)->queryAll();
         return parent::all($db);
     }
 
@@ -202,7 +203,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface {
         if (empty($rows)) {
             return [];
         }
-
+        
         $models = $this->createModels($rows);
         if (!empty($this->join) && $this->indexBy === null) {
             $models = $this->removeDuplicatedModels($models);

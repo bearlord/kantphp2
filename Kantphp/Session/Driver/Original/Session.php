@@ -9,7 +9,7 @@
 
 namespace Kant\Session\Driver\Original;
 
-class SessionOriginal {
+class Session {
 
     //Session setting: gc_maxlifetime
     private static $_setting;

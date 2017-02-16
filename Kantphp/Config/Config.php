@@ -9,7 +9,7 @@
 
 namespace Kant\Config;
 
-class KantConfig {
+class Config {
 
     /**
      * Whether in-memory modifications to configuration data are allowed
@@ -110,7 +110,7 @@ class KantConfig {
      * Merge object
      * 
      * @param type $config
-     * @return \Kant\Config\KantConfig
+     * @return \Kant\Config\Config
      */
     public function merge($config) {
         $this->_data = $this->_merge($this->_data, $config);

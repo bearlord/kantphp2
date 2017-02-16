@@ -7,30 +7,21 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Driver\Session;
+namespace Kant\Session\Driver\Sqlite;
 
-use Kant\Secure\Crypt\Crypt_AES;
+use Kant\Session\Driver\Sqlite\Model;
 
-/**
- * Session Memcache
- * 
- * @access private
- * @static
- * @version 1.1
- * @since version 1.1
- */
-class SessionMemcache {
+class Session {
 
     protected $sidpre = 'sess_';
     //Session setting: gc_maxlifetime, auth_key;
     private $_setting;
     //Session Model
-    private $_sessM;
+    protected $model;
 
     public function __construct($setting) {
         $this->_setting = $setting;
-        require_once KANT_PATH . 'Session/Sqlite/SessionSqliteModel.php';
-        $this->_sessM = new SessionSqliteModel();
+        $this->model = new Model();
         self::_setSessionModule();
     }
 
@@ -98,13 +89,14 @@ class SessionMemcache {
     }
 
     public function destroy($sid) {
-        $this->_sessM->delete($sid);
+        $sessionid = $this->sidpre . $sid;
+        $this->model->readSession($sessionid);
         return true;
     }
 
     public function gc($maxlifetime) {
         $expiretime = time() - $maxlifetime;
-        $this->_sessM->deleteExpire($expiretime);
+        $this->model->deleteExpire($expiretime);
         return true;
     }
 
