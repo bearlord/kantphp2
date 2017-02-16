@@ -12,7 +12,10 @@ namespace Kant\Session\Driver\Mysql;
 class Session implements \SessionHandlerInterface {
 
     protected $sidpre = 'sess_';
-    //Session setting: gc_maxlifetime, auth_key;
+
+    /**
+     * Session setting: gc_maxlifetime, auth_key;
+     */
     private $_setting;
 
     public function __construct($setting) {
@@ -52,7 +55,7 @@ class Session implements \SessionHandlerInterface {
     }
 
     /**
-     *  * Read session data
+     *  Read session data
      * @link http://php.net/manual/en/sessionhandlerinterface.read.php
      * 
      * @param string $session_id
@@ -71,10 +74,10 @@ class Session implements \SessionHandlerInterface {
      * @link http://php.net/manual/en/sessionhandlerinterface.write.php
      * 
      * @param string $session_id
-     * @param string $data
+     * @param string $session_data
      * @return boolean
      */
-    public function write($session_id, $data) {
+    public function write($session_id, $session_data) {
         $sessionid = $this->sidpre . $session_id;
         $session = Model::find()->where([
                     'sessionid' => $sessionid
@@ -83,7 +86,7 @@ class Session implements \SessionHandlerInterface {
             $session = new Model();
         }
         $session->sessionid = $sessionid;
-        $session->data = $data;
+        $session->data = $session_data;
         $session->lastvisit = time();
         $session->ip = get_client_ip();
         return $session->save();
