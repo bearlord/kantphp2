@@ -66,12 +66,14 @@ class KantApplication extends ServiceLocator {
 
         $config = $this->initConfig($env);
         $this->preInit($config);
-
-        $this->setSession($config['session']);
+        
         $this->setCache($config['cache']);
+        $this->setDb();
+        
+        $this->setSession($config['session']);
         $this->setCookie($config['cookie']);
 
-        $this->setDb();
+        
     }
 
     /**

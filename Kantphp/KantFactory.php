@@ -64,14 +64,6 @@ class KantFactory {
         return self::$container['session'];
     }
 
-    public static function getDb() {
-        if (!self::$container['db']) {
-            $config = self::getConfig()->get("database.default");
-            self::$container['db'] = new Connection($config);
-        }
-        return self::$container['db'];
-    }
-
     /**
      * Get Pathinfo object
      */

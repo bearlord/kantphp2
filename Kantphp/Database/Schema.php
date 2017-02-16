@@ -54,7 +54,7 @@ abstract class Schema extends Object {
      * If left part is found in DB error message exception class from the right part is used.
      */
     public $exceptionMap = [
-        'SQLSTATE[23' => 'Kant\db\IntegrityException',
+        'SQLSTATE[23' => 'Kant\\Database\\IntegrityException'
     ];
 
     /**
@@ -580,7 +580,7 @@ abstract class Schema extends Object {
         }
         $message = $e->getMessage() . "\nThe SQL being executed was: $rawSql";
         $errorInfo = $e instanceof \PDOException ? $e->errorInfo : null;
-        return new $exceptionClass($message, $errorInfo, (int) $e->getCode(), $e);
+        return new $exceptionClass($message, (int) $e->getCode(), $e);
     }
 
     /**

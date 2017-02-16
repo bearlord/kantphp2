@@ -13,12 +13,6 @@ final class Session {
 
     private static $_session;
 
-    /**
-     * Session List
-     * @var type 
-     */
-    protected $sessionList = array();
-
     public function __construct() {
         
     }

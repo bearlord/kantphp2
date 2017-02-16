@@ -9,20 +9,14 @@
 
 namespace Kant\Session\Driver\Mysql;
 
-use Kant\Session\Mysql\Driver\SessionMysqlModel;
-
-class Session {
+class Session implements \SessionHandlerInterface {
 
     protected $sidpre = 'sess_';
     //Session setting: gc_maxlifetime, auth_key;
     private $_setting;
-    //Session Model
-    protected $model;
 
     public function __construct($setting) {
         $this->_setting = $setting;
-        require_once KANT_PATH . 'Session/Mysql/SessionMysqlModel.php';
-        $this->model = new SessionMysqlModel();
         self::_setSessionModule();
     }
 
@@ -38,67 +32,88 @@ class Session {
         session_start();
     }
 
-    public function open() {
+    /**
+     * Initialize session
+     * @link http://php.net/manual/en/sessionhandlerinterface.open.php
+     * @return boolean
+     */
+    public function open($save_path = '', $name = '') {
         return true;
     }
 
+    /**
+     * Close the session
+     * 
+     * bool The return value (usually <b>TRUE</b> on success, <b>FALSE</b> on failure).
+     */
     public function close() {
         $maxlifetime = $this->_setting['maxlifetime'] ? $this->_setting['maxlifetime'] : ini_get('session.gc_maxlifetime');
         return self::gc($maxlifetime);
     }
 
     /**
-     * READ SESSION
+     *  * Read session data
+     * @link http://php.net/manual/en/sessionhandlerinterface.read.php
      * 
-     * @param string $sid
-     * @return string
+     * @param string $session_id
+     * @return string an encoded string of the read data. If nothing was read, it must return an empty string. 
      */
-    public function read($sid) {
-        $sessionid = $this->sidpre . $sid;
-        $row = $this->model->readSession($sessionid);
-        if ($row) {
-            $data = $row[0]['data'];
-            return $data;
-        }
-    }
-
-    /**
-     * Write Session
-     * 
-     * @param string $sid
-     * @param string $data
-     * @return boolean
-     */
-    public function write($sid, $data) {
-        $sessionid = $this->sidpre . $sid;
-        $exist = $this->model->readSession($sessionid);
-        if (!$exist) {
-            $row = $this->model->saveSession(array(
-                'sessionid' => $sessionid,
-                'data' => $data,
-                'lastvisit' => time(),
-                'ip' => get_client_ip()
-            ));
-        } else {
-            $row = $this->model->saveSession(array(
-                'data' => $data,
-                'lastvisit' => time(),
-                'ip' => get_client_ip()
-                    ), $sessionid);
-        }
+    public function read($session_id) {
+        $sessionid = $this->sidpre . $session_id;
+        $row = Model::find()->where([
+                    'sessionid' => $sessionid
+                ])->asArray()->one();
         return $row;
     }
 
-    public function destroy($sid) {
-        $sessionid = $this->sidpre . $sid;
-        $this->model->readSession($sessionid);
-        return true;
+    /**
+     * Write session data
+     * @link http://php.net/manual/en/sessionhandlerinterface.write.php
+     * 
+     * @param string $session_id
+     * @param string $data
+     * @return boolean
+     */
+    public function write($session_id, $data) {
+        $sessionid = $this->sidpre . $session_id;
+        $session = Model::find()->where([
+                    'sessionid' => $sessionid
+                ])->one();
+        if (!$session) {
+            $session = new Model();
+        }
+        $session->sessionid = $sessionid;
+        $session->data = $data;
+        $session->lastvisit = time();
+        $session->ip = get_client_ip();
+        return $session->save();
     }
 
+    /**
+     * Destroy a session
+     * @link http://php.net/manual/en/sessionhandlerinterface.destroy.php
+     * 
+     * @param string $session_id
+     * @return @return bool The return value (usually <b>TRUE</b> on success, <b>FALSE</b> on failure).
+     */
+    public function destroy($session_id) {
+        return Model::deleteAll([
+                    'sessionid' => $this->sidpre . $session_id
+        ]);
+    }
+
+    /**
+     * Cleanup old sessions
+     * Sessions that have not updated for the last <i>maxlifetime</i> seconds will be removed.
+     * 
+     * @link http://php.net/manual/en/sessionhandlerinterface.gc.php
+     * @param type $maxlifetime
+     * @return bool The return value (usually <b>TRUE</b> on success, <b>FALSE</b> on failure).
+     */
     public function gc($maxlifetime) {
-        $expiretime = time() - $maxlifetime;
-        $this->model->deleteExpire($expiretime);
-        return true;
+        return Model::deleteAll(
+                        "lastvisit < :expiretime", [':expiretime' => time() - $maxlifetime]
+        );
     }
 
 }
