@@ -28,7 +28,6 @@ class KantFactory {
         'config' => '',
         'route' => '',
         'session' => '',
-        'cookie' => '',
         'db' => '',
         'pathinfo' => ''
     ];

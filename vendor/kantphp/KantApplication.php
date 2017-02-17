@@ -60,6 +60,9 @@ class KantApplication extends ServiceLocator {
 
     /**
      * Constructs
+     * Initialize Config,register Cache,Database,Session,Cookie
+     * 
+     * @param string $env
      */
     public function __construct($env) {
         Kant::$app = $this;

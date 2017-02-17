@@ -2,6 +2,7 @@
 
 namespace App\Index\Controller;
 
+use Kant\Kant;
 use Kant\Http\Request;
 use Kant\Http\Response;
 
@@ -36,8 +37,8 @@ class TestController extends \Kant\Controller\Controller {
     /**
      * 缓存测试
      */
-    public function cacheAction() {
-        \Kant\Cache\Cache::platform();
+    public function fcacheAction() {
+        \Kant\Cache\Cache::instance();
         \Kant\Cache\Cache::set("a", 100);
         var_dump(\Kant\Cache\Cache::get("a"));
     }
@@ -100,5 +101,25 @@ class TestController extends \Kant\Controller\Controller {
 
         $this->view->display();
     }
+    
+    public function renderAction() {
+//        $this->view->name = 'zhangsan';
+        return $this->view->render('test/render', ['name' => 'zhangsan']);
+    }
 
+    /**
+     * 缓存测试
+     */
+    public function cacheAction() {
+        var_dump(Kant::$app->cache);
+        Kant::$app->cache->set('hello', 'Hello World!!');
+        $h = Kant::$app->cache->get('hello');
+        var_dump($h);
+    }
+    
+    public function cookieAction() {
+        Kant::$app->cookie->set('name', 'hello');
+        $ck = Kant::$app->cookie->get('name');
+        var_dump($ck);
+    }
 }

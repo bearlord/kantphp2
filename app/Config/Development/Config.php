@@ -14,6 +14,17 @@ return [
             'charset' => 'utf8',
             'tablePrefix' => 'kant_'
         ],
-    ]
+        'pg' => [
+            'dsn' => 'pgsql:host=localhost;port=5432;dbname=kantphp',
+            'username' => 'postgres',
+            'password' => 'postgres',
+            'charset' => 'utf8',
+            'tablePrefix' => 'kant_'
+        ]
+    ],
+    'session' => [
+        'type' => 'mysql',
+        'maxlifetime' => 1800,
+    ],
 ];
 ?>

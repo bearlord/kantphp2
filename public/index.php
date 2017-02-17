@@ -3,9 +3,9 @@
 use Kant\KantApplication;
 
 //Application path
-define('APP_PATH', dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'Application' . DIRECTORY_SEPARATOR);
+define('APP_PATH', __DIR__ . '/../app/');
 
-include dirname(APP_PATH) . '/Kantphp/Framework.php';
+include __DIR__ . '/../vendor/kantphp/Framework.php';
 
 KantApplication::getInstance('Development')->run();
 
