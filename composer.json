@@ -1,0 +1,19 @@
+{
+    "name": "kantphp/kantphp",
+    "type": "library",
+    "description": "KantPHP Framework",
+    "keywords": ["php","framework"],
+    "homepage": "https://github.com/bearlord/kantphp2",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Zhenqiang Zhenqiang",
+            "email": "565364226@qq.com",
+            "homepage": "http://www.kantphp.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    }
+}
