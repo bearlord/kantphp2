@@ -1,5 +1,5 @@
 KantPHP Framework是快速的 PHP 开发框架。
-基于PHP5.3+, 开源, 遵循 BSD 3-Clause License。
+基于PHP5.4+, 开源, 遵循 BSD 3-Clause License。
 KantPHP Framework 基于MVC框架，配置灵活，注重安全，运行效率高，扩展性好，耦合性低，使开发 Web应用，RESTFUL应用 和 API接口 更为简单，容易。
 
 参考总结了 国内外 著名的PHP框架和优秀项目
