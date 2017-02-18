@@ -1,14 +1,21 @@
 <?php
 
+/**
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
+ */
+
 namespace Kant\Http;
 
 class Xml {
 
-    protected $options = [        
-        'root_node' => 'root',        
-        'root_attr' => '',        
-        'item_node' => 'item',        
-        'item_key' => 'id',        
+    protected $options = [
+        'root_node' => 'root',
+        'root_attr' => '',
+        'item_node' => 'item',
+        'item_key' => 'id',
         'encoding' => 'utf-8'
     ];
 

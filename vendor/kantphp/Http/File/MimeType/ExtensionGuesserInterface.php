@@ -1,12 +1,11 @@
 <?php
 
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+/**
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @original-author Laravel/Symfony
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Symfony\Component\HttpFoundation\File\MimeType;
@@ -14,8 +13,8 @@ namespace Symfony\Component\HttpFoundation\File\MimeType;
 /**
  * Guesses the file extension corresponding to a given mime type.
  */
-interface ExtensionGuesserInterface
-{
+interface ExtensionGuesserInterface {
+
     /**
      * Makes a best guess for a file extension, given a mime type.
      *

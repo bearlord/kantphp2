@@ -1,13 +1,21 @@
 <?php
 
+/**
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @original-author Laravel/Symfony
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
+ */
+
 namespace Kant\Session;
 
 use SessionHandlerInterface;
 use Kant\Contracts\Encryption\DecryptException;
 use Kant\Contracts\Encryption\Encrypter as EncrypterContract;
 
-class EncryptedStore extends Store
-{
+class EncryptedStore extends Store {
+
     /**
      * The encrypter instance.
      *
@@ -24,8 +32,7 @@ class EncryptedStore extends Store
      * @param  string|null $id
      * @return void
      */
-    public function __construct($name, SessionHandlerInterface $handler, EncrypterContract $encrypter, $id = null)
-    {
+    public function __construct($name, SessionHandlerInterface $handler, EncrypterContract $encrypter, $id = null) {
         $this->encrypter = $encrypter;
 
         parent::__construct($name, $handler, $id);
@@ -37,8 +44,7 @@ class EncryptedStore extends Store
      * @param  string  $data
      * @return string
      */
-    protected function prepareForUnserialize($data)
-    {
+    protected function prepareForUnserialize($data) {
         try {
             return $this->encrypter->decrypt($data);
         } catch (DecryptException $e) {
@@ -52,8 +58,7 @@ class EncryptedStore extends Store
      * @param  string  $data
      * @return string
      */
-    protected function prepareForStorage($data)
-    {
+    protected function prepareForStorage($data) {
         return $this->encrypter->encrypt($data);
     }
 
@@ -62,8 +67,8 @@ class EncryptedStore extends Store
      *
      * @return \Kant\Contracts\Encryption\Encrypter
      */
-    public function getEncrypter()
-    {
+    public function getEncrypter() {
         return $this->encrypter;
     }
+
 }

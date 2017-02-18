@@ -535,8 +535,8 @@ class Request implements Arrayable, ArrayAccess {
 
         $request = array('g' => $_GET, 'p' => $_POST, 'c' => $_COOKIE);
 
-        $requestOrder = ini_get('request_order') ? : ini_get('variables_order');
-        $requestOrder = preg_replace('#[^cgp]#', '', strtolower($requestOrder)) ? : 'gp';
+        $requestOrder = ini_get('request_order') ?: ini_get('variables_order');
+        $requestOrder = preg_replace('#[^cgp]#', '', strtolower($requestOrder)) ?: 'gp';
 
         $_REQUEST = array();
         foreach (str_split($requestOrder) as $order) {
@@ -2660,7 +2660,7 @@ class Request implements Arrayable, ArrayAccess {
      * @return \Closure
      */
     public function getUserResolver() {
-        return $this->userResolver ? : function () {
+        return $this->userResolver ?: function () {
             //
         };
     }
@@ -2683,7 +2683,7 @@ class Request implements Arrayable, ArrayAccess {
      * @return \Closure
      */
     public function getRouteResolver() {
-        return $this->routeResolver ? : function () {
+        return $this->routeResolver ?: function () {
             //
         };
     }

@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @original-author Laravel/Symfony
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
+ */
+
 namespace Kant\Session;
 
 use Kant\Kant;
@@ -114,7 +122,7 @@ class Manager {
 
         $table = Factory::getConfig()->get('session.table');
 
-        $lifetime =  Factory::getConfig()->get('session.maxlifetime');
+        $lifetime = Factory::getConfig()->get('session.maxlifetime');
 
         return $this->buildSession(new DatabaseSessionHandler($connection, $table, $lifetime));
     }
@@ -215,7 +223,7 @@ class Manager {
     public function getSessionConfig() {
         return Factory::getConfig()->get('session');
     }
-    
+
     /**
      * Dynamically call the default driver instance.
      *
@@ -223,8 +231,7 @@ class Manager {
      * @param  array   $parameters
      * @return mixed
      */
-    public function __call($method, $parameters)
-    {
+    public function __call($method, $parameters) {
         return call_user_func_array([$this->driver(), $method], $parameters);
     }
 

@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @original-author Laravel/Symfony
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
+ */
+
 namespace Kant\Http\File\MimeType;
 
 use Kant\Http\File\Exception\FileNotFoundException;
@@ -9,8 +17,8 @@ use Kant\Http\File\Exception\AccessDeniedException;
  * Guesses the mime type using the PECL extension FileInfo.
  *
  */
-class FileinfoMimeTypeGuesser implements MimeTypeGuesserInterface
-{
+class FileinfoMimeTypeGuesser implements MimeTypeGuesserInterface {
+
     private $magicFile;
 
     /**
@@ -20,8 +28,7 @@ class FileinfoMimeTypeGuesser implements MimeTypeGuesserInterface
      *
      * @link http://www.php.net/manual/en/function.finfo-open.php
      */
-    public function __construct($magicFile = null)
-    {
+    public function __construct($magicFile = null) {
         $this->magicFile = $magicFile;
     }
 
@@ -30,16 +37,14 @@ class FileinfoMimeTypeGuesser implements MimeTypeGuesserInterface
      *
      * @return bool
      */
-    public static function isSupported()
-    {
+    public static function isSupported() {
         return function_exists('finfo_open');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function guess($path)
-    {
+    public function guess($path) {
         if (!is_file($path)) {
             throw new FileNotFoundException($path);
         }
@@ -58,4 +63,5 @@ class FileinfoMimeTypeGuesser implements MimeTypeGuesserInterface
 
         return $finfo->file($path);
     }
+
 }
