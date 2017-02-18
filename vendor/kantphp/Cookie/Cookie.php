@@ -9,7 +9,7 @@
 
 namespace Kant\Cookie;
 
-use Kant\KantFactory;
+use Kant\Factory;
 
 final class Cookie {
 

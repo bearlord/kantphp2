@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package KantPHP
  * @author  Zhenqiang Zhang <565364226@qq.com>
@@ -13,20 +14,16 @@ namespace Kant\Helper;
  *
  * Do not use BaseStringHelper. Use [[StringHelper]] instead.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @author Alex Makarov <sam@rmcreative.ru>
- * @since 2.0
  */
-class StringHelper
-{
+class StringHelper {
+
     /**
      * Returns the number of bytes in the given string.
      * This method ensures the string is treated as a byte array by using `mb_strlen()`.
      * @param string $string the string being measured for length
      * @return integer the number of bytes in the given string.
      */
-    public static function byteLength($string)
-    {
+    public static function byteLength($string) {
         return mb_strlen($string, '8bit');
     }
 
@@ -40,8 +37,7 @@ class StringHelper
      * @return string the extracted part of string, or FALSE on failure or an empty string.
      * @see http://www.php.net/manual/en/function.substr.php
      */
-    public static function byteSubstr($string, $start, $length = null)
-    {
+    public static function byteSubstr($string, $start, $length = null) {
         return mb_substr($string, $start, $length === null ? mb_strlen($string, '8bit') : $length, '8bit');
     }
 
@@ -58,8 +54,7 @@ class StringHelper
      * @return string the trailing name component of the given path.
      * @see http://www.php.net/manual/en/function.basename.php
      */
-    public static function basename($path, $suffix = '')
-    {
+    public static function basename($path, $suffix = '') {
         if (($len = mb_strlen($suffix)) > 0 && mb_substr($path, -$len) === $suffix) {
             $path = mb_substr($path, 0, -$len);
         }
@@ -80,8 +75,7 @@ class StringHelper
      * @return string the parent directory's path.
      * @see http://www.php.net/manual/en/function.basename.php
      */
-    public static function dirname($path)
-    {
+    public static function dirname($path) {
         $pos = mb_strrpos(str_replace('\\', '/', $path), '/');
         if ($pos !== false) {
             return mb_substr($path, 0, $pos);
@@ -89,7 +83,7 @@ class StringHelper
             return '';
         }
     }
-    
+
     /**
      * Truncates a string to the number of words specified.
      *
@@ -100,8 +94,7 @@ class StringHelper
      * This parameter is available since version 2.0.1.
      * @return string the truncated string.
      */
-    public static function truncateWords($string, $count, $suffix = '...', $asHtml = false)
-    {
+    public static function truncateWords($string, $count, $suffix = '...', $asHtml = false) {
         if ($asHtml) {
             return static::truncateHtml($string, $count, $suffix);
         }
@@ -113,8 +106,6 @@ class StringHelper
             return $string;
         }
     }
-    
-    
 
     /**
      * Explodes string into array, optionally trims values and skips empty ones
@@ -129,8 +120,7 @@ class StringHelper
      * @return array
      * @since 2.0.4
      */
-    public static function explode($string, $delimiter = ',', $trim = true, $skipEmpty = false)
-    {
+    public static function explode($string, $delimiter = ',', $trim = true, $skipEmpty = false) {
         $result = explode($delimiter, $string);
         if ($trim) {
             if ($trim === true) {
@@ -145,8 +135,8 @@ class StringHelper
         if ($skipEmpty) {
             // Wrapped with array_values to make array keys sequential after empty values removing
             $result = array_values(array_filter($result, function ($value) {
-                return $value !== '';
-            }));
+                        return $value !== '';
+                    }));
         }
         return $result;
     }
@@ -158,8 +148,20 @@ class StringHelper
      * @param string $string
      * @return integer
      */
-    public static function countWords($string)
-    {
+    public static function countWords($string) {
         return count(preg_split('/\s+/u', $string, null, PREG_SPLIT_NO_EMPTY));
     }
+
+    /**
+     * Convert a value to studly caps case.
+     * 
+     * @param type $value
+     * @return type
+     */
+    public static function studly($value) {
+        $value = ucwords(str_replace(['-', '_'], ' ', $value));
+        $value = str_replace(' ', '', $value);
+        return $value;
+    }
+
 }

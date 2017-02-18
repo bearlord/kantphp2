@@ -10,7 +10,7 @@
 namespace Kant\I18n;
 
 use Kant\Kant;
-use Kant\KantFactory;
+use Kant\Factory;
 use Kant\Foundation\Component;
 use Kant\Exception\InvalidConfigException;
 
@@ -64,7 +64,7 @@ class I18N extends Component {
         if (!isset($this->translations['app']) && !isset($this->translations['app*'])) {
             $this->translations['app'] = [
                 'class' => 'Kant\I18n\PhpMessageSource',
-                'sourceLanguage' => KantFactory::getConfig()->get('language'),
+                'sourceLanguage' => Factory::getConfig()->get('language'),
                 'basePath' => APP_PATH . 'Messages/',
             ];
         }

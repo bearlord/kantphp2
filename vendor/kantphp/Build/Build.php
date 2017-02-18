@@ -9,7 +9,7 @@
 
 namespace Kant\Build;
 
-use Kant\KantFactory;
+use Kant\Factory;
 
 class Build {
 
@@ -47,7 +47,7 @@ class [CONTROLLER]Controller extends BaseController {
     }
 
     public static function buildDirSecure($dirs) {
-        $config = KantFactory::getConfig()->get('config');
+        $config = Factory::getConfig()->get('config');
         $dir_secure_filename = !empty($config['dir_secure_filename']) ? $config['dir_secure_filename'] : 'index.html';
         $files = explode(",", $dir_secure_filename);
         $content = !empty($config['dir_secure_content']) ? $config['dir_secure_content'] : '';

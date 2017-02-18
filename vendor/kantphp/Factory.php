@@ -17,7 +17,7 @@ use Kant\Cookie\Cookie;
 use Kant\Database\Connection;
 use Kant\Pathinfo\Pathinfo;
 
-class KantFactory {
+class Factory {
 
     /**
      * Object container

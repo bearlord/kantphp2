@@ -416,7 +416,6 @@ class Command extends Component {
     public function insert($table, $columns) {
         $params = [];
         $sql = $this->db->getQueryBuilder()->insert($table, $columns, $params);
-
         return $this->setSql($sql)->bindValues($params);
     }
 
@@ -817,24 +816,26 @@ class Command extends Component {
     protected function queryInternal($method, $fetchMode = null) {
         $rawSql = $this->getRawSql();
         if ($method !== '') {
-            Cache::setExpire($this->queryCacheDuration);
-            $cacheKey = [
-                __CLASS__,
-                $method,
-                $fetchMode,
-                $this->db->options['hostname'],
-                $this->db->options['username'],
-                $rawSql,
-            ];
-            $result = Cache::get($cacheKey);
-            if (is_array($result)) {
-                return $result;
+            $info = $this->db->getQueryCacheInfo($this->queryCacheDuration, $this->queryCacheDependency);
+            if (is_array($info)) {
+                Cache::setExpire($this->queryCacheDuration);
+                $cacheKey = [
+                    __CLASS__,
+                    $method,
+                    $fetchMode,
+                    $this->db->options['hostname'],
+                    $this->db->options['username'],
+                    $rawSql,
+                ];
+                $result = Cache::get($cacheKey);
+                if (is_array($result)) {
+                    return $result;
+                }
             }
         }
 
         $this->prepare(true);
-
-        $token = $rawSql;
+        
         try {
 
             $this->pdoStatement->execute();

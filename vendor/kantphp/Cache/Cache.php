@@ -9,11 +9,6 @@
 
 namespace Kant\Cache;
 
-use Kant\KantFactory;
-use Kant\Cache\Driver\File;
-use Kant\Cache\Driver\Memcache;
-use Kant\Cache\Driver\Redis;
-
 /**
  * Cache factory
  * 
@@ -30,9 +25,9 @@ class Cache {
      */
     private static $_cache;
     
-    public static function instance($config = "") {
+    public static function register($config = "") {
         if (self::$_cache == '') {
-            self::$_cache = (new self())->connect($config);
+            self::$_cache = (new self())->driver($config);
         }
         return self::$_cache;
     }
@@ -44,7 +39,7 @@ class Cache {
      * @param cache_name string
      * @return object on success
      */
-    public function connect($options) {
+    public function driver($options) {
         if (!empty($options['timeout'])) {
             $options['timeout'] = $options['timeout'] ?: 1;
         }

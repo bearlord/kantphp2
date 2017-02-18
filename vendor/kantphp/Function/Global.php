@@ -76,10 +76,10 @@ function strcut($str, $start = 0, $offset = '') {
     $exp = 0;
     while ($exp < $offset) {
         if (ord($str{$i}) >= 0x80 && ord($str{$i}) < 0xff) {
-            $substr.= substr($str, $i, 3);
+            $substr .= substr($str, $i, 3);
             $i = $i + 3;
         } else {
-            $substr.=$str{$i};
+            $substr .= $str{$i};
             $i++;
         }
         $exp++;
@@ -114,5 +114,19 @@ function unserializesession($data) {
     $returnArray[$currentKey] = unserialize($valueText);
 
     return $returnArray;
+}
+
+if (!function_exists('value')) {
+
+    /**
+     * Return the default value of the given value.
+     *
+     * @param  mixed  $value
+     * @return mixed
+     */
+    function value($value) {
+        return $value instanceof Closure ? $value() : $value;
+    }
+
 }
 ?>

@@ -12,8 +12,9 @@ namespace Kant;
 use Kant\Foundation\Component;
 use Kant\Di\ServiceLocator;
 use Kant\Helper\ArrayHelper;
-use Kant\KantFactory;
+use Kant\Factory;
 use Kant\Route\Route;
+use Kant\Http\Request;
 use Kant\Http\Response;
 use Kant\Registry\KantRegistry;
 use Kant\Log\Log;
@@ -21,14 +22,13 @@ use Kant\Runtime\Runtime;
 use Kant\Exception\KantException;
 use ReflectionException;
 use ReflectionMethod;
-use Kant\Http\Request;
-use Kant\Cache\Cache;
 use InvalidArgumentException;
 use ReflectionParameter;
 
 class KantApplication extends ServiceLocator {
 
     private static $_instance = null;
+    protected $config;
 
     /**
      * @var string the language that is meant to be used for end users. It is recommended that you
@@ -67,16 +67,8 @@ class KantApplication extends ServiceLocator {
     public function __construct($env) {
         Kant::$app = $this;
 
-        $config = $this->initConfig($env);
+        $this->config = $config = $this->initConfig($env);
         $this->preInit($config);
-        
-        $this->setCache($config['cache']);
-        $this->setDb();
-        
-        $this->setSession($config['session']);
-        $this->setCookie($config['cookie']);
-
-        
     }
 
     /**
@@ -84,15 +76,12 @@ class KantApplication extends ServiceLocator {
      */
     protected function initConfig($environment) {
         $appConfig = ArrayHelper::merge(
-                        require KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php', 
-                        require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php', 
-                        require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Route.php', 
-                        [
-                            'environment' => $environment,
-                            'config_path' => CFG_PATH . $environment . DIRECTORY_SEPARATOR
+                        require KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php', require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php', require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Route.php', [
+                    'environment' => $environment,
+                    'config_path' => CFG_PATH . $environment . DIRECTORY_SEPARATOR
                         ]
         );
-        return KantFactory::getConfig()->merge($appConfig)->reference();
+        return Factory::getConfig()->merge($appConfig)->reference();
     }
 
     /**
@@ -102,7 +91,7 @@ class KantApplication extends ServiceLocator {
     protected function setModuleConfig($module) {
         $configFilePath = MODULE_PATH . $module . DIRECTORY_SEPARATOR . 'Config.php';
         if (file_exists($configFilePath)) {
-            KantFactory::getConfig()->merge(require $configFilePath);
+            Factory::getConfig()->merge(require $configFilePath);
         }
     }
 
@@ -112,8 +101,9 @@ class KantApplication extends ServiceLocator {
      * @staticvar type $session
      * @return type
      */
-    protected function setSession($config) {
-        return KantFactory::getSession($config);
+    protected function setSession($config, $request, $response) {
+        $this->set('session', (new Session\Session($config, $request, $response))->handle());
+//        var_dump($this->get('session'));
     }
 
     /**
@@ -123,14 +113,26 @@ class KantApplication extends ServiceLocator {
      * @return type
      */
     protected function setCache($config) {
-        return $this->set('cache', Cache::instance($config));
+        return $this->set('cache', \Kant\Cache\Cache::register($config));
     }
     
+    public function getCache() {
+        return $this->get('cache');
+    }
+
     /**
      * Register Cookie
      */
     protected function setCookie($config) {
-        $this->set('cookie', ['class' => Cookie\Cookie::class, 'config' => $config]);
+        $this->set('cookie', ['class' => 'Kant\\Cookie\\Cookie', 'config' => $config]);
+    }
+    
+    public function getCookie() {
+        return $this->get('cookie');
+    }
+    
+    public function getSession() {
+        return $this->get('session');
     }
 
     /**
@@ -153,12 +155,19 @@ class KantApplication extends ServiceLocator {
      * 
      */
     public function run() {
-        $type = strtolower(KantFactory::getConfig()->get('return_type'));
+        $type = strtolower($this->config['return_type']);
 
         $request = Kant::$container->instance('Kant\Http\Request', Request::capture());
         $response = Kant::$container->instance('Kant\Http\Response', Response::create("", Response::HTTP_OK, [
                     'Content-Type' => $this->outputType[$type]
         ]));
+
+        $this->setCache($this->config['cache']);
+        $this->setDb();
+
+        $this->setCookie($this->config['cookie']);
+        $this->setSession($this->config['session'], $request, $response);
+        
 
         $data = $this->dispatch($this->route($request->path()));
         $result = $this->parseData($data, $type);
@@ -251,7 +260,7 @@ class KantApplication extends ServiceLocator {
      * End
      */
     protected function end() {
-        if (KantFactory::getConfig()->get('debug')) {
+        if (Factory::getConfig()->get('debug')) {
             Runtime::mark('end');
         }
     }
@@ -261,9 +270,9 @@ class KantApplication extends ServiceLocator {
      */
     protected function route($path) {
         //remove url suffix
-        $pathinfo = str_replace(KantFactory::getConfig()->get('url_suffix'), '', $path);
+        $pathinfo = str_replace(Factory::getConfig()->get('url_suffix'), '', $path);
 
-        Route::import(KantFactory::getConfig()->get('route'));
+        Route::import(Factory::getConfig()->get('route'));
         $dispath = Route::check($pathinfo);
         if ($dispath === false) {
             $dispath = Route::parseUrl($pathinfo);
@@ -275,7 +284,7 @@ class KantApplication extends ServiceLocator {
      * Parse Pathinfo
      */
     protected function parsePathinfo() {
-        $pathinfo = KantFactory::getPathInfo()->parsePathinfo();
+        $pathinfo = Factory::getPathInfo()->parsePathinfo();
         return $pathinfo;
     }
 
@@ -378,14 +387,14 @@ class KantApplication extends ServiceLocator {
         $this->dispatcher = $dispatcher;
 
         //module name
-        $moduleName = ucfirst($dispatcher[0]) ?: ucfirst(KantFactory::getConfig()->get('route.module'));
+        $moduleName = ucfirst($dispatcher[0]) ?: ucfirst(Factory::getConfig()->get('route.module'));
         if (empty($moduleName)) {
             throw new KantException('No Module found');
         }
         $this->setModuleConfig($moduleName);
 
         //controller name
-        $controllerName = ucfirst($dispatcher[1]) ?: ucfirst(KantFactory::getConfig()->get('route.ctrl'));
+        $controllerName = ucfirst($dispatcher[1]) ?: ucfirst(Factory::getConfig()->get('route.ctrl'));
         $controller = $this->controller($controllerName, $moduleName);
         if (!$controller) {
             if (empty($controller)) {
@@ -393,8 +402,8 @@ class KantApplication extends ServiceLocator {
             }
         }
         //action name
-        $action = $this->dispatcher[2] ?: ucfirst(KantFactory::getConfig()->get('route.act'));
-        $data = $this->callClass($controller . "@" . $action . KantFactory::getConfig()->get('action_suffix'));
+        $action = $this->dispatcher[2] ?: ucfirst(Factory::getConfig()->get('route.act'));
+        $data = $this->callClass($controller . "@" . $action . Factory::getConfig()->get('action_suffix'));
         return $data;
     }
 
@@ -432,7 +441,7 @@ class KantApplication extends ServiceLocator {
      * Set the database connection component.
      */
     public function setDb() {
-        $dbConfig = KantFactory::getConfig()->get('database');
+        $dbConfig = Factory::getConfig()->get('database');
         foreach ($dbConfig as $key => $config) {
             $this->set($key, array_merge([
                 'class' => 'Kant\Database\Connection'

@@ -9,10 +9,10 @@
 
 namespace Kant\Controller;
 
+use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Exception\KantException;
 use Kant\Registry\KantRegistry;
-use Kant\View\View;
 
 /**
  * Base Controller 
@@ -71,7 +71,7 @@ class Controller extends Component {
      */
     protected function initView() {
         if ($this->view == '') {
-            $this->view = \Kant\Kant::createObject([
+            $this->view = Kant::createObject([
                 'class' => 'Kant\\View\\View',
                 'layout' => $this->layout
             ]);

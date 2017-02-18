@@ -1,13 +1,13 @@
 <?php
 
 namespace Kant\Traits;
-use Kant\KantFactory;
+use Kant\Factory;
 
 trait UrlTrait {
 
     public function url($url = '', $vars = '', $suffix = true) {
         $originalparams = array();
-        $config = KantFactory::getConfig()->reference();
+        $config = Factory::getConfig()->reference();
         if (strpos($url, $config['url_suffix']) !== false) {
             $url = rtrim($url, $config['url_suffix']);
         }
@@ -81,7 +81,7 @@ trait UrlTrait {
      * @param integer $second
      */
     public function redirect($message, $url = 'goback', $second = 3) {
-        $redirectTpl = KantFactory::getConfig()->get('redirect_tpl');
+        $redirectTpl = Factory::getConfig()->get('redirect_tpl');
         if ($redirectTpl) {
             include TPL_PATH . $redirectTpl . '.php';
         } else {

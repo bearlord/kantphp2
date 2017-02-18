@@ -9,43 +9,243 @@
 
 namespace Kant\Session;
 
+use Kant\Http\Request;
+use Kant\Http\Response;
+use Kant\Http\Cookie;
+use Kant\Session\Manager;
+use Kant\Support\Arr;
+
 final class Session {
 
-    private static $_session;
+    public static $_session;
+    protected $config;
+    protected $manager;
+    protected $request;
+    protected $response;
 
-    public function __construct() {
-        
+    /**
+     * Indicates if the session was handled for the current request.
+     *
+     * @var bool
+     */
+    protected $sessionHandled = false;
+
+    public function __construct($config, Request $request, Response $response) {
+        $this->config = $config;
+        $this->request = $request;
+        $this->response = $response;
     }
 
     /**
-     * Get instantce of the final object
-     * 
-     * @param type $config
+     * Register the session manager instance.
+     *
+     * @return void
      */
-    public static function getInstance($config) {
-        $options = self::parseConfig($config);
-        if (self::$_session == '') {
-            self::$_session = (new self())->load($options);
+    public function handle() {
+        $this->manager = new Manager($this->config);
+        $this->sessionHandled = true;
+        $request = $this->request;
+        $response = $this->response;
+        // If a session driver has been configured, we will need to start the session here
+        // so that the data is ready for an application. Note that the Laravel sessions
+        // do not make use of PHP "native" sessions in any way since they are crappy.
+        if ($this->sessionConfigured()) {
+            $session = $this->startSession($request);
+//            var_dump($session);
+            $request->setSession($session);
+
+            $this->collectGarbage($session);
         }
-        return self::$_session;
-    }
 
-    public static function parseConfig($config = "") {
-        if ($config == "") {
-            $config = KantFactory::getConfig()->get('session.original');
-        } elseif (is_string($config)) {
-            $config = KantFactory::getConfig()->get('session.' . $config);
+        // Again, if the session has been configured we will need to close out the session
+        // so that the attributes may be persisted to some storage medium. We will also
+        // add the session identifier cookie to the application response headers now.
+        if ($this->sessionConfigured()) {
+            $this->storeCurrentUrl($request, $session);
+
+            $this->addCookieToResponse($response, $session);
         }
-        return $config;
+
+        return $session;
     }
 
-    public function load($options) {
-        $type = ucfirst($options['type']);
-        $class = "\\Kant\\Session\\Driver\\{$type}\\Session";
-        $object = new $class($options);
-        return $object;
+    /**
+     * Determine if a session driver has been configured.
+     *
+     * @return bool
+     */
+    protected function sessionConfigured() {
+        return !is_null(Arr::get($this->manager->getSessionConfig(), 'driver'));
     }
 
+    /**
+     * Start the session for the given request.
+     *
+     * @param  \Kant\Http\Request  $request
+     * @return \Kant\Session\SessionInterface
+     */
+    protected function startSession(Request $request) {
+        $session = $this->getSession($request);
+
+        $session->setRequestOnHandler($request);
+
+        $session->start();
+
+        return $session;
+    }
+
+    /**
+     * Get the session implementation from the manager.
+     *
+     * @param  \Kant\Http\Request  $request
+     * @return \Kant\Session\SessionInterface
+     */
+    public function getSession(Request $request) {
+        $session = $this->manager->driver();
+        $session->setId($request->cookies->get($session->getName()));
+        return $session;
+    }
+
+    /**
+     * Store the current URL for the request if necessary.
+     *
+     * @param  \Kant\Http\Request  $request
+     * @param  \Kant\Session\SessionInterface  $session
+     * @return void
+     */
+    protected function storeCurrentUrl(Request $request, $session) {
+        if ($request->method() === 'GET' && $request->route() && !$request->ajax()) {
+            $session->setPreviousUrl($request->fullUrl());
+        }
+    }
+
+    /**
+     * Remove the garbage from the session if necessary.
+     *
+     * @param  \Kant\Session\SessionInterface  $session
+     * @return void
+     */
+    protected function collectGarbage($session) {
+        $config = $this->manager->getSessionConfig();
+
+        // Here we will see if this request hits the garbage collection lottery by hitting
+        // the odds needed to perform garbage collection on any given request. If we do
+        // hit it, we'll call this handler to let it delete all the expired sessions.
+        if ($this->configHitsLottery($config)) {
+            $session->getHandler()->gc($this->getSessionLifetimeInSeconds());
+        }
+    }
+
+    /**
+     * Determine if the configuration odds hit the lottery.
+     *
+     * @param  array  $config
+     * @return bool
+     */
+    protected function configHitsLottery(array $config) {
+        return mt_rand(1, $config['lottery'][1]) <= $config['lottery'][0];
+    }
+
+    /**
+     * Add the session cookie to the application response.
+     *
+     * @param  \Symfony\Component\HttpFoundation\Response  $response
+     * @param  \Kant\Session\SessionInterface  $session
+     * @return void
+     */
+    protected function addCookieToResponse(Response $response, SessionInterface $session) {
+        if ($this->usingCookieSessions()) {
+            $this->manager->driver()->save();
+        }
+
+        if ($this->sessionIsPersistent($config = $this->manager->getSessionConfig())) {
+            $response->headers->setCookie(new Cookie(
+                    $session->getName(), $session->getId(), $this->getCookieExpirationDate(), $config['path'], $config['domain'], Arr::get($config, 'secure', false), Arr::get($config, 'http_only', true)
+            ));
+        }
+    }
+
+    /**
+     * Get the session lifetime in seconds.
+     *
+     * @return int
+     */
+    protected function getSessionLifetimeInSeconds() {
+        return Arr::get($this->manager->getSessionConfig(), 'lifetime') * 60;
+    }
+
+    /**
+     * Get the cookie lifetime in seconds.
+     *
+     * @return int
+     */
+    protected function getCookieExpirationDate() {
+        $config = $this->manager->getSessionConfig();
+
+        return $config['expire_on_close'] ? 0 : time() + $config['lifetime'];
+    }
+
+
+    /**
+     * Determine if the configured session driver is persistent.
+     *
+     * @param  array|null  $config
+     * @return bool
+     */
+    protected function sessionIsPersistent(array $config = null) {
+        $config = $config ?: $this->manager->getSessionConfig();
+
+        return !in_array($config['driver'], [null, 'array']);
+    }
+
+    /**
+     * Determine if the session is using cookie sessions.
+     *
+     * @return bool
+     */
+    protected function usingCookieSessions() {
+        if (!$this->sessionConfigured()) {
+            return false;
+        }
+
+        return $this->manager->driver()->getHandler() instanceof CookieSessionHandler;
+    }
+
+//    /*
+//    private static $_session;
+//
+//    public function __construct() {
+//
+//    }
+//
+//    /**
+//     * Get instantce of the final object
+//     *
+//     * @param type $config
+//     */
+//    public static function getInstance($config) {
+//        $options = self::parseConfig($config);
+//        if (self::$_session == '') {
+//            self::$_session = (new self())->load($options);
+//        }
+//        return self::$_session;
+//    }
+//
+//    public static function parseConfig($config = "") {
+//        if ($config == "") {
+//            $config = KantFactory::getConfig()->get('session.original');
+//        } elseif (is_string($config)) {
+//            $config = KantFactory::getConfig()->get('session.' . $config);
+//        }
+//        return $config;
+//    }
+//
+//    public function load($options) {
+//        $type = ucfirst($options['type']);
+//        $class = "\\Kant\\Session\\Driver\\{$type}\\Session";
+//        $object = new $class($options);
+//        return $object;
+//    }
 }
 
 ?>

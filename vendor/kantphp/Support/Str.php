@@ -219,18 +219,6 @@ class Str {
     }
 
     /**
-     * Generate a more truly "random" bytes.
-     *
-     * @param  int  $length
-     * @return string
-     *
-     * @deprecated since version 5.2. Use random_bytes instead.
-     */
-    public static function randomBytes($length = 16) {
-        return random_bytes($length);
-    }
-
-    /**
      * Generate a "random" alpha-numeric string.
      *
      * Should not be considered sufficient for cryptography, etc.
@@ -245,20 +233,20 @@ class Str {
     }
 
     /**
-     * Compares two strings using a constant-time algorithm.
+     * Generate a "random" Integer string.
      *
-     * Note: This method will leak length information.
+     * Should not be considered sufficient for cryptography, etc.
      *
-     * Note: Adapted from Symfony\Component\Security\Core\Util\StringUtils.
-     *
-     * @param  string  $knownString
-     * @param  string  $userInput
-     * @return bool
-     *
-     * @deprecated since version 5.2. Use hash_equals instead.
+     * @param  int  $length
+     * @return string
      */
-    public static function equals($knownString, $userInput) {
-        return hash_equals($knownString, $userInput);
+    public static function quickRandomInt($length) {
+        $charset = "0123456789";
+        $charset_len = strlen($charset) - 1;
+        for ($i = 0; $i < $length; $i++) {
+            $code .= $charset[rand(1, $charset_len)];
+        }
+        return $code;
     }
 
     /**

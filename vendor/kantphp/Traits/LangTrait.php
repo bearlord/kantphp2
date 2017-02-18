@@ -2,7 +2,7 @@
 
 namespace Kant\Traits;
 
-use Kant\KantFactory;
+use Kant\Factory;
 
 trait LangTrait {
 
@@ -14,7 +14,7 @@ trait LangTrait {
     public function getLang() {
         static $lang = null;
         if (empty($lang)) {
-            $lang = !empty($_COOKIE['language']) ? $_COOKIE['language'] : KantFactory::getConfig()->get('language');
+            $lang = !empty($_COOKIE['language']) ? $_COOKIE['language'] : Factory::getConfig()->get('language');
             if (empty($lang)) {
                 $lang = 'en_US';
             }

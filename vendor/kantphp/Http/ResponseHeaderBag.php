@@ -2,6 +2,7 @@
 
 namespace Kant\Http;
 
+
 /**
  * ResponseHeaderBag is a container for Response HTTP headers.
  *

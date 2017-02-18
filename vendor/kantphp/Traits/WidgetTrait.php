@@ -2,7 +2,7 @@
 
 namespace Kant\Traits;
 
-use Kant\KantFactory;
+use Kant\Factory;
 
 /**
  * Description of Widget
@@ -22,7 +22,7 @@ trait WidgetTrait {
      * @throws KantException
      */
     public function widget($widgetname, $method, $data = array(), $return = false) {
-        $dispatcher = KantFactory::getConfig()->get('dispatcher');
+        $dispatcher = Factory::getConfig()->get('dispatcher');
         $module = isset($dispatcher['module']) ? ucfirst($dispatcher['module']) : '';
         $classname = ucfirst($widgetname) . 'Widget';
         if ($module) {

@@ -1,0 +1,231 @@
+<?php
+
+namespace Kant\Session;
+
+use Kant\Kant;
+use Kant\Factory;
+use Kant\Support\Str;
+use Kant\Exception\InvalidArgumentException;
+
+class Manager {
+
+    /**
+     * The registered custom driver creators.
+     *
+     * @var array
+     */
+    protected $customCreators = [];
+
+    /**
+     * Get the default session driver name.
+     *
+     * @return string
+     */
+    public function getDefaultDriver() {
+        return Factory::getConfig()->get('session.driver');
+    }
+
+    public function driver($driver = null) {
+        $driver = $driver ?: $this->getDefaultDriver();
+
+        // If the given driver has not been created before, we will create the instances
+        // here and cache it so we can return it next time very quickly. If there is
+        // already a driver created by this name, we'll just return that instance.
+        if (!isset($this->drivers[$driver])) {
+            $this->drivers[$driver] = $this->createDriver($driver);
+        }
+
+        return $this->drivers[$driver];
+    }
+
+    public function createDriver($driver) {
+        $method = 'create' . Str::studly($driver) . 'Driver';
+        // We'll check to see if a creator method exists for the given driver. If not we
+        // will check for a custom driver creator, which allows developers to create
+        // drivers using their own customized driver creator Closure to create it.
+        if (isset($this->customCreators[$driver])) {
+            return $this->callCustomCreator($driver);
+        } elseif (method_exists($this, $method)) {
+            return $this->$method();
+        }
+
+        throw new InvalidArgumentException("Driver [$driver] not supported.");
+    }
+
+    /**
+     * Call a custom driver creator.
+     *
+     * @param  string  $driver
+     * @return mixed
+     */
+    protected function callCustomCreator($driver) {
+        return $this->buildSession($this->customCreators[$driver]());
+    }
+
+    /**
+     * Create an instance of the "array" session driver.
+     *
+     * @return \Kant\Session\Store
+     */
+    protected function createArrayDriver() {
+        return $this->buildSession(new NullSessionHandler);
+    }
+
+    /**
+     * Create an instance of the "cookie" session driver.
+     *
+     * @return \Kant\Session\Store
+     */
+    protected function createCookieDriver() {
+        $lifetime = $this->app['config']['session.lifetime'];
+
+        return $this->buildSession(new CookieSessionHandler($this->app['cookie'], $lifetime));
+    }
+
+    /**
+     * Create an instance of the file session driver.
+     *
+     * @return \Kant\Session\Store
+     */
+    protected function createFileDriver() {
+        return $this->createNativeDriver();
+    }
+
+    /**
+     * Create an instance of the file session driver.
+     *
+     * @return \Kant\Session\Store
+     */
+    protected function createNativeDriver() {
+        $path = $this->app['config']['session.files'];
+
+        $lifetime = $this->app['config']['session.lifetime'];
+
+        return $this->buildSession(new FileSessionHandler($this->app['files'], $path, $lifetime));
+    }
+
+    /**
+     * Create an instance of the database session driver.
+     *
+     * @return \Kant\Session\Store
+     */
+    protected function createDatabaseDriver() {
+        $connection = $this->getDatabaseConnection();
+
+        $table = Factory::getConfig()->get('session.table');
+
+        $lifetime =  Factory::getConfig()->get('session.maxlifetime');
+
+        return $this->buildSession(new DatabaseSessionHandler($connection, $table, $lifetime));
+    }
+
+    /**
+     * Get the database connection for the database driver.
+     *
+     * @return \Kant\Database\Connection
+     */
+    protected function getDatabaseConnection() {
+        return Kant::$app->getDb();
+    }
+
+    /**
+     * Create an instance of the APC session driver.
+     *
+     * @return \Kant\Session\Store
+     */
+    protected function createApcDriver() {
+        return $this->createCacheBased('apc');
+    }
+
+    /**
+     * Create an instance of the Memcached session driver.
+     *
+     * @return \Kant\Session\Store
+     */
+    protected function createMemcachedDriver() {
+        return $this->createCacheBased('memcached');
+    }
+
+    /**
+     * Create an instance of the Wincache session driver.
+     *
+     * @return \Kant\Session\Store
+     */
+    protected function createWincacheDriver() {
+        return $this->createCacheBased('wincache');
+    }
+
+    /**
+     * Create an instance of the Redis session driver.
+     *
+     * @return \Kant\Session\Store
+     */
+    protected function createRedisDriver() {
+        $handler = $this->createCacheHandler('redis');
+
+        $handler->getCache()->getStore()->setConnection($this->app['config']['session.connection']);
+
+        return $this->buildSession($handler);
+    }
+
+    /**
+     * Create an instance of a cache driven driver.
+     *
+     * @param  string  $driver
+     * @return \Kant\Session\Store
+     */
+    protected function createCacheBased($driver) {
+        return $this->buildSession($this->createCacheHandler($driver));
+    }
+
+    /**
+     * Create the cache based session handler instance.
+     *
+     * @param  string  $driver
+     * @return \Kant\Session\CacheBasedSessionHandler
+     */
+    protected function createCacheHandler($driver) {
+        $minutes = $this->app['config']['session.lifetime'];
+
+        return new CacheBasedSessionHandler(clone $this->app['cache']->driver($driver), $minutes);
+    }
+
+    /**
+     * Build the session instance.
+     *
+     * @param  \SessionHandlerInterface  $handler
+     * @return \Kant\Session\Store
+     */
+    protected function buildSession($handler) {
+        if (Factory::getConfig()->get('session.encrypt')) {
+            return new EncryptedStore(
+                    Factory::getConfig()->get('cookie'), $handler, $this->app['encrypter']
+            );
+        } else {
+            var_dump(Factory::getConfig()->get('session.cookie'));
+            return new Store(Factory::getConfig()->get('session.cookie'), $handler);
+        }
+    }
+
+    /**
+     * Get the session configuration.
+     *
+     * @return array
+     */
+    public function getSessionConfig() {
+        return Factory::getConfig()->get('session');
+    }
+    
+    /**
+     * Dynamically call the default driver instance.
+     *
+     * @param  string  $method
+     * @param  array   $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        return call_user_func_array([$this->driver(), $method], $parameters);
+    }
+
+}

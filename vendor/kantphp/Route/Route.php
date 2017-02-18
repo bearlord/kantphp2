@@ -9,7 +9,7 @@
 
 namespace Kant\Route;
 
-use Kant\KantFactory;
+use Kant\Factory;
 
 class Route {
 
@@ -568,7 +568,7 @@ class Route {
             $path = explode('/', $pathinfo);
         }
 
-        $routeConfig = KantFactory::getConfig()->get("route");
+        $routeConfig = Factory::getConfig()->get("route");
         $module = array_shift($path);
         $module = !empty($module) ? $module : $routeConfig['module'];
         $controller = !empty($path) ? array_shift($path) : $routeConfig['ctrl'];
@@ -577,7 +577,7 @@ class Route {
             if (strpos($action, "?") !== false) {
                 $action = substr($action, 0, strpos($action, "?"));
             }
-            $urlsuffix = KantFactory::getConfig()->get('url_suffix');
+            $urlsuffix = Factory::getConfig()->get('url_suffix');
             if ($urlsuffix) {
                 if (strpos($action, "&") !== false) {
                     $action = substr($action, 0, strpos($action, $urlsuffix));

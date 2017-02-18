@@ -12,7 +12,7 @@ namespace Kant\View;
 use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Registry\KantRegistry;
-use Kant\KantFactory;
+use Kant\Factory;
 use Kant\Exception\KantException;
 
 /**
@@ -147,7 +147,7 @@ class View extends Component {
         if (is_file($view)) {
             return $view;
         }
-        $ext = KantFactory::getConfig()->get("view.ext");
+        $ext = Factory::getConfig()->get("view.ext");
         $viewPath = $this->getViewPath();
         if (empty($view)) {
             $viewFile = $viewPath . strtolower($this->dispatcher[1]) . DIRECTORY_SEPARATOR . strtolower($this->dispatcher[2]) . $ext;
@@ -167,7 +167,7 @@ class View extends Component {
         if (is_string($this->layout)) {
             $layout = $this->layout;
         }
-        $ext = KantFactory::getConfig()->get("view.ext");
+        $ext = Factory::getConfig()->get("view.ext");
         if (strncmp($layout, '/', 1) === 0) {
             $file = $this->getLayoutPath() . DIRECTORY_SEPARATOR . substr($layout, 1) . $ext;
         } else {
@@ -183,7 +183,7 @@ class View extends Component {
         $ext = pathinfo($viewFile, PATHINFO_EXTENSION);
         if (isset($this->renderers[$ext])) {
             if (is_array($this->renderers[$ext]) || is_string($this->renderers[$ext])) {
-                $class = ucfirst(KantFactory::getConfig()->get($this->renderers[$ext]));
+                $class = ucfirst(Factory::getConfig()->get($this->renderers[$ext]));
                 $this->renderers[$ext] = Kant::createObject(["class" => "Kant\\View\\$class"]);
             }
             /* @var $renderer ViewRenderer */
@@ -216,7 +216,7 @@ class View extends Component {
         if ($module == '') {
             $module = isset($this->dispatcher[0]) ? strtolower($this->dispatcher[0]) : '';
         }
-        $theme = KantFactory::getConfig()->get('view.theme');
+        $theme = Factory::getConfig()->get('view.theme');
         if ($module) {
             $viewPath = TPL_PATH . $theme . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR;
         } else {

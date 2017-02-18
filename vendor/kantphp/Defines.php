@@ -39,7 +39,6 @@ define('IS_AJAX', ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SER
 define('CHARSET', 'utf-8');
 
 require_once KANT_PATH . 'Function/Global.php';
-require_once KANT_PATH . 'KantFactory.php';
 require_once APP_PATH . 'Function/Common.php';
 
 ini_set('magic_quotes_runtime', 0);

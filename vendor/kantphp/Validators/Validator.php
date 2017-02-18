@@ -11,7 +11,7 @@ namespace Kant\Validators;
 
 use Kant\Kant;
 use Kant\Foundation\Component;
-use Kant\KantFactory;
+use Kant\Factory;
 
 //use yii\base\NotSupportedException;
 
@@ -383,7 +383,7 @@ class Validator extends Component {
                 $params['value'] = $value;
             }
         }
-        $model->addError($attribute, Kant::$app->getI18n()->format($message, $params, KantFactory::getConfig()->get('language')));
+        $model->addError($attribute, Kant::$app->getI18n()->format($message, $params, Factory::getConfig()->get('language')));
     }
 
     /**

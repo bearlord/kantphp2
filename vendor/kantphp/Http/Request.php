@@ -13,6 +13,7 @@ use Kant\Foundation\Arrayable;
 use ArrayAccess;
 use Kant\Support\Str;
 use Kant\Support\Arr;
+use Kant\Session\SessionInterface;
 
 class Request implements Arrayable, ArrayAccess {
 
@@ -1849,7 +1850,7 @@ class Request implements Arrayable, ArrayAccess {
             $request = call_user_func(self::$requestFactory, $query, $request, $attributes, $cookies, $files, $server, $content);
 
             if (!$request instanceof self) {
-                throw new \LogicException('The Request factory must return an instance of Symfony\Component\HttpFoundation\Request.');
+                throw new \LogicException('The Request factory must return an instance of Kant\Http\Request.');
             }
 
             return $request;
