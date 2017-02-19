@@ -105,11 +105,21 @@ class Manager {
      * @return \Kant\Session\Store
      */
     protected function createNativeDriver() {
-        $path = $this->app['config']['session.files'];
+        
+        $files = $this->getFileSystem();
+        
+        $path = Factory::getConfig()->get('session.files');
 
-        $lifetime = $this->app['config']['session.lifetime'];
+        $lifetime = Factory::getConfig()->get('session.lifetime');
 
-        return $this->buildSession(new FileSessionHandler($this->app['files'], $path, $lifetime));
+        return $this->buildSession(new FileSessionHandler($files, $path, $lifetime));
+    }
+    
+    /**
+     * Get the file system for the file driver
+     */
+    protected function getFileSystem() {
+        return Kant::$app->files;
     }
 
     /**
@@ -210,7 +220,6 @@ class Manager {
                     Factory::getConfig()->get('cookie'), $handler, $this->app['encrypter']
             );
         } else {
-            var_dump(Factory::getConfig()->get('session.cookie'));
             return new Store(Factory::getConfig()->get('session.cookie'), $handler);
         }
     }

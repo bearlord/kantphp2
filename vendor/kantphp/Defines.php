@@ -5,8 +5,8 @@ if (!defined('APP_PATH')) {
     define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . DIRECTORY_SEPARATOR . 'Application' . DIRECTORY_SEPARATOR);
 }
 
-//Cache directory
-define('CACHE_PATH', APP_PATH . 'Cache' . DIRECTORY_SEPARATOR);
+//Storage directory
+define('RUNTIME_PATH', APP_PATH . 'Runtime' . DIRECTORY_SEPARATOR);
 //Template directory
 define('TPL_PATH', APP_PATH . 'View' . DIRECTORY_SEPARATOR);
 //Config directroy

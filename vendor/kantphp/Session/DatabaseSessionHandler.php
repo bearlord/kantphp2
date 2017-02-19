@@ -11,6 +11,7 @@
 namespace Kant\Session;
 
 use SessionHandlerInterface;
+use Kant\Database\Connection;
 
 class DatabaseSessionHandler implements SessionHandlerInterface {
 
@@ -57,7 +58,7 @@ class DatabaseSessionHandler implements SessionHandlerInterface {
      * @param  string  $lifetime
      * @return void
      */
-    public function __construct(\Kant\Database\Connection $connection, $table, $lifetime) {
+    public function __construct(Connection $connection, $table, $lifetime) {
         $this->lifetime = $lifetime;
         $this->connection = $connection;
         $this->table = $this->connection->tablePrefix . $table;
@@ -123,29 +124,12 @@ class DatabaseSessionHandler implements SessionHandlerInterface {
      * @return array
      */
     protected function getDefaultData($data) {
-        return [
-            'sess_data' => base64_encode($data),
-            'last_activity' => time(),
-            'ip_address' => get_client_ip()
-        ];
-
         $data = [
             'sess_data' => base64_encode($data),
             'last_activity' => time(),
-            'ip_address' => get_client_ip()
+            'ip_address' => get_client_ip(),
+            'user_agent' => substr($_SERVER['HTTP_USER_AGENT'], 0,500)
         ];
-
-        if (!$container = $this->container) {
-            return $data;
-        }
-
-        if ($container->bound('request')) {
-            $data['ip_address'] = $container->make('request')->ip();
-
-            $data['user_agent'] = substr(
-                    (string) $container->make('request')->header('User-Agent'), 0, 500
-            );
-        }
 
         return $data;
     }

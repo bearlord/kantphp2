@@ -21,7 +21,7 @@ class File extends \Kant\Cache\Cache {
         'expire' => 0,
         'cache_subdir' => false,
         'prefix' => '',
-        'path' => CACHE_PATH . 'CacheData/',
+        'path' => RUNTIME_PATH . 'Cache/',
         'data_compress' => false,
         'lock_ex' => false
     ];

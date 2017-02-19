@@ -72,6 +72,17 @@ class KantApplication extends ServiceLocator {
     }
 
     /**
+     * Returns the configuration of core application components.
+     * @see set()
+     */
+    public function coreComponents() {
+        return [
+            'i18n' => ['class' => 'Kant\I18n\I18N'],
+            'files' => ['class' => 'Kant\Filesystem\Filesystem']
+        ];
+    }
+
+    /**
      * Init Config
      */
     protected function initConfig($environment) {
@@ -113,24 +124,24 @@ class KantApplication extends ServiceLocator {
      * @return type
      */
     protected function setCache($config) {
-        return $this->set('cache', \Kant\Cache\Cache::register($config));
+        return $this->set('Kant\Cache\Cache', \Kant\Cache\Cache::register($config));
     }
-    
+
     public function getCache() {
-        return $this->get('cache');
+        return $this->get('Kant\Cache\Cache');
     }
 
     /**
      * Register Cookie
      */
     protected function setCookie($config) {
-        $this->set('cookie', ['class' => 'Kant\\Cookie\\Cookie', 'config' => $config]);
+        $this->set('cookie', ['class' => 'Kant\Cookie\Cookie', 'config' => $config]);
     }
-    
+
     public function getCookie() {
         return $this->get('cookie');
     }
-    
+
     public function getSession() {
         return $this->get('session');
     }
@@ -167,7 +178,7 @@ class KantApplication extends ServiceLocator {
 
         $this->setCookie($this->config['cookie']);
         $this->setSession($this->config['session'], $request, $response);
-        
+
 
         $data = $this->dispatch($this->route($request->path()));
         $result = $this->parseData($data, $type);
@@ -428,16 +439,6 @@ class KantApplication extends ServiceLocator {
     }
 
     /**
-     * Returns the configuration of core application components.
-     * @see set()
-     */
-    public function coreComponents() {
-        return [
-            'i18n' => ['class' => 'Kant\I18n\I18N'],
-        ];
-    }
-
-    /**
      * Set the database connection component.
      */
     public function setDb() {
@@ -463,6 +464,11 @@ class KantApplication extends ServiceLocator {
      */
     public function getI18n() {
         return $this->get('i18n');
+    }
+
+    public function getFiles() {
+        var_dump($this);
+        return $this->get('files');
     }
 
     /**

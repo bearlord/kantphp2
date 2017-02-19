@@ -81,7 +81,7 @@ return [
           | location may be specified. This is only needed for file sessions.
           |
          */
-        'files' => CACHE_PATH . 'Session/',
+        'files' => RUNTIME_PATH . 'Session/',
         /**
           |--------------------------------------------------------------------------
           | Session Database Connection
@@ -114,7 +114,7 @@ return [
           | happen on a given request. By default, the odds are 2 out of 100.
           |
          */
-        'lottery' => [2, 100],
+        'lottery' => [99, 100],
         /*
           |--------------------------------------------------------------------------
           | Session Cookie Name
@@ -172,7 +172,13 @@ return [
         'http_only' => true,
     ],
     'database' => [
-        //default configuration
+        /*
+          |--------------------------------------------------------------------------
+          | MySQL example
+          |--------------------------------------------------------------------------
+          |
+          | Default database link is MySQL,
+         */
         'db' => [
             'dsn' => 'mysql:host=localhost;dbname=kantphp',
             'username' => 'root',
@@ -180,17 +186,14 @@ return [
             'charset' => 'utf8',
             'tablePrefix' => 'kant_'
         ],
-        //postgresql
+        /*
+          |--------------------------------------------------------------------------
+          | PostgreSQL example
+          |--------------------------------------------------------------------------
+          |
+         */
         'pgsql' => [
             'dsn' => 'pgsql:host=localhost;port=5432;dbname=mydatabase',
-            'username' => 'root',
-            'password' => '123456',
-            'charset' => 'utf8',
-            'tablePrefix' => 'kant_'
-        ],
-        //sqlite
-        'sqlite' => [
-            'dsn' => CACHE_PATH . 'SqliteDb/test.db',
             'username' => 'root',
             'password' => '123456',
             'charset' => 'utf8',
