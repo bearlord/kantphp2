@@ -145,7 +145,7 @@ class DatabaseSessionHandler implements SessionHandlerInterface {
      * {@inheritdoc}
      */
     public function gc($lifetime) {
-        $this->connection->createCommand()->delete($this->table, 'last_activity <= ' . time() - $lifetime)->execute();
+        $this->connection->createCommand()->delete($this->table, 'last_activity <= :expire', [':expire' => time() - $lifetime])->execute();
     }
 
     /**
