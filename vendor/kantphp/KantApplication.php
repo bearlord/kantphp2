@@ -114,7 +114,6 @@ class KantApplication extends ServiceLocator {
      */
     protected function setSession($config, $request, $response) {
         $this->set('session', (new Session\Session($config, $request, $response))->handle());
-//        var_dump($this->get('session'));
     }
 
     /**
@@ -483,7 +482,8 @@ class KantApplication extends ServiceLocator {
         if ($this->isCallableWithAtSign($callback) || $defaultMethod) {
             return $this->callClass($callback, $parameters, $defaultMethod);
         }
-
+        var_dump($callback);
+        var_dump($parameters);
         $dependencies = $this->getMethodDependencies($callback, $parameters);
         return call_user_func_array($callback, $dependencies);
     }

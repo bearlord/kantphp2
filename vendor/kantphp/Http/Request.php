@@ -1864,7 +1864,7 @@ class Request implements Arrayable, ArrayAccess {
     }
 
     /**
-     * Create a new Illuminate HTTP request from server variables.
+     * Create a new Kant HTTP request from server variables.
      *
      * @return static
      */
@@ -2569,7 +2569,7 @@ class Request implements Arrayable, ArrayAccess {
     }
 
     /**
-     * Create an Illuminate request from a Symfony instance.
+     * Create an Kant request from a Symfony instance.
      *
      * @param  Request  $request
      * @return Request
@@ -2595,7 +2595,7 @@ class Request implements Arrayable, ArrayAccess {
     /**
      * Get the session associated with the request.
      *
-     * @return \Illuminate\Session\Store
+     * @return \Kant\Session\Store
      *
      * @throws \RuntimeException
      */
@@ -2622,7 +2622,7 @@ class Request implements Arrayable, ArrayAccess {
      *
      * @param string|null $param
      *
-     * @return \Illuminate\Routing\Route|object|string
+     * @return \Kant\Routing\Route|object|string
      */
     public function route($param = null) {
         $route = call_user_func($this->getRouteResolver());

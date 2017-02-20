@@ -10,6 +10,7 @@
 namespace Kant\Di;
 
 use Kant\Foundation\Component;
+use Kant\Exception\InvalidConfigException;
 use ReflectionClass;
 
 /**
