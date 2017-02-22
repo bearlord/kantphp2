@@ -49,7 +49,6 @@ class FileSessionHandler implements SessionHandlerInterface {
      * {@inheritdoc}
      */
     public function open($savePath, $sessionName) {
-        echo 'open';
         return true;
     }
 

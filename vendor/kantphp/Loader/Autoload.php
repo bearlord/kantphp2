@@ -42,13 +42,9 @@ class KantAutoloaderInit {
                         $className = str_replace('\\', '/', $className) . ".php";
                         $filename = MODULE_PATH . $className;
                     } 
-//                    else if (strpos($className, "Model") !== false || strpos($className, "Controller") !== false) {
-//                        $className = str_replace('\\', '/', $className) . ".php";
-//                        $filename = MODULE_PATH . $className;
-//                    } 
                     else {
                         $className = str_replace('\\', '/', $className) . ".php";
-                        $filename = APP_PATH . $className;
+                        $filename = VENDOR_PATH . $className;
                     }
                 } else {
                     $filename = $className;

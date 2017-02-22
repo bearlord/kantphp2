@@ -27,11 +27,12 @@ return [
         'ext' => ".php",
     ],
     'cookie' => [
-        'cookie_domain' => '',
-        'cookie_path' => '/',
-        'cookie_pre' => 'kant_',
-        'cookie_ttl' => 0,
-        'auth_key' => 'NMa1FcQBE1HHHd4AQyTV'
+        'domain' => '',
+        'path' => '/',
+        'prefix' => 'kant_',
+        'expire' => 0,
+        'key' => 'NMa1FcQBE1HHHd4AQyTV',
+        'secure' => false
     ],
     'session' => [
         /**

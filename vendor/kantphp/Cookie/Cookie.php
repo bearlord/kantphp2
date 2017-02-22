@@ -9,163 +9,182 @@
 
 namespace Kant\Cookie;
 
-use Kant\Factory;
+use Kant\Http\Request;
+use Kant\Http\Response;
+use Kant\Support\Arr;
 
 final class Cookie {
 
-    private static $_cookie;
-
     /**
      *
-     * @example: 
-     * 
+     * @var config
      */
-    public $config = ['cookie_domain' => '',
-        'cookie_path' => '/',
-        'cookie_pre' => 'kant_',
-        'cookie_ttl' => 0,
-        'auth_key' => 'kant'
-    ];
+    protected $config;
+    protected $request;
+    protected $response;
 
-    public function __construct($config = "") {
-        if ($config != "" && $config != $this->config) {
-            $this->config = array_merge($config, $this->config);
-        }
+    /**
+     * The default path (if specified).
+     *
+     * @var string
+     */
+    protected $path = '/';
+
+    /**
+     * The default domain (if specified).
+     *
+     * @var string
+     */
+    protected $domain = null;
+
+    /**
+     * The default secure setting (defaults to false).
+     *
+     * @var bool
+     */
+    protected $secure = false;
+
+    /**
+     * All of the cookies queued for sending.
+     *
+     * @var array
+     */
+    protected $queued = [];
+
+    public function __construct($config, Request $request, Response $response) {
+        $this->setDefaultPathAndDomain($config['path'], $config['domain'], $config['secure']);
+        $this->request = $request;
+        $this->response = $response;
+    }
+
+    public function handle() {
+        
     }
 
     /**
+     * Create a new cookie instance.
      *
-     * Get instantce of the final object
-     *
-     * @param cache_config string
-     * @return object on success
+     * @param  string  $name
+     * @param  string  $value
+     * @param  int     $minutes
+     * @param  string  $path
+     * @param  string  $domain
+     * @param  bool    $secure
+     * @param  bool    $httpOnly
+     * @return \Symfony\Component\HttpFoundation\Cookie
      */
-    public static function getInstance($config = '') {
-        if (self::$_cookie == '') {
-            self::$_cookie = new self($config);
-        }
-        return self::$_cookie;
+    public function make($name, $value, $minutes = 0, $path = null, $domain = null, $secure = false, $httpOnly = true) {
+        list($path, $domain, $secure) = $this->getPathAndDomain($path, $domain, $secure);
+
+        $time = ($minutes == 0) ? 0 : time() + ($minutes * 60);
+
+        $response = $this->response;
+        return $response->headers->setCookie(
+                        new \Kant\Http\Cookie($name, $value, $time, $path, $domain, $secure, $httpOnly)
+        );
     }
 
     /**
+     * Create a cookie that lasts "forever" (five years).
      *
-     * Encode decode function
-     *
-     * @param string string
-     * @param operation string
-     * @param key string
-     * @param expiry boolean
-     * @return string
+     * @param  string  $name
+     * @param  string  $value
+     * @param  string  $path
+     * @param  string  $domain
+     * @param  bool    $secure
+     * @param  bool    $httpOnly
+     * @return \Symfony\Component\HttpFoundation\Cookie
      */
-    private function hash($string, $operation = 'DECODE', $key = '', $expiry = 0) {
-        $ckey_length = 4;
-        $key = sha1($key ? $key : $this->config['auth_key']);
-        // 密匙a会参与加解密
-        $keya = sha1(substr($key, 0, 20));
-        // 密匙b会用来做数据完整性验证
-        $keyb = sha1(substr($key, 20, 20));
-        // 密匙c用于变化生成的密文
-        $keyc = $ckey_length ? ($operation == 'DECODE' ? substr($string, 0, $ckey_length) : substr(sha1(microtime()), -$ckey_length)) : '';
-
-        // 参与运算的密匙
-        $cryptkey = $keya . sha1($keya . $keyc);
-        $key_length = strlen($cryptkey); //80行
-        // 明文，前10位用来保存时间戳，解密时验证数据有效性，10到30位用来保存$keyb(密匙b)，解密时会通过这个密匙验证数据完整性
-        // 如果是解码的话，会从第$ckey_length位开始，因为密文前$ckey_length位保存 动态密匙，以保证解密正确
-        $string = $operation == 'DECODE' ? base64_decode(substr($string, $ckey_length)) : sprintf('%010d', $expiry ? $expiry + time() : 0) . substr(sha1($string . $keyb), 0, 20) . $string;
-        $string_length = strlen($string);
-        $result = '';
-        $box = range(0, 239);
-        $rndkey = array();
-
-        // 产生密匙簿
-        for ($i = 0; $i <= 239; $i++) {
-            $rndkey[$i] = ord($cryptkey[$i % $key_length]);
-        }
-        // 用固定的算法，打乱密匙簿，增加随机性，好像很复杂，实际上对并不会增加密文的强度
-        for ($j = $i = 0; $i < 240; $i++) {
-            $j = ($j + $box[$i] + $rndkey[$i]) % 240;
-            $tmp = $box[$i];
-            $box[$i] = $box[$j];
-            $box[$j] = $tmp;
-        }
-        // 核心加解密部分
-        for ($a = $j = $i = 0; $i < $string_length; $i++) {
-            $a = ($a + 1) % 240;
-            $j = ($j + $box[$a]) % 240;
-            $tmp = $box[$a];
-            $box[$a] = $box[$j];
-            $box[$j] = $tmp;
-            // 从密匙簿得出密匙进行异或，再转成字符
-            $result .= chr(ord($string[$i]) ^ ($box[($box[$a] + $box[$j]) % 240]));
-        }
-
-        if ($operation == 'DECODE') {
-            // substr($result, 0, 10) == 0 验证数据有效性
-            // substr($result, 0, 10) - time() > 0 验证数据有效性
-            // substr($result, 10, 20) == substr(sha1(substr($result, 30).$keyb), 0, 20) 验证数据完整性
-            // 验证数据有效性，请看未加密明文的格式
-            if ((substr($result, 0, 10) == 0 || substr($result, 0, 10) - time() > 0) && substr($result, 10, 20) == substr(sha1(substr($result, 30) . $keyb), 0, 20)) {
-                return substr($result, 30);
-            } else {
-                return '';
-            }
-        } else {
-            // 把动态密匙保存在密文里，这也是为什么同样的明文，生产不同密文后能解密的原因
-            // 因为加密后的密文可能是一些特殊字符，复制过程可能会丢失，所以用base64编码
-            return $keyc . str_replace('=', '', base64_encode($result));
-        }
+    public function forever($name, $value, $path = null, $domain = null, $secure = false, $httpOnly = true) {
+        return $this->make($name, $value, 2628000, $path, $domain, $secure, $httpOnly);
     }
 
     /**
+     * Expire the given cookie.
      *
-     * Set cookie
-     *
-     * @param var string
-     * @param value string
-     * @param time integer
+     * @param  string  $name
+     * @param  string  $path
+     * @param  string  $domain
+     * @return \Symfony\Component\HttpFoundation\Cookie
      */
-    public function set($var, $value = '', $time = 0) {
-        //If $time exists,set cookie time is $time,and if $time is null,set cookie time expired
-        $time = $time > 0 ? (time() + $time) : ($value == '' ? time() - 31536000 : $this->config['cookie_ttl']);
-        $s = $_SERVER['SERVER_PORT'] == '443' ? 1 : 0;
-        $var = $this->config['cookie_pre'] . $var;
-        if (is_array($value)) {
-            foreach ($value as $k => $v) {
-                setcookie($var . '[' . $k . ']', $this->hash($v, 'ENCODE'), $time, $this->config['cookie_path'], $this->config['cookie_domain'], $s);
-            }
-        } else {
-            if (isset($_COOKIE[$var]) && is_array($_COOKIE[$var])) {
-                foreach ($_COOKIE[$var] as $k => $v) {
-                    setcookie($var . '[' . $k . ']', !empty($value) ? $this->hash($value, 'ENCODE') : '', $time, $this->config['cookie_path'], $this->config['cookie_domain'], $s);
-                }
-            } else {
-                setcookie($var, !empty($value) ? $this->hash($value, 'ENCODE') : '', $time, $this->config['cookie_path'], $this->config['cookie_domain'], $s);
-            }
-        }
+    public function forget($name, $path = null, $domain = null) {
+        return $this->make($name, null, -2628000, $path, $domain);
     }
 
     /**
-     *  Get cookie
-     * 
-     * @param string $var
-     * @param type $default
-     * @return type
+     * Determine if a cookie has been queued.
+     *
+     * @param  string  $key
+     * @return bool
      */
-    public function get($var, $default = '') {
-        $var = $this->config['cookie_pre'] . $var;
-        if (isset($_COOKIE[$var])) {
-            if (is_array($_COOKIE[$var])) {
-                foreach ($_COOKIE[$var] as $k => $v) {
-                    $cookie[$var][$k] = $this->hash($v, 'DECODE');
-                }
-            } else {
-                $cookie[$var] = $this->hash($_COOKIE[$var], 'DECODE');
-            }
-            return $cookie[$var];
-        } else {
-            return $default;
-        }
+    public function hasQueued($key) {
+        return !is_null($this->queued($key));
     }
 
+    /**
+     * Get a queued cookie instance.
+     *
+     * @param  string  $key
+     * @param  mixed   $default
+     * @return \Symfony\Component\HttpFoundation\Cookie
+     */
+    public function queued($key, $default = null) {
+        return Arr::get($this->queued, $key, $default);
+    }
+
+    /**
+     * Queue a cookie to send with the next response.
+     *
+     * @param  mixed
+     * @return void
+     */
+    public function queue() {
+        $cookie = call_user_func_array([$this, 'make'], func_get_args());
+        $this->queued[$cookie->getName()] = $cookie;
+    }
+
+    /**
+     * Remove a cookie from the queue.
+     *
+     * @param  string  $name
+     * @return void
+     */
+    public function unqueue($name) {
+        unset($this->queued[$name]);
+    }
+
+    /**
+     * Get the path and domain, or the default values.
+     *
+     * @param  string  $path
+     * @param  string  $domain
+     * @param  bool    $secure
+     * @return array
+     */
+    protected function getPathAndDomain($path, $domain, $secure = false) {
+        return [$path ?: $this->path, $domain ?: $this->domain, $secure ?: $this->secure];
+    }
+
+    /**
+     * Set the default path and domain for the jar.
+     *
+     * @param  string  $path
+     * @param  string  $domain
+     * @param  bool    $secure
+     * @return $this
+     */
+    public function setDefaultPathAndDomain($path, $domain, $secure = false) {
+        list($this->path, $this->domain, $this->secure) = [$path, $domain, $secure];
+
+        return $this;
+    }
+
+    /**
+     * Get the cookies which have been queued for the next request.
+     *
+     * @return array
+     */
+    public function getQueuedCookies() {
+        return $this->queued;
+    }
 }

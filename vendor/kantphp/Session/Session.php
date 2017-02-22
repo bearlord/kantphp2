@@ -45,15 +45,12 @@ final class Session {
     public function handle() {
         $this->manager = new Manager($this->config);
         $this->sessionHandled = true;
-        $request = $this->request;
-        $response = $this->response;
         // If a session driver has been configured, we will need to start the session here
         // so that the data is ready for an application. Note that the Laravel sessions
         // do not make use of PHP "native" sessions in any way since they are crappy.
         if ($this->sessionConfigured()) {
-            $session = $this->startSession($request);
-//            var_dump($session);
-            $request->setSession($session);
+            $session = $this->startSession($this->request);
+            $this->request->setSession($session);
 
             $this->collectGarbage($session);
         }
@@ -62,9 +59,9 @@ final class Session {
         // so that the attributes may be persisted to some storage medium. We will also
         // add the session identifier cookie to the application response headers now.
         if ($this->sessionConfigured()) {
-            $this->storeCurrentUrl($request, $session);
+            $this->storeCurrentUrl($this->request, $session);
 
-            $this->addCookieToResponse($response, $session);
+            $this->addCookieToResponse($this->response, $session);
         }
 
         return $session;
@@ -150,7 +147,7 @@ final class Session {
     /**
      * Add the session cookie to the application response.
      *
-     * @param  \Symfony\Component\HttpFoundation\Response  $response
+     * @param  \Kant\Http\Response  $response
      * @param  \Kant\Session\SessionInterface  $session
      * @return void
      */

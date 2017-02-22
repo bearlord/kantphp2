@@ -137,7 +137,6 @@ class PhpMessageSource extends MessageSource {
         } else {
             $messageFile .= str_replace('\\', '/', $category) . '.php';
         }
-        var_dump($messageFile);
         return $messageFile;
     }
 

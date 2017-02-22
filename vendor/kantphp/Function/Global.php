@@ -6,7 +6,8 @@
  * @copyright (c) 2011 KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-if (!function_exists('value')) {
+use Kant\Kant;
+if (!function_exists('hash')) {
 
     /**
      *
@@ -80,6 +81,26 @@ if (!function_exists('value')) {
             // Because the encrypted ciphertext might be special characters, the replication process may be lost, so using base64 encoding.
             return $keyc . str_replace('=', '', base64_encode($result));
         }
+    }
+
+}
+if (!function_exists('csrf_token')) {
+
+    /**
+     * Get the CSRF token value.
+     *
+     * @return string
+     *
+     * @throws \RuntimeException
+     */
+    function csrf_token() {
+        $session = Kant::$app->session;
+
+        if (isset($session)) {
+            return $session->getToken();
+        }
+
+        throw new RuntimeException('Application session store not set.');
     }
 
 }

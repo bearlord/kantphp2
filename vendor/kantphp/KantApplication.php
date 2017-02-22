@@ -116,6 +116,10 @@ class KantApplication extends ServiceLocator {
         $this->set('session', (new Session\Session($config, $request, $response))->handle());
     }
 
+    public function getSession() {
+        return $this->get('session');
+    }
+
     /**
      * Register cache
      * 
@@ -133,16 +137,12 @@ class KantApplication extends ServiceLocator {
     /**
      * Register Cookie
      */
-    protected function setCookie($config) {
-        $this->set('cookie', ['class' => 'Kant\Cookie\Cookie', 'config' => $config]);
+    protected function setCookie($config, $request, $response) {
+        $this->set('cookie', (new Cookie\Cookie($config, $request, $response)));
     }
 
     public function getCookie() {
         return $this->get('cookie');
-    }
-
-    public function getSession() {
-        return $this->get('session');
     }
 
     /**
@@ -168,14 +168,14 @@ class KantApplication extends ServiceLocator {
         $type = strtolower($this->config['return_type']);
 
         $request = Kant::$container->instance('Kant\Http\Request', Request::capture());
-        $response = Kant::$container->instance('Kant\Http\Response', Response::create("", Response::HTTP_OK, [
+        $response = Kant::$container->instance('Kant\Http\Response', Response::create($request, Response::HTTP_OK, [
                     'Content-Type' => $this->outputType[$type]
         ]));
 
         $this->setCache($this->config['cache']);
         $this->setDb();
 
-        $this->setCookie($this->config['cookie']);
+        $this->setCookie($this->config['cookie'], $request, $response);
         $this->setSession($this->config['session'], $request, $response);
 
 
@@ -466,7 +466,6 @@ class KantApplication extends ServiceLocator {
     }
 
     public function getFiles() {
-        var_dump($this);
         return $this->get('files');
     }
 
@@ -482,8 +481,6 @@ class KantApplication extends ServiceLocator {
         if ($this->isCallableWithAtSign($callback) || $defaultMethod) {
             return $this->callClass($callback, $parameters, $defaultMethod);
         }
-        var_dump($callback);
-        var_dump($parameters);
         $dependencies = $this->getMethodDependencies($callback, $parameters);
         return call_user_func_array($callback, $dependencies);
     }

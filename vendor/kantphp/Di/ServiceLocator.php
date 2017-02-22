@@ -116,7 +116,7 @@ class ServiceLocator extends Component {
 
         if (isset($this->_definitions[$id])) {
             $definition = $this->_definitions[$id];
-            if (is_object($definition) && !$definition instanceof Closure) {
+            if (is_object($definition)) {
                 return $this->_components[$id] = $definition;
             } else {
                 return $this->_components[$id] = Kant::createObject($definition);
