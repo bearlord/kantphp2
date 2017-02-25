@@ -303,7 +303,6 @@ class Container extends Component {
         if (empty($config)) {
             return $reflection->newInstanceArgs($dependencies);
         }
-
         if (!empty($dependencies) && $reflection->implementsInterface('Kant\Foundation\Configurable')) {
             // set $config as the last parameter (existing one will be overwritten)
             $dependencies[count($dependencies) - 1] = $config;

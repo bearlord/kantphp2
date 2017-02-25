@@ -52,7 +52,7 @@ class KantException extends Exception {
                 $error['line'] = $this->getLine();
             }
             $error['trace'] = $this->getTraceAsString();
-            Log::write($error['message'], Log::ERR);
+//            Log::write($error['message'], Log::ERR);
             $exceptionFile = KANT_PATH . 'View/system/exception.php';
             include $exceptionFile;
             

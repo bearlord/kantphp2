@@ -5,7 +5,7 @@ namespace Kant\Foundation;
 use Kant\Kant;
 use Kant\Exception\KantException;
 
-class Object {
+class Object implements Configurable {
 
     public function __construct($config = []) {
         if (!empty($config)) {

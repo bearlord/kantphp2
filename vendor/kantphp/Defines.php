@@ -16,9 +16,16 @@ define('MODULE_PATH', APP_PATH . 'Module' . DIRECTORY_SEPARATOR);
 define('LIB_PATH', APP_PATH . 'Library' . DIRECTORY_SEPARATOR);
 //Public Path
 define('PUBLIC_PATH', dirname(APP_PATH) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR);
+
+/**
+ * This constant defines whether error handling should be enabled. Defaults to true.
+ */
+defined('ENABLE_ERROR_HANDLER') or define('ENABLE_ERROR_HANDLER', true);
+defined('KANT_BEGIN_TIME') or define('KANT_BEGIN_TIME', microtime(true));
+
 //Log path
 if (!defined('LOG_PATH')) {
-    define('LOG_PATH', APP_PATH . 'Logs/');
+    define('LOG_PATH', RUNTIME_PATH . 'Logs/');
 }
 if (!defined('PATH_INFO_REPAIR')) {
     define("PATH_INFO_REPAIR", FALSE);

@@ -23,7 +23,9 @@ return [
         ]
     ],
     'session' => [
-        'type' => 'mysql',
+        'driver' => 'database',
+        'table' => 'session',
+        'cookie' => 'kant_session',
         'maxlifetime' => 1800,
     ],
 ];

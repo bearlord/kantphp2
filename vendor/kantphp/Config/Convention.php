@@ -7,14 +7,24 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 return [
+    /**
+      |--------------------------------------------------------------------------
+      | App language
+      |--------------------------------------------------------------------------
+     */
+    'language' => 'zh-CN',
+    /**
+      |--------------------------------------------------------------------------
+      | Time zone
+      |--------------------------------------------------------------------------
+     */
+    'timezone' => 'Etc/GMT-8',
     'return_type' => 'html',
     'pathinfo_repair' => false,
     'debug' => true,
     'url_suffix' => '.html',
     'action_suffix' => 'Action',
     'redirect_tpl' => 'dispatch/redirect',
-    'language' => 'zh-CN',
-    'timezone' => 'Etc/GMT-8',
     'charset' => 'utf-8',
     'db_fields_cache' => false,
     'route' => [
@@ -36,17 +46,17 @@ return [
     ],
     'session' => [
         /**
-        |--------------------------------------------------------------------------
-        | Default Session Driver
-        |--------------------------------------------------------------------------
-        |
-        | This option controls the default session "driver" that will be used on
-        | requests. By default, we will use the lightweight native driver but
-        | you may specify any of the other wonderful drivers provided here.
-        |
-        | Supported: "file", "cookie", "database", "apc",
-        |            "memcached", "redis", "array"
-        |
+          |--------------------------------------------------------------------------
+          | Default Session Driver
+          |--------------------------------------------------------------------------
+          |
+          | This option controls the default session "driver" that will be used on
+          | requests. By default, we will use the lightweight native driver but
+          | you may specify any of the other wonderful drivers provided here.
+          |
+          | Supported: "file", "cookie", "database", "apc",
+          |            "memcached", "redis", "array"
+          |
          */
         'driver' => null,
         /**

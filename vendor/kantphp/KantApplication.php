@@ -28,8 +28,10 @@ use ReflectionParameter;
 class KantApplication extends ServiceLocator {
 
     private static $_instance = null;
-    protected $config;
+    public $config;
 
+    public $env = 'Dev';
+    
     /**
      * @var string the language that is meant to be used for end users. It is recommended that you
      * use [IETF language tags](http://en.wikipedia.org/wiki/IETF_language_tag). For example, `en` stands
@@ -66,7 +68,7 @@ class KantApplication extends ServiceLocator {
      */
     public function __construct($env) {
         Kant::$app = $this;
-
+        $this->env = $env;
         $this->config = $config = $this->initConfig($env);
         $this->preInit($config);
     }
@@ -85,11 +87,11 @@ class KantApplication extends ServiceLocator {
     /**
      * Init Config
      */
-    protected function initConfig($environment) {
+    protected function initConfig($env) {
         $appConfig = ArrayHelper::merge(
-                        require KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php', require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Config.php', require CFG_PATH . $environment . DIRECTORY_SEPARATOR . 'Route.php', [
-                    'environment' => $environment,
-                    'config_path' => CFG_PATH . $environment . DIRECTORY_SEPARATOR
+                        require KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php', require CFG_PATH . $env . DIRECTORY_SEPARATOR . 'Config.php', require CFG_PATH . $env . DIRECTORY_SEPARATOR . 'Route.php', [
+                    'environment' => $env,
+                    'config_path' => CFG_PATH . $env . DIRECTORY_SEPARATOR
                         ]
         );
         return Factory::getConfig()->merge($appConfig)->reference();
@@ -116,6 +118,11 @@ class KantApplication extends ServiceLocator {
         $this->set('session', (new Session\Session($config, $request, $response))->handle());
     }
 
+    /**
+     * Get session instance
+     * 
+     * @return object
+     */
     public function getSession() {
         return $this->get('session');
     }
@@ -124,14 +131,19 @@ class KantApplication extends ServiceLocator {
      * Register cache
      * 
      * @param type $config
-     * @return type
+     * @return null
      */
     protected function setCache($config) {
-        return $this->set('Kant\Cache\Cache', \Kant\Cache\Cache::register($config));
+        return $this->set('cache', \Kant\Cache\Cache::register($config));
     }
 
+    /**
+     * Get cache instance
+     * 
+     * @return object
+     */
     public function getCache() {
-        return $this->get('Kant\Cache\Cache');
+        return $this->get('cache');
     }
 
     /**
@@ -141,6 +153,10 @@ class KantApplication extends ServiceLocator {
         $this->set('cookie', (new Cookie\Cookie($config, $request, $response)));
     }
 
+    /**
+     * Get Cookie instance
+     * @return object
+     */
     public function getCookie() {
         return $this->get('cookie');
     }
@@ -151,7 +167,7 @@ class KantApplication extends ServiceLocator {
      * @param type $environment
      * @return type
      */
-    public static function getInstance($environment = 'Development') {
+    public static function getInstance($environment = 'Dev') {
         if (null === self::$_instance) {
             self::$_instance = new self($environment);
         }
@@ -207,7 +223,6 @@ class KantApplication extends ServiceLocator {
                 $components['components'][$id]['class'] = $component['class'];
             }
         }
-
         Component::__construct($components);
 
         if ($config['debug']) {
@@ -218,29 +233,11 @@ class KantApplication extends ServiceLocator {
         //load common file
         require_once APP_PATH . 'Bootstrap.php';
 
-        //Logfile initialization
-        Log::init(array(
-            'type' => 'File',
-            'log_path' => LOG_PATH
-        ));
-    }
-
-    /**
-     * set the language that is meant to be used for end users. It is recommended that you
-     * use [IETF language tags](http://en.wikipedia.org/wiki/IETF_language_tag). For example, `en` stands
-     * for English, while `en-US` stands for English (United States).
-     * 
-     */
-    public function setLanguage($value) {
-        $this->language = $value;
-    }
-
-    /**
-     * get the language that is meant to be used for end users.
-     * @return string
-     */
-    public function getLanguage() {
-        return $this->language;
+//        //Logfile initialization
+//        Log::init(array(
+//            'type' => 'File',
+//            'log_path' => LOG_PATH
+//        ));
     }
 
     /**
@@ -264,6 +261,24 @@ class KantApplication extends ServiceLocator {
      */
     public function setTimeZone($value) {
         date_default_timezone_set($value);
+    }
+
+    /**
+     * set the language that is meant to be used for end users. It is recommended that you
+     * use [IETF language tags](http://en.wikipedia.org/wiki/IETF_language_tag). For example, `en` stands
+     * for English, while `en-US` stands for English (United States).
+     * 
+     */
+    public function setLanguage($value) {
+        $this->language = $value;
+    }
+
+    /**
+     * get the language that is meant to be used for end users.
+     * @return string
+     */
+    public function getLanguage() {
+        return $this->language;
     }
 
     /**
@@ -397,24 +412,47 @@ class KantApplication extends ServiceLocator {
         $this->dispatcher = $dispatcher;
 
         //module name
-        $moduleName = ucfirst($dispatcher[0]) ?: ucfirst(Factory::getConfig()->get('route.module'));
+        $moduleName = $this->getModuleName($dispatcher[0]);
         if (empty($moduleName)) {
             throw new KantException('No Module found');
         }
         $this->setModuleConfig($moduleName);
 
+
         //controller name
-        $controllerName = ucfirst($dispatcher[1]) ?: ucfirst(Factory::getConfig()->get('route.ctrl'));
+        $controllerName = $this->getControllerName($dispatcher[1]);
         $controller = $this->controller($controllerName, $moduleName);
         if (!$controller) {
             if (empty($controller)) {
                 throw new KantException(sprintf("No controller exists:%s", ucfirst($this->dispatcher[1]) . 'Controller'));
             }
         }
+
+
         //action name
         $action = $this->dispatcher[2] ?: ucfirst(Factory::getConfig()->get('route.act'));
         $data = $this->callClass($controller . "@" . $action . Factory::getConfig()->get('action_suffix'));
         return $data;
+    }
+
+    /**
+     * Get module name
+     * 
+     * @param string $name
+     * @return string
+     */
+    protected function getModuleName($name) {
+        return ucfirst($name ?: Factory::getConfig()->get('route.module'));
+    }
+
+    /**
+     * Get controller name
+     * 
+     * @param string $name
+     * @return string
+     */
+    protected function getControllerName($name) {
+        return ucfirst($name ?: Factory::getConfig()->get('route.ctrl'));
     }
 
     /**
@@ -428,7 +466,7 @@ class KantApplication extends ServiceLocator {
         $controller = ucfirst($controller) . "Controller";
         $filepath = APP_PATH . "Module/{$module}/Controller/{$controller}.php";
         if (!file_exists($filepath)) {
-            throw new KantException(sprintf("File does not exists:%s", $filepath));
+            throw new \Exception(sprintf("File does not exists:%s", $filepath));
         }
         include $filepath;
 
@@ -458,6 +496,14 @@ class KantApplication extends ServiceLocator {
     }
 
     /**
+     * Returns the error handler component.
+     * @return \Kant\ErrorHandler\ErrorHandler
+     */
+    public function getErrorHandler() {
+        return $this->get('errorHandler');
+    }
+
+    /**
      * Returns the internationalization (i18n) component
      * @return \yii\i18n\I18N the internationalization application component.
      */
@@ -467,6 +513,22 @@ class KantApplication extends ServiceLocator {
 
     public function getFiles() {
         return $this->get('files');
+    }
+
+    /**
+     * Returns the request component.
+     * @return Request the request component.
+     */
+    public function getRequest() {
+        return $this->get('Kant\Http\Request');
+    }
+
+    /**
+     * Returns the response component.
+     * @return Response the response component.
+     */
+    public function getResponse() {
+        return $this->get('response');
     }
 
     /**

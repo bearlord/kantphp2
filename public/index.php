@@ -7,6 +7,6 @@ define('APP_PATH', __DIR__ . '/../app/');
 
 include __DIR__ . '/../vendor/kantphp/Framework.php';
 
-KantApplication::getInstance('Development')->run();
+KantApplication::getInstance('Dev')->run();
 
 ?>

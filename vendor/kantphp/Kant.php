@@ -10,6 +10,7 @@
 namespace Kant;
 
 use Kant\Exception\InvalidConfigException;
+use Kant\Log\Logger;
 
 class Kant {
 
@@ -26,6 +27,7 @@ class Kant {
      * @see Container
      */
     public static $container;
+    private static $_logger;
 
     /**
      * Creates a new object using the given configuration.
@@ -130,6 +132,67 @@ class Kant {
 
             return ($p === []) ? $message : strtr($message, $p);
         }
+    }
+
+    /**
+     * @return Logger message logger
+     */
+    public static function getLogger() {
+        if (self::$_logger !== null) {
+            return self::$_logger;
+        } else {
+            $aa = self::$_logger = static::createObject([
+                        'class' => 'Kant\Log\Logger',
+                        'traceLevel' => Factory::getConfig()->get('debug') ? 3 : 0,
+                        'flushInterval' => 999
+            ]);
+            return self::$_logger = static::createObject([
+                        'class' => 'Kant\Log\Logger',
+                        'traceLevel' => Factory::getConfig()->get('debug') ? 3 : 0,
+                        'flushInterval' => 999
+            ]);
+        }
+    }
+
+    /**
+     * Sets the logger object.
+     * @param Logger $logger the logger object.
+     */
+    public static function setLogger($logger) {
+        self::$_logger = $logger;
+    }
+
+    /**
+     * Logs an error message.
+     * An error message is typically logged when an unrecoverable error occurs
+     * during the execution of an application.
+     * @param string $message the message to be logged.
+     * @param string $category the category of the message.
+     */
+    public static function error($message, $category = 'application') {
+        static::getLogger()->log($message, Logger::LEVEL_ERROR, $category);
+    }
+
+    /**
+     * Logs a warning message.
+     * A warning message is typically logged when an error occurs while the execution
+     * can still continue.
+     * @param string $message the message to be logged.
+     * @param string $category the category of the message.
+     */
+    public static function warning($message, $category = 'application') {
+        static::getLogger()->log($message, Logger::LEVEL_WARNING, $category);
+    }
+
+    /**
+     * Logs an informative message.
+     * An informative message is typically logged by an application to keep record of
+     * something important (e.g. an administrator logs in).
+     * @param string $message the message to be logged.
+     * @param string $category the category of the message.
+     */
+    public static function info($message, $category = 'application') {
+        static::getLogger()->log($message, Logger::LEVEL_INFO, $category);
     }
 
 }
