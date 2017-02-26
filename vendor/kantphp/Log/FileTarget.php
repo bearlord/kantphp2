@@ -9,6 +9,7 @@
 namespace Kant\Log;
 
 use Kant\Log\Target;
+use Kant\Helper\Dir;
 use Kant\Exception\InvalidConfigException;
 
 class FileTarget extends Target {
@@ -71,12 +72,12 @@ class FileTarget extends Target {
      */
     public function init() {
         if ($this->logFile === null) {
-            $this->logFile = LOG_PATH . '/logs/app.log';
-        } 
-        
+            $this->logFile = LOG_PATH . "/" . date("Y-m-d") . '/app.log';
+        }
+
         $logPath = dirname($this->logFile);
         if (!is_dir($logPath)) {
-            FileHelper::createDirectory($logPath, $this->dirMode, true);
+            Dir::create($logPath, $this->dirMode, true);
         }
         if ($this->maxLogFiles < 1) {
             $this->maxLogFiles = 1;
@@ -114,6 +115,33 @@ class FileTarget extends Target {
         }
         if ($this->fileMode !== null) {
             @chmod($this->logFile, $this->fileMode);
+        }
+    }
+
+    /**
+     * Rotates log files.
+     */
+    protected function rotateFiles() {
+        $file = $this->logFile;
+        for ($i = $this->maxLogFiles; $i >= 0; --$i) {
+            // $i == 0 is the original log file
+            $rotateFile = $file . ($i === 0 ? '' : '.' . $i);
+            if (is_file($rotateFile)) {
+                // suppress errors because it's possible multiple processes enter into this section
+                if ($i === $this->maxLogFiles) {
+                    @unlink($rotateFile);
+                } else {
+                    if ($this->rotateByCopy) {
+                        @copy($rotateFile, $file . '.' . ($i + 1));
+                        if ($fp = @fopen($rotateFile, 'a')) {
+                            @ftruncate($fp, 0);
+                            @fclose($fp);
+                        }
+                    } else {
+                        @rename($rotateFile, $file . '.' . ($i + 1));
+                    }
+                }
+            }
         }
     }
 

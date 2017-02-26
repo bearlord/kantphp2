@@ -577,7 +577,7 @@ class Route {
             if (strpos($action, "?") !== false) {
                 $action = substr($action, 0, strpos($action, "?"));
             }
-            $urlsuffix = Factory::getConfig()->get('url_suffix');
+            $urlsuffix = Factory::getConfig()->get('urlSuffix');
             if ($urlsuffix) {
                 if (strpos($action, "&") !== false) {
                     $action = substr($action, 0, strpos($action, $urlsuffix));

@@ -8,8 +8,8 @@ trait UrlTrait {
     public function url($url = '', $vars = '', $suffix = true) {
         $originalparams = array();
         $config = Factory::getConfig()->reference();
-        if (strpos($url, $config['url_suffix']) !== false) {
-            $url = rtrim($url, $config['url_suffix']);
+        if (strpos($url, $config['urlSuffix']) !== false) {
+            $url = rtrim($url, $config['urlSuffix']);
         }
         $info = parse_url($url);
         if (isset($info['fragment'])) {
@@ -57,7 +57,7 @@ trait UrlTrait {
         }
         //$url = rtrim($url, "/");
         if ($suffix) {
-            $suffix = $suffix === true ? $config['url_suffix'] : $suffix;
+            $suffix = $suffix === true ? $config['urlSuffix'] : $suffix;
             if ($pos = strpos($suffix, '|')) {
                 $suffix = substr($suffix, 0, $pos);
             }
@@ -81,7 +81,7 @@ trait UrlTrait {
      * @param integer $second
      */
     public function redirect($message, $url = 'goback', $second = 3) {
-        $redirectTpl = Factory::getConfig()->get('redirect_tpl');
+        $redirectTpl = Factory::getConfig()->get('redirectTpl');
         if ($redirectTpl) {
             include TPL_PATH . $redirectTpl . '.php';
         } else {

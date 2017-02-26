@@ -17,7 +17,6 @@ use Kant\Route\Route;
 use Kant\Http\Request;
 use Kant\Http\Response;
 use Kant\Registry\KantRegistry;
-use Kant\Log\Log;
 use Kant\Runtime\Runtime;
 use Kant\Exception\KantException;
 use ReflectionException;
@@ -29,9 +28,8 @@ class KantApplication extends ServiceLocator {
 
     private static $_instance = null;
     public $config;
-
     public $env = 'Dev';
-    
+
     /**
      * @var string the language that is meant to be used for end users. It is recommended that you
      * use [IETF language tags](http://en.wikipedia.org/wiki/IETF_language_tag). For example, `en` stands
@@ -79,6 +77,7 @@ class KantApplication extends ServiceLocator {
      */
     public function coreComponents() {
         return [
+            'log' => ['class' => 'Kant\Log\Dispatcher'],
             'i18n' => ['class' => 'Kant\I18n\I18N'],
             'files' => ['class' => 'Kant\Filesystem\Filesystem']
         ];
@@ -181,9 +180,10 @@ class KantApplication extends ServiceLocator {
      * 
      */
     public function run() {
-        $type = strtolower($this->config['return_type']);
+        $type = strtolower($this->config['returnType']);
 
         $request = Kant::$container->instance('Kant\Http\Request', Request::capture());
+
         $response = Kant::$container->instance('Kant\Http\Response', Response::create($request, Response::HTTP_OK, [
                     'Content-Type' => $this->outputType[$type]
         ]));
@@ -193,7 +193,6 @@ class KantApplication extends ServiceLocator {
 
         $this->setCookie($this->config['cookie'], $request, $response);
         $this->setSession($this->config['session'], $request, $response);
-
 
         $data = $this->dispatch($this->route($request->path()));
         $result = $this->parseData($data, $type);
@@ -217,27 +216,23 @@ class KantApplication extends ServiceLocator {
 
         // merge core components with custom components
         foreach ($this->coreComponents() as $id => $component) {
-            if (!isset($components['components'][$id])) {
+            if (!isset($config['components'][$id])) {
                 $components['components'][$id] = $component;
-            } elseif (is_array($config['components'][$id]) && !isset($components['components'][$id]['class'])) {
+            } elseif (is_array($config['components'][$id]) && !isset($config['components'][$id]['class'])) {
+                $components['components'][$id] = $config['components'][$id];
                 $components['components'][$id]['class'] = $component['class'];
             }
         }
+
         Component::__construct($components);
-
-        if ($config['debug']) {
-            ini_set('display_errors', 1);
-            error_reporting(E_ALL);
-            Runtime::mark('begin');
+//
+        if (!$config['enableDebugLogs']) {
+            foreach (Kant::$app->getLog()->targets as $target) {
+                $target->enabled = false;
+            }
         }
-        //load common file
-        require_once APP_PATH . 'Bootstrap.php';
 
-//        //Logfile initialization
-//        Log::init(array(
-//            'type' => 'File',
-//            'log_path' => LOG_PATH
-//        ));
+        require_once APP_PATH . 'Bootstrap.php';
     }
 
     /**
@@ -295,7 +290,7 @@ class KantApplication extends ServiceLocator {
      */
     protected function route($path) {
         //remove url suffix
-        $pathinfo = str_replace(Factory::getConfig()->get('url_suffix'), '', $path);
+        $pathinfo = str_replace(Factory::getConfig()->get('urlSuffix'), '', $path);
 
         Route::import(Factory::getConfig()->get('route'));
         $dispath = Route::check($pathinfo);
@@ -431,7 +426,7 @@ class KantApplication extends ServiceLocator {
 
         //action name
         $action = $this->dispatcher[2] ?: ucfirst(Factory::getConfig()->get('route.act'));
-        $data = $this->callClass($controller . "@" . $action . Factory::getConfig()->get('action_suffix'));
+        $data = $this->callClass($controller . "@" . $action . Factory::getConfig()->get('actionSuffix'));
         return $data;
     }
 
@@ -496,6 +491,14 @@ class KantApplication extends ServiceLocator {
     }
 
     /**
+     * Returns the log dispatcher component.
+     * @return \yii\log\Dispatcher the log dispatcher application component.
+     */
+    public function getLog() {
+        return $this->get('log');
+    }
+
+    /**
      * Returns the error handler component.
      * @return \Kant\ErrorHandler\ErrorHandler
      */
@@ -505,7 +508,7 @@ class KantApplication extends ServiceLocator {
 
     /**
      * Returns the internationalization (i18n) component
-     * @return \yii\i18n\I18N the internationalization application component.
+     * @return \Kant\I18n\I18N the internationalization application component.
      */
     public function getI18n() {
         return $this->get('i18n');

@@ -9,11 +9,12 @@
 namespace Kant\Log;
 
 use Kant\Kant;
+use Kant\Foundation\Component;
 use Kant\Helper\ArrayHelper;
 use Kant\Helper\VarDumper;
 
 
-class Target {
+class Target extends Component {
 
     /**
      * @var boolean whether to enable this log target. Defaults to true.
@@ -221,7 +222,7 @@ class Target {
         $level = Logger::getLevelName($level);
         if (!is_string($text)) {
             // exceptions may not be serializable if in the call stack somewhere is a Closure
-            if ($text instanceof \Throwable || $text instanceof \Exception) {
+            if ($text instanceof \Exception) {
                 $text = (string) $text;
             } else {
                 $text = VarDumper::export($text);
@@ -248,7 +249,6 @@ class Target {
      * @return string the prefix string
      */
     public function getMessagePrefix($message) {
-        return "000";
         if ($this->prefix !== null) {
             return call_user_func($this->prefix, $message);
         }
@@ -256,22 +256,16 @@ class Target {
         if (Kant::$app === null) {
             return '';
         }
-
-        $ip = $request instanceof Request ? $request->ip() : '-';
-
-        /* @var $user \yii\web\User */
-        $user = Kant::$app->has('user', true) ? Kant::$app->get('user') : null;
-        if ($user && ($identity = $user->getIdentity(false))) {
-            $userID = $identity->getId();
-        } else {
-            $userID = '-';
-        }
+        
+//        $ip = $request instanceof Request ? $request->ip() : '-';
+        
+        $ip = get_client_ip();
 
         /* @var $session \yii\web\Session */
         $session = Kant::$app->has('session', true) ? Kant::$app->get('session') : null;
         $sessionID = $session && $session->getIsActive() ? $session->getId() : '-';
 
-        return "[$ip][$userID][$sessionID]";
+        return "[$ip][$sessionID]";
     }
 
 }

@@ -19,12 +19,35 @@ return [
       |--------------------------------------------------------------------------
      */
     'timezone' => 'Etc/GMT-8',
-    'return_type' => 'html',
+    /**
+      |--------------------------------------------------------------------------
+      | Additon components autoloaded
+      |--------------------------------------------------------------------------
+     */
+    'components' => [
+        'log' => [
+            'traceLevel' => 3,
+            'targets' => [
+                [
+                    'class' => 'Kant\Log\FileTarget',
+                    'levels' => ['error', 'warning'],
+                ],
+            ],
+            
+        ],
+    ],
+    /**
+      |--------------------------------------------------------------------------
+      | Is enable Debug Logs
+      |--------------------------------------------------------------------------
+     */
+    'enableDebugLogs' => true,
+    'returnType' => 'html',
     'pathinfo_repair' => false,
     'debug' => true,
-    'url_suffix' => '.html',
-    'action_suffix' => 'Action',
-    'redirect_tpl' => 'dispatch/redirect',
+    'urlSuffix' => '.html',
+    'actionSuffix' => 'Action',
+    'redirectTpl' => 'dispatch/redirect',
     'charset' => 'utf-8',
     'db_fields_cache' => false,
     'route' => [

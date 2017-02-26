@@ -54,7 +54,7 @@ class Kant {
      * @throws InvalidConfigException if the configuration is invalid.
      * @see \Kant\di\Container
      */
-    public static function createObject($type, array $params = []) {
+    public static function createObject($type, $params = []) {
         if (is_string($type)) {
             return static::$container->get($type, $params);
         } elseif (is_array($type) && isset($type['class'])) {
@@ -141,16 +141,7 @@ class Kant {
         if (self::$_logger !== null) {
             return self::$_logger;
         } else {
-            $aa = self::$_logger = static::createObject([
-                        'class' => 'Kant\Log\Logger',
-                        'traceLevel' => Factory::getConfig()->get('debug') ? 3 : 0,
-                        'flushInterval' => 999
-            ]);
-            return self::$_logger = static::createObject([
-                        'class' => 'Kant\Log\Logger',
-                        'traceLevel' => Factory::getConfig()->get('debug') ? 3 : 0,
-                        'flushInterval' => 999
-            ]);
+            return self::$_logger = static::createObject('Kant\Log\Logger');
         }
     }
 

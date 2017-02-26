@@ -14,6 +14,7 @@ use ArrayAccess;
 use Kant\Support\Str;
 use Kant\Support\Arr;
 use Kant\Session\SessionInterface;
+use RuntimeException;
 
 class Request implements Arrayable, ArrayAccess {
 

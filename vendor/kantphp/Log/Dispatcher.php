@@ -75,15 +75,22 @@ class Dispatcher extends Component {
      * @inheritdoc
      */
     public function __construct($config = []) {
-        $this->targets = $config['targets'];
-        var_dump($config);
-        parent::__construct();
+          // ensure logger gets set before any other config option
+        if (isset($config['logger'])) {
+            $this->setLogger($config['logger']);
+            unset($config['logger']);
+        }
+        // connect logger and dispatcher
+        $this->getLogger();
+
+        parent::__construct($config);
     }
 
     /**
      * @inheritdoc
      */
     public function init() {
+        parent::init();
         foreach ($this->targets as $name => $target) {
             if (!$target instanceof Target) {
                 $this->targets[$name] = Kant::createObject($target);
@@ -178,7 +185,6 @@ class Dispatcher extends Component {
                 }
             }
         }
-
         if (!empty($targetErrors)) {
             $this->dispatch($targetErrors, true);
         }

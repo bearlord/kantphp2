@@ -93,40 +93,11 @@ class Logger extends Component {
      */
     public $dispatcher;
 
-    const EMERG = 'EMERG';
-    const ALERT = 'ALERT';
-    const CRIT = 'CRIT';
-    const ERR = 'ERR';
-    const WARN = 'WARN';
-    const NOTICE = 'NOTIC';
-    const INFO = 'INFO';
-    const DEBUG = 'DEBUG';
-    const SQL = 'SQL';
-
-    //Config
-    static protected $config = array();
-    //Log message
-    static protected $log = array();
-    //Log storage
-    static protected $storage = null;
-
-    public function __construct($config = "") {
-        parent::__construct($config);
-    }
-
     /**
      * Initializes the logger by registering [[flush()]] as a shutdown function.
      */
     public function init() {
-        $aa  = \Kant\Kant::createObject([
-            'class' => Dispatcher::class,
-            'targets' => [
-                    'file' => [
-                    'class' => 'Kant\Log\FileTarget',
-                        ['levels' => ['error', 'warning']],
-                ],
-            ]
-        ]);
+        parent::init();
         register_shutdown_function(function () {
             // make regular flush before other shutdown functions, which allows session data collection and so on
             $this->flush();
@@ -178,6 +149,9 @@ class Logger extends Component {
         $messages = $this->messages;
         // new messages could be logged while the existing ones are being handled by targets
         $this->messages = [];
+        if (!$this->dispatcher instanceof Dispatcher) {
+            $this->dispatcher = \Kant\Kant::$app->getLog();
+        }
         if ($this->dispatcher instanceof Dispatcher) {
             $this->dispatcher->dispatch($messages, $final);
         }
@@ -253,7 +227,7 @@ class Logger extends Component {
      * and the second element the total time spent in SQL execution.
      */
     public function getDbProfiling() {
-        $timings = $this->getProfiling(['kant\db\Command::query', 'kant\db\Command::execute']);
+        $timings = $this->getProfiling(['Kant\Db\Command::query', 'Kant\Db\Command::execute']);
         $count = count($timings);
         $time = 0;
         foreach ($timings as $timing) {
@@ -313,70 +287,6 @@ class Logger extends Component {
         ];
 
         return isset($levels[$level]) ? $levels[$level] : 'unknown';
-    }
-
-    /*
-      // 日志初始化
-      static public function init($config = array()) {
-      self::$config = array_merge(self::$config, $config);
-      $type = isset(self::$config) ? self::$config['type'] : 'File';
-      $class = "Log" . ucwords(strtolower($type));
-      require $class . '.php';
-      $className = "\\Log\\" . $class;
-      self::$storage = new $className(self::$config);
-      }
-     * 
-     */
-
-    /**
-     * Record message
-     * 
-     * @param string $message
-     */
-    static function record($message, $level = self::DEBUG) {
-        self::$log[] = "{$level}: {$message}\r\n";
-    }
-
-    /**
-     * Record savae
-     * 
-     * @param string $destination
-     * @return type
-     */
-    static function save($destination = '') {
-        if (empty(self::$log)) {
-            return;
-        }
-        if (empty($destination)) {
-            $destination = LOG_PATH . date('y_m_d') . '.log';
-        }
-        if (!self::$storage) {
-            return;
-        }
-        $message = implode('', self::$log);
-        self::$storage->write($message, $destination);
-        // 保存后清空日志缓存
-        self::$log = array();
-    }
-
-    /**
-     * 日志直接写入
-     * @static
-     * @access public
-     * @param string $message 日志信息
-     * @param string $level  日志级别
-     * @param integer $type 日志记录方式
-     * @param string $destination  写入目标
-     * @return void
-     */
-    static function write($message, $level = self::DEBUG, $destination = '') {
-        if (!self::$storage) {
-            return;
-        }
-        if (empty($destination)) {
-            $destination = LOG_PATH . date('y_m_d') . '.log';
-        }
-        self::$storage->write("{$level}: {$message}", $destination);
     }
 
 }
