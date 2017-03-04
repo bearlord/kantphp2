@@ -13,6 +13,7 @@ use Kant\Foundation\Component;
 use Kant\Di\ServiceLocator;
 use Kant\Helper\ArrayHelper;
 use Kant\Factory;
+use Kant\Config\Config;
 use Kant\Route\Route;
 use Kant\Http\Request;
 use Kant\Http\Response;
@@ -27,6 +28,11 @@ use ReflectionParameter;
 class KantApplication extends ServiceLocator {
 
     private static $_instance = null;
+
+    /**
+     * Config object instance
+     * @var type 
+     */
     public $config;
     public $env = 'Dev';
 
@@ -93,7 +99,7 @@ class KantApplication extends ServiceLocator {
                     'config_path' => CFG_PATH . $env . DIRECTORY_SEPARATOR
                         ]
         );
-        return Factory::getConfig()->merge($appConfig)->reference();
+        return Factory::getConfig()->merge($appConfig);
     }
 
     /**
@@ -148,7 +154,7 @@ class KantApplication extends ServiceLocator {
     /**
      * Register Cookie
      */
-    protected function setCookie($config, $request, $response) {
+    protected function setCookie($config, Request $request, Response $response) {
         $this->set('cookie', (new Cookie\Cookie($config, $request, $response)));
     }
 
@@ -180,53 +186,52 @@ class KantApplication extends ServiceLocator {
      * 
      */
     public function run() {
-        $type = strtolower($this->config['returnType']);
+        $type = strtolower($this->config->get('returnType'));
 
-        $request = Kant::$container->instance('Kant\Http\Request', Request::capture());
+        $request = $this->singleton('Kant\Http\Request', Request::capture());
 
-        $response = Kant::$container->instance('Kant\Http\Response', Response::create($request, Response::HTTP_OK, [
+        $response = $this->singleton('Kant\Http\Response', Response::create($request, Response::HTTP_OK, [
                     'Content-Type' => $this->outputType[$type]
         ]));
 
-        $this->setCache($this->config['cache']);
+        $this->setCache($this->config->get('cache'));
         $this->setDb();
 
-        $this->setCookie($this->config['cookie'], $request, $response);
-        $this->setSession($this->config['session'], $request, $response);
+        $this->setCookie($this->config->get('cookie'), $request, $response);
+        $this->setSession($this->config->get('session'), $request, $response);
 
-        $data = $this->dispatch($this->route($request->path()));
-        $result = $this->parseData($data, $type);
+        $this->dispatch($this->route($request->path()), $type, $response);
 
-        $response->setContent($result)->send();
+        $response->send();
         $this->end();
     }
 
     /**
      * Parpare
      */
-    protected function preInit($config) {
+    protected function preInit(Config $config) {
         //set default timezone
-        if (isset($config['timezone'])) {
-            $this->setTimeZone($config['timezone']);
+        if ($config->get('timezone') != "") {
+            $this->setTimeZone($config->get('timezone'));
         } elseif (!ini_get('date.timezone')) {
             $this->setTimeZone('UTC');
         }
 
-        $this->setLanguage($config['language']);
+        $this->setLanguage($config->get('language'));
 
         // merge core components with custom components
         foreach ($this->coreComponents() as $id => $component) {
-            if (!isset($config['components'][$id])) {
+            if (!isset($config->get('components')[$id])) {
                 $components['components'][$id] = $component;
-            } elseif (is_array($config['components'][$id]) && !isset($config['components'][$id]['class'])) {
-                $components['components'][$id] = $config['components'][$id];
+            } elseif (is_array($config->get('components')[$id]) && !isset($config->get('components')[$id]['class'])) {
+                $components['components'][$id] = $config->get('components')[$id];
                 $components['components'][$id]['class'] = $component['class'];
             }
         }
 
         Component::__construct($components);
 //
-        if (!$config['enableDebugLogs']) {
+        if ($config->get('enableDebugLogs')) {
             foreach (Kant::$app->getLog()->targets as $target) {
                 $target->enabled = false;
             }
@@ -311,7 +316,7 @@ class KantApplication extends ServiceLocator {
     /**
      * Dispatch
      */
-    protected function dispatch($dispatch) {
+    protected function dispatch($dispatch, $type, Response $response) {
         $data = [];
         switch ($dispatch['type']) {
             case 'redirect':
@@ -332,7 +337,8 @@ class KantApplication extends ServiceLocator {
             default:
                 throw new KantException('dispatch type not support', 5002);
         }
-        return $data;
+
+        $response->setContent($this->parseData($data, $type));
     }
 
     /**
@@ -461,7 +467,7 @@ class KantApplication extends ServiceLocator {
         $controller = ucfirst($controller) . "Controller";
         $filepath = APP_PATH . "Module/{$module}/Controller/{$controller}.php";
         if (!file_exists($filepath)) {
-            throw new \Exception(sprintf("File does not exists:%s", $filepath));
+            throw new KantException(sprintf("File does not exists:%s", $filepath));
         }
         include $filepath;
 
@@ -653,6 +659,17 @@ class KantApplication extends ServiceLocator {
      */
     public function make($class) {
         return Kant::createObject($class);
+    }
+
+    /**
+     * Register an existing instance as shared in the container.
+     *
+     * @param  string  $class
+     * @param  mixed   $instance
+     * @return void
+     */
+    public function singleton($class, $instance) {
+        return Kant::$container->singleton($class, $instance);
     }
 
 }
