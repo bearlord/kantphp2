@@ -14,7 +14,7 @@ use Kant\Di\ServiceLocator;
 use Kant\Helper\ArrayHelper;
 use Kant\Factory;
 use Kant\Config\Config;
-use Kant\Route\Route;
+use Kant\Routing\Route;
 use Kant\Http\Request;
 use Kant\Http\Response;
 use Kant\Registry\KantRegistry;
@@ -200,7 +200,20 @@ class KantApplication extends ServiceLocator {
         $this->setCookie($this->config->get('cookie'), $request, $response);
         $this->setSession($this->config->get('session'), $request, $response);
 
-        $this->dispatch($this->route($request->path()), $type, $response);
+
+//        Route::import(Factory::getConfig()->get('route'));
+//        $route = Kant::createObject(\Kant\Routing\Router::class);
+
+
+        $router = Kant::createObject(\Kant\Routing\Router::class);
+
+//        $route->group([], APP_PATH . 'Bootstrap.php');
+        $router->group(['middleware' => 'web', 'namespace' => 'App\Http\Controllers'], APP_PATH . 'Bootstrap.php');
+//        var_dump($route->routes);
+        $router->dispatch($request, $response);
+
+
+//        $this->dispatch($this->route($request->path()), $type, $response);
 
         $response->send();
         $this->end();
@@ -236,8 +249,6 @@ class KantApplication extends ServiceLocator {
                 $target->enabled = false;
             }
         }
-
-        require_once APP_PATH . 'Bootstrap.php';
     }
 
     /**
@@ -294,8 +305,12 @@ class KantApplication extends ServiceLocator {
      * Route
      */
     protected function route($path) {
+
+
+        die();
         //remove url suffix
         $pathinfo = str_replace(Factory::getConfig()->get('urlSuffix'), '', $path);
+
 
         Route::import(Factory::getConfig()->get('route'));
         $dispath = Route::check($pathinfo);
@@ -538,6 +553,10 @@ class KantApplication extends ServiceLocator {
      */
     public function getResponse() {
         return $this->get('response');
+    }
+
+    public function getRouter() {
+        return Kant::createObject(\Kant\Routing\Router::class);
     }
 
     /**

@@ -8,7 +8,7 @@
  */
 
 namespace Kant\Di;
-
+use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Helper\ArrayHelper;
 use Kant\Exception\InvalidConfigException;
@@ -496,7 +496,7 @@ class Container extends Component {
      * @param  mixed   $instance
      * @return void
      */
-    public function instance($class, $instance) {
+    public function singleton($class, $instance) {
         $this->_singletons[$class] = $instance;
         return $instance;
     }

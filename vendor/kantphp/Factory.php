@@ -10,7 +10,7 @@
 namespace Kant;
 
 use Kant\Config\Config;
-use Kant\Route\Route;
+use Kant\Routing\Route;
 use Kant\Session\Session;
 use Kant\Pathinfo\Pathinfo;
 

@@ -11,6 +11,7 @@ namespace Kant\Http;
 
 use Kant\Foundation\Arrayable;
 use ArrayAccess;
+use Closure;
 use Kant\Support\Str;
 use Kant\Support\Arr;
 use Kant\Session\SessionInterface;

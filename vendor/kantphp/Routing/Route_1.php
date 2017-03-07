@@ -7,11 +7,17 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Route;
+namespace Kant\Routing;
 
+use ReflectionFunction;
+use Kant\Kant;
 use Kant\Factory;
+use Kant\Support\Arr;
+use Kant\Http\Request;
 
 class Route {
+
+    use RouteDependencyResolverTrait;
 
     /**
      * Rules
@@ -54,6 +60,366 @@ class Route {
      * @var array 
      */
     private static $pattern = [];
+
+    /**
+     * The default values for the route.
+     *
+     * @var array
+     */
+    public $defaults = [];
+
+    /**
+     * The regular expression requirements.
+     *
+     * @var array
+     */
+    public $wheres = [];
+
+    /**
+     * The compiled version of the route.
+     *
+     * @var \Symfony\Component\Routing\CompiledRoute
+     */
+    public $compiled;
+
+    /**
+     * Create a new Route instance.
+     *
+     * @param  array|string  $methods
+     * @param  string  $uri
+     * @param  \Closure|array  $action
+     * @return void
+     */
+    public function __construct($methods, $uri, $action) {
+        $this->uri = $uri;
+        $this->methods = (array) $methods;
+        $this->action = $this->parseAction($action);
+
+        if (in_array('GET', $this->methods) && !in_array('HEAD', $this->methods)) {
+            $this->methods[] = 'HEAD';
+        }
+
+        if (isset($this->action['prefix'])) {
+            $this->prefix($this->action['prefix']);
+        }
+    }
+
+    /**
+     * Parse the route action into a standard array.
+     *
+     * @param  callable|array|null  $action
+     * @return array
+     *
+     * @throws \UnexpectedValueException
+     */
+    protected function parseAction($action) {
+        return RouteAction::parse($this->uri, $action);
+    }
+
+    /**
+     * Run the route action and return the response.
+     *
+     * @return mixed
+     */
+    public function run() {
+
+        try {
+            if ($this->isControllerAction()) {
+                return $this->runController();
+            }
+
+            return $this->runCallable();
+        } catch (HttpResponseException $e) {
+            return $e->getResponse();
+        }
+    }
+
+    /**
+     * Checks whether the route's action is a controller.
+     *
+     * @return bool
+     */
+    protected function isControllerAction() {
+        return is_string($this->action['uses']);
+    }
+    /**
+     * Run the route action and return the response.
+     *
+     * @return mixed
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    protected function runController()
+    {
+        return (new ControllerDispatcher($this->container))->dispatch(
+            $this, $this->getController(), $this->getControllerMethod()
+        );
+    }
+
+    
+
+    /**
+     * Run the route action and return the response.
+     *
+     * @return mixed
+     */
+    protected function runCallable() {
+//        var_dump($this->action['uses']);
+        $parameters = $this->resolveMethodDependencies(
+                $this->parametersWithoutNulls(), new ReflectionFunction($this->action['uses'])
+        );
+        var_dump($parameters);
+        return call_user_func_array($this->action['uses'], $parameters);
+
+        $callable = $this->action['uses'];
+        return $callable(...array_values($this->resolveMethodDependencies(
+                                $this->parametersWithoutNulls(), new ReflectionFunction($this->action['uses'])
+        )));
+    }
+
+    /**
+     * Get the HTTP verbs the route responds to.
+     *
+     * @return array
+     */
+    public function methods() {
+        return $this->methods;
+    }
+
+    /**
+     * Get the domain defined for the route.
+     *
+     * @return string|null
+     */
+    public function domain() {
+        return isset($this->action['domain']) ? str_replace(['http://', 'https://'], '', $this->action['domain']) : null;
+    }
+
+    /**
+     * Get the URI associated with the route.
+     *
+     * @return string
+     */
+    public function uri() {
+        return $this->uri;
+    }
+
+    /**
+     * Add a prefix to the route URI.
+     *
+     * @param  string  $prefix
+     * @return $this
+     */
+    public function prefix($prefix) {
+        $uri = rtrim($prefix, '/') . '/' . ltrim($this->uri, '/');
+
+        $this->uri = trim($uri, '/');
+
+        return $this;
+    }
+
+    /**
+     * Get the route validators for the instance.
+     *
+     * @return array
+     */
+    public static function getValidators() {
+        if (isset(static::$validators)) {
+            return static::$validators;
+        }
+
+        // To match the route, we will use a chain of responsibility pattern with the
+        // validator implementations. We will spin through each one making sure it
+        // passes and then we will know if the route as a whole matches request.
+        return static::$validators = [
+            new UriValidator, new MethodValidator,
+            new SchemeValidator, new HostValidator,
+        ];
+    }
+
+    /**
+     * Set the router instance on the route.
+     *
+     * @param  \Kant\Routing\Router  $router
+     * @return $this
+     */
+    public function setRouter(Router $router) {
+        $this->router = $router;
+
+        return $this;
+    }
+
+    /**
+     * Determine if the route matches given request.
+     *
+     * @param  \Kant\Http\Request  $request
+     * @param  bool  $includingMethod
+     * @return bool
+     */
+    public function matches(Request $request, $includingMethod = true) {
+        $this->compileRoute();
+        return true;
+        foreach ($this->getValidators() as $validator) {
+            if (!$includingMethod && $validator instanceof MethodValidator) {
+                continue;
+            }
+
+            if (!$validator->matches($this, $request)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Compile the route into a Symfony CompiledRoute instance.
+     *
+     * @return void
+     */
+    protected function compileRoute() {
+        if (!$this->compiled) {
+            $this->compiled = (new RouteCompiler($this))->compile();
+        }
+
+        return $this->compiled;
+    }
+
+    /**
+     * Bind the route to a given request for execution.
+     *
+     * @param  \Kant\Http\Request  $request
+     * @return $this
+     */
+    public function bind(Request $request) {
+//        $this->compileRoute();
+
+        $this->parameters = (new RouteParameterBinder($this))
+                ->parameters($request);
+
+        return $this;
+    }
+
+    /**
+     * Get the key / value list of parameters for the route.
+     *
+     * @return array
+     *
+     * @throws \LogicException
+     */
+    public function parameters() {
+        if (isset($this->parameters)) {
+            return $this->parameters;
+        }
+
+        throw new LogicException('Route is not bound.');
+    }
+
+    /**
+     * Get the key / value list of parameters without null values.
+     *
+     * @return array
+     */
+    public function parametersWithoutNulls() {
+        return array_filter($this->parameters(), function ($p) {
+            return !is_null($p);
+        });
+    }
+
+    /**
+     * Get all of the parameter names for the route.
+     *
+     * @return array
+     */
+    public function parameterNames() {
+        if (isset($this->parameterNames)) {
+            return $this->parameterNames;
+        }
+
+        return $this->parameterNames = $this->compileParameterNames();
+    }
+
+    /**
+     * Get the parameter names for the route.
+     *
+     * @return array
+     */
+    protected function compileParameterNames() {
+        preg_match_all('/\{(.*?)\}/', $this->domain() . $this->uri, $matches);
+
+        return array_map(function ($m) {
+            return trim($m, '?');
+        }, $matches[1]);
+    }
+
+    /**
+     * Set a regular expression requirement on the route.
+     *
+     * @param  array|string  $name
+     * @param  string  $expression
+     * @return $this
+     */
+    public function where($name, $expression = null) {
+        foreach ($this->parseWhere($name, $expression) as $name => $expression) {
+            $this->wheres[$name] = $expression;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Parse arguments to the where method into an array.
+     *
+     * @param  array|string  $name
+     * @param  string  $expression
+     * @return array
+     */
+    protected function parseWhere($name, $expression) {
+        return is_array($name) ? $name : [$name => $expression];
+    }
+
+    /**
+     * Get the action array for the route.
+     *
+     * @return array
+     */
+    public function getAction() {
+        return $this->action;
+    }
+
+    /**
+     * Set the action array for the route.
+     *
+     * @param  array  $action
+     * @return $this
+     */
+    public function setAction(array $action) {
+        $this->action = $action;
+
+        return $this;
+    }
+
+    /**
+     * Get or set the middlewares attached to the route.
+     *
+     * @param  array|string|null $middleware
+     * @return $this|array
+     */
+    public function middleware($middleware = null) {
+        if (is_null($middleware)) {
+            return (array) Arr::get($this->action, 'middleware', []);
+        }
+
+        if (is_string($middleware)) {
+            $middleware = func_get_args();
+        }
+
+        $this->action['middleware'] = array_merge(
+                (array) Arr::get($this->action, 'middleware', []), $middleware
+        );
+
+        return $this;
+    }
 
     /**
      * Rule map addition
@@ -148,9 +514,9 @@ class Route {
      * @param array $option
      * @param array $pattern
      */
-    public static function get($rule, $route = '', $option = [], $pattern = []) {
-        self::rule($rule, $route, 'GET', $option, $pattern);
-    }
+//    public static function get($rule, $route = '', $option = [], $pattern = []) {
+//        self::rule($rule, $route, 'GET', $option, $pattern);
+//    }
 
     /**
      * Register post request rule
@@ -612,6 +978,33 @@ class Route {
      */
     protected static function parseUrlParams($url, $var) {
         $_GET = array_merge($var, $_GET);
+    }
+
+    /**
+     * Handle dynamic, static calls to the object.
+     *
+     * @param  string  $method
+     * @param  array   $args
+     * @return mixed
+     *
+     * @throws \RuntimeException
+     */
+    public static function __callStatic($method, $args) {
+        $instance = Kant::createObject(\Kant\Routing\Route::class);
+        switch (count($args)) {
+            case 0:
+                return $instance->$method();
+            case 1:
+                return $instance->$method($args[0]);
+            case 2:
+                return $instance->$method($args[0], $args[1]);
+            case 3:
+                return $instance->$method($args[0], $args[1], $args[2]);
+            case 4:
+                return $instance->$method($args[0], $args[1], $args[2], $args[3]);
+            default:
+                return call_user_func_array([$instance, $method], $args);
+        }
     }
 
 }
