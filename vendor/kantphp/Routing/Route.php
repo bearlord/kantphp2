@@ -13,6 +13,7 @@ use ReflectionFunction;
 use Kant\Kant;
 use Kant\Factory;
 use Kant\Support\Arr;
+use Kant\Support\Str;
 use Kant\Http\Request;
 use Kant\Routing\Matching\UriValidator;
 use Kant\Routing\Matching\HostValidator;
@@ -78,6 +79,19 @@ class Route {
      * @var array
      */
     public $wheres = [];
+    
+    /**
+     * The controller instance.
+     *
+     * @var mixed
+     */
+    public $controller;
+    
+    /**
+     * The Action suffix
+     * @var type 
+     */
+    public $actionSuffix = 'Action';
 
     /**
      * The compiled version of the route.
@@ -162,9 +176,41 @@ class Route {
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     protected function runController() {
-        return (new ControllerDispatcher($this->container))->dispatch(
+        return (new ControllerDispatcher())->dispatch(
                         $this, $this->getController(), $this->getControllerMethod()
         );
+    }
+
+    /**
+     * Get the controller instance for the route.
+     *
+     * @return mixed
+     */
+    public function getController() {
+        $class = $this->parseControllerCallback()[0];
+        if (!$this->controller) {
+            $this->controller = Kant::createObject($class);
+        }
+
+        return $this->controller;
+    }
+
+    /**
+     * Get the controller method used for the route.
+     *
+     * @return string
+     */
+    protected function getControllerMethod() {
+        return $this->parseControllerCallback()[1] . $this->actionSuffix;
+    }
+
+    /**
+     * Parse the controller.
+     *
+     * @return array
+     */
+    protected function parseControllerCallback() {
+        return Str::parseCallback($this->action['uses']);
     }
 
     /**
@@ -179,10 +225,10 @@ class Route {
 
         return call_user_func_array($this->action['uses'], $parameters);
 
-        $callable = $this->action['uses'];
-        return $callable(...array_values($this->resolveMethodDependencies(
-                                $this->parametersWithoutNulls(), new ReflectionFunction($this->action['uses'])
-        )));
+//        $callable = $this->action['uses'];
+//        return $callable(...array_values($this->resolveMethodDependencies(
+//                                $this->parametersWithoutNulls(), new ReflectionFunction($this->action['uses'])
+//        )));
     }
 
     /**

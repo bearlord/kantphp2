@@ -329,6 +329,18 @@ class Router extends \Kant\Foundation\Component {
     }
 
     /**
+     * Prepend the last group namespace onto the use clause.
+     *
+     * @param  string  $class
+     * @return string
+     */
+    protected function prependGroupNamespace($class) {
+        $group = end($this->groupStack);
+
+        return isset($group['namespace']) && strpos($class, '\\') !== 0 ? $group['namespace'] . '\\' . $class : $class;
+    }
+
+    /**
      * Create a new Route object.
      *
      * @param  array|string  $methods
@@ -402,7 +414,7 @@ class Router extends \Kant\Foundation\Component {
         $request->setRouteResolver(function () use ($route) {
             return $route;
         });
-        
+
         $this->runRouteWithinStack($route, $response);
     }
 
