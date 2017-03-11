@@ -27,6 +27,13 @@ use ReflectionParameter;
 
 class KantApplication extends ServiceLocator {
 
+    /**
+     * The Laravel framework version.
+     *
+     * @var string
+     */
+    const VERSION = '2.2.0';
+
     private static $_instance = null;
 
     /**
@@ -78,6 +85,15 @@ class KantApplication extends ServiceLocator {
     }
 
     /**
+     * Get the version number of the application.
+     *
+     * @return string
+     */
+    public function version() {
+        return static::VERSION;
+    }
+
+    /**
      * Returns the configuration of core application components.
      * @see set()
      */
@@ -102,16 +118,7 @@ class KantApplication extends ServiceLocator {
         return Factory::getConfig()->merge($appConfig);
     }
 
-    /**
-     * Init Module Config;
-     * @param type $module
-     */
-    protected function setModuleConfig($module) {
-        $configFilePath = MODULE_PATH . $module . DIRECTORY_SEPARATOR . 'Config.php';
-        if (file_exists($configFilePath)) {
-            Factory::getConfig()->merge(require $configFilePath);
-        }
-    }
+    
 
     /**
      * Initialize session
@@ -201,21 +208,17 @@ class KantApplication extends ServiceLocator {
         $this->setSession($this->config->get('session'), $request, $response);
 
 
-//        Route::import(Factory::getConfig()->get('route'));
-//        $route = Kant::createObject(\Kant\Routing\Router::class);
-
-
         $router = Kant::createObject(\Kant\Routing\Router::class);
 
 //        $route->group([], APP_PATH . 'Bootstrap.php');
-        $router->group(['middleware' => 'web', 'namespace' => 'App\Http\Controllers'], APP_PATH . 'Bootstrap.php');
+        $router->group(['middleware' => 'web', 'namespace' => 'App\Http\Controller'], APP_PATH . 'Bootstrap.php');
 //        var_dump($route->routes);
         $router->dispatch($request, $response);
 
 
 //        $this->dispatch($this->route($request->path()), $type, $response);
 
-        $response->send();
+        $response->send(); 
         $this->end();
     }
 
@@ -302,61 +305,6 @@ class KantApplication extends ServiceLocator {
     }
 
     /**
-     * Route
-     */
-    protected function route($path) {
-
-
-        die();
-        //remove url suffix
-        $pathinfo = str_replace(Factory::getConfig()->get('urlSuffix'), '', $path);
-
-
-        Route::import(Factory::getConfig()->get('route'));
-        $dispath = Route::check($pathinfo);
-        if ($dispath === false) {
-            $dispath = Route::parseUrl($pathinfo);
-        }
-        return $dispath;
-    }
-
-    /**
-     * Parse Pathinfo
-     */
-    protected function parsePathinfo() {
-        $pathinfo = Factory::getPathInfo()->parsePathinfo();
-        return $pathinfo;
-    }
-
-    /**
-     * Dispatch
-     */
-    protected function dispatch($dispatch, $type, Response $response) {
-        $data = [];
-        switch ($dispatch['type']) {
-            case 'redirect':
-                header('Location: ' . $dispatch['url'], true, $dispatch['status']);
-                break;
-            case 'module':
-                $data = self::module($dispatch['module']);
-                break;
-            case 'controller':
-                $data = Loader::action($dispatch['controller'], $dispatch['params']);
-                break;
-            case 'method':
-                $data = self::invokeMethod($dispatch['method'], $dispatch['params']);
-                break;
-            case 'function':
-                $data = self::invokeFunction($dispatch['function'], $dispatch['params']);
-                break;
-            default:
-                throw new KantException('dispatch type not support', 5002);
-        }
-
-        $response->setContent($this->parseData($data, $type));
-    }
-
-    /**
      * Parse Data
      * 
      * @param type $data
@@ -373,122 +321,6 @@ class KantApplication extends ServiceLocator {
         $method = new ReflectionMethod($OutputObj, 'output');
         $result = $method->invokeArgs($OutputObj, array($data));
         return $result;
-    }
-
-    /**
-     * Invoke Function
-     * 
-     * @param type $function
-     * @param type $vars
-     * @return type
-     */
-    public static function invokeFunction($function, $vars = []) {
-        $reflect = new \ReflectionFunction($function);
-        $args = self::bindParams($reflect, $vars);
-        return $reflect->invokeArgs($args);
-    }
-
-    /**
-     * Bind Params
-     * 
-     * @param type $reflect
-     * @param type $vars
-     * @return type
-     * @throws Exception
-     */
-    private static function bindParams($reflect, $vars) {
-        $args = [];
-        $type = key($vars) === 0 ? 1 : 0;
-        if ($reflect->getNumberOfParameters() > 0) {
-            $params = $reflect->getParameters();
-            foreach ($params as $param) {
-                $name = $param->getName();
-                if (1 == $type && !empty($vars)) {
-                    $args[] = array_shift($vars);
-                } elseif (0 == $type && isset($vars[$name])) {
-                    $args[] = $vars[$name];
-                } elseif ($param->isDefaultValueAvailable()) {
-                    $args[] = $param->getDefaultValue();
-                } else {
-                    throw new KantException('method param miss:' . $name, 5004);
-                }
-            }
-        }
-        return $args;
-    }
-
-    /**
-     * Execution
-     * 
-     * @throws KantException
-     * @throws ReflectionException
-     */
-    public function module($dispatcher) {
-        KantRegistry::set('dispatcher', $dispatcher);
-        $this->dispatcher = $dispatcher;
-
-        //module name
-        $moduleName = $this->getModuleName($dispatcher[0]);
-        if (empty($moduleName)) {
-            throw new KantException('No Module found');
-        }
-        $this->setModuleConfig($moduleName);
-
-
-        //controller name
-        $controllerName = $this->getControllerName($dispatcher[1]);
-        $controller = $this->controller($controllerName, $moduleName);
-        if (!$controller) {
-            if (empty($controller)) {
-                throw new KantException(sprintf("No controller exists:%s", ucfirst($this->dispatcher[1]) . 'Controller'));
-            }
-        }
-
-
-        //action name
-        $action = $this->dispatcher[2] ?: ucfirst(Factory::getConfig()->get('route.act'));
-        $data = $this->callClass($controller . "@" . $action . Factory::getConfig()->get('actionSuffix'));
-        return $data;
-    }
-
-    /**
-     * Get module name
-     * 
-     * @param string $name
-     * @return string
-     */
-    protected function getModuleName($name) {
-        return ucfirst($name ?: Factory::getConfig()->get('route.module'));
-    }
-
-    /**
-     * Get controller name
-     * 
-     * @param string $name
-     * @return string
-     */
-    protected function getControllerName($name) {
-        return ucfirst($name ?: Factory::getConfig()->get('route.ctrl'));
-    }
-
-    /**
-     * Controller
-     * 
-     * @staticvar array $classes
-     * @return boolean|array|\classname
-     * @throws KantException
-     */
-    protected function controller($controller, $module) {
-        $controller = ucfirst($controller) . "Controller";
-        $filepath = APP_PATH . "Module/{$module}/Controller/{$controller}.php";
-        if (!file_exists($filepath)) {
-            throw new KantException(sprintf("File does not exists:%s", $filepath));
-        }
-        include $filepath;
-
-        $namespace = "App\\{$module}\\Controller\\";
-        $controller = $namespace . $controller;
-        return $controller;
     }
 
     /**
@@ -557,127 +389,6 @@ class KantApplication extends ServiceLocator {
 
     public function getRouter() {
         return Kant::createObject(\Kant\Routing\Router::class);
-    }
-
-    /**
-     * Call the given Closure / class@method and inject its dependencies.
-     *
-     * @param  callable|string  $callback
-     * @param  array  $parameters
-     * @param  string|null  $defaultMethod
-     * @return mixed
-     */
-    public function call($callback, array $parameters = [], $defaultMethod = null) {
-        if ($this->isCallableWithAtSign($callback) || $defaultMethod) {
-            return $this->callClass($callback, $parameters, $defaultMethod);
-        }
-        $dependencies = $this->getMethodDependencies($callback, $parameters);
-        return call_user_func_array($callback, $dependencies);
-    }
-
-    /**
-     * Determine if the given string is in Class@method syntax.
-     *
-     * @param  mixed  $callback
-     * @return bool
-     */
-    protected function isCallableWithAtSign($callback) {
-        return is_string($callback) && strpos($callback, '@') !== false;
-    }
-
-    /**
-     * Get all dependencies for a given method.
-     *
-     * @param  callable|string  $callback
-     * @param  array  $parameters
-     * @return array
-     */
-    protected function getMethodDependencies($callback, array $parameters = []) {
-        $dependencies = [];
-
-        foreach ($this->getCallReflector($callback)->getParameters() as $parameter) {
-            $this->addDependencyForCallParameter($parameter, $parameters, $dependencies);
-        }
-
-        return array_merge($dependencies, $parameters);
-    }
-
-    /**
-     * Get the proper reflection instance for the given callback.
-     *
-     * @param  callable|string  $callback
-     * @return \ReflectionFunctionAbstract
-     */
-    protected function getCallReflector($callback) {
-        if (is_string($callback) && strpos($callback, '::') !== false) {
-            $callback = explode('::', $callback);
-        }
-        if (is_array($callback)) {
-            list($class, $name) = $callback;
-            if (!preg_match('/^[A-Za-z](\w)*$/', $name)) {
-                throw new ReflectionException('Method not provided.');
-            }
-            $method = new ReflectionMethod($class, $name);
-            if (!$method->isPublic()) {
-                throw new ReflectionException('Method not provided');
-            }
-            return $method;
-        }
-
-        return new ReflectionFunction($callback);
-    }
-
-    /**
-     * Get the dependency for the given call parameter.
-     *
-     * @param  \ReflectionParameter  $parameter
-     * @param  array  $parameters
-     * @param  array  $dependencies
-     * @return mixed
-     */
-    protected function addDependencyForCallParameter(ReflectionParameter $parameter, array &$parameters, &$dependencies) {
-        if (array_key_exists($parameter->name, $parameters)) {
-            $dependencies[] = $parameters[$parameter->name];
-
-            unset($parameters[$parameter->name]);
-        } elseif ($parameter->getClass()) {
-            $dependencies[] = $this->make($parameter->getClass()->name);
-        } elseif ($parameter->isDefaultValueAvailable()) {
-            $dependencies[] = $parameter->getDefaultValue();
-        }
-    }
-
-    /**
-     * Call a string reference to a class using Class@method syntax.
-     *
-     * @param  string  $target
-     * @param  array  $parameters
-     * @param  string|null  $defaultMethod
-     * @return mixed
-     *
-     * @throws \InvalidArgumentException
-     */
-    protected function callClass($target, array $parameters = [], $defaultMethod = null) {
-        $segments = explode('@', $target);
-
-        // If the listener has an @ sign, we will assume it is being used to delimit
-        // the class name from the handle method name. This allows for handlers
-        // to run multiple handler methods in a single class for convenience.
-        $method = count($segments) == 2 ? $segments[1] : $defaultMethod;
-
-        if (is_null($method)) {
-            throw new InvalidArgumentException('Method not provided.');
-        }
-//        return $this->call([$this->make($segments[0]), $method], $parameters);
-
-        return $this->call([Kant::$container->get($segments[0]), $method], $parameters);
-    }
-
-    /**
-     * Resolve the given type from the container.
-     */
-    public function make($class) {
-        return Kant::createObject($class);
     }
 
     /**

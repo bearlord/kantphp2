@@ -410,6 +410,9 @@ class Router extends \Kant\Foundation\Component {
         // receive access to this route instance for checking of the parameters.
         $route = $this->findRoute($request);
 
+        if (!$route) {
+            return $this->dispatchToModule($request, $response);
+        }
 
         $request->setRouteResolver(function () use ($route) {
             return $route;
@@ -464,6 +467,19 @@ class Router extends \Kant\Foundation\Component {
      */
     public function hasGroupStack() {
         return !empty($this->groupStack);
+    }
+
+    /**
+     * Dispatch the request to a module and return the response.
+     *
+     * @param  \Kant\Http\Request  $request
+     * @return mixed
+     */
+    public function dispatchToModule(Request $request, Response $response) {
+        return $response->setContent(
+                        (new ModuleDispatcher())->dispatch(
+                                $request)
+        );
     }
 
     /**

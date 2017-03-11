@@ -67,6 +67,27 @@ class Route {
     private static $pattern = [];
 
     /**
+     * The URI pattern the route responds to.
+     *
+     * @var string
+     */
+    public $uri;
+
+    /**
+     * The HTTP methods the route responds to.
+     *
+     * @var array
+     */
+    public $methods;
+
+    /**
+     * The route action array.
+     *
+     * @var array
+     */
+    public $action;
+
+    /**
      * The default values for the route.
      *
      * @var array
@@ -79,14 +100,14 @@ class Route {
      * @var array
      */
     public $wheres = [];
-    
+
     /**
      * The controller instance.
      *
      * @var mixed
      */
     public $controller;
-    
+
     /**
      * The Action suffix
      * @var type 
@@ -173,7 +194,7 @@ class Route {
      *
      * @return mixed
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @throws \Kant\Exception\NotFoundHttpException
      */
     protected function runController() {
         return (new ControllerDispatcher())->dispatch(

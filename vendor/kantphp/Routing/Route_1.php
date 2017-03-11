@@ -147,7 +147,7 @@ class Route {
      *
      * @return mixed
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @throws \Kant\Exception\NotFoundHttpException
      */
     protected function runController()
     {
