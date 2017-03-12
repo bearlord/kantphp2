@@ -49,8 +49,6 @@ class RouteCollection {
         }
 
         $this->allRoutes[$method . $domainAndUri] = $route;
-
-//        var_dump($this->get("GET"));
     }
 
     /**

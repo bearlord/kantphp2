@@ -6,10 +6,13 @@ use Kant\Routing\RouteCollection;
 use Kant\Routing\RouteGroup;
 use Closure;
 use Kant\Support\Str;
+use Kant\Helper\DirHelper;
 use Kant\Http\Request;
 use Kant\Http\Response;
 
 class Router extends \Kant\Foundation\Component {
+
+    protected $mapFileExt = ".php";
 
     /**
      * The route collection instance.
@@ -62,7 +65,25 @@ class Router extends \Kant\Foundation\Component {
 
     public function __construct() {
         $this->routes = new RouteCollection;
-//        $this->routes = \Kant\Kant::createObject(\Kant\Routing\RouteCollection::class);
+        $this->mapRoutes();
+    }
+
+    /**
+     * Define routes for the application.
+     *
+     * These routes all receive session state, CSRF protection, etc.
+     *
+     * @return void
+     */
+    public function mapRoutes() {
+        $mapFiles = DirHelper::lists(CFG_PATH . "Route", trim($this->mapFileExt, "."));
+        foreach ($mapFiles as $map) {
+            $mapName = basename($map, $this->mapFileExt);
+            $this->group([
+                'middleware' => $mapName,
+                'namespace' => "App\\{$mapName}\\Controller"
+                    ], $map);
+        }
     }
 
     /**
@@ -73,9 +94,7 @@ class Router extends \Kant\Foundation\Component {
      * @return \Kant\Routing\Route
      */
     public function get($uri, $action = null) {
-        $ss = $this->addRoute(['GET', 'HEAD'], $uri, $action);
-        //添加routes之后
-        return $ss;
+        return $this->addRoute(['GET', 'HEAD'], $uri, $action);
     }
 
     /**
@@ -284,7 +303,7 @@ class Router extends \Kant\Foundation\Component {
         }
 
         $this->addWhereClausesToRoute($route);
-//        var_dump($route);
+
         return $route;
     }
 

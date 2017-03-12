@@ -9,7 +9,7 @@
 namespace Kant\Log;
 
 use Kant\Log\Target;
-use Kant\Helper\Dir;
+use Kant\Helper\DirHelper;
 use Kant\Exception\InvalidConfigException;
 
 class FileTarget extends Target {
@@ -77,7 +77,7 @@ class FileTarget extends Target {
 
         $logPath = dirname($this->logFile);
         if (!is_dir($logPath)) {
-            Dir::create($logPath, $this->dirMode, true);
+            DirHelper::create($logPath, $this->dirMode, true);
         }
         if ($this->maxLogFiles < 1) {
             $this->maxLogFiles = 1;

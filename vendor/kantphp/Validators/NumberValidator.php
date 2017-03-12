@@ -67,13 +67,13 @@ class NumberValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = $this->integerOnly ? Kant::t('yii', '{attribute} must be an integer.') : Kant::t('yii', '{attribute} must be a number.');
+            $this->message = $this->integerOnly ? Kant::t('kant', '{attribute} must be an integer.') : Kant::t('kant', '{attribute} must be a number.');
         }
         if ($this->min !== null && $this->tooSmall === null) {
-            $this->tooSmall = Kant::t('yii', '{attribute} must be no less than {min}.');
+            $this->tooSmall = Kant::t('kant', '{attribute} must be no less than {min}.');
         }
         if ($this->max !== null && $this->tooBig === null) {
-            $this->tooBig = Kant::t('yii', '{attribute} must be no greater than {max}.');
+            $this->tooBig = Kant::t('kant', '{attribute} must be no greater than {max}.');
         }
     }
 
@@ -103,7 +103,7 @@ class NumberValidator extends Validator {
      */
     protected function validateValue($value) {
         if (is_array($value) || is_object($value)) {
-            return [Kant::t('yii', '{attribute} is invalid.'), []];
+            return [Kant::t('kant', '{attribute} is invalid.'), []];
         }
         $pattern = $this->integerOnly ? $this->integerPattern : $this->numberPattern;
         if (!preg_match($pattern, "$value")) {
@@ -125,28 +125,28 @@ class NumberValidator extends Validator {
 
         $options = [
             'pattern' => new JsExpression($this->integerOnly ? $this->integerPattern : $this->numberPattern),
-            'message' => Yii::$app->getI18n()->format($this->message, [
+            'message' => Kant::$app->getI18n()->format($this->message, [
                 'attribute' => $label,
-                    ], Yii::$app->language),
+                    ], Kant::$app->language),
         ];
 
         if ($this->min !== null) {
             // ensure numeric value to make javascript comparison equal to PHP comparison
             // https://github.com/yiisoft/yii2/issues/3118
             $options['min'] = is_string($this->min) ? (float) $this->min : $this->min;
-            $options['tooSmall'] = Yii::$app->getI18n()->format($this->tooSmall, [
+            $options['tooSmall'] = Kant::$app->getI18n()->format($this->tooSmall, [
                 'attribute' => $label,
                 'min' => $this->min,
-                    ], Yii::$app->language);
+                    ], Kant::$app->language);
         }
         if ($this->max !== null) {
             // ensure numeric value to make javascript comparison equal to PHP comparison
             // https://github.com/yiisoft/yii2/issues/3118
             $options['max'] = is_string($this->max) ? (float) $this->max : $this->max;
-            $options['tooBig'] = Yii::$app->getI18n()->format($this->tooBig, [
+            $options['tooBig'] = Kant::$app->getI18n()->format($this->tooBig, [
                 'attribute' => $label,
                 'max' => $this->max,
-                    ], Yii::$app->language);
+                    ], Kant::$app->language);
         }
         if ($this->skipOnEmpty) {
             $options['skipOnEmpty'] = 1;

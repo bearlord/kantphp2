@@ -78,10 +78,10 @@ class UniqueValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = Kant::t('yii', '{attribute} "{value}" has already been taken.');
+            $this->message = Kant::t('kant', '{attribute} "{value}" has already been taken.');
         }
         if ($this->comboNotUnique === null) {
-            $this->comboNotUnique = Kant::t('yii', 'The combination {values} of {attributes} has already been taken.');
+            $this->comboNotUnique = Kant::t('kant', 'The combination {values} of {attributes} has already been taken.');
         }
     }
 
@@ -104,7 +104,7 @@ class UniqueValidator extends Validator {
 
         foreach ($params as $value) {
             if (is_array($value)) {
-                $this->addError($model, $attribute, Kant::t('yii', '{attribute} is invalid.'));
+                $this->addError($model, $attribute, Kant::t('kant', '{attribute} is invalid.'));
 
                 return;
             }

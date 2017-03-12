@@ -9,7 +9,7 @@
 
 namespace Kant\Helper;
 
-class Dir {
+class DirHelper {
 
     /**
      *
@@ -61,7 +61,7 @@ class Dir {
      * @param todir string
      * @return boolean true on success or false
      */
-    public function copy($fromdir, $todir) {
+    public static function copy($fromdir, $todir) {
         $fromdir = self::path($fromdir);
         $todir = self::path($todir);
         if (!is_dir($fromdir)) {
@@ -94,11 +94,11 @@ class Dir {
      * @param list array
      * @return array
      */
-    public function lists($path, $exts = '', $list = array()) {
+    public static function lists($path, $exts = '', $list = array()) {
         $path = self::path($path);
         $files = glob($path . '*');
         foreach ($files as $v) {
-            $fileext = fileext($v);
+            $fileext = substr(strrchr($v, '.'), 1);
             if (!$exts || preg_match("/\.($exts)/i", $v)) {
                 $list[] = $v;
                 if (is_dir($v)) {
@@ -115,11 +115,11 @@ class Dir {
      *
      * @param in_charset string
      * @param out_charset string
-     * @param dir string
+     * @param DirHelper string
      * @param fileexts string
      * @return boolean True on success or false
      */
-    public function iconv($in_charset, $out_charset, $dir, $fileexts = 'php|html|htm|shtml|shtm|js|txt|xml') {
+    public static function iconv($in_charset, $out_charset, $dir, $fileexts = 'php|html|htm|shtml|shtm|js|txt|xml') {
         if ($in_charset == $out_charset) {
             return false;
         }
@@ -140,7 +140,7 @@ class Dir {
      * @param type $atime
      * @return boolean
      */
-    public function touch($path, $mtime = TIME, $atime = TIME) {
+    public static function touch($path, $mtime = TIME, $atime = TIME) {
         if (!is_dir($path)) {
             return false;
         }
@@ -164,7 +164,7 @@ class Dir {
      * @param array $dirs
      * @return array
      */
-    public function tree($dir, $parentid = 0, $dirs = array()) {
+    public static function tree($dir, $parentid = 0, $dirs = array()) {
         global $id;
         if ($parentid == 0) {
             $id = 0;
@@ -186,7 +186,7 @@ class Dir {
      * @param type $dir
      * @return boolean
      */
-    public function delete($dir) {
+    public static function delete($dir) {
         $dir = self::path($dir);
         if (!is_dir($dir)) {
             return false;

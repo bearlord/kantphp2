@@ -7,6 +7,7 @@ use Kant\Factory;
 use Kant\Registry\KantRegistry;
 use ReflectionMethod;
 use ReflectionParameter;
+use ReflectionException;
 
 class ModuleDispatcher {
 

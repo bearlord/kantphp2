@@ -62,7 +62,7 @@ class RangeValidator extends Validator {
             throw new InvalidConfigException('The "range" property must be set.');
         }
         if ($this->message === null) {
-            $this->message = Kant::t('yii', '{attribute} is invalid.');
+            $this->message = Kant::t('kant', '{attribute} is invalid.');
         }
     }
 
@@ -109,9 +109,9 @@ class RangeValidator extends Validator {
         $options = [
             'range' => $range,
             'not' => $this->not,
-            'message' => Yii::$app->getI18n()->format($this->message, [
+            'message' => Kant::$app->getI18n()->format($this->message, [
                 'attribute' => $model->getAttributeLabel($attribute),
-                    ], Yii::$app->language),
+                    ], Kant::$app->language),
         ];
         if ($this->skipOnEmpty) {
             $options['skipOnEmpty'] = 1;

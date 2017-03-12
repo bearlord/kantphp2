@@ -72,7 +72,7 @@ class EachValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = Kant::t('yii', '{attribute} is invalid.');
+            $this->message = Kant::t('kant', '{attribute} is invalid.');
         }
     }
 

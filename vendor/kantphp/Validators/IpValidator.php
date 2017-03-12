@@ -244,25 +244,25 @@ class IpValidator extends Validator {
         }
 
         if ($this->message === null) {
-            $this->message = Kant::t('yii', '{attribute} must be a valid IP address.');
+            $this->message = Kant::t('kant', '{attribute} must be a valid IP address.');
         }
         if ($this->ipv6NotAllowed === null) {
-            $this->ipv6NotAllowed = Kant::t('yii', '{attribute} must not be an IPv6 address.');
+            $this->ipv6NotAllowed = Kant::t('kant', '{attribute} must not be an IPv6 address.');
         }
         if ($this->ipv4NotAllowed === null) {
-            $this->ipv4NotAllowed = Kant::t('yii', '{attribute} must not be an IPv4 address.');
+            $this->ipv4NotAllowed = Kant::t('kant', '{attribute} must not be an IPv4 address.');
         }
         if ($this->wrongCidr === null) {
-            $this->wrongCidr = Kant::t('yii', '{attribute} contains wrong subnet mask.');
+            $this->wrongCidr = Kant::t('kant', '{attribute} contains wrong subnet mask.');
         }
         if ($this->noSubnet === null) {
-            $this->noSubnet = Kant::t('yii', '{attribute} must be an IP address with specified subnet.');
+            $this->noSubnet = Kant::t('kant', '{attribute} must be an IP address with specified subnet.');
         }
         if ($this->hasSubnet === null) {
-            $this->hasSubnet = Kant::t('yii', '{attribute} must not be a subnet.');
+            $this->hasSubnet = Kant::t('kant', '{attribute} must not be a subnet.');
         }
         if ($this->notInRange === null) {
-            $this->notInRange = Kant::t('yii', '{attribute} is not in the allowed range.');
+            $this->notInRange = Kant::t('kant', '{attribute} is not in the allowed range.');
         }
     }
 
@@ -597,9 +597,9 @@ class IpValidator extends Validator {
             'hasSubnet' => $this->hasSubnet,
         ];
         foreach ($messages as &$message) {
-            $message = Yii::$app->getI18n()->format($message, [
+            $message = Kant::$app->getI18n()->format($message, [
                 'attribute' => $model->getAttributeLabel($attribute),
-                    ], Yii::$app->language);
+                    ], Kant::$app->language);
         }
 
         $options = [

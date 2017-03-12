@@ -60,7 +60,7 @@ class UrlValidator extends Validator {
             throw new InvalidConfigException('In order to use IDN validation intl extension must be installed and enabled.');
         }
         if ($this->message === null) {
-            $this->message = Kant::t('yii', '{attribute} is not a valid URL.');
+            $this->message = Kant::t('kant', '{attribute} is not a valid URL.');
         }
     }
 
@@ -119,9 +119,9 @@ class UrlValidator extends Validator {
 
         $options = [
             'pattern' => new JsExpression($pattern),
-            'message' => Yii::$app->getI18n()->format($this->message, [
+            'message' => Kant::$app->getI18n()->format($this->message, [
                 'attribute' => $model->getAttributeLabel($attribute),
-                    ], Yii::$app->language),
+                    ], Kant::$app->language),
             'enableIDN' => (bool) $this->enableIDN,
         ];
         if ($this->skipOnEmpty) {

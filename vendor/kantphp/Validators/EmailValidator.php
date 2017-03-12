@@ -63,7 +63,7 @@ class EmailValidator extends Validator {
             throw new InvalidConfigException('In order to use IDN validation intl extension must be installed and enabled.');
         }
         if ($this->message === null) {
-            $this->message = Kant::t('yii', '{attribute} is not a valid email address.');
+            $this->message = Kant::t('kant', '{attribute} is not a valid email address.');
         }
     }
 
@@ -113,9 +113,9 @@ class EmailValidator extends Validator {
             'pattern' => new JsExpression($this->pattern),
             'fullPattern' => new JsExpression($this->fullPattern),
             'allowName' => $this->allowName,
-            'message' => Yii::$app->getI18n()->format($this->message, [
+            'message' => Kant::$app->getI18n()->format($this->message, [
                 'attribute' => $model->getAttributeLabel($attribute),
-                    ], Yii::$app->language),
+                    ], Kant::$app->language),
             'enableIDN' => (bool) $this->enableIDN,
         ];
         if ($this->skipOnEmpty) {

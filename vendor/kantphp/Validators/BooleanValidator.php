@@ -43,7 +43,7 @@ class BooleanValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = Kant::t('yii', '{attribute} must be either "{true}" or "{false}".');
+            $this->message = Kant::t('kant', '{attribute} must be either "{true}" or "{false}".');
         }
     }
 
@@ -70,11 +70,11 @@ class BooleanValidator extends Validator {
         $options = [
             'trueValue' => $this->trueValue,
             'falseValue' => $this->falseValue,
-            'message' => Yii::$app->getI18n()->format($this->message, [
+            'message' => Kant::$app->getI18n()->format($this->message, [
                 'attribute' => $model->getAttributeLabel($attribute),
                 'true' => $this->trueValue === true ? 'true' : $this->trueValue,
                 'false' => $this->falseValue === false ? 'false' : $this->falseValue,
-                    ], Yii::$app->language),
+                    ], Kant::$app->language),
         ];
         if ($this->skipOnEmpty) {
             $options['skipOnEmpty'] = 1;

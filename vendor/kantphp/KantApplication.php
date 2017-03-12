@@ -14,16 +14,11 @@ use Kant\Di\ServiceLocator;
 use Kant\Helper\ArrayHelper;
 use Kant\Factory;
 use Kant\Config\Config;
-use Kant\Routing\Route;
 use Kant\Http\Request;
 use Kant\Http\Response;
-use Kant\Registry\KantRegistry;
 use Kant\Runtime\Runtime;
 use Kant\Exception\KantException;
-use ReflectionException;
 use ReflectionMethod;
-use InvalidArgumentException;
-use ReflectionParameter;
 
 class KantApplication extends ServiceLocator {
 
@@ -110,7 +105,7 @@ class KantApplication extends ServiceLocator {
      */
     protected function initConfig($env) {
         $appConfig = ArrayHelper::merge(
-                        require KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php', require CFG_PATH . $env . DIRECTORY_SEPARATOR . 'Config.php', require CFG_PATH . $env . DIRECTORY_SEPARATOR . 'Route.php', [
+                        require KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php', require CFG_PATH . $env . DIRECTORY_SEPARATOR . 'Config.php', [
                     'environment' => $env,
                     'config_path' => CFG_PATH . $env . DIRECTORY_SEPARATOR
                         ]
@@ -202,22 +197,15 @@ class KantApplication extends ServiceLocator {
         ]));
 
         $this->setCache($this->config->get('cache'));
-        $this->setDb();
+        $this->setDb($this->config->get('database'));
 
         $this->setCookie($this->config->get('cookie'), $request, $response);
         $this->setSession($this->config->get('session'), $request, $response);
 
 
         $router = Kant::createObject(\Kant\Routing\Router::class);
-
-//        $route->group([], APP_PATH . 'Bootstrap.php');
-        $router->group(['middleware' => 'web', 'namespace' => 'App\Http\Controller'], APP_PATH . 'Bootstrap.php');
-//        var_dump($route->routes);
         $router->dispatch($request, $response);
-
-
-//        $this->dispatch($this->route($request->path()), $type, $response);
-
+        
         $response->send(); 
         $this->end();
     }
@@ -326,9 +314,8 @@ class KantApplication extends ServiceLocator {
     /**
      * Set the database connection component.
      */
-    public function setDb() {
-        $dbConfig = Factory::getConfig()->get('database');
-        foreach ($dbConfig as $key => $config) {
+    public function setDb($config) {
+        foreach ($config as $key => $config) {
             $this->set($key, array_merge([
                 'class' => 'Kant\Database\Connection'
                             ], $config));

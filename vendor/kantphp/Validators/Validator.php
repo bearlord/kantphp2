@@ -289,7 +289,7 @@ class Validator extends Component {
         }
 
         list($message, $params) = $result;
-        $params['attribute'] = Kant::t('yii', 'the input value');
+        $params['attribute'] = Kant::t('kant', 'the input value');
         if (is_array($value)) {
             $params['value'] = 'array()';
         } elseif (is_object($value)) {
