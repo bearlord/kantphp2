@@ -9,6 +9,7 @@
 
 namespace Kant\Log;
 
+use Kant\Kant;
 use Kant\Foundation\Component;
 
 /**
@@ -173,7 +174,7 @@ class Logger extends Component {
         // new messages could be logged while the existing ones are being handled by targets
         $this->messages = [];
         if (!$this->dispatcher instanceof Dispatcher) {
-            $this->dispatcher = \Kant\Kant::$app->getLog();
+            $this->dispatcher = Kant::$app->getLog();
         }
         if ($this->dispatcher instanceof Dispatcher) {
             $this->dispatcher->dispatch($messages, $final);
@@ -183,7 +184,7 @@ class Logger extends Component {
     /**
      * Returns the total elapsed time since the start of the current request.
      * This method calculates the difference between now and the timestamp
-     * defined by constant `YII_BEGIN_TIME` which is evaluated at the beginning
+     * defined by constant `KANT_BEGIN_TIME` which is evaluated at the beginning
      * of [[\kant\BaseKant]] class file.
      * @return float the total elapsed time in seconds for current request.
      */

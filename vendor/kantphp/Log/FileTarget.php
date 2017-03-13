@@ -1,9 +1,10 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Log;
@@ -72,7 +73,7 @@ class FileTarget extends Target {
      */
     public function init() {
         if ($this->logFile === null) {
-            $this->logFile = LOG_PATH . "/" . date("Y-m-d") . '/app.log';
+            $this->logFile = LOG_PATH  . date("Y-m-d") . '/app.log';
         }
 
         $logPath = dirname($this->logFile);
@@ -91,9 +92,9 @@ class FileTarget extends Target {
      * Writes log messages to a file.
      * @throws InvalidConfigException if unable to open the log file for writing
      */
-    public function export() {
+    public function export() {      
         $text = implode("\n", array_map([$this, 'formatMessage'], $this->messages)) . "\n";
-//        $this->logFile = LOG_PATH . 'app.log';
+
         if (($fp = @fopen($this->logFile, 'a')) === false) {
             throw new InvalidConfigException("Unable to append to log file: {$this->logFile}");
         }

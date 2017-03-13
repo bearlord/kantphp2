@@ -307,7 +307,7 @@ class KantApplication extends ServiceLocator {
 
         if ($config->get('enableDebugLogs')) {
             foreach (Kant::$app->getLog()->targets as $target) {
-                $target->enabled = false;
+                $target->enabled = true;
             }
         }
     }

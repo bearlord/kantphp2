@@ -53,7 +53,7 @@ class Kant {
      * @param array $params the constructor parameters
      * @return object the created object
      * @throws InvalidConfigException if the configuration is invalid.
-     * @see \Kant\di\Container
+     * @see \Kant\Di\Container
      */
     public static function createObject($type, $params = []) {
         if (is_string($type)) {
@@ -119,7 +119,7 @@ class Kant {
      * @param string $message the message to be translated.
      * @param array $params the parameters that will be used to replace the corresponding placeholders in the message.
      * @param string $language the language code (e.g. `en-US`, `en`). If this is null, the current
-     * [[\yii\base\Application::language|application language]] will be used.
+     * [[\Kant\Application::language|application language]] will be used.
      * @return string the translated message.
      */
     public static function t($category, $message, $params = [], $language = null) {
@@ -206,12 +206,12 @@ class Kant {
      * The begin- and end- calls must also be properly nested. For example,
      *
      * ```php
-     * \Yii::beginProfile('block1');
+     * \Kant::beginProfile('block1');
      * // some code to be profiled
-     *     \Yii::beginProfile('block2');
+     *     \Kant::beginProfile('block2');
      *     // some other code to be profiled
-     *     \Yii::endProfile('block2');
-     * \Yii::endProfile('block1');
+     *     \Kant::endProfile('block2');
+     * \Kant::endProfile('block1');
      * ```
      * @param string $token token for the code block
      * @param string $category the category of this log message
