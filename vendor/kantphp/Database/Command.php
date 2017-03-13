@@ -9,6 +9,7 @@
 
 namespace Kant\Database;
 
+use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Cache\Cache;
 
@@ -789,18 +790,31 @@ class Command extends Component {
      */
     public function execute() {
         $sql = $this->getSql();
+        
         $rawSql = $this->getRawSql();
+        
+        Kant::info($rawSql, __METHOD__);
+        
         if ($sql == '') {
             return 0;
         }
+        
         $this->prepare(false);
+        
         $token = $rawSql;
         try {
+            Kant::beginProfile($token, __METHOD__);
+            
             $this->pdoStatement->execute();
             $n = $this->pdoStatement->rowCount();
+            
+            Kant::endProfile($token, __METHOD__);
+            
             $this->refreshTableSchema();
             return $n;
         } catch (\Exception $e) {
+            Kant::endProfile($token, __METHOD__);
+            
             throw $this->db->getSchema()->convertException($e, $rawSql);
         }
     }
@@ -815,6 +829,9 @@ class Command extends Component {
      */
     protected function queryInternal($method, $fetchMode = null) {
         $rawSql = $this->getRawSql();
+        
+        Kant::info($rawSql, 'Kant\Database\Command::query');
+        
         if ($method !== '') {
             $info = $this->db->getQueryCacheInfo($this->queryCacheDuration, $this->queryCacheDependency);
             if (is_array($info)) {
@@ -828,7 +845,9 @@ class Command extends Component {
                     $rawSql,
                 ];
                 $result = Cache::get($cacheKey);
-                if (is_array($result)) {
+                if (is_array($result)) {                  
+                    Kant::trace('Query result served from cache', 'Kant\Database\Command::query');
+                    
                     return $result;
                 }
             }

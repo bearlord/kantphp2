@@ -9,8 +9,9 @@
 
 namespace Kant;
 
-use Kant\Exception\InvalidConfigException;
+use Kant\Factory;
 use Kant\Log\Logger;
+use Kant\Exception\InvalidConfigException;
 
 class Kant {
 
@@ -154,6 +155,19 @@ class Kant {
     }
 
     /**
+     * Logs a trace message.
+     * Trace messages are logged mainly for development purpose to see
+     * the execution work flow of some code.
+     * @param string $message the message to be logged.
+     * @param string $category the category of the message.
+     */
+    public static function trace($message, $category = 'application') {
+        if (Factory::getConfig()->get('debug')) {
+            static::getLogger()->log($message, Logger::LEVEL_TRACE, $category);
+        }
+    }
+
+    /**
      * Logs an error message.
      * An error message is typically logged when an unrecoverable error occurs
      * during the execution of an application.
@@ -184,6 +198,38 @@ class Kant {
      */
     public static function info($message, $category = 'application') {
         static::getLogger()->log($message, Logger::LEVEL_INFO, $category);
+    }
+
+    /**
+     * Marks the beginning of a code block for profiling.
+     * This has to be matched with a call to [[endProfile]] with the same category name.
+     * The begin- and end- calls must also be properly nested. For example,
+     *
+     * ```php
+     * \Yii::beginProfile('block1');
+     * // some code to be profiled
+     *     \Yii::beginProfile('block2');
+     *     // some other code to be profiled
+     *     \Yii::endProfile('block2');
+     * \Yii::endProfile('block1');
+     * ```
+     * @param string $token token for the code block
+     * @param string $category the category of this log message
+     * @see endProfile()
+     */
+    public static function beginProfile($token, $category = 'application') {
+        static::getLogger()->log($token, Logger::LEVEL_PROFILE_BEGIN, $category);
+    }
+
+    /**
+     * Marks the end of a code block for profiling.
+     * This has to be matched with a previous call to [[beginProfile]] with the same category name.
+     * @param string $token token for the code block
+     * @param string $category the category of this log message
+     * @see beginProfile()
+     */
+    public static function endProfile($token, $category = 'application') {
+        static::getLogger()->log($token, Logger::LEVEL_PROFILE_END, $category);
     }
 
 }

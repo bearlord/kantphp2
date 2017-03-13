@@ -581,10 +581,18 @@ class Connection extends Component {
         if (empty($this->dsn)) {
             throw new InvalidConfigException('Connection::dsn cannot be empty.');
         }
+        
+        $token = 'Opening DB connection: ' . $this->dsn;
         try {
+            Kant::info($token, __METHOD__);
+            Kant::beginProfile($token, __METHOD__);
+            
             $this->pdo = $this->createPdoInstance();
             $this->initConnection();
+            
+            Kant::endProfile($token, __METHOD__);
         } catch (\PDOException $e) {
+            Kant::endProfile($token, __METHOD__);
             throw new Exception($e->getMessage(), $e->errorInfo, (int) $e->getCode(), $e);
         }
     }
@@ -596,6 +604,7 @@ class Connection extends Component {
     public function close() {
         if ($this->pdo !== null) {
             Kant::trace('Closing DB connection: ' . $this->dsn, __METHOD__);
+            
             $this->pdo = null;
             $this->_schema = null;
             $this->_transaction = null;

@@ -12,7 +12,30 @@ namespace Kant\Log;
 use Kant\Foundation\Component;
 
 /**
- * 日志处理类
+ * Logger records logged messages in memory and sends them to different targets if [[dispatcher]] is set.
+ *
+ * A Logger instance can be accessed via `Kant::getLogger()`. You can call the method [[log()]] to record a single log message.
+ * For convenience, a set of shortcut methods are provided for logging messages of various severity levels
+ * via the [[Kant]] class:
+ *
+ * - [[Kant::trace()]]
+ * - [[Kant::error()]]
+ * - [[Kant::warning()]]
+ * - [[Kant::info()]]
+ * - [[Kant::beginProfile()]]
+ * - [[Kant::endProfile()]]
+ *
+ * When the application ends or [[flushInterval]] is reached, Logger will call [[flush()]]
+ * to send logged messages to different log targets, such as [[FileTarget|file]], [[EmailTarget|email]],
+ * or [[DbTarget|database]], with the help of the [[dispatcher]].
+ *
+ * @property array $dbProfiling The first element indicates the number of SQL statements executed, and the
+ * second element the total time spent in SQL execution. This property is read-only.
+ * @property float $elapsedTime The total elapsed time in seconds for current request. This property is
+ * read-only.
+ * @property array $profiling The profiling results. Each element is an array consisting of these elements:
+ * `info`, `category`, `timestamp`, `trace`, `level`, `duration`. This property is read-only.
+ *
  */
 class Logger extends Component {
 
@@ -161,7 +184,7 @@ class Logger extends Component {
      * Returns the total elapsed time since the start of the current request.
      * This method calculates the difference between now and the timestamp
      * defined by constant `YII_BEGIN_TIME` which is evaluated at the beginning
-     * of [[\kant\BaseYii]] class file.
+     * of [[\kant\BaseKant]] class file.
      * @return float the total elapsed time in seconds for current request.
      */
     public function getElapsedTime() {
