@@ -18,18 +18,10 @@ namespace Kant\Cache;
  */
 class Cache {
 
-    /**
-     *
-     * Static instance of factory mode
-     *
-     */
-    private static $_cache;
-    
-    public static function register($config = "") {
-        if (self::$_cache == '') {
-            self::$_cache = (new self())->driver($config);
-        }
-        return self::$_cache;
+    protected $config;
+
+    public function __construct($config) {
+        $this->config = $config;
     }
 
     /**
@@ -39,7 +31,8 @@ class Cache {
      * @param cache_name string
      * @return object on success
      */
-    public function driver($options) {
+    public function handle() {
+        $options = $this->config;
         if (!empty($options['timeout'])) {
             $options['timeout'] = $options['timeout'] ?: 1;
         }

@@ -113,8 +113,6 @@ class KantApplication extends ServiceLocator {
         return Factory::getConfig()->merge($appConfig);
     }
 
-    
-
     /**
      * Initialize session
      * 
@@ -122,7 +120,41 @@ class KantApplication extends ServiceLocator {
      * @return type
      */
     protected function setSession($config, $request, $response) {
-        $this->set('session', (new Session\Session($config, $request, $response))->handle());
+        $this->set('session', Kant::createObject([
+                    'class' => \Kant\Session\Session::class], [$config, $request, $response]
+                )->handle());
+    }
+
+    /**
+     * Register Cookie
+     */
+    protected function setCookie($config, Request $request, Response $response) {
+        $this->set('cookie', Kant::createObject([
+                    'class' => \Kant\Cookie\Cookie::class], [$config, $request, $response]
+        ));
+    }
+
+    /**
+     * Register cache
+     * 
+     * @param type $config
+     * @return null
+     */
+    protected function setCache($config) {
+        return $this->set('cache', Kant::createObject([
+                            'class' => \Kant\Cache\Cache::class], [$config]
+                        )->handle());
+    }
+
+    /**
+     * Set the database connection component.
+     */
+    public function setDb($config) {
+        foreach ($config as $key => $config) {
+            $this->set($key, array_merge([
+                'class' => 'Kant\Database\Connection'
+                            ], $config));
+        }
     }
 
     /**
@@ -135,13 +167,11 @@ class KantApplication extends ServiceLocator {
     }
 
     /**
-     * Register cache
-     * 
-     * @param type $config
-     * @return null
+     * Get Cookie instance
+     * @return object
      */
-    protected function setCache($config) {
-        return $this->set('cache', \Kant\Cache\Cache::register($config));
+    public function getCookie() {
+        return $this->get('cookie');
     }
 
     /**
@@ -154,18 +184,59 @@ class KantApplication extends ServiceLocator {
     }
 
     /**
-     * Register Cookie
+     * Returns the database connection component.
+     * @return \Kant\Database\Connection the database connection.
      */
-    protected function setCookie($config, Request $request, Response $response) {
-        $this->set('cookie', (new Cookie\Cookie($config, $request, $response)));
+    public function getDb() {
+        return $this->get('db');
     }
 
     /**
-     * Get Cookie instance
-     * @return object
+     * Returns the log dispatcher component.
+     * @return \yii\log\Dispatcher the log dispatcher application component.
      */
-    public function getCookie() {
-        return $this->get('cookie');
+    public function getLog() {
+        return $this->get('log');
+    }
+
+    /**
+     * Returns the error handler component.
+     * @return \Kant\ErrorHandler\ErrorHandler
+     */
+    public function getErrorHandler() {
+        return $this->get('errorHandler');
+    }
+
+    /**
+     * Returns the internationalization (i18n) component
+     * @return \Kant\I18n\I18N the internationalization application component.
+     */
+    public function getI18n() {
+        return $this->get('i18n');
+    }
+
+    public function getFiles() {
+        return $this->get('files');
+    }
+
+    /**
+     * Returns the request component.
+     * @return Request the request component.
+     */
+    public function getRequest() {
+        return $this->get('Kant\Http\Request');
+    }
+
+    /**
+     * Returns the response component.
+     * @return Response the response component.
+     */
+    public function getResponse() {
+        return $this->get('response');
+    }
+
+    public function getRouter() {
+        return Kant::createObject(\Kant\Routing\Router::class);
     }
 
     /**
@@ -203,11 +274,9 @@ class KantApplication extends ServiceLocator {
         $this->setSession($this->config->get('session'), $request, $response);
 
 
-        $router = Kant::createObject(\Kant\Routing\Router::class);
-//        $router->mapRoutes();
-        $router->dispatch($request, $response);
-        
-        $response->send(); 
+        $this->getRouter()->dispatch($request, $response);
+
+        $response->send();
         $this->end();
     }
 
@@ -235,7 +304,7 @@ class KantApplication extends ServiceLocator {
         }
 
         Component::__construct($components);
-//
+
         if ($config->get('enableDebugLogs')) {
             foreach (Kant::$app->getLog()->targets as $target) {
                 $target->enabled = false;
@@ -310,73 +379,6 @@ class KantApplication extends ServiceLocator {
         $method = new ReflectionMethod($OutputObj, 'output');
         $result = $method->invokeArgs($OutputObj, array($data));
         return $result;
-    }
-
-    /**
-     * Set the database connection component.
-     */
-    public function setDb($config) {
-        foreach ($config as $key => $config) {
-            $this->set($key, array_merge([
-                'class' => 'Kant\Database\Connection'
-                            ], $config));
-        }
-    }
-
-    /**
-     * Returns the database connection component.
-     * @return \Kant\Database\Connection the database connection.
-     */
-    public function getDb() {
-        return $this->get('db');
-    }
-
-    /**
-     * Returns the log dispatcher component.
-     * @return \yii\log\Dispatcher the log dispatcher application component.
-     */
-    public function getLog() {
-        return $this->get('log');
-    }
-
-    /**
-     * Returns the error handler component.
-     * @return \Kant\ErrorHandler\ErrorHandler
-     */
-    public function getErrorHandler() {
-        return $this->get('errorHandler');
-    }
-
-    /**
-     * Returns the internationalization (i18n) component
-     * @return \Kant\I18n\I18N the internationalization application component.
-     */
-    public function getI18n() {
-        return $this->get('i18n');
-    }
-
-    public function getFiles() {
-        return $this->get('files');
-    }
-
-    /**
-     * Returns the request component.
-     * @return Request the request component.
-     */
-    public function getRequest() {
-        return $this->get('Kant\Http\Request');
-    }
-
-    /**
-     * Returns the response component.
-     * @return Response the response component.
-     */
-    public function getResponse() {
-        return $this->get('response');
-    }
-
-    public function getRouter() {
-        return Kant::createObject(\Kant\Routing\Router::class);
     }
 
     /**
