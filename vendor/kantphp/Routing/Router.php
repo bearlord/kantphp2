@@ -2,11 +2,13 @@
 
 namespace Kant\Routing;
 
+use Kant\Kant;
 use Kant\Routing\RouteCollection;
 use Kant\Routing\RouteGroup;
 use Closure;
 use Kant\Support\Str;
 use Kant\Helper\DirHelper;
+use Kant\Helper\StringHelper;
 use Kant\Http\Request;
 use Kant\Http\Response;
 
@@ -78,10 +80,10 @@ class Router extends \Kant\Foundation\Component {
     public function mapRoutes() {
         $mapFiles = DirHelper::lists(CFG_PATH . "Route", trim($this->mapFileExt, "."));
         foreach ($mapFiles as $map) {
-            $mapName = basename($map, $this->mapFileExt);
+            $mapName = StringHelper::basename($map, $this->mapFileExt);
             $this->group([
                 'middleware' => $mapName,
-                'namespace' => "App\\{$mapName}\\Controller"
+                'namespace' => "App\\{$mapName}\\Controllers"
                     ], $map);
         }
     }
@@ -183,11 +185,11 @@ class Router extends \Kant\Foundation\Component {
      * @param  array  $resources
      * @return void
      */
-//    public function resources(array $resources) {
-//        foreach ($resources as $name => $controller) {
-//            $this->resource($name, $controller);
-//        }
-//    }
+    public function resources(array $resources) {
+        foreach ($resources as $name => $controller) {
+            $this->resource($name, $controller);
+        }
+    }
 
     /**
      * Route a resource to a controller.
@@ -197,15 +199,11 @@ class Router extends \Kant\Foundation\Component {
      * @param  array  $options
      * @return void
      */
-//    public function resource($name, $controller, array $options = []) {
-//        if ($this->container && $this->container->bound(ResourceRegistrar::class)) {
-//            $registrar = $this->container->make(ResourceRegistrar::class);
-//        } else {
-//            $registrar = new ResourceRegistrar($this);
-//        }
-//
-//        $registrar->register($name, $controller, $options);
-//    }
+    public function resource($name, $controller, array $options = []) {
+        $registrar = new ResourceRegistrar($this);
+
+        $registrar->register($name, $controller, $options);
+    }
 
     /**
      * Create a route group with shared attributes.
@@ -428,7 +426,7 @@ class Router extends \Kant\Foundation\Component {
         // route resolver on the request so middlewares assigned to the route will
         // receive access to this route instance for checking of the parameters.
         $route = $this->findRoute($request);
-
+        
         if (!$route) {
             return $this->dispatchToModule($request, $response);
         }
@@ -436,7 +434,7 @@ class Router extends \Kant\Foundation\Component {
         $request->setRouteResolver(function () use ($route) {
             return $route;
         });
-
+        
         $this->runRouteWithinStack($route, $response);
     }
 

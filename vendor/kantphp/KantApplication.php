@@ -204,6 +204,7 @@ class KantApplication extends ServiceLocator {
 
 
         $router = Kant::createObject(\Kant\Routing\Router::class);
+//        $router->mapRoutes();
         $router->dispatch($request, $response);
         
         $response->send(); 

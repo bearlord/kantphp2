@@ -8,6 +8,7 @@ use Kant\Registry\KantRegistry;
 use ReflectionMethod;
 use ReflectionParameter;
 use ReflectionException;
+use Kant\Exception\KantException;
 
 class ModuleDispatcher {
 
@@ -113,7 +114,6 @@ class ModuleDispatcher {
      */
     public function module($dispatcher) {
         KantRegistry::set('dispatcher', $dispatcher);
-        var_dump($dispatcher);
         //module name
         $moduleName = $this->getModuleName($dispatcher[0]);
         if (empty($moduleName)) {

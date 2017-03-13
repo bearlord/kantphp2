@@ -41,7 +41,6 @@ trait RouteDependencyResolverTrait {
             $instance = $this->transformDependency(
                     $parameter, $parameters, $originalParameters
             );
-            var_dump($instance);
             if (!is_null($instance)) {
                 $this->spliceIntoParameters($parameters, $key, $instance);
             }
