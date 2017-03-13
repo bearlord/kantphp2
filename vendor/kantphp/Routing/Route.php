@@ -12,8 +12,10 @@ namespace Kant\Routing;
 use ReflectionFunction;
 use Kant\Kant;
 use Kant\Factory;
+use Kant\Registry\KantRegistry;
 use Kant\Support\Arr;
 use Kant\Support\Str;
+use Kant\Helper\StringHelper;
 use Kant\Http\Request;
 use Kant\Routing\Matching\UriValidator;
 use Kant\Routing\Matching\HostValidator;
@@ -23,48 +25,6 @@ use Kant\Routing\Matching\SchemeValidator;
 class Route {
 
     use RouteDependencyResolverTrait;
-
-    /**
-     * Rules
-     * @var array 
-     */
-    private static $rules = [
-        'GET' => [],
-        'POST' => [],
-        'PUT' => [],
-        'DELETE' => [],
-        'HEAD' => [],
-        'OPTIONS' => [],
-        '*' => [],
-    ];
-
-    /**
-     * Restful
-     * @var type 
-     */
-    private static $rest = [
-        'index' => ['GET', '', 'index'],
-        'create' => ['GET', '/create', 'create'],
-        'edit' => ['GET', '/:id/edit', 'edit'],
-        'read' => ['GET', '/:id', 'read'],
-        'save' => ['POST', '', 'save'],
-        'update' => ['PUT', '/:id', 'update'],
-        'delete' => ['DELETE', '/:id', 'delete'],
-    ];
-
-    /**
-     * Route map
-     * 
-     * @var array 
-     */
-    private static $map = [];
-
-    /**
-     * Route pattern
-     * 
-     * @var array 
-     */
-    private static $pattern = [];
 
     /**
      * The URI pattern the route responds to.
@@ -107,6 +67,13 @@ class Route {
      * @var mixed
      */
     public $controller;
+    
+    /**
+     *
+     * The Controller suffix
+     * @var type 
+     */
+    public $controllerSuffix = "Controller";
 
     /**
      * The Action suffix
@@ -197,6 +164,10 @@ class Route {
      * @throws \Kant\Exception\NotFoundHttpException
      */
     protected function runController() {
+        KantRegistry::set("dispatcher", [
+            $this->action['middleware'],
+            StringHelper::basename($this->parseControllerCallback()[0], $this->controllerSuffix), $this->parseControllerCallback()[1]
+        ]);
         return (new ControllerDispatcher())->dispatch(
                         $this, $this->getController(), $this->getControllerMethod()
         );
@@ -245,11 +216,6 @@ class Route {
         );
 
         return call_user_func_array($this->action['uses'], $parameters);
-
-//        $callable = $this->action['uses'];
-//        return $callable(...array_values($this->resolveMethodDependencies(
-//                                $this->parametersWithoutNulls(), new ReflectionFunction($this->action['uses'])
-//        )));
     }
 
     /**

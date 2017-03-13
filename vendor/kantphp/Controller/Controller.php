@@ -79,26 +79,4 @@ class Controller extends Component {
         return $this->view;
     }
 
-    /**
-     * Magic call
-     * 
-     * @param type $method
-     * @param type $args
-     * @throws KantException
-     */
-    public function __call($method, $args) {
-        $dispatcher = KantRegistry::get('dispatcher');
-        if (0 === strcasecmp($method, strtolower($dispatcher[2]) . "Action")) {
-            if (method_exists($this, '_empty')) {
-                $this->_empty($method, $args);
-            } elseif (file_exists($this->view->findViewFile())) {
-                $this->display();
-            } else {
-                throw new KantException(sprintf("No action exists:%s", ucfirst($dispatcher[2]) . 'Action'));
-            }
-        } else {
-            throw new KantException("Method not exists");
-        }
-    }
-
 }

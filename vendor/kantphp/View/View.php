@@ -13,7 +13,6 @@ use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Registry\KantRegistry;
 use Kant\Factory;
-use Kant\Exception\KantException;
 
 /**
  * View class
@@ -117,7 +116,7 @@ class View extends Component {
      * @return type
      * @throws RuntimeException
      */
-    public function fetch($view, $params = []) {
+    public function fetch($view = '', $params = []) {
         $viewFile = $this->findViewFile($view);
         $params = array_merge($this->params, $params);
         return $this->renderFile($viewFile, $params);

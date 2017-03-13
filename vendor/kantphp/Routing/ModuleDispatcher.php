@@ -15,6 +15,13 @@ class ModuleDispatcher {
     use RouteDependencyResolverTrait;
 
     /**
+     *
+     * The Controller suffix
+     * @var type 
+     */
+    public $controllerSuffix = "Controller";
+
+    /**
      * Create a new controller dispatcher instance.
      *
      * @param  \Kant\Container\Container  $container
@@ -127,7 +134,7 @@ class ModuleDispatcher {
         $controller = $this->controller($controllerName, $moduleName);
         if (!$controller) {
             if (empty($controller)) {
-                throw new KantException(sprintf("No controller exists:%s", ucfirst($dispatcher[1]) . 'Controller'));
+                throw new KantException(sprintf("No controller exists:%s", ucfirst($dispatcher[1]) . $this->controllerSuffix));
             }
         }
 

@@ -18,7 +18,6 @@ use Kant\Support\Arr;
 
 final class Session {
 
-    public static $_session;
     protected $config;
     protected $manager;
     protected $request;
