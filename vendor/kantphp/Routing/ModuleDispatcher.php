@@ -318,23 +318,6 @@ class ModuleDispatcher {
     }
 
     /**
-     * Get the middleware for the controller instance.
-     *
-     * @param  \Kant\Routing\Controller  $controller
-     * @param  string  $method
-     * @return array
-     */
-    public static function getMiddleware($controller, $method) {
-        if (!method_exists($controller, 'getMiddleware')) {
-            return [];
-        }
-
-        return collect($controller->getMiddleware())->reject(function ($data) use ($method) {
-                    return static::methodExcludedByOptions($method, $data['options']);
-                })->pluck('middleware')->all();
-    }
-
-    /**
      * Determine if the given options exclude a particular method.
      *
      * @param  string  $method

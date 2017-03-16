@@ -8,19 +8,20 @@
  */
 
 namespace Kant\Exception;
+
 use Kant\Exception\KantException;
+
 /**
  * InvalidConfigException represents an exception caused by incorrect object configuration.
  *
  */
-class InvalidConfigException extends KantException
-{
+class InvalidConfigException extends KantException {
+
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName()
-    {
+    public function getName() {
         return 'Invalid Configuration';
     }
-}
 
+}

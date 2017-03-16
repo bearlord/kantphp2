@@ -7,6 +7,7 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 use Kant\Kant;
+
 if (!function_exists('hash')) {
 
     /**
@@ -166,6 +167,20 @@ if (function_exists('random')) {
             $code .= $charset[rand(1, $charset_len)];
         }
         return $code;
+    }
+
+}
+
+if (!function_exists('array_wrap')) {
+
+    /**
+     * If the given value is not an array, wrap it in one.
+     *
+     * @param  mixed  $value
+     * @return array
+     */
+    function array_wrap($value) {
+        return !is_array($value) ? [$value] : $value;
     }
 
 }

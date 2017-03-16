@@ -55,7 +55,7 @@ class KantException extends Exception {
 //            Log::write($error['message'], Log::ERR);
             $exceptionFile = KANT_PATH . 'View/system/exception.php';
             include $exceptionFile;
-            
+
             exit();
 //            parent::__construct($msg, (int) $code, $previous);
         }

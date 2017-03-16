@@ -6,7 +6,6 @@ use Kant\Kant;
 use Kant\Routing\RouteCollection;
 use Kant\Routing\RouteGroup;
 use Closure;
-use Kant\Support\Str;
 use Kant\Helper\DirHelper;
 use Kant\Helper\StringHelper;
 use Kant\Http\Request;
@@ -66,7 +65,7 @@ class Router extends \Kant\Foundation\Component {
     protected $currentRequest;
 
     public function __construct() {
-        $this->routes = new RouteCollection;
+        $this->routes = Kant::createObject(RouteCollection::class);
         $this->mapRoutes();
     }
 
@@ -86,6 +85,14 @@ class Router extends \Kant\Foundation\Component {
                 'namespace' => "App\\{$mapName}\\Controllers"
                     ], $map);
         }
+    }
+    
+    /**
+     * Get the Route Collection object.
+     * 
+     */
+    public function getRoutes() {
+        return $this->routes;
     }
 
     /**
@@ -509,7 +516,7 @@ class Router extends \Kant\Foundation\Component {
      * @throws \RuntimeException
      */
     public static function __callStatic($method, $args) {
-        $instance = Kant::createObject(\Kant\Routing\Router::class);
+        $instance = $this;
 
         switch (count($args)) {
             case 0:

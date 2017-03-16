@@ -29,6 +29,10 @@ class KantApplication extends ServiceLocator {
      */
     const VERSION = '2.2.0';
 
+    /**
+     * @var string the charset currently used for the application.
+     */
+    public $charset = 'UTF-8';
     private static $_instance = null;
 
     /**
@@ -111,6 +115,25 @@ class KantApplication extends ServiceLocator {
                         ]
         );
         return Factory::getConfig()->merge($appConfig);
+    }
+
+    /**
+     * Register Request
+     */
+    public function setRequest() {
+        $this->set('Kant\Http\Request', Request::capture());
+    }
+
+    /**
+     * Register Response
+     * 
+     * @param Request $request
+     * @param type $type
+     */
+    public function setResponse(Request $request, $type) {
+        $this->set('Kant\Http\Response', Response::create($request, Response::HTTP_OK, [
+                    'Content-Type' => $this->outputType[$type]
+        ]));
     }
 
     /**
@@ -232,7 +255,7 @@ class KantApplication extends ServiceLocator {
      * @return Response the response component.
      */
     public function getResponse() {
-        return $this->get('response');
+        return $this->get('Kant\Http\Response');
     }
 
     public function getRouter() {
@@ -261,11 +284,11 @@ class KantApplication extends ServiceLocator {
     public function run() {
         $type = strtolower($this->config->get('returnType'));
 
-        $request = $this->singleton('Kant\Http\Request', Request::capture());
+        $this->setRequest();
+        $request = $this->getRequest();
 
-        $response = $this->singleton('Kant\Http\Response', Response::create($request, Response::HTTP_OK, [
-                    'Content-Type' => $this->outputType[$type]
-        ]));
+        $this->setResponse($request, $type);
+        $response = $this->getResponse();
 
         $this->setCache($this->config->get('cache'));
         $this->setDb($this->config->get('database'));
@@ -389,7 +412,8 @@ class KantApplication extends ServiceLocator {
      * @return void
      */
     public function singleton($class, $instance) {
-        return Kant::$container->singleton($class, $instance);
+        $this->set($class, $instance);
+        return $this->get($class);
     }
 
 }

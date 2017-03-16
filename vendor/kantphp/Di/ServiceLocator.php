@@ -152,7 +152,7 @@ class ServiceLocator extends Component {
      * });
      *
      * // an instance
-     * $locator->set('cache', new \yii\caching\FileCache);
+     * $locator->set('cache', new \Kant\Cache\Cache);
      * ```
      *
      * If a component definition with the same ID already exists, it will be overwritten.

@@ -8,6 +8,7 @@
  */
 
 namespace Kant\Exception;
+
 use Kant\Exception\KantException;
 
 /**

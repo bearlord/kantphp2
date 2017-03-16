@@ -64,7 +64,7 @@ class I18N extends Component {
         if (!isset($this->translations['app']) && !isset($this->translations['app*'])) {
             $this->translations['app'] = [
                 'class' => 'Kant\I18n\PhpMessageSource',
-                'sourceLanguage' => Factory::getConfig()->get('language'),
+                'sourceLanguage' => Kant::$app->sourceLanguage,
                 'basePath' => APP_PATH . 'Messages/',
             ];
         }

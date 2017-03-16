@@ -47,10 +47,9 @@ trait UrlTrait {
         }
         $url = APP_URL . implode($depr, ($var));
         $vars = array_merge($originalparams, $vars);
-        if (!empty($vars)) { // 添加参数
+        if (!empty($vars)) {
             foreach ($vars as $var => $val) {
                 if ('' !== trim($val)) {
-//					$url .= $depr . $var . "," . urlencode($val);
                     $url .= $depr . $var . "," . $val;
                 }
             }
