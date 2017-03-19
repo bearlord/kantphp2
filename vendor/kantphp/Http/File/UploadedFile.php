@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -88,6 +88,21 @@ class UploadedFile extends File {
         $this->test = (bool) $test;
 
         parent::__construct($path, UPLOAD_ERR_OK === $this->error);
+    }
+    
+    
+    /**
+     * Create a new file instance from a base instance.
+     *
+     * @param  \Symfony\Component\HttpFoundation\File\UploadedFile  $file
+     * @return static
+     */
+    public static function createFromBase(UploadedFile $file)
+    {
+        return $file instanceof static ? $file : new static(
+            $file->getPathname(), $file->getClientOriginalName(), $file->getClientMimeType(),
+            $file->getClientSize(), $file->getError()
+        );
     }
 
     /**

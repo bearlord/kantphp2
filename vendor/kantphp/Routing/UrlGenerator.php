@@ -115,7 +115,7 @@ class UrlGenerator {
      *
      * @return string
      */
-    public function current() {
+    public function current($params = []) {
         return $this->to($this->request->getPathInfo());
     }
 
@@ -163,7 +163,7 @@ class UrlGenerator {
             list($name, $parameters) = $this->parsePathQuery($path);
             return $this->route($name, $parameters);
         }
-        
+
         if ($path === '') {
             $path = Kant::$app->getRequest()->getUri();
         }
@@ -305,7 +305,7 @@ class UrlGenerator {
      * @param  bool   $absolute
      * @return string
      *
-     * @throws \Kant\Routing\Exceptions\UrlGenerationException
+     * @throws \Kant\Exception\UrlGenerationException
      */
     protected function parseToRoute($route, $parameters, $absolute) {
         return $this->routeUrl()->to(
@@ -605,13 +605,12 @@ class UrlGenerator {
      * @return string
      */
     protected function httpBluidQuery(array $tail, $query = NULL) {
-        if (is_null($query)) {
-            return "?" . http_build_query($tail);
+        if (!empty($query)) {
+            parse_str(ltrim($query, "?"), $params);
+            return "?" . http_build_query(array_merge($params, $tail));
+        } else {
+            return http_build_query($tail);
         }
-        if (!empty($tail)) {
-            return $query . "&" . http_build_query($tail);
-        }
-        
     }
 
 }

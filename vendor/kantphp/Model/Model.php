@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -11,13 +11,13 @@ namespace Kant\Model;
 
 use Kant\Foundation\Component;
 use Kant\Foundation\Arrayable;
-use Yii;
+use Kant\Kant;
+use Kant\Factory;
 use ArrayAccess;
 use ArrayObject;
 use ArrayIterator;
 use ReflectionClass;
 use IteratorAggregate;
-//use yii\validators\RequiredValidator;
 use Kant\Validators\Validator;
 use Kant\Helper\Inflector;
 use Kant\Exception\InvalidParamException;
@@ -53,6 +53,9 @@ use Kant\Exception\InvalidParamException;
  * @property string $scenario The scenario that this model is in. Defaults to [[SCENARIO_DEFAULT]].
  * @property ArrayObject|\yii\validators\Validator[] $validators All the validators declared in the model.
  * This property is read-only.
+ * 
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  *
  */
 class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayable {
@@ -690,8 +693,8 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
      * @param mixed $value the attribute value
      */
     public function onUnsafeAttribute($name, $value) {
-        if (YII_DEBUG) {
-            Yii::trace("Failed to set unsafe attribute '$name' in '" . get_class($this) . "'.", __METHOD__);
+        if (Factory::getConfig()->get('debug')) {
+            Kant::trace("Failed to set unsafe attribute '$name' in '" . get_class($this) . "'.", __METHOD__);
         }
     }
 
@@ -792,10 +795,10 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
      */
     public function load($data, $formName = null) {
         $scope = $formName === null ? $this->formName() : $formName;
-        if ($scope !== "" && !empty($data)) {
+        if ($scope === '' && !empty($data)) {
             $this->setAttributes($data);
             return true;
-        } elseif (!empty($data)) {
+        } elseif (isset($data[$scope])) {
             $this->setAttributes($data[$scope]);
             return true;
         } else {

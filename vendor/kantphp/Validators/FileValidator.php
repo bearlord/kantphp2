@@ -2,16 +2,16 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\helpers\Html;
-use yii\helpers\Json;
+use Kant\Helper\Html;
+use Kant\Helper\Json;
 use yii\web\JsExpression;
 use yii\web\UploadedFile;
 use yii\helpers\FileHelper;
@@ -23,6 +23,8 @@ use yii\helpers\FileHelper;
  *
  * @property integer $sizeLimit The size limit for uploaded files. This property is read-only.
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 class FileValidator extends Validator {
 
@@ -380,7 +382,7 @@ class FileValidator extends Validator {
      * @inheritdoc
      */
     public function clientValidateAttribute($model, $attribute, $view) {
-        ValidationAsset::register($view);
+//        ValidationAsset::register($view);
         $options = $this->getClientOptions($model, $attribute);
         return 'yii.validation.file(attribute, messages, ' . Json::encode($options) . ');';
     }

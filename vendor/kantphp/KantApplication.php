@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -100,6 +100,8 @@ class KantApplication extends ServiceLocator {
         return [
             'log' => ['class' => 'Kant\Log\Dispatcher'],
             'i18n' => ['class' => 'Kant\I18n\I18N'],
+            'formatter' => ['class' => 'Kant\I18n\Formatter'],
+            'assetManager' => ['class' => 'Kant\View\AssetManager'],
             'files' => ['class' => 'Kant\Filesystem\Filesystem']
         ];
     }
@@ -121,7 +123,8 @@ class KantApplication extends ServiceLocator {
      * Register Request
      */
     public function setRequest() {
-        $this->set('Kant\Http\Request', Request::capture());
+//        $this->set('Kant\Http\Request', Request::capture());
+        Kant::$container->set('Kant\Http\Request', Request::capture());
     }
 
     /**
@@ -131,7 +134,7 @@ class KantApplication extends ServiceLocator {
      * @param type $type
      */
     public function setResponse(Request $request, $type) {
-        $this->set('Kant\Http\Response', Response::create($request, Response::HTTP_OK, [
+        Kant::$container->set('Kant\Http\Response', Response::create($request, Response::HTTP_OK, [
                     'Content-Type' => $this->outputType[$type]
         ]));
     }
@@ -178,6 +181,13 @@ class KantApplication extends ServiceLocator {
                 'class' => 'Kant\Database\Connection'
                             ], $config));
         }
+    }
+    
+    /**
+     * Set the view Object
+     */
+    public function setView(){
+        Kant::$container->set('Kant\View\View', Kant::createObject(\Kant\View|View\View::class));
     }
 
     /**
@@ -247,7 +257,8 @@ class KantApplication extends ServiceLocator {
      * @return Request the request component.
      */
     public function getRequest() {
-        return $this->get('Kant\Http\Request');
+//        return $this->get('Kant\Http\Request');
+        return Kant::$container->get('Kant\Http\Request');
     }
 
     /**
@@ -255,11 +266,36 @@ class KantApplication extends ServiceLocator {
      * @return Response the response component.
      */
     public function getResponse() {
-        return $this->get('Kant\Http\Response');
+        return Kant::$container->get('Kant\Http\Response');
     }
 
     public function getRouter() {
-        return Kant::createObject(\Kant\Routing\Router::class);
+        return Kant::createObject('Kant\Routing\Router');
+    }
+
+     /**
+     * Returns the view object.
+     * @return View|\Kant\View\View the view application component that is used to render various view files.
+     */
+    public function getView() {
+        return Kant::$container->get('Kant\View\View');
+    }
+    
+    /**
+     * Returns the asset manager.
+     * @return \Kant\View\AssetManager the asset manager application component.
+     */
+    public function getAssetManager() {
+        return $this->get('assetManager');
+    }
+
+
+    /**
+     * Returns the formatter component.
+     * @return \Kant\I18n\Formatter the formatter application component.
+     */
+    public function getFormatter() {
+        return Kant::$container->get('Kant\View\View');
     }
 
     /**

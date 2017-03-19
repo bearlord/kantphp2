@@ -1,15 +1,15 @@
 <?php
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Helper;
 
-use yii\base\Arrayable;
-use yii\base\InvalidValueException;
+use Kant\Foundation\Arrayable;
+use Kant\Exception\InvalidValueException;
 
 /**
  * BaseVarDumper provides concrete implementation for [[VarDumper]].

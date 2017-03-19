@@ -2,15 +2,14 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\View;
 
 use Kant\Kant;
-use Kant\Foundation\Component;
 use Kant\Registry\KantRegistry;
 use Kant\Factory;
 
@@ -20,8 +19,60 @@ use Kant\Factory;
  * @version 1.1
  * @since version 1.0
  */
-class View extends Component {
+class View extends BaseView {
 
+    /**
+     * @event Event an event that is triggered by [[beginBody()]].
+     */
+    const EVENT_BEGIN_BODY = 'beginBody';
+    /**
+     * @event Event an event that is triggered by [[endBody()]].
+     */
+    const EVENT_END_BODY = 'endBody';
+    
+    /**
+     * The location of registered JavaScript code block or files.
+     * This means the location is in the head section.
+     */
+    const POS_HEAD = 1;
+
+    /**
+     * The location of registered JavaScript code block or files.
+     * This means the location is at the beginning of the body section.
+     */
+    const POS_BEGIN = 2;
+
+    /**
+     * The location of registered JavaScript code block or files.
+     * This means the location is at the end of the body section.
+     */
+    const POS_END = 3;
+
+    /**
+     * The location of registered JavaScript code block.
+     * This means the JavaScript code block will be enclosed within `jQuery(document).ready()`.
+     */
+    const POS_READY = 4;
+
+    /**
+     * The location of registered JavaScript code block.
+     * This means the JavaScript code block will be enclosed within `jQuery(window).load()`.
+     */
+    const POS_LOAD = 5;
+
+    /**
+     * This is internally used as the placeholder for receiving the content registered for the head section.
+     */
+    const PH_HEAD = '<![CDATA[KANT-BLOCK-HEAD]]>';
+    /**
+     * This is internally used as the placeholder for receiving the content registered for the beginning of the body section.
+     */
+    const PH_BODY_BEGIN = '<![CDATA[KANT-BLOCK-BODY-BEGIN]]>';
+    /**
+     * This is internally used as the placeholder for receiving the content registered for the end of the body section.
+     */
+    const PH_BODY_END = '<![CDATA[KANT-BLOCK-BODY-END]]>';
+    
     /**
      * template theme
      *
@@ -66,11 +117,45 @@ class View extends Component {
     private $_layoutPath;
 
     /**
+     * @var array the registered JS code blocks
+     * @see registerJs()
+     */
+    public $js;
+    private $_assetManager;
+
+    /**
      *
      */
     public function __construct() {
         parent::__construct();
         $this->dispatcher = KantRegistry::get('dispatcher');
+    }
+
+    /**
+     * Marks the position of an HTML head section.
+     */
+    public function head() {
+        echo self::PH_HEAD;
+    }
+
+    /**
+     * Marks the beginning of an HTML body section.
+     */
+    public function beginBody() {
+        echo self::PH_BODY_BEGIN;
+        $this->trigger(self::EVENT_BEGIN_BODY);
+    }
+
+    /**
+     * Marks the ending of an HTML body section.
+     */
+    public function endBody() {
+        $this->trigger(self::EVENT_END_BODY);
+        echo self::PH_BODY_END;
+
+//        foreach (array_keys($this->assetBundles) as $bundle) {
+//            $this->registerAssetFiles($bundle);
+//        }
     }
 
     /**
@@ -127,7 +212,7 @@ class View extends Component {
      *
      * @param type $view
      */
-    public function render($view = "", $params = []) {       
+    public function render($view = "", $params = []) {
         $content = $this->fetch($view, $params);
         $layoutFile = $this->findLayoutFile();
         if ($layoutFile !== false) {
@@ -225,6 +310,14 @@ class View extends Component {
     }
 
     /**
+     * Registers the asset manager being used by this view object.
+     * @return \yii\web\AssetManager the asset manager. Defaults to the "assetManager" application component.
+     */
+    public function getAssetManager() {
+        return $this->_assetManager ?: Kant::$app->getAssetManager();
+    }
+
+    /**
      * Returns the directory that contains layout view files for this module.
      * 
      * @return string
@@ -234,6 +327,76 @@ class View extends Component {
             $this->_layoutPath = $this->getViewPath() . 'layouts';
         }
         return $this->_layoutPath;
+    }
+
+    /**
+     * Registers the named asset bundle.
+     * All dependent asset bundles will be registered.
+     * @param string $name the class name of the asset bundle (without the leading backslash)
+     * @param integer|null $position if set, this forces a minimum position for javascript files.
+     * This will adjust depending assets javascript file position or fail if requirement can not be met.
+     * If this is null, asset bundles position settings will not be changed.
+     * See [[registerJsFile]] for more details on javascript position.
+     * @return AssetBundle the registered asset bundle instance
+     * @throws InvalidConfigException if the asset bundle does not exist or a circular dependency is detected
+     */
+    public function registerAssetBundle($name, $position = null) {
+        if (!isset($this->assetBundles[$name])) {
+            $am = $this->getAssetManager();
+            $bundle = $am->getBundle($name);
+            $this->assetBundles[$name] = false;
+            // register dependencies
+            $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
+            foreach ($bundle->depends as $dep) {
+                $this->registerAssetBundle($dep, $pos);
+            }
+            $this->assetBundles[$name] = $bundle;
+        } elseif ($this->assetBundles[$name] === false) {
+            throw new InvalidConfigException("A circular dependency is detected for bundle '$name'.");
+        } else {
+            $bundle = $this->assetBundles[$name];
+        }
+
+        if ($position !== null) {
+            $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
+            if ($pos === null) {
+                $bundle->jsOptions['position'] = $pos = $position;
+            } elseif ($pos > $position) {
+                throw new InvalidConfigException("An asset bundle that depends on '$name' has a higher javascript file position configured than '$name'.");
+            }
+            // update position for all dependencies
+            foreach ($bundle->depends as $dep) {
+                $this->registerAssetBundle($dep, $pos);
+            }
+        }
+
+        return $bundle;
+    }
+
+    /**
+     * Registers a JS code block.
+     * @param string $js the JS code block to be registered
+     * @param integer $position the position at which the JS script tag should be inserted
+     * in a page. The possible values are:
+     *
+     * - [[POS_HEAD]]: in the head section
+     * - [[POS_BEGIN]]: at the beginning of the body section
+     * - [[POS_END]]: at the end of the body section
+     * - [[POS_LOAD]]: enclosed within jQuery(window).load().
+     *   Note that by using this position, the method will automatically register the jQuery js file.
+     * - [[POS_READY]]: enclosed within jQuery(document).ready(). This is the default value.
+     *   Note that by using this position, the method will automatically register the jQuery js file.
+     *
+     * @param string $key the key that identifies the JS code block. If null, it will use
+     * $js as the key. If two JS code blocks are registered with the same key, the latter
+     * will overwrite the former.
+     */
+    public function registerJs($js, $position = self::POS_READY, $key = null) {
+        $key = $key ?: md5($js);
+        $this->js[$position][$key] = $js;
+        if ($position === self::POS_READY || $position === self::POS_LOAD) {
+            JqueryAsset::register($this);
+        }
     }
 
 }

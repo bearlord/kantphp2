@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -13,7 +13,7 @@ use DateTime;
 use IntlDateFormatter;
 use Kant\Kant;
 use Kant\Exception\InvalidConfigException;
-use yii\helpers\FormatConverter;
+use Kant\Helper\FormatConverter;
 
 /**
  * DateValidator verifies if the attribute represents a date, time or datetime in a proper [[format]].
@@ -29,6 +29,10 @@ use yii\helpers\FormatConverter;
  * property and the target timeZone will be UTC when [[timestampAttributeFormat]] is `null` (exporting as UNIX timestamp)
  * or [[timestampAttributeTimeZone]] otherwise. If you want to avoid the time zone conversion, make sure that [[timeZone]] and
  * [[timestampAttributeTimeZone]] are the same.
+ * 
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Carsten Brandt <mail@cebe.cc>
+ * @since 2.0
  */
 class DateValidator extends Validator {
 

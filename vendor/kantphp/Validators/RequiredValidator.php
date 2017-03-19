@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -14,6 +14,8 @@ use Kant\Kant;
 /**
  * RequiredValidator validates that the specified attribute does not have null or empty value.
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 class RequiredValidator extends Validator {
 
@@ -104,7 +106,7 @@ class RequiredValidator extends Validator {
             'attribute' => $model->getAttributeLabel($attribute),
                 ], Kant::$app->language);
 
-        ValidationAsset::register($view);
+//        ValidationAsset::register($view);
 
         return 'yii.validation.required(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
     }
