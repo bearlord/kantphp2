@@ -164,13 +164,23 @@ class Route {
      * @throws \Kant\Exception\NotFoundHttpException
      */
     protected function runController() {
-        KantRegistry::set("dispatcher", [
+        $this->setViewDispatcher([
             $this->action['middleware'],
             StringHelper::basename($this->parseControllerCallback()[0], $this->controllerSuffix), $this->parseControllerCallback()[1]
         ]);
         return (new ControllerDispatcher())->dispatch(
                         $this, $this->getController(), $this->getControllerMethod()
         );
+    }
+
+    /**
+     * Set view dispatcher
+     * 
+     * @param type $dispatcher
+     */
+    public function setViewDispatcher($dispatcher) {
+        KantRegistry::set('dispatcher', $dispatcher);
+        Kant::$app->getView()->setDispatcher($dispatcher);
     }
 
     /**

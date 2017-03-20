@@ -70,6 +70,8 @@ class Controller extends Component {
      * @return type
      */
     protected function initView() {
+        $this->view = Kant::$app->getView();
+        return $this->view;
         if ($this->view == '') {
             $this->view = Kant::createObject([
                 'class' => 'Kant\\View\\View',

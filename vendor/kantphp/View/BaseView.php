@@ -32,8 +32,7 @@ class BaseView extends Component {
      * @event ViewEvent an event that is triggered by [[renderFile()]] right after it renders a view file.
      */
     const EVENT_AFTER_RENDER = 'afterRender';
-    
-    
+
     /**
      * This method is invoked right before [[renderFile()]] renders a view file.
      * The default implementation will trigger the [[EVENT_BEFORE_RENDER]] event.
@@ -42,8 +41,7 @@ class BaseView extends Component {
      * @param array $params the parameter array passed to the [[render()]] method.
      * @return boolean whether to continue rendering the view file.
      */
-    public function beforeRender($viewFile, $params)
-    {
+    public function beforeRender($viewFile, $params) {
         $event = new ViewEvent([
             'viewFile' => $viewFile,
             'params' => $params,
@@ -70,12 +68,11 @@ class BaseView extends Component {
         $this->trigger(self::EVENT_END_PAGE);
         ob_end_flush();
     }
-    
+
     /**
      * Marks the beginning of an HTML body section.
      */
-    public function beginBody()
-    {
+    public function beginBody() {
         echo self::PH_BODY_BEGIN;
         $this->trigger(self::EVENT_BEGIN_BODY);
     }
@@ -83,8 +80,7 @@ class BaseView extends Component {
     /**
      * Marks the ending of an HTML body section.
      */
-    public function endBody()
-    {
+    public function endBody() {
         $this->trigger(self::EVENT_END_BODY);
         echo self::PH_BODY_END;
 

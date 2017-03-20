@@ -120,7 +120,6 @@ class ModuleDispatcher {
      * @throws ReflectionException
      */
     public function module($dispatcher) {
-        KantRegistry::set('dispatcher', $dispatcher);
         //module name
         $moduleName = $this->getModuleName($dispatcher[0]);
         if (empty($moduleName)) {
@@ -128,6 +127,7 @@ class ModuleDispatcher {
         }
         $this->setModuleConfig($moduleName);
 
+        $this->setViewDispatcher($dispatcher);
 
         //controller name
         $controllerName = $this->getControllerName($dispatcher[1]);
@@ -154,6 +154,16 @@ class ModuleDispatcher {
         if (file_exists($configFilePath)) {
             Factory::getConfig()->merge(require $configFilePath);
         }
+    }
+
+    /**
+     * Set view dispatcher
+     * 
+     * @param type $dispatcher
+     */
+    public function setViewDispatcher($dispatcher) {
+        KantRegistry::set('dispatcher', $dispatcher);
+        Kant::$app->getView()->setDispatcher($dispatcher);
     }
 
     /**

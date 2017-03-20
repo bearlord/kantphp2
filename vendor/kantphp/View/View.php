@@ -12,6 +12,7 @@ namespace Kant\View;
 use Kant\Kant;
 use Kant\Registry\KantRegistry;
 use Kant\Factory;
+use Kant\Helper\Html;
 
 /**
  * View class
@@ -25,11 +26,12 @@ class View extends BaseView {
      * @event Event an event that is triggered by [[beginBody()]].
      */
     const EVENT_BEGIN_BODY = 'beginBody';
+
     /**
      * @event Event an event that is triggered by [[endBody()]].
      */
     const EVENT_END_BODY = 'endBody';
-    
+
     /**
      * The location of registered JavaScript code block or files.
      * This means the location is in the head section.
@@ -64,15 +66,47 @@ class View extends BaseView {
      * This is internally used as the placeholder for receiving the content registered for the head section.
      */
     const PH_HEAD = '<![CDATA[KANT-BLOCK-HEAD]]>';
+
     /**
      * This is internally used as the placeholder for receiving the content registered for the beginning of the body section.
      */
     const PH_BODY_BEGIN = '<![CDATA[KANT-BLOCK-BODY-BEGIN]]>';
+
     /**
      * This is internally used as the placeholder for receiving the content registered for the end of the body section.
      */
     const PH_BODY_END = '<![CDATA[KANT-BLOCK-BODY-END]]>';
-    
+
+    /**
+     * @var array the registered meta tags.
+     * @see registerMetaTag()
+     */
+    public $metaTags;
+
+    /**
+     * @var array the registered link tags.
+     * @see registerLinkTag()
+     */
+    public $linkTags;
+
+    /**
+     * @var array the registered CSS code blocks.
+     * @see registerCss()
+     */
+    public $css;
+
+    /**
+     * @var array the registered CSS files.
+     * @see registerCssFile()
+     */
+    public $cssFiles;
+
+    /**
+     * @var array the registered JS code blocks
+     * @see registerJs()
+     */
+    public $js;
+
     /**
      * template theme
      *
@@ -115,22 +149,12 @@ class View extends BaseView {
      * @var string the root directory that contains layout view files for this module.
      */
     private $_layoutPath;
-
-    /**
-     * @var array the registered JS code blocks
-     * @see registerJs()
-     */
-    public $js;
     private $_assetManager;
 
-    /**
-     *
-     */
-    public function __construct() {
-        parent::__construct();
-        $this->dispatcher = KantRegistry::get('dispatcher');
-    }
 
+    public function setDispatcher($dispatcher) {
+        $this->dispatcher = $dispatcher;
+    }
     /**
      * Marks the position of an HTML head section.
      */
@@ -156,6 +180,39 @@ class View extends BaseView {
 //        foreach (array_keys($this->assetBundles) as $bundle) {
 //            $this->registerAssetFiles($bundle);
 //        }
+    }
+
+    /**
+     * Marks the ending of an HTML page.
+     * @param boolean $ajaxMode whether the view is rendering in AJAX mode.
+     * If true, the JS scripts registered at [[POS_READY]] and [[POS_LOAD]] positions
+     * will be rendered at the end of the view like normal scripts.
+     */
+    public function endPage($ajaxMode = false) {
+        $this->trigger(self::EVENT_END_PAGE);
+
+        $content = ob_get_clean();
+
+        echo strtr($content, [
+            self::PH_HEAD => $this->renderHeadHtml(),
+            self::PH_BODY_BEGIN => $this->renderBodyBeginHtml(),
+            self::PH_BODY_END => $this->renderBodyEndHtml($ajaxMode),
+        ]);
+
+        $this->clear();
+    }
+
+    /**
+     * Clears up the registered meta tags, link tags, css/js scripts and files.
+     */
+    public function clear() {
+        $this->metaTags = null;
+        $this->linkTags = null;
+        $this->css = null;
+        $this->cssFiles = null;
+        $this->js = null;
+        $this->jsFiles = null;
+        $this->assetBundles = [];
     }
 
     /**
@@ -394,9 +451,101 @@ class View extends BaseView {
     public function registerJs($js, $position = self::POS_READY, $key = null) {
         $key = $key ?: md5($js);
         $this->js[$position][$key] = $js;
+        return;
         if ($position === self::POS_READY || $position === self::POS_LOAD) {
             JqueryAsset::register($this);
         }
+    }
+
+    /**
+     * Renders the content to be inserted in the head section.
+     * The content is rendered using the registered meta tags, link tags, CSS/JS code blocks and files.
+     * @return string the rendered content
+     */
+    protected function renderHeadHtml() {
+        $lines = [];
+        if (!empty($this->metaTags)) {
+            $lines[] = implode("\n", $this->metaTags);
+        }
+
+        if (!empty($this->linkTags)) {
+            $lines[] = implode("\n", $this->linkTags);
+        }
+        if (!empty($this->cssFiles)) {
+            $lines[] = implode("\n", $this->cssFiles);
+        }
+        if (!empty($this->css)) {
+            $lines[] = implode("\n", $this->css);
+        }
+        if (!empty($this->jsFiles[self::POS_HEAD])) {
+            $lines[] = implode("\n", $this->jsFiles[self::POS_HEAD]);
+        }
+        if (!empty($this->js[self::POS_HEAD])) {
+            $lines[] = Html::script(implode("\n", $this->js[self::POS_HEAD]), ['type' => 'text/javascript']);
+        }
+
+        return empty($lines) ? "" : implode("\n", $lines);
+    }
+
+    /**
+     * Renders the content to be inserted at the end of the body section.
+     * The content is rendered using the registered JS code blocks and files.
+     * @param boolean $ajaxMode whether the view is rendering in AJAX mode.
+     * If true, the JS scripts registered at [[POS_READY]] and [[POS_LOAD]] positions
+     * will be rendered at the end of the view like normal scripts.
+     * @return string the rendered content
+     */
+    protected function renderBodyEndHtml($ajaxMode) {
+        if (!empty($this->jsFiles[self::POS_END])) {
+            $lines[] = implode("\n", $this->jsFiles[self::POS_END]);
+        }
+
+        if ($ajaxMode) {
+            $scripts = [];
+            if (!empty($this->js[self::POS_END])) {
+                $scripts[] = implode("\n", $this->js[self::POS_END]);
+            }
+            if (!empty($this->js[self::POS_READY])) {
+                $scripts[] = implode("\n", $this->js[self::POS_READY]);
+            }
+            if (!empty($this->js[self::POS_LOAD])) {
+                $scripts[] = implode("\n", $this->js[self::POS_LOAD]);
+            }
+        {
+                $lines[] = Html::script(implode("\n", $scripts), ['type' => 'text/javascript']);
+            }
+        } else {
+            if (!empty($this->js[self::POS_END])) {
+                $lines[] = Html::script(implode("\n", $this->js[self::POS_END]), ['type' => 'text/javascript']);
+            }
+            if (!empty($this->js[self::POS_READY])) {
+                $js = "jQuery(document).ready(function () {\n" . implode("\n", $this->js[self::POS_READY]) . "\n});";
+                $lines[] = Html::script($js, ['type' => 'text/javascript']);
+            }
+            if (!empty($this->js[self::POS_LOAD])) {
+                $js = "jQuery(window).load(function () {\n" . implode("\n", $this->js[self::POS_LOAD]) . "\n});";
+                $lines[] = Html::script($js, ['type' => 'text/javascript']);
+            }
+        }
+
+        return (empty($lines) ?  "": implode("\n", $lines)) . "\n";
+    }
+
+    /**
+     * Renders the content to be inserted at the beginning of the body section.
+     * The content is rendered using the registered JS code blocks and files.
+     * @return string the rendered content
+     */
+    protected function renderBodyBeginHtml() {
+        $lines = [];
+        if (!empty($this->jsFiles[self::POS_BEGIN])) {
+            $lines[] = implode("\n", $this->jsFiles[self::POS_BEGIN]);
+        }
+        if (!empty($this->js[self::POS_BEGIN])) {
+            $lines[] = Html::script(implode("\n", $this->js[self::POS_BEGIN]), ['type' => 'text/javascript']);
+        }
+
+        return (empty($lines) ? "" : implode("\n", $lines)) . "\n";
     }
 
 }

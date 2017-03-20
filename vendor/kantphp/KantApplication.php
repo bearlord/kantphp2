@@ -123,7 +123,6 @@ class KantApplication extends ServiceLocator {
      * Register Request
      */
     public function setRequest() {
-//        $this->set('Kant\Http\Request', Request::capture());
         Kant::$container->set('Kant\Http\Request', Request::capture());
     }
 
@@ -187,7 +186,7 @@ class KantApplication extends ServiceLocator {
      * Set the view Object
      */
     public function setView(){
-        Kant::$container->set('Kant\View\View', Kant::createObject(\Kant\View|View\View::class));
+        Kant::$container->set('Kant\View\View', Kant::createObject('Kant\View\View'));
     }
 
     /**
@@ -226,7 +225,7 @@ class KantApplication extends ServiceLocator {
 
     /**
      * Returns the log dispatcher component.
-     * @return \yii\log\Dispatcher the log dispatcher application component.
+     * @return \Kant\Log\Dispatcher the log dispatcher application component.
      */
     public function getLog() {
         return $this->get('log');
@@ -257,7 +256,6 @@ class KantApplication extends ServiceLocator {
      * @return Request the request component.
      */
     public function getRequest() {
-//        return $this->get('Kant\Http\Request');
         return Kant::$container->get('Kant\Http\Request');
     }
 
@@ -295,7 +293,7 @@ class KantApplication extends ServiceLocator {
      * @return \Kant\I18n\Formatter the formatter application component.
      */
     public function getFormatter() {
-        return Kant::$container->get('Kant\View\View');
+        return Kant::$container->get('Kant\I18n\Formatter');
     }
 
     /**
@@ -332,7 +330,7 @@ class KantApplication extends ServiceLocator {
         $this->setCookie($this->config->get('cookie'), $request, $response);
         $this->setSession($this->config->get('session'), $request, $response);
 
-
+        $this->setView();
         $this->getRouter()->dispatch($request, $response);
 
         $response->send();
