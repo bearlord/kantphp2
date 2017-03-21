@@ -8,7 +8,7 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kan\Http\File\MimeType;
+namespace Kant\Http\File\MimeType;
 
 use Kant\Http\File\Exception\FileNotFoundException;
 use Kant\Http\File\Exception\AccessDeniedException;

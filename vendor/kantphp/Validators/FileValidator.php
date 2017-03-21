@@ -13,8 +13,8 @@ use Kant\Kant;
 use Kant\Helper\Html;
 use Kant\Helper\Json;
 use yii\web\JsExpression;
-use yii\web\UploadedFile;
-use yii\helpers\FileHelper;
+use Kant\Http\File\UploadedFile;
+use Kant\Helper\FileHelper;
 
 /**
  * FileValidator verifies if an attribute is receiving a valid uploaded file.
@@ -244,7 +244,7 @@ class FileValidator extends Validator {
                     return [
                         $this->tooBig,
                         [
-                            'file' => $file->name,
+                            'file' => $file->getClientOriginalName(),
                             'limit' => $this->getSizeLimit(),
                             'formattedLimit' => Kant::$app->formatter->asShortSize($this->getSizeLimit()),
                         ],
@@ -253,35 +253,35 @@ class FileValidator extends Validator {
                     return [
                         $this->tooSmall,
                         [
-                            'file' => $file->name,
+                            'file' => $file->getClientOriginalName(),
                             'limit' => $this->minSize,
                             'formattedLimit' => Kant::$app->formatter->asShortSize($this->minSize),
                         ],
                     ];
                 } elseif (!empty($this->extensions) && !$this->validateExtension($file)) {
-                    return [$this->wrongExtension, ['file' => $file->name, 'extensions' => implode(', ', $this->extensions)]];
+                    return [$this->wrongExtension, ['file' => $file->getClientOriginalName(), 'extensions' => implode(', ', $this->extensions)]];
                 } elseif (!empty($this->mimeTypes) && !$this->validateMimeType($file)) {
-                    return [$this->wrongMimeType, ['file' => $file->name, 'mimeTypes' => implode(', ', $this->mimeTypes)]];
+                    return [$this->wrongMimeType, ['file' => $file->getClientOriginalName(), 'mimeTypes' => implode(', ', $this->mimeTypes)]];
                 }
                 return null;
             case UPLOAD_ERR_INI_SIZE:
             case UPLOAD_ERR_FORM_SIZE:
                 return [$this->tooBig, [
-                        'file' => $file->name,
+                        'file' => $file->getClientOriginalName(),
                         'limit' => $this->getSizeLimit(),
                         'formattedLimit' => Kant::$app->formatter->asShortSize($this->getSizeLimit()),
                 ]];
             case UPLOAD_ERR_PARTIAL:
-                Yii::warning('File was only partially uploaded: ' . $file->name, __METHOD__);
+                Kant::warning('File was only partially uploaded: ' . $file->getClientOriginalName(), __METHOD__);
                 break;
             case UPLOAD_ERR_NO_TMP_DIR:
-                Yii::warning('Missing the temporary folder to store the uploaded file: ' . $file->name, __METHOD__);
+                Kant::warning('Missing the temporary folder to store the uploaded file: ' . $file->getClientOriginalName(), __METHOD__);
                 break;
             case UPLOAD_ERR_CANT_WRITE:
-                Yii::warning('Failed to write the uploaded file to disk: ' . $file->name, __METHOD__);
+                Kant::warning('Failed to write the uploaded file to disk: ' . $file->getClientOriginalName(), __METHOD__);
                 break;
             case UPLOAD_ERR_EXTENSION:
-                Yii::warning('File upload was stopped by some PHP extension: ' . $file->name, __METHOD__);
+                Kant::warning('File upload was stopped by some PHP extension: ' . $file->getClientOriginalName(), __METHOD__);
                 break;
             default:
                 break;
@@ -306,7 +306,7 @@ class FileValidator extends Validator {
         $limit = $this->sizeToBytes(ini_get('upload_max_filesize'));
         $postLimit = $this->sizeToBytes(ini_get('post_max_size'));
         if ($postLimit > 0 && $postLimit < $limit) {
-            Yii::warning('PHP.ini\'s \'post_max_size\' is less than \'upload_max_filesize\'.', __METHOD__);
+            Kant::warning('PHP.ini\'s \'post_max_size\' is less than \'upload_max_filesize\'.', __METHOD__);
             $limit = $postLimit;
         }
         if ($this->maxSize !== null && $limit > 0 && $this->maxSize < $limit) {
@@ -355,11 +355,9 @@ class FileValidator extends Validator {
      * @return boolean
      */
     protected function validateExtension($file) {
-        $extension = mb_strtolower($file->extension, 'UTF-8');
-
+        $extension = mb_strtolower($file->extension(), 'UTF-8');
         if ($this->checkExtensionByMimeType) {
-
-            $mimeType = FileHelper::getMimeType($file->tempName, null, false);
+            $mimeType = FileHelper::getMimeType($file->getPathname(), null, false);
             if ($mimeType === null) {
                 return false;
             }

@@ -17,8 +17,16 @@ use Kant\Routing\UrlGenerator;
  *
  */
 class Url {
-    
-    
+
+    /**
+     * Returns a value indicating whether a URL is relative.
+     * A relative URL does not have host info part.
+     * @param string $url the URL to be checked
+     * @return boolean whether the URL is relative
+     */
+    public static function isRelative($url) {
+        return strncmp($url, '//', 2) && strpos($url, '://') === false;
+    }
 
     /**
      * Handle dynamic, static calls to the object.

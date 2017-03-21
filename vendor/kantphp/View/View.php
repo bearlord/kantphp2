@@ -10,7 +10,6 @@
 namespace Kant\View;
 
 use Kant\Kant;
-use Kant\Registry\KantRegistry;
 use Kant\Factory;
 use Kant\Helper\Html;
 
@@ -76,6 +75,13 @@ class View extends BaseView {
      * This is internally used as the placeholder for receiving the content registered for the end of the body section.
      */
     const PH_BODY_END = '<![CDATA[KANT-BLOCK-BODY-END]]>';
+    
+    /**
+     * @var AssetBundle[] list of the registered asset bundles. The keys are the bundle names, and the values
+     * are the registered [[AssetBundle]] objects.
+     * @see registerAssetBundle()
+     */
+    public $assetBundles = [];
 
     /**
      * @var array the registered meta tags.

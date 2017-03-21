@@ -13,7 +13,7 @@ namespace Kant\Exception;
  * InvalidParamException represents an exception caused by invalid parameters passed to a method.
  *
  */
-class InvalidParamException extends \BadMethodCallException {
+class InvalidParamException extends KantException {
 
     /**
      * @return string the user-friendly name of this exception

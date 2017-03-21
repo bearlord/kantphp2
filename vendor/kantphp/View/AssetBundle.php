@@ -1,8 +1,10 @@
 <?php
+
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\View;
@@ -10,7 +12,7 @@ namespace Kant\View;
 use Kant\Foundation\Object;
 use Kant\Helper\ArrayHelper;
 use Kant\Helper\Url;
-use Yii;
+use Kant\Kant;
 
 /**
  * AssetBundle represents a collection of asset files, such as CSS, JS, images.
@@ -25,8 +27,8 @@ use Yii;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class AssetBundle extends Object
-{
+class AssetBundle extends Object {
+
     /**
      * @var string the directory that contains the source asset files for this asset bundle.
      * A source asset file is a file that is part of your source code repository of your Web application.
@@ -41,6 +43,7 @@ class AssetBundle extends Object
      * @see $publishOptions
      */
     public $sourcePath;
+
     /**
      * @var string the Web-accessible directory that contains the asset files in this bundle.
      *
@@ -50,6 +53,7 @@ class AssetBundle extends Object
      * You can use either a directory or an alias of the directory.
      */
     public $basePath;
+
     /**
      * @var string the base URL for the relative asset files listed in [[js]] and [[css]].
      *
@@ -59,6 +63,7 @@ class AssetBundle extends Object
      * You can use either a URL or an alias of the URL.
      */
     public $baseUrl;
+
     /**
      * @var array list of bundle class names that this bundle depends on.
      *
@@ -72,6 +77,7 @@ class AssetBundle extends Object
      * ```
      */
     public $depends = [];
+
     /**
      * @var array list of JavaScript files that this bundle contains. Each JavaScript file can be
      * specified in one of the following formats:
@@ -89,6 +95,7 @@ class AssetBundle extends Object
      * Note that only a forward slash "/" should be used as directory separator.
      */
     public $js = [];
+
     /**
      * @var array list of CSS files that this bundle contains. Each CSS file can be specified
      * in one of the three formats as explained in [[js]].
@@ -96,30 +103,31 @@ class AssetBundle extends Object
      * Note that only a forward slash "/" should be used as directory separator.
      */
     public $css = [];
+
     /**
      * @var array the options that will be passed to [[View::registerJsFile()]]
      * when registering the JS files in this bundle.
      */
     public $jsOptions = [];
+
     /**
      * @var array the options that will be passed to [[View::registerCssFile()]]
      * when registering the CSS files in this bundle.
      */
     public $cssOptions = [];
+
     /**
      * @var array the options to be passed to [[AssetManager::publish()]] when the asset bundle
      * is being published. This property is used only when [[sourcePath]] is set.
      */
     public $publishOptions = [];
 
-
     /**
      * Registers this asset bundle with a view.
      * @param View $view the view to be registered with
      * @return static the registered asset bundle instance
      */
-    public static function register($view)
-    {
+    public static function register($view) {
         return $view->registerAssetBundle(get_called_class());
     }
 
@@ -127,25 +135,23 @@ class AssetBundle extends Object
      * Initializes the bundle.
      * If you override this method, make sure you call the parent implementation in the last.
      */
-    public function init()
-    {
-//        if ($this->sourcePath !== null) {
-//            $this->sourcePath = rtrim(Kant::getAlias($this->sourcePath), '/\\');
-//        }
-//        if ($this->basePath !== null) {
-//            $this->basePath = rtrim(Kant::getAlias($this->basePath), '/\\');
-//        }
-//        if ($this->baseUrl !== null) {
-//            $this->baseUrl = rtrim(Kant::getAlias($this->baseUrl), '/');
-//        }
+    public function init() {
+        if ($this->sourcePath !== null) {
+            $this->sourcePath = rtrim(Kant::getAlias($this->sourcePath), '/\\');
+        }
+        if ($this->basePath !== null) {
+            $this->basePath = rtrim(Kant::getAlias($this->basePath), '/\\');
+        }
+        if ($this->baseUrl !== null) {
+            $this->baseUrl = rtrim(Kant::getAlias($this->baseUrl), '/');
+        }
     }
 
     /**
      * Registers the CSS and JS files with the given view.
      * @param \yii\web\View $view the view that the asset files are to be registered with.
      */
-    public function registerAssetFiles($view)
-    {
+    public function registerAssetFiles($view) {
         $manager = $view->getAssetManager();
         foreach ($this->js as $js) {
             if (is_array($js)) {
@@ -177,8 +183,7 @@ class AssetBundle extends Object
      * CSS or JS files using [[AssetManager::converter|asset converter]].
      * @param AssetManager $am the asset manager to perform the asset publishing
      */
-    public function publish($am)
-    {
+    public function publish($am) {
         if ($this->sourcePath !== null && !isset($this->basePath, $this->baseUrl)) {
             list ($this->basePath, $this->baseUrl) = $am->publish($this->sourcePath, $this->publishOptions);
         }
@@ -210,4 +215,5 @@ class AssetBundle extends Object
             }
         }
     }
+
 }

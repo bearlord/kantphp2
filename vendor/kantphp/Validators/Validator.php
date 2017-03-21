@@ -253,7 +253,6 @@ class Validator extends Component {
                 $attributes[] = $attribute[0] === '!' ? substr($attribute, 1) : $attribute;
             }
         }
-
         foreach ($attributes as $attribute) {
             $skip = ($this->skipOnError && $model->hasErrors($attribute)) || ($this->skipOnEmpty && $this->isEmpty($model->$attribute));
             if (!$skip) {

@@ -7,14 +7,15 @@
     "license": "BSD-3-Clause",
     "authors": [
         {
-            "name": "Zhenqiang Zhenqiang",
-            "email": "565364226@qq.com",
+            "name": "Zhenqiang Zhang",
+            "email": "zhenqiang.zhang@hotmail.com",
             "homepage": "http://www.kantphp.com",
             "role": "Developer"
         }
     ],
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "ezyang/htmlpurifier": "^4.9"
     },
     "autoload": {
         "psr-4": {

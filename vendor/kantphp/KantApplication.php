@@ -10,7 +10,7 @@
 namespace Kant;
 
 use Kant\Foundation\Component;
-use Kant\Di\ServiceLocator;
+use Kant\Foundation\Module;
 use Kant\Helper\ArrayHelper;
 use Kant\Factory;
 use Kant\Config\Config;
@@ -20,14 +20,7 @@ use Kant\Runtime\Runtime;
 use Kant\Exception\KantException;
 use ReflectionMethod;
 
-class KantApplication extends ServiceLocator {
-
-    /**
-     * The Laravel framework version.
-     *
-     * @var string
-     */
-    const VERSION = '2.2.0';
+class KantApplication extends Module {
 
     /**
      * @var string the charset currently used for the application.
@@ -81,15 +74,6 @@ class KantApplication extends ServiceLocator {
         $this->env = $env;
         $this->config = $config = $this->initConfig($env);
         $this->preInit($config);
-    }
-
-    /**
-     * Get the version number of the application.
-     *
-     * @return string
-     */
-    public function version() {
-        return static::VERSION;
     }
 
     /**
@@ -181,11 +165,11 @@ class KantApplication extends ServiceLocator {
                             ], $config));
         }
     }
-    
+
     /**
      * Set the view Object
      */
-    public function setView(){
+    public function setView() {
         Kant::$container->set('Kant\View\View', Kant::createObject('Kant\View\View'));
     }
 
@@ -271,14 +255,14 @@ class KantApplication extends ServiceLocator {
         return Kant::createObject('Kant\Routing\Router');
     }
 
-     /**
+    /**
      * Returns the view object.
      * @return View|\Kant\View\View the view application component that is used to render various view files.
      */
     public function getView() {
         return Kant::$container->get('Kant\View\View');
     }
-    
+
     /**
      * Returns the asset manager.
      * @return \Kant\View\AssetManager the asset manager application component.
@@ -286,7 +270,6 @@ class KantApplication extends ServiceLocator {
     public function getAssetManager() {
         return $this->get('assetManager');
     }
-
 
     /**
      * Returns the formatter component.
@@ -341,6 +324,13 @@ class KantApplication extends ServiceLocator {
      * Parpare
      */
     protected function preInit(Config $config) {
+        if ($config->get('vendorPath') != "") {
+            $this->setVendorPath($config->get('vendorPath'));
+        } else {
+            // set "@vendor"
+            $this->getVendorPath();
+        }
+
         //set default timezone
         if ($config->get('timezone') != "") {
             $this->setTimeZone($config->get('timezone'));

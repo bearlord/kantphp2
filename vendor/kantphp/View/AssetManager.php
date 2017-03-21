@@ -1,8 +1,10 @@
 <?php
+
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\View;
@@ -11,7 +13,7 @@ use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Exception\InvalidConfigException;
 use Kant\Exception\InvalidParamException;
-use yii\helpers\FileHelper;
+use Kant\Helper\FileHelper;
 use Kant\Helper\Url;
 
 /**
@@ -37,8 +39,8 @@ use Kant\Helper\Url;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class AssetManager extends Component
-{
+class AssetManager extends Component {
+
     /**
      * @var array|boolean list of asset bundle configurations. This property is provided to customize asset bundles.
      * When a bundle is being loaded by [[getBundle()]], if it has a corresponding configuration specified here,
@@ -63,14 +65,17 @@ class AssetManager extends Component
      * ```
      */
     public $bundles = [];
+
     /**
      * @var string the root directory storing the published asset files.
      */
     public $basePath = PUBLIC_PATH . 'assets';
+
     /**
      * @var string the base URL through which the published asset files can be accessed.
      */
     public $baseUrl = APP_URL . 'assets';
+
     /**
      * @var array mapping from source asset files (keys) to target asset files (values).
      *
@@ -102,6 +107,7 @@ class AssetManager extends Component
      * ```
      */
     public $assetMap = [];
+
     /**
      * @var boolean whether to use symbolic link to publish asset files. Defaults to false, meaning
      * asset files are copied to [[basePath]]. Using symbolic links has the benefit that the published
@@ -120,12 +126,14 @@ class AssetManager extends Component
      * ```
      */
     public $linkAssets = false;
+
     /**
      * @var integer the permission to be set for newly published asset files.
      * This value will be used by PHP chmod() function. No umask will be applied.
      * If not set, the permission will be determined by the current environment.
      */
     public $fileMode;
+
     /**
      * @var integer the permission to be set for newly generated asset directories.
      * This value will be used by PHP chmod() function. No umask will be applied.
@@ -133,6 +141,7 @@ class AssetManager extends Component
      * but read-only for other users.
      */
     public $dirMode = 0775;
+
     /**
      * @var callback a PHP callback that is called before copying each sub-directory or file.
      * This option is used only when publishing a directory. If the callback returns false, the copy
@@ -144,6 +153,7 @@ class AssetManager extends Component
      * This is passed as a parameter `beforeCopy` to [[\yii\helpers\FileHelper::copyDirectory()]].
      */
     public $beforeCopy;
+
     /**
      * @var callback a PHP callback that is called after a sub-directory or file is successfully copied.
      * This option is used only when publishing a directory. The signature of the callback is the same as
@@ -151,6 +161,7 @@ class AssetManager extends Component
      * This is passed as a parameter `afterCopy` to [[\yii\helpers\FileHelper::copyDirectory()]].
      */
     public $afterCopy;
+
     /**
      * @var boolean whether the directory being published should be copied even if
      * it is found in the target directory. This option is used only when publishing a directory.
@@ -159,6 +170,7 @@ class AssetManager extends Component
      * significantly degrade the performance.
      */
     public $forceCopy = false;
+
     /**
      * @var boolean whether to append a timestamp to the URL of every published asset. When this is true,
      * the URL of a published asset may look like `/path/to/asset?v=timestamp`, where `timestamp` is the
@@ -168,6 +180,7 @@ class AssetManager extends Component
      * @since 2.0.3
      */
     public $appendTimestamp = false;
+
     /**
      * @var callable a callback that will be called to produce hash for asset directory generation.
      * The signature of the callback should be as follows:
@@ -195,16 +208,13 @@ class AssetManager extends Component
      * @since 2.0.6
      */
     public $hashCallback;
-
     private $_dummyBundles = [];
-
 
     /**
      * Initializes the component.
      * @throws InvalidConfigException if [[basePath]] is invalid
      */
-    public function init()
-    {
+    public function init() {
         parent::init();
         if (!is_dir($this->basePath)) {
             throw new InvalidConfigException("The directory does not exist: {$this->basePath}");
@@ -227,8 +237,7 @@ class AssetManager extends Component
      * @return AssetBundle the asset bundle instance
      * @throws InvalidConfigException if $name does not refer to a valid asset bundle
      */
-    public function getBundle($name, $publish = true)
-    {
+    public function getBundle($name, $publish = true) {
         if ($this->bundles === false) {
             return $this->loadDummyBundle($name);
         } elseif (!isset($this->bundles[$name])) {
@@ -253,8 +262,7 @@ class AssetManager extends Component
      * @return AssetBundle
      * @throws InvalidConfigException if configuration isn't valid
      */
-    protected function loadBundle($name, $config = [], $publish = true)
-    {
+    protected function loadBundle($name, $config = [], $publish = true) {
         if (!isset($config['class'])) {
             $config['class'] = $name;
         }
@@ -272,8 +280,7 @@ class AssetManager extends Component
      * @param string $name
      * @return AssetBundle
      */
-    protected function loadDummyBundle($name)
-    {
+    protected function loadDummyBundle($name) {
         if (!isset($this->_dummyBundles[$name])) {
             $this->_dummyBundles[$name] = $this->loadBundle($name, [
                 'sourcePath' => null,
@@ -292,8 +299,7 @@ class AssetManager extends Component
      * @param string $asset the asset path. This should be one of the assets listed in [[js]] or [[css]].
      * @return string the actual URL for the specified asset.
      */
-    public function getAssetUrl($bundle, $asset)
-    {
+    public function getAssetUrl($bundle, $asset) {
         if (($actualAsset = $this->resolveAsset($bundle, $asset)) !== false) {
             if (strncmp($actualAsset, '@web/', 5) === 0) {
                 $asset = substr($actualAsset, 5);
@@ -326,8 +332,7 @@ class AssetManager extends Component
      * @param string $asset the asset path. This should be one of the assets listed in [[js]] or [[css]].
      * @return string|boolean the actual file path, or false if the asset is specified as an absolute URL
      */
-    public function getAssetPath($bundle, $asset)
-    {
+    public function getAssetPath($bundle, $asset) {
         if (($actualAsset = $this->resolveAsset($bundle, $asset)) !== false) {
             return Url::isRelative($actualAsset) ? $this->basePath . '/' . $actualAsset : false;
         } else {
@@ -340,8 +345,7 @@ class AssetManager extends Component
      * @param string $asset
      * @return string|boolean
      */
-    protected function resolveAsset($bundle, $asset)
-    {
+    protected function resolveAsset($bundle, $asset) {
         if (isset($this->assetMap[$asset])) {
             return $this->assetMap[$asset];
         }
@@ -366,8 +370,7 @@ class AssetManager extends Component
      * Returns the asset converter.
      * @return AssetConverterInterface the asset converter.
      */
-    public function getConverter()
-    {
+    public function getConverter() {
         if ($this->_converter === null) {
             $this->_converter = Kant::createObject(AssetConverter::className());
         } elseif (is_array($this->_converter) || is_string($this->_converter)) {
@@ -386,8 +389,7 @@ class AssetManager extends Component
      * an object implementing the [[AssetConverterInterface]], or a configuration
      * array that can be used to create the asset converter object.
      */
-    public function setConverter($value)
-    {
+    public function setConverter($value) {
         $this->_converter = $value;
     }
 
@@ -438,9 +440,8 @@ class AssetManager extends Component
      * @return array the path (directory or file path) and the URL that the asset is published as.
      * @throws InvalidParamException if the asset to be published does not exist.
      */
-    public function publish($path, $options = [])
-    {
-//        $path = Kant::getAlias($path);
+    public function publish($path, $options = []) {
+        $path = Kant::getAlias($path);
 
         if (isset($this->_published[$path])) {
             return $this->_published[$path];
@@ -463,8 +464,7 @@ class AssetManager extends Component
      * @return array the path and the URL that the asset is published as.
      * @throws InvalidParamException if the asset to be published does not exist.
      */
-    protected function publishFile($src)
-    {
+    protected function publishFile($src) {
         $dir = $this->hash($src);
         $fileName = basename($src);
         $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $dir;
@@ -508,8 +508,7 @@ class AssetManager extends Component
      * @return array the path directory and the URL that the asset is published as.
      * @throws InvalidParamException if the asset to be published does not exist.
      */
-    protected function publishDirectory($src, $options)
-    {
+    protected function publishDirectory($src, $options) {
         $dir = $this->hash($src);
         $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $dir;
         if ($this->linkAssets) {
@@ -519,11 +518,10 @@ class AssetManager extends Component
             }
         } elseif (!empty($options['forceCopy']) || ($this->forceCopy && !isset($options['forceCopy'])) || !is_dir($dstDir)) {
             $opts = array_merge(
-                $options,
-                [
-                    'dirMode' => $this->dirMode,
-                    'fileMode' => $this->fileMode,
-                ]
+                    $options, [
+                'dirMode' => $this->dirMode,
+                'fileMode' => $this->fileMode,
+                    ]
             );
             if (!isset($opts['beforeCopy'])) {
                 if ($this->beforeCopy !== null) {
@@ -550,8 +548,7 @@ class AssetManager extends Component
      * @param string $path directory or file path being published
      * @return string|false string the published file path. False if the file or directory does not exist
      */
-    public function getPublishedPath($path)
-    {
+    public function getPublishedPath($path) {
         $path = Kant::getAlias($path);
 
         if (isset($this->_published[$path])) {
@@ -571,8 +568,7 @@ class AssetManager extends Component
      * @param string $path directory or file path being published
      * @return string|false string the published URL for the file or directory. False if the file or directory does not exist.
      */
-    public function getPublishedUrl($path)
-    {
+    public function getPublishedUrl($path) {
         $path = Kant::getAlias($path);
 
         if (isset($this->_published[$path])) {
@@ -591,12 +587,12 @@ class AssetManager extends Component
      * @param string $path string to be hashed.
      * @return string hashed string.
      */
-    protected function hash($path)
-    {
+    protected function hash($path) {
         if (is_callable($this->hashCallback)) {
             return call_user_func($this->hashCallback, $path);
         }
         $path = (is_file($path) ? dirname($path) : $path) . filemtime($path);
         return sprintf('%x', crc32($path . Kant::getVersion()));
     }
+
 }

@@ -202,9 +202,8 @@ class ActiveForm extends Widget
             $id = $this->options['id'];
             $options = Json::htmlEncode($this->getClientOptions());
             $attributes = Json::htmlEncode($this->attributes);
-//            $view = $this->getView();
-            $view = Kant::$app->getView();
-//            ActiveFormAsset::register($view);
+            $view = $this->getView();
+            ActiveFormAsset::register($view);
             $view->registerJs("jQuery('#$id').yiiActiveForm($attributes, $options);");
         }
 

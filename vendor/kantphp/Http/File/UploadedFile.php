@@ -54,7 +54,7 @@ class UploadedFile extends File {
      *
      * @var int
      */
-    private $error;
+    public $error;
 
     /**
      * Accepts the information of the uploaded file as provided by the PHP global $_FILES.
@@ -88,21 +88,6 @@ class UploadedFile extends File {
         $this->test = (bool) $test;
 
         parent::__construct($path, UPLOAD_ERR_OK === $this->error);
-    }
-    
-    
-    /**
-     * Create a new file instance from a base instance.
-     *
-     * @param  \Symfony\Component\HttpFoundation\File\UploadedFile  $file
-     * @return static
-     */
-    public static function createFromBase(UploadedFile $file)
-    {
-        return $file instanceof static ? $file : new static(
-            $file->getPathname(), $file->getClientOriginalName(), $file->getClientMimeType(),
-            $file->getClientSize(), $file->getError()
-        );
     }
 
     /**
@@ -288,6 +273,59 @@ class UploadedFile extends File {
         $message = isset($errors[$errorCode]) ? $errors[$errorCode] : 'The file "%s" was not uploaded due to an unknown error.';
 
         return sprintf($message, $this->getClientOriginalName(), $maxFilesize);
+    }
+
+    /**
+     * Create a new file instance from a base instance.
+     *
+     * @param  \Symfony\Component\HttpFoundation\File\UploadedFile  $file
+     * @return static
+     */
+    public static function createFromBase(UploadedFile $file) {
+        return $file instanceof static ? $file : new static(
+                $file->getPathname(), $file->getClientOriginalName(), $file->getClientMimeType(), $file->getClientSize(), $file->getError()
+        );
+    }
+
+    /**
+     * Get the fully qualified path to the file.
+     *
+     * @return string
+     */
+    public function path() {
+        return $this->getRealPath();
+    }
+
+    /**
+     * Get the file's extension.
+     *
+     * @return string
+     */
+    public function extension() {
+        return $this->guessExtension();
+    }
+
+    /**
+     * Get the file's extension supplied by the client.
+     *
+     * @return string
+     */
+    public function clientExtension() {
+        return $this->guessClientExtension();
+    }
+
+    /**
+     * Get a filename for the file that is the MD5 hash of the contents.
+     *
+     * @param  string  $path
+     * @return string
+     */
+    public function hashName($path = null) {
+        if ($path) {
+            $path = rtrim($path, '/') . '/';
+        }
+
+        return $path . md5_file($this->path()) . '.' . $this->extension();
     }
 
 }
