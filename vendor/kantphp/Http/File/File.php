@@ -70,7 +70,6 @@ class File extends \SplFileInfo {
      */
     public function getMimeType() {
         $guesser = MimeTypeGuesser::getInstance();
-
         return $guesser->guess($this->getPathname());
     }
 

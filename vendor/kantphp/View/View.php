@@ -12,6 +12,7 @@ namespace Kant\View;
 use Kant\Kant;
 use Kant\Factory;
 use Kant\Helper\Html;
+use Kant\Helper\ArrayHelper;
 
 /**
  * View class
@@ -75,7 +76,7 @@ class View extends BaseView {
      * This is internally used as the placeholder for receiving the content registered for the end of the body section.
      */
     const PH_BODY_END = '<![CDATA[KANT-BLOCK-BODY-END]]>';
-    
+
     /**
      * @var AssetBundle[] list of the registered asset bundles. The keys are the bundle names, and the values
      * are the registered [[AssetBundle]] objects.
@@ -112,6 +113,12 @@ class View extends BaseView {
      * @see registerJs()
      */
     public $js;
+
+    /**
+     * @var array the registered JS files.
+     * @see registerJsFile()
+     */
+    public $jsFiles;
 
     /**
      * template theme
@@ -157,10 +164,10 @@ class View extends BaseView {
     private $_layoutPath;
     private $_assetManager;
 
-
     public function setDispatcher($dispatcher) {
         $this->dispatcher = $dispatcher;
     }
+
     /**
      * Marks the position of an HTML head section.
      */
@@ -182,10 +189,9 @@ class View extends BaseView {
     public function endBody() {
         $this->trigger(self::EVENT_END_BODY);
         echo self::PH_BODY_END;
-
-//        foreach (array_keys($this->assetBundles) as $bundle) {
-//            $this->registerAssetFiles($bundle);
-//        }
+        foreach (array_keys($this->assetBundles) as $bundle) {
+            $this->registerAssetFiles($bundle);
+        }
     }
 
     /**
@@ -219,6 +225,25 @@ class View extends BaseView {
         $this->js = null;
         $this->jsFiles = null;
         $this->assetBundles = [];
+    }
+
+    /**
+     * Registers all files provided by an asset bundle including depending bundles files.
+     * Removes a bundle from [[assetBundles]] once files are registered.
+     * @param string $name name of the bundle to register
+     */
+    protected function registerAssetFiles($name) {
+        if (!isset($this->assetBundles[$name])) {
+            return;
+        }
+        $bundle = $this->assetBundles[$name];
+        if ($bundle) {
+            foreach ($bundle->depends as $dep) {
+                $this->registerAssetFiles($dep);
+            }
+            $bundle->registerAssetFiles($this);
+        }
+        unset($this->assetBundles[$name]);
     }
 
     /**
@@ -437,6 +462,104 @@ class View extends BaseView {
     }
 
     /**
+     * Registers a meta tag.
+     *
+     * For example, a description meta tag can be added like the following:
+     *
+     * ```php
+     * $view->registerMetaTag([
+     *     'name' => 'description',
+     *     'content' => 'This website is about funny raccoons.'
+     * ]);
+     * ```
+     *
+     * will result in the meta tag `<meta name="description" content="This website is about funny raccoons.">`.
+     *
+     * @param array $options the HTML attributes for the meta tag.
+     * @param string $key the key that identifies the meta tag. If two meta tags are registered
+     * with the same key, the latter will overwrite the former. If this is null, the new meta tag
+     * will be appended to the existing ones.
+     */
+    public function registerMetaTag($options, $key = null) {
+        if ($key === null) {
+            $this->metaTags[] = Html::tag('meta', '', $options);
+        } else {
+            $this->metaTags[$key] = Html::tag('meta', '', $options);
+        }
+    }
+
+    /**
+     * Registers a link tag.
+     *
+     * For example, a link tag for a custom [favicon](http://www.w3.org/2005/10/howto-favicon)
+     * can be added like the following:
+     *
+     * ```php
+     * $view->registerLinkTag(['rel' => 'icon', 'type' => 'image/png', 'href' => '/myicon.png']);
+     * ```
+     *
+     * which will result in the following HTML: `<link rel="icon" type="image/png" href="/myicon.png">`.
+     *
+     * **Note:** To register link tags for CSS stylesheets, use [[registerCssFile()]] instead, which
+     * has more options for this kind of link tag.
+     *
+     * @param array $options the HTML attributes for the link tag.
+     * @param string $key the key that identifies the link tag. If two link tags are registered
+     * with the same key, the latter will overwrite the former. If this is null, the new link tag
+     * will be appended to the existing ones.
+     */
+    public function registerLinkTag($options, $key = null) {
+        if ($key === null) {
+            $this->linkTags[] = Html::tag('link', '', $options);
+        } else {
+            $this->linkTags[$key] = Html::tag('link', '', $options);
+        }
+    }
+
+    /**
+     * Registers a CSS code block.
+     * @param string $css the content of the CSS code block to be registered
+     * @param array $options the HTML attributes for the `<style>`-tag.
+     * @param string $key the key that identifies the CSS code block. If null, it will use
+     * $css as the key. If two CSS code blocks are registered with the same key, the latter
+     * will overwrite the former.
+     */
+    public function registerCss($css, $options = [], $key = null) {
+        $key = $key ?: md5($css);
+        $this->css[$key] = Html::style($css, $options);
+    }
+
+    /**
+     * Registers a CSS file.
+     * @param string $url the CSS file to be registered.
+     * @param array $options the HTML attributes for the link tag. Please refer to [[Html::cssFile()]] for
+     * the supported options. The following options are specially handled and are not treated as HTML attributes:
+     *
+     * - `depends`: array, specifies the names of the asset bundles that this CSS file depends on.
+     *
+     * @param string $key the key that identifies the CSS script file. If null, it will use
+     * $url as the key. If two CSS files are registered with the same key, the latter
+     * will overwrite the former.
+     */
+    public function registerCssFile($url, $options = [], $key = null) {
+        $url = Kant::getAlias($url);
+        $key = $key ?: $url;
+        $depends = ArrayHelper::remove($options, 'depends', []);
+
+        if (empty($depends)) {
+            $this->cssFiles[$key] = Html::cssFile($url, $options);
+        } else {
+            $this->getAssetManager()->bundles[$key] = new AssetBundle([
+                'baseUrl' => '',
+                'css' => [strncmp($url, '//', 2) === 0 ? $url : ltrim($url, '/')],
+                'cssOptions' => $options,
+                'depends' => (array) $depends,
+            ]);
+            $this->registerAssetBundle($key);
+        }
+    }
+
+    /**
      * Registers a JS code block.
      * @param string $js the JS code block to be registered
      * @param integer $position the position at which the JS script tag should be inserted
@@ -457,9 +580,45 @@ class View extends BaseView {
     public function registerJs($js, $position = self::POS_READY, $key = null) {
         $key = $key ?: md5($js);
         $this->js[$position][$key] = $js;
-        return;
         if ($position === self::POS_READY || $position === self::POS_LOAD) {
             JqueryAsset::register($this);
+        }
+    }
+
+    /**
+     * Registers a JS file.
+     * @param string $url the JS file to be registered.
+     * @param array $options the HTML attributes for the script tag. The following options are specially handled
+     * and are not treated as HTML attributes:
+     *
+     * - `depends`: array, specifies the names of the asset bundles that this JS file depends on.
+     * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
+     *     * [[POS_HEAD]]: in the head section
+     *     * [[POS_BEGIN]]: at the beginning of the body section
+     *     * [[POS_END]]: at the end of the body section. This is the default value.
+     *
+     * Please refer to [[Html::jsFile()]] for other supported options.
+     *
+     * @param string $key the key that identifies the JS script file. If null, it will use
+     * $url as the key. If two JS files are registered with the same key, the latter
+     * will overwrite the former.
+     */
+    public function registerJsFile($url, $options = [], $key = null) {
+        $url = Kant::getAlias($url);
+        $key = $key ?: $url;
+        $depends = ArrayHelper::remove($options, 'depends', []);
+
+        if (empty($depends)) {
+            $position = ArrayHelper::remove($options, 'position', self::POS_END);
+            $this->jsFiles[$position][$key] = Html::jsFile($url, $options);
+        } else {
+            $this->getAssetManager()->bundles[$key] = new AssetBundle([
+                'baseUrl' => '',
+                'js' => [strncmp($url, '//', 2) === 0 ? $url : ltrim($url, '/')],
+                'jsOptions' => $options,
+                'depends' => (array) $depends,
+            ]);
+            $this->registerAssetBundle($key);
         }
     }
 
@@ -490,7 +649,7 @@ class View extends BaseView {
             $lines[] = Html::script(implode("\n", $this->js[self::POS_HEAD]), ['type' => 'text/javascript']);
         }
 
-        return empty($lines) ? "" : implode("\n", $lines);
+        return (empty($lines) ? "" : implode("\n", $lines)) . "\n";
     }
 
     /**
@@ -516,8 +675,7 @@ class View extends BaseView {
             }
             if (!empty($this->js[self::POS_LOAD])) {
                 $scripts[] = implode("\n", $this->js[self::POS_LOAD]);
-            }
-        {
+            } {
                 $lines[] = Html::script(implode("\n", $scripts), ['type' => 'text/javascript']);
             }
         } else {
@@ -534,7 +692,7 @@ class View extends BaseView {
             }
         }
 
-        return (empty($lines) ?  "": implode("\n", $lines)) . "\n";
+        return (empty($lines) ? "" : implode("\n", $lines)) . "\n";
     }
 
     /**

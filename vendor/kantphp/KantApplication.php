@@ -77,6 +77,27 @@ class KantApplication extends Module {
     }
 
     /**
+     * @inheritdoc
+     */
+    public function init() {
+        $this->setRequest();
+        $this->bootstrap();
+    }
+
+    /**
+     * Initializes extensions and executes bootstrap components.
+     * This method is called by [[init()]] after the application has been fully configured.
+     * If you override this method, make sure you also call the parent implementation.
+     */
+    public function bootstrap() {
+        $type = strtolower($this->config->get('returnType'));
+        $request = $this->getRequest();
+        $this->setResponse($request, $type);
+        Kant::setAlias('@webroot', dirname($request->getScriptName()));
+        Kant::setAlias('@web', $request->getBaseUrl());
+    }
+
+    /**
      * Returns the configuration of core application components.
      * @see set()
      */
@@ -299,12 +320,8 @@ class KantApplication extends Module {
      * 
      */
     public function run() {
-        $type = strtolower($this->config->get('returnType'));
-
-        $this->setRequest();
         $request = $this->getRequest();
-
-        $this->setResponse($request, $type);
+        
         $response = $this->getResponse();
 
         $this->setCache($this->config->get('cache'));
