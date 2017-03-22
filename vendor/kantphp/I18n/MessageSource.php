@@ -37,7 +37,7 @@ class MessageSource extends Component {
 
     /**
      * @var string the language that the original messages are in. If not set, it will use the value of
-     * [[\yii\base\Application::sourceLanguage]].
+     * [[\Kant\Application::sourceLanguage]].
      */
     public $sourceLanguage;
     private $_messages = [];

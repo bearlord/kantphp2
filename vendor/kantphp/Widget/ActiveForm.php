@@ -27,7 +27,7 @@ use Kant\Helper\Json;
 class ActiveForm extends Widget {
 
     /**
-     * @var array|string $action the form action URL. This parameter will be processed by [[\yii\helpers\Url::to()]].
+     * @var array|string $action the form action URL. This parameter will be processed by [[\Kant\Helper\Url::to()]].
      * @see method for specifying the HTTP method for this form.
      */
     public $action = '';
@@ -51,7 +51,7 @@ class ActiveForm extends Widget {
 
     /**
      * @var array the HTML attributes (name-value pairs) for the form tag.
-     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $options = [];
 
@@ -120,9 +120,9 @@ class ActiveForm extends Widget {
     public $enableAjaxValidation = false;
 
     /**
-     * @var boolean whether to hook up yii.activeForm JavaScript plugin.
+     * @var boolean whether to hook up kant.activeForm JavaScript plugin.
      * This property must be set true if you want to support client validation and/or AJAX validation, or if you
-     * want to take advantage of the yii.activeForm plugin. When this is false, the form will not generate
+     * want to take advantage of the kant.activeForm plugin. When this is false, the form will not generate
      * any JavaScript.
      */
     public $enableClientScript = true;
@@ -225,7 +225,7 @@ class ActiveForm extends Widget {
             $attributes = Json::htmlEncode($this->attributes);
             $view = $this->getView();
             ActiveFormAsset::register($view);
-            $view->registerJs("jQuery('#$id').yiiActiveForm($attributes, $options);");
+            $view->registerJs("jQuery('#$id').kantActiveForm($attributes, $options);");
         }
 
         echo Html::endForm();
@@ -251,7 +251,7 @@ class ActiveForm extends Widget {
             $options['validationUrl'] = Url::to($this->validationUrl);
         }
 
-        // only get the options that are different from the default ones (set in yii.activeForm.js)
+        // only get the options that are different from the default ones (set in kant.activeForm.js)
         return array_diff_assoc($options, [
             'encodeErrorSummary' => true,
             'errorSummary' => '.error-summary',
@@ -275,7 +275,7 @@ class ActiveForm extends Widget {
      * - footer: string, the footer HTML for the error summary.
      *
      * The rest of the options will be rendered as the attributes of the container tag. The values will
-     * be HTML-encoded using [[\yii\helpers\Html::encode()]]. If a value is null, the corresponding attribute will not be rendered.
+     * be HTML-encoded using [[\Kant\Helper\Html::encode()]]. If a value is null, the corresponding attribute will not be rendered.
      * @return string the generated error summary
      * @see errorSummaryCssClass
      */

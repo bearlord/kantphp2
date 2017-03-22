@@ -10,8 +10,8 @@
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\web\JsExpression;
-use yii\helpers\Json;
+use Kant\Helper\JsExpression;
+use Kant\Helper\Json;
 
 /**
  * NumberValidator validates that the attribute value is a number.
@@ -20,6 +20,8 @@ use yii\helpers\Json;
  * Optionally, you may configure the [[max]] and [[min]] properties to ensure the number
  * is within certain range.
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 class NumberValidator extends Validator {
 
@@ -132,7 +134,6 @@ class NumberValidator extends Validator {
 
         if ($this->min !== null) {
             // ensure numeric value to make javascript comparison equal to PHP comparison
-            // https://github.com/yiisoft/yii2/issues/3118
             $options['min'] = is_string($this->min) ? (float) $this->min : $this->min;
             $options['tooSmall'] = Kant::$app->getI18n()->format($this->tooSmall, [
                 'attribute' => $label,
@@ -141,7 +142,6 @@ class NumberValidator extends Validator {
         }
         if ($this->max !== null) {
             // ensure numeric value to make javascript comparison equal to PHP comparison
-            // https://github.com/yiisoft/yii2/issues/3118
             $options['max'] = is_string($this->max) ? (float) $this->max : $this->max;
             $options['tooBig'] = Kant::$app->getI18n()->format($this->tooBig, [
                 'attribute' => $label,
@@ -154,7 +154,7 @@ class NumberValidator extends Validator {
 
         ValidationAsset::register($view);
 
-        return 'yii.validation.number(value, messages, ' . Json::htmlEncode($options) . ');';
+        return 'kant.validation.number(value, messages, ' . Json::htmlEncode($options) . ');';
     }
 
 }

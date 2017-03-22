@@ -26,7 +26,7 @@ class Kant {
      * @see getAlias()
      * @see setAlias()
      */
-    public static $aliases = ['@yii' => __DIR__];
+    public static $aliases = ['@kant' => __DIR__];
 
     /**
      * @var Container the dependency injection (DI) container used by [[createObject()]].
@@ -58,8 +58,8 @@ class Kant {
      *    the corresponding registered path.
      * 3. Throw an exception or return false, depending on the `$throwException` parameter.
      *
-     * For example, by default '@yii' is registered as the alias to the Yii framework directory,
-     * say '/path/to/yii'. The alias '@yii/web' would then be translated into '/path/to/yii/web'.
+     * For example, by default '@kant' is registered as the alias to the Kant framework directory,
+     * say '/path/to/kant'. The alias '@kant/web' would then be translated into '/path/to/kant/web'.
      *
      * If you have registered two aliases '@foo' and '@foo/bar'. Then translating '@foo/bar/config'
      * would replace the part '@foo/bar' (instead of '@foo') with the corresponding registered path.
@@ -108,7 +108,7 @@ class Kant {
      * Registers a path alias.
      *
      * A path alias is a short name representing a long path (a file path, a URL, etc.)
-     * For example, we use '@yii' as the alias of the path to the Yii framework directory.
+     * For example, we use '@kant' as the alias of the path to the Kant framework directory.
      *
      * A path alias must start with the character '@' so that it can be easily differentiated
      * from non-alias paths.
@@ -118,15 +118,15 @@ class Kant {
      *
      * Any trailing '/' and '\' characters in the given path will be trimmed.
      *
-     * @param string $alias the alias name (e.g. "@yii"). It must start with a '@' character.
+     * @param string $alias the alias name (e.g. "@kant"). It must start with a '@' character.
      * It may contain the forward slash '/' which serves as boundary character when performing
      * alias translation by [[getAlias()]].
      * @param string $path the path corresponding to the alias. If this is null, the alias will
      * be removed. Trailing '/' and '\' characters will be trimmed. This can be
      *
      * - a directory or a file path (e.g. `/tmp`, `/tmp/main.txt`)
-     * - a URL (e.g. `http://www.yiiframework.com`)
-     * - a path alias (e.g. `@yii/base`). In this case, the path alias will be converted into the
+     * - a URL (e.g. `http://www.kantphp.com`)
+     * - a path alias (e.g. `@kant/base`). In this case, the path alias will be converted into the
      *   actual path first by calling [[getAlias()]].
      *
      * @throws InvalidParamException if $path is an invalid alias.
@@ -238,7 +238,7 @@ class Kant {
     /**
      * Translates a message to the specified language.
      *
-     * This is a shortcut method of [[\yii\i18n\I18N::translate()]].
+     * This is a shortcut method of [[\Kant\I18n\I18N::translate()]].
      *
      * The translation will be conducted according to the message category and the target language will be used.
      *
@@ -251,7 +251,7 @@ class Kant {
      * ```
      *
      * Further formatting of message parameters is supported using the [PHP intl extensions](http://www.php.net/manual/en/intro.intl.php)
-     * message formatter. See [[\yii\i18n\I18N::translate()]] for more details.
+     * message formatter. See [[\Kant\I18n\I18N::translate()]] for more details.
      *
      * @param string $category the message category.
      * @param string $message the message to be translated.

@@ -1,16 +1,13 @@
 /**
- * Yii validation module.
- *
- * This JavaScript module provides the validation methods for the built-in validators.
- *
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
+ * Kant validation module.
+ * 
+ * @author  Qiang Xue <qiang.xue@gmail.com>
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-yii.validation = (function ($) {
+kant.validation = (function ($) {
     var pub = {
         isEmpty: function (value) {
             return value === null || value === undefined || value == [] || value === '';
@@ -41,7 +38,7 @@ yii.validation = (function ($) {
                 return;
             }
             var valid = !options.strict && (value == options.trueValue || value == options.falseValue)
-                || options.strict && (value === options.trueValue || value === options.falseValue);
+                    || options.strict && (value === options.trueValue || value === options.falseValue);
 
             if (!valid) {
                 pub.addMessage(messages, options.message, value);
@@ -88,8 +85,8 @@ yii.validation = (function ($) {
                 }
 
                 var def = $.Deferred(),
-                    fr = new FileReader(),
-                    img = new Image();
+                        fr = new FileReader(),
+                        img = new Image();
 
                 img.onload = function () {
                     if (options.minWidth && this.width < options.minWidth) {
@@ -194,7 +191,7 @@ yii.validation = (function ($) {
 
 
             var regexp = /^((?:"?([^"]*)"?\s)?)(?:\s+)?(?:(<?)((.+)@([^>]+))(>?))$/,
-                matches = regexp.exec(value);
+                    matches = regexp.exec(value);
 
             if (matches === null) {
                 valid = false
@@ -233,7 +230,7 @@ yii.validation = (function ($) {
 
             if (options.enableIDN) {
                 var regexp = /^([^:]+):\/\/([^\/]+)(.*)$/,
-                    matches = regexp.exec(value);
+                        matches = regexp.exec(value);
                 if (matches === null) {
                     valid = false;
                 } else {

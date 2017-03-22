@@ -10,10 +10,10 @@
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\base\InvalidConfigException;
-use yii\helpers\Html;
-use yii\helpers\Json;
-use yii\web\JsExpression;
+use Kant\Exception\InvalidConfigException;
+use Kant\Helper\Html;
+use Kant\Helper\Json;
+use Kant\Helper\JsExpression;
 
 /**
  * The validator checks if the attribute value is a valid IPv4/IPv6 address or subnet.
@@ -618,7 +618,7 @@ class IpValidator extends Validator {
 
         ValidationAsset::register($view);
 
-        return 'yii.validation.ip(value, messages, ' . Json::htmlEncode($options) . ');';
+        return 'kant.validation.ip(value, messages, ' . Json::htmlEncode($options) . ');';
     }
 
 }

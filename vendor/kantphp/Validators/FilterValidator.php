@@ -9,7 +9,7 @@
 
 namespace Kant\Validators;
 
-use yii\base\InvalidConfigException;
+use Kant\Exception\InvalidConfigException;
 
 /**
  * FilterValidator converts the attribute value according to a filter.
@@ -95,7 +95,7 @@ class FilterValidator extends Validator {
 
         ValidationAsset::register($view);
 
-        return 'value = yii.validation.trim($form, attribute, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
+        return 'value = kant.validation.trim($form, attribute, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
     }
 
 }

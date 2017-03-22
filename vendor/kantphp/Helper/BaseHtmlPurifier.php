@@ -9,6 +9,8 @@
 
 namespace Kant\Helper;
 
+use Kant\Kant;
+
 /**
  * BaseHtmlPurifier provides concrete implementation for [[HtmlPurifier]].
  *
@@ -48,7 +50,7 @@ class BaseHtmlPurifier {
         $configInstance = \HTMLPurifier_Config::create($config instanceof \Closure ? null : $config);
         $configInstance->autoFinalize = false;
         $purifier = \HTMLPurifier::instance($configInstance);
-        $purifier->config->set('Cache.SerializerPath', \Yii::$app->getRuntimePath());
+        $purifier->config->set('Cache.SerializerPath', Kant::$app->getRuntimePath());
         $purifier->config->set('Cache.SerializerPermissions', 0775);
 
         static::configure($configInstance);

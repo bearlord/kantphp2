@@ -12,7 +12,7 @@ namespace Kant\Validators;
 use Kant\Kant;
 use Kant\Helper\Html;
 use Kant\Helper\Json;
-use yii\web\JsExpression;
+use Kant\Helper\JsExpression;
 use Kant\Http\File\UploadedFile;
 use Kant\Helper\FileHelper;
 
@@ -382,7 +382,7 @@ class FileValidator extends Validator {
     public function clientValidateAttribute($model, $attribute, $view) {
         ValidationAsset::register($view);
         $options = $this->getClientOptions($model, $attribute);
-        return 'yii.validation.file(attribute, messages, ' . Json::encode($options) . ');';
+        return 'kant.validation.file(attribute, messages, ' . Json::encode($options) . ');';
     }
 
     /**

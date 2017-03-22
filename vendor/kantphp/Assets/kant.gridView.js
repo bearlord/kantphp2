@@ -1,22 +1,19 @@
 /**
- * Yii GridView widget.
- *
- * This is the JavaScript widget used by the yii\grid\GridView widget.
- *
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
+ * Kant GridView widget.
+ * 
+ * @author  Qiang Xue <qiang.xue@gmail.com>
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 (function ($) {
-    $.fn.yiiGridView = function (method) {
+    $.fn.kantGridView = function (method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
         } else if (typeof method === 'object' || !method) {
             return methods.init.apply(this, arguments);
         } else {
-            $.error('Method ' + method + ' does not exist on jQuery.yiiGridView');
+            $.error('Method ' + method + ' does not exist on jQuery.kantGridView');
             return false;
         }
     };
@@ -63,8 +60,8 @@
                 gridData[id] = $.extend(gridData[id], {settings: settings});
 
                 var enterPressed = false;
-                $(document).off('change.yiiGridView keydown.yiiGridView', settings.filterSelector)
-                    .on('change.yiiGridView keydown.yiiGridView', settings.filterSelector, function (event) {
+                $(document).off('change.kantGridView keydown.kantGridView', settings.filterSelector)
+                    .on('change.kantGridView keydown.kantGridView', settings.filterSelector, function (event) {
                         if (event.type === 'keydown') {
                             if (event.keyCode !== 13) {
                                 return; // only react to enter key
@@ -99,7 +96,7 @@
 
             var namesInFilter = Object.keys(data);
 
-            $.each(yii.getQueryParams(settings.filterUrl), function (name, value) {
+            $.each(kant.getQueryParams(settings.filterUrl), function (name, value) {
                 if (namesInFilter.indexOf(name) === -1 && namesInFilter.indexOf(name.replace(/\[\]$/, '')) === -1) {
                     if (!$.isArray(value)) {
                         value = [value];
@@ -157,10 +154,10 @@
             var checkAll = "#" + id + " input[name='" + options.checkAll + "']";
             var inputs = options.class ? "input." + options.class : "input[name='" + options.name + "']";
             var inputsEnabled = "#" + id + " " + inputs + ":enabled";
-            $(document).off('click.yiiGridView', checkAll).on('click.yiiGridView', checkAll, function () {
+            $(document).off('click.kantGridView', checkAll).on('click.kantGridView', checkAll, function () {
                 $grid.find(inputs + ":enabled").prop('checked', this.checked);
             });
-            $(document).off('click.yiiGridView', inputsEnabled).on('click.yiiGridView', inputsEnabled, function () {
+            $(document).off('click.kantGridView', inputsEnabled).on('click.kantGridView', inputsEnabled, function () {
                 var all = $grid.find(inputs).length == $grid.find(inputs + ":checked").length;
                 $grid.find("input[name='" + options.checkAll + "']").prop('checked', all);
             });
@@ -180,8 +177,8 @@
 
         destroy: function () {
             return this.each(function () {
-                $(window).unbind('.yiiGridView');
-                $(this).removeData('yiiGridView');
+                $(window).unbind('.kantGridView');
+                $(this).removeData('kantGridView');
             });
         },
 

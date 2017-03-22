@@ -1,15 +1,17 @@
 <?php
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Database\Mysql;
 
+use Kant\Database\QueryBuilder;
 use Kant\Exception\InvalidParamException;
 use Kant\Database\Exception;
-use yii\db\Expression;
+use Kant\Database\Expression;
 
 /**
  * QueryBuilder is the query builder for MySQL databases.
@@ -17,7 +19,7 @@ use yii\db\Expression;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class QueryBuilder extends \yii\db\QueryBuilder
+class QueryBuilder extends QueryBuilder
 {
     /**
      * @var array mapping from abstract column types (keys) to physical column types (values).

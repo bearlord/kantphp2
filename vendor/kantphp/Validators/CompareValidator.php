@@ -11,7 +11,7 @@ namespace Kant\Validators;
 
 use Kant\Kant;
 use Kant\Exception\InvalidConfigException;
-use yii\helpers\Html;
+use Kant\Helper\Html;
 
 /**
  * CompareValidator compares the specified attribute value with another value.
@@ -236,7 +236,7 @@ class CompareValidator extends Validator {
 
         ValidationAsset::register($view);
 
-        return 'yii.validation.compare(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
+        return 'kant.validation.compare(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
     }
 
 }

@@ -492,16 +492,16 @@ class Query extends Component implements QueryInterface {
      *
      * ```php
      * // SELECT * FROM  `user` `u`, `profile`;
-     * $query = (new \yii\db\Query)->from(['u' => 'user', 'profile']);
+     * $query = (new \Kant\Database\Query)->from(['u' => 'user', 'profile']);
      *
      * // SELECT * FROM (SELECT * FROM `user` WHERE `active` = 1) `activeusers`;
-     * $subquery = (new \yii\db\Query)->from('user')->where(['active' => true])
-     * $query = (new \yii\db\Query)->from(['activeusers' => $subquery]);
+     * $subquery = (new \Kant\Database\Query)->from('user')->where(['active' => true])
+     * $query = (new \Kant\Database\Query)->from(['activeusers' => $subquery]);
      *
      * // subquery can also be a string with plain SQL wrapped in parenthesis
      * // SELECT * FROM (SELECT * FROM `user` WHERE `active` = 1) `activeusers`;
      * $subquery = "(SELECT * FROM `user` WHERE `active` = 1)";
-     * $query = (new \yii\db\Query)->from(['activeusers' => $subquery]);
+     * $query = (new \Kant\Database\Query)->from(['activeusers' => $subquery]);
      * ```
      *
      * @return $this the query object itself

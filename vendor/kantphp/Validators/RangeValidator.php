@@ -10,8 +10,8 @@
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\base\InvalidConfigException;
-use yii\helpers\ArrayHelper;
+use Kant\Exception\InvalidConfigException;
+use Kant\Helper\ArrayHelper;
 
 /**
  * RangeValidator validates that the attribute value is among a list of values.
@@ -124,7 +124,7 @@ class RangeValidator extends Validator {
 
         ValidationAsset::register($view);
 
-        return 'yii.validation.range(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
+        return 'kant.validation.range(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
     }
 
 }

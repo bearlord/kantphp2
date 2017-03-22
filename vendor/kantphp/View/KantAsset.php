@@ -10,16 +10,16 @@
 namespace Kant\View;
 
 /**
- * This asset bundle provides the base javascript files for the Yii Framework.
+ * This asset bundle provides the base javascript files for the KantPHP Framework.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
 class KantAsset extends AssetBundle {
 
-    public $sourcePath = '@yii/assets';
+    public $sourcePath = '@kant/assets';
     public $js = [
-        'yii.js',
+        'kant.js',
     ];
     public $depends = [
         'Kant\View\JqueryAsset',

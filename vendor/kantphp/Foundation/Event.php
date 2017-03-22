@@ -67,7 +67,7 @@ class Event extends Object {
      *
      * ```php
      * Event::on(ActiveRecord::className(), ActiveRecord::EVENT_AFTER_INSERT, function ($event) {
-     *     Yii::trace(get_class($event->sender) . ' is inserted.');
+     *     Kant::trace(get_class($event->sender) . ' is inserted.');
      * });
      * ```
      *

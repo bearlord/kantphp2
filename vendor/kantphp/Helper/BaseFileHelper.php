@@ -1,16 +1,18 @@
 <?php
+
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Helper;
 
 use Kant\Kant;
-use yii\base\ErrorException;
-use yii\base\InvalidConfigException;
-use yii\base\InvalidParamException;
+use Kant\Exception\KantException;
+use Kant\Exception\ErrorException;
+use Kant\Exception\InvalidParamException;
 
 /**
  * BaseFileHelper provides concrete implementation for [[FileHelper]].
@@ -21,8 +23,8 @@ use yii\base\InvalidParamException;
  * @author Alex Makarov <sam@rmcreative.ru>
  * @since 2.0
  */
-class BaseFileHelper
-{
+class BaseFileHelper {
+
     const PATTERN_NODIR = 1;
     const PATTERN_ENDSWITH = 4;
     const PATTERN_MUSTBEDIR = 8;
@@ -32,8 +34,7 @@ class BaseFileHelper
     /**
      * @var string the path (or alias) of a PHP file containing MIME type information.
      */
-    public static $mimeMagicFile = '@yii/Helper/mimeTypes.php';
-
+    public static $mimeMagicFile = '@kant/Helper/mimeTypes.php';
 
     /**
      * Normalizes a file/directory path.
@@ -48,8 +49,7 @@ class BaseFileHelper
      * @param string $ds the directory separator to be used in the normalized result. Defaults to `DIRECTORY_SEPARATOR`.
      * @return string the normalized file/directory path
      */
-    public static function normalizePath($path, $ds = DIRECTORY_SEPARATOR)
-    {
+    public static function normalizePath($path, $ds = DIRECTORY_SEPARATOR) {
         $path = rtrim(strtr($path, '/\\', $ds . $ds), $ds);
         if (strpos($ds . $path, "{$ds}.") === false && strpos($path, "{$ds}{$ds}") === false) {
             return $path;
@@ -84,14 +84,13 @@ class BaseFileHelper
      *
      * @param string $file the original file
      * @param string $language the target language that the file should be localized to.
-     * If not set, the value of [[\yii\base\Application::language]] will be used.
+     * If not set, the value of [[\Kant\Application::language]] will be used.
      * @param string $sourceLanguage the language that the original file is in.
-     * If not set, the value of [[\yii\base\Application::sourceLanguage]] will be used.
+     * If not set, the value of [[\Kant\Application::sourceLanguage]] will be used.
      * @return string the matching localized file, or the original file if the localized version is not found.
      * If the target and the source language codes are the same, the original file will be returned.
      */
-    public static function localize($file, $language = null, $sourceLanguage = null)
-    {
+    public static function localize($file, $language = null, $sourceLanguage = null) {
         if ($language === null) {
             $language = Kant::$app->language;
         }
@@ -130,8 +129,7 @@ class BaseFileHelper
      * @return string the MIME type (e.g. `text/plain`). Null is returned if the MIME type cannot be determined.
      * @throws InvalidConfigException when the `fileinfo` PHP extension is not installed and `$checkExtension` is `false`.
      */
-    public static function getMimeType($file, $magicFile = null, $checkExtension = true)
-    {
+    public static function getMimeType($file, $magicFile = null, $checkExtension = true) {
         if ($magicFile !== null) {
             $magicFile = Kant::getAlias($magicFile);
         }
@@ -163,8 +161,7 @@ class BaseFileHelper
      * If this is not set, the file specified by [[mimeMagicFile]] will be used.
      * @return string the MIME type. Null is returned if the MIME type cannot be determined.
      */
-    public static function getMimeTypeByExtension($file, $magicFile = null)
-    {
+    public static function getMimeTypeByExtension($file, $magicFile = null) {
         $mimeTypes = static::loadMimeTypes($magicFile);
 
         if (($ext = pathinfo($file, PATHINFO_EXTENSION)) !== '') {
@@ -185,8 +182,7 @@ class BaseFileHelper
      * If this is not set, the file specified by [[mimeMagicFile]] will be used.
      * @return array the extensions corresponding to the specified MIME type
      */
-    public static function getExtensionsByMimeType($mimeType, $magicFile = null)
-    {
+    public static function getExtensionsByMimeType($mimeType, $magicFile = null) {
         $mimeTypes = static::loadMimeTypes($magicFile);
         return array_keys($mimeTypes, mb_strtolower($mimeType, 'UTF-8'), true);
     }
@@ -199,8 +195,7 @@ class BaseFileHelper
      * If this is not set, the file specified by [[mimeMagicFile]] will be used.
      * @return array the mapping from file extensions to MIME types
      */
-    protected static function loadMimeTypes($magicFile)
-    {
+    protected static function loadMimeTypes($magicFile) {
         if ($magicFile === null) {
             $magicFile = static::$mimeMagicFile;
         }
@@ -248,10 +243,9 @@ class BaseFileHelper
      * - afterCopy: callback, a PHP callback that is called after each sub-directory or file is successfully copied.
      *   The signature of the callback should be: `function ($from, $to)`, where `$from` is the sub-directory or
      *   file copied from, while `$to` is the copy target.
-     * @throws \yii\base\InvalidParamException if unable to open directory
+     * @throws \Kant\Exception\InvalidParamException if unable to open directory
      */
-    public static function copyDirectory($src, $dst, $options = [])
-    {
+    public static function copyDirectory($src, $dst, $options = []) {
         $src = static::normalizePath($src);
         $dst = static::normalizePath($dst);
 
@@ -312,8 +306,7 @@ class BaseFileHelper
      *
      * @throws ErrorException in case of failure
      */
-    public static function removeDirectory($dir, $options = [])
-    {
+    public static function removeDirectory($dir, $options = []) {
         if (!is_dir($dir)) {
             return;
         }
@@ -384,8 +377,7 @@ class BaseFileHelper
      * @return array files found under the directory. The file list is sorted.
      * @throws InvalidParamException if the dir is invalid.
      */
-    public static function findFiles($dir, $options = [])
-    {
+    public static function findFiles($dir, $options = []) {
         if (!is_dir($dir)) {
             throw new InvalidParamException("The dir argument must be a directory: $dir");
         }
@@ -425,8 +417,7 @@ class BaseFileHelper
      * the supported options.
      * @return boolean whether the file or directory satisfies the filtering options.
      */
-    public static function filterPath($path, $options)
-    {
+    public static function filterPath($path, $options) {
         if (isset($options['filter'])) {
             $result = call_user_func($options['filter'], $path);
             if (is_bool($result)) {
@@ -469,10 +460,9 @@ class BaseFileHelper
      * @param integer $mode the permission to be set for the created directory.
      * @param boolean $recursive whether to create parent directories if they do not exist.
      * @return boolean whether the directory is created successfully
-     * @throws \yii\base\Exception if the directory could not be created (i.e. php error due to parallel changes)
+     * @throws \Kant\Exception\KantException if the directory could not be created (i.e. php error due to parallel changes)
      */
-    public static function createDirectory($path, $mode = 0775, $recursive = true)
-    {
+    public static function createDirectory($path, $mode = 0775, $recursive = true) {
         if (is_dir($path)) {
             return true;
         }
@@ -486,14 +476,14 @@ class BaseFileHelper
                 return false;
             }
         } catch (\Exception $e) {
-            if (!is_dir($path)) {// https://github.com/yiisoft/yii2/issues/9288
-                throw new \yii\base\Exception("Failed to create directory \"$path\": " . $e->getMessage(), $e->getCode(), $e);
+            if (!is_dir($path)) {
+                throw new KantException("Failed to create directory \"$path\": " . $e->getMessage(), $e->getCode());
             }
         }
         try {
             return chmod($path, $mode);
         } catch (\Exception $e) {
-            throw new \yii\base\Exception("Failed to change permissions for directory \"$path\": " . $e->getMessage(), $e->getCode(), $e);
+            throw new KantException("Failed to change permissions for directory \"$path\": " . $e->getMessage(), $e->getCode());
         }
     }
 
@@ -508,8 +498,7 @@ class BaseFileHelper
      * @param integer $flags pattern flags
      * @return boolean whether the name matches against pattern
      */
-    private static function matchBasename($baseName, $pattern, $firstWildcard, $flags)
-    {
+    private static function matchBasename($baseName, $pattern, $firstWildcard, $flags) {
         if ($firstWildcard === false) {
             if ($pattern === $baseName) {
                 return true;
@@ -542,8 +531,7 @@ class BaseFileHelper
      * @param integer $flags pattern flags
      * @return boolean whether the path part matches against pattern
      */
-    private static function matchPathname($path, $basePath, $pattern, $firstWildcard, $flags)
-    {
+    private static function matchPathname($path, $basePath, $pattern, $firstWildcard, $flags) {
         // match with FNM_PATHNAME; the pattern has base implicitly in front of it.
         if (isset($pattern[0]) && $pattern[0] === '/') {
             $pattern = StringHelper::byteSubstr($pattern, 1, StringHelper::byteLength($pattern));
@@ -598,8 +586,7 @@ class BaseFileHelper
      * @return string null or one of $excludes item as an array with keys: 'pattern', 'flags'
      * @throws InvalidParamException if any of the exclude patterns is not a string or an array with keys: pattern, flags, firstWildcard.
      */
-    private static function lastExcludeMatchingFromList($basePath, $path, $excludes)
-    {
+    private static function lastExcludeMatchingFromList($basePath, $path, $excludes) {
         foreach (array_reverse($excludes) as $exclude) {
             if (is_string($exclude)) {
                 $exclude = self::parseExcludePattern($exclude, false);
@@ -630,11 +617,10 @@ class BaseFileHelper
      * Processes the pattern, stripping special characters like / and ! from the beginning and settings flags instead.
      * @param string $pattern
      * @param boolean $caseSensitive
-     * @throws \yii\base\InvalidParamException
+     * @throws \Kant\Exception\InvalidParamException
      * @return array with keys: (string) pattern, (int) flags, (int|boolean) firstWildcard
      */
-    private static function parseExcludePattern($pattern, $caseSensitive)
-    {
+    private static function parseExcludePattern($pattern, $caseSensitive) {
         if (!is_string($pattern)) {
             throw new InvalidParamException('Exclude/include pattern must be a string.');
         }
@@ -678,8 +664,7 @@ class BaseFileHelper
      * @param string $pattern the pattern to search in
      * @return integer|boolean position of first wildcard character or false if not found
      */
-    private static function firstWildcardInPattern($pattern)
-    {
+    private static function firstWildcardInPattern($pattern) {
         $wildcards = ['*', '?', '[', '\\'];
         $wildcardSearch = function ($r, $c) use ($pattern) {
             $p = strpos($pattern, $c);
@@ -694,8 +679,7 @@ class BaseFileHelper
      * @param array $options raw options
      * @return array normalized options
      */
-    private static function normalizeOptions(array $options)
-    {
+    private static function normalizeOptions(array $options) {
         if (!array_key_exists('caseSensitive', $options)) {
             $options['caseSensitive'] = true;
         }
@@ -715,4 +699,5 @@ class BaseFileHelper
         }
         return $options;
     }
+
 }

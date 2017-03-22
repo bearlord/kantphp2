@@ -231,7 +231,6 @@ trait ActiveRelationTrait {
 
             return [$model];
         } else {
-            // https://github.com/yiisoft/yii2/issues/3197
             // delay indexing related models after buckets are built
             $indexBy = $this->indexBy;
             $this->indexBy = null;

@@ -71,8 +71,8 @@ class AssetBundle extends Object {
      *
      * ```php
      * public $depends = [
-     *    'yii\web\YiiAsset',
-     *    'yii\bootstrap\BootstrapAsset',
+     *    'Kant\View\KantAsset',
+     *    'Kant\View\BootstrapAsset',
      * ];
      * ```
      */
@@ -149,7 +149,7 @@ class AssetBundle extends Object {
 
     /**
      * Registers the CSS and JS files with the given view.
-     * @param \yii\web\View $view the view that the asset files are to be registered with.
+     * @param \Kant\View\View $view the view that the asset files are to be registered with.
      */
     public function registerAssetFiles($view) {
         $manager = $view->getAssetManager();

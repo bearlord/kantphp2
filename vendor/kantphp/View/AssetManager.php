@@ -19,7 +19,7 @@ use Kant\Helper\Url;
 /**
  * AssetManager manages asset bundle configuration and loading.
  *
- * AssetManager is configured as an application component in [[\yii\web\Application]] by default.
+ * AssetManager is configured as an application component in [[\Kant\Application]] by default.
  * You can access that instance via `Kant::$app->assetManager`.
  *
  * You can modify its configuration by adding an array to your application config under `components`
@@ -58,7 +58,7 @@ class AssetManager extends Component {
      *
      * ```php
      * [
-     *     'yii\bootstrap\BootstrapAsset' => [
+     *     'Kant\View\BootstrapAsset' => [
      *         'css' => [],
      *     ],
      * ]
@@ -150,7 +150,7 @@ class AssetManager extends Component {
      * The signature of the callback should be: `function ($from, $to)`, where `$from` is the sub-directory or
      * file to be copied from, while `$to` is the copy target.
      *
-     * This is passed as a parameter `beforeCopy` to [[\yii\helpers\FileHelper::copyDirectory()]].
+     * This is passed as a parameter `beforeCopy` to [[\Kant\Helper\FileHelper::copyDirectory()]].
      */
     public $beforeCopy;
 
@@ -158,7 +158,7 @@ class AssetManager extends Component {
      * @var callback a PHP callback that is called after a sub-directory or file is successfully copied.
      * This option is used only when publishing a directory. The signature of the callback is the same as
      * for [[beforeCopy]].
-     * This is passed as a parameter `afterCopy` to [[\yii\helpers\FileHelper::copyDirectory()]].
+     * This is passed as a parameter `afterCopy` to [[\Kant\Helper\FileHelper::copyDirectory()]].
      */
     public $afterCopy;
 
@@ -419,8 +419,7 @@ class AssetManager extends Component {
      * one-time-manifestation of a non-critical problem in the creation of the directory
      * that holds the published assets. This problem can be avoided altogether by 'requesting'
      * in advance all the resources that are supposed to trigger a 'publish()' call, and doing
-     * that in the application deployment phase, before system goes live. See more in the following
-     * discussion: http://code.google.com/p/yii/issues/detail?id=2579
+     * that in the application deployment phase, before system goes live. 
      *
      * @param string $path the asset (file or directory) to be published
      * @param array $options the options to be applied when publishing a directory.

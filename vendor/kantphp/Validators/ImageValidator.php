@@ -10,7 +10,7 @@
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\web\UploadedFile;
+use Kant\Http\File\UploadedFile;
 
 /**
  * ImageValidator verifies if an attribute is receiving a valid image.
@@ -171,7 +171,7 @@ class ImageValidator extends FileValidator {
     public function clientValidateAttribute($model, $attribute, $view) {
         ValidationAsset::register($view);
         $options = $this->getClientOptions($model, $attribute);
-        return 'yii.validation.image(attribute, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ', deferred);';
+        return 'kant.validation.image(attribute, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ', deferred);';
     }
 
     /**

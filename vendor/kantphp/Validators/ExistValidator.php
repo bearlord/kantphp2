@@ -10,7 +10,7 @@
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\base\InvalidConfigException;
+use Kant\Exception\InvalidConfigException;
 
 /**
  * ExistValidator validates that the attribute value exists in a table.

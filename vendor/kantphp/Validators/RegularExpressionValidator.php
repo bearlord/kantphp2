@@ -10,10 +10,10 @@
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\base\InvalidConfigException;
-use yii\helpers\Html;
-use yii\web\JsExpression;
-use yii\helpers\Json;
+use Kant\Exception\InvalidConfigException;
+use Kant\Helper\Html;
+use Kant\Helper\JsExpression;
+use Kant\Helper\Json;
 
 /**
  * RegularExpressionValidator validates that the attribute value matches the specified [[pattern]].
@@ -78,7 +78,7 @@ class RegularExpressionValidator extends Validator {
 
         ValidationAsset::register($view);
 
-        return 'yii.validation.regularExpression(value, messages, ' . Json::htmlEncode($options) . ');';
+        return 'kant.validation.regularExpression(value, messages, ' . Json::htmlEncode($options) . ');';
     }
 
 }

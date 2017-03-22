@@ -9,6 +9,7 @@
 
 namespace Kant\Foundation;
 
+use Kant\Kant;
 use Kant\Foundation\Object;
 use Kant\Exception\InvalidCallException;
 use Kant\Exception\UnknownMethodException;
@@ -96,7 +97,7 @@ class Component extends Object {
         } elseif (strncmp($name, 'as ', 3) === 0) {
             // as behavior: attach behavior
             $name = trim(substr($name, 3));
-            $this->attachBehavior($name, $value instanceof Behavior ? $value : Yii::createObject($value));
+            $this->attachBehavior($name, $value instanceof Behavior ? $value : Kant::createObject($value));
 
             return;
         } else {
@@ -498,7 +499,7 @@ class Component extends Object {
      *
      *  - a [[Behavior]] object
      *  - a string specifying the behavior class
-     *  - an object configuration array that will be passed to [[Yii::createObject()]] to create the behavior object.
+     *  - an object configuration array that will be passed to [[Kant::createObject()]] to create the behavior object.
      *
      * @return Behavior the behavior object
      * @see detachBehavior()
@@ -572,7 +573,7 @@ class Component extends Object {
      */
     private function attachBehaviorInternal($name, $behavior) {
         if (!($behavior instanceof Behavior)) {
-            $behavior = Yii::createObject($behavior);
+            $behavior = Kant::createObject($behavior);
         }
         if (is_int($name)) {
             $behavior->attach($this);

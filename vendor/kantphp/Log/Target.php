@@ -25,8 +25,8 @@ class Target extends Component {
     /**
      * @var array list of message categories that this target is interested in. Defaults to empty, meaning all categories.
      * You can use an asterisk at the end of a category so that the category may be used to
-     * match those categories sharing the same common prefix. For example, 'yii\db\*' will match
-     * categories starting with 'yii\db\', such as 'yii\db\Connection'.
+     * match those categories sharing the same common prefix. For example, 'Kant\Database\*' will match
+     * categories starting with 'Kant\Database\', such as 'Kant\Database\Connection'.
      */
     public $categories = [];
 
@@ -34,8 +34,8 @@ class Target extends Component {
      * @var array list of message categories that this target is NOT interested in. Defaults to empty, meaning no uninteresting messages.
      * If this property is not empty, then any category listed here will be excluded from [[categories]].
      * You can use an asterisk at the end of a category so that the category can be used to
-     * match those categories sharing the same common prefix. For example, 'yii\db\*' will match
-     * categories starting with 'yii\db\', such as 'yii\db\Connection'.
+     * match those categories sharing the same common prefix. For example, 'Kant\Database\*' will match
+     * categories starting with 'Kant\Database\', such as 'Kant\Database\Connection'.
      * @see categories
      */
     public $except = [];
@@ -53,7 +53,7 @@ class Target extends Component {
      * - `var.key` - only `var[key]` key will be logged.
      * - `!var.key` - `var[key]` key will be excluded.
      *
-     * @see \yii\helpers\ArrayHelper::filter()
+     * @see \Kant\Helper\ArrayHelper::filter()
      */
     public $logVars = ['_GET', '_POST', '_FILES', '_COOKIE', '_SESSION', '_SERVER'];
 

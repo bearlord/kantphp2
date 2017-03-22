@@ -232,7 +232,7 @@ class Connection extends Component {
     ];
 
     /**
-     * @var string Custom PDO wrapper class. If not set, it will use [[PDO]] or [[yii\db\mssql\PDO]] when MSSQL is used.
+     * @var string Custom PDO wrapper class. If not set, it will use [[PDO]] or [[Kant\Database\Mssql\PDO]] when MSSQL is used.
      * @see pdo
      */
     public $pdoClass;
@@ -466,7 +466,7 @@ class Connection extends Component {
      * @param integer $duration the number of seconds that query results can remain valid in the cache. If this is
      * not set, the value of [[queryCacheDuration]] will be used instead.
      * Use 0 to indicate that the cached data will never expire.
-     * @param \yii\caching\Dependency $dependency the cache dependency associated with the cached query results.
+     * @param \Kant\Cache\Dependency $dependency the cache dependency associated with the cached query results.
      * @return mixed the return result of the callable
      * @throws \Exception if there is any exception during query
      * @see enableQueryCache
@@ -525,7 +525,7 @@ class Connection extends Component {
      * Returns the current query cache information.
      * This method is used internally by [[Command]].
      * @param integer $duration the preferred caching duration. If null, it will be ignored.
-     * @param \yii\caching\Dependency $dependency the preferred caching dependency. If null, it will be ignored.
+     * @param \Kant\Cache\Dependency $dependency the preferred caching dependency. If null, it will be ignored.
      * @return array the current query cache information, or null if query cache is not enabled.
      * @internal
      */
@@ -634,9 +634,9 @@ class Connection extends Component {
             }
             if (isset($driver)) {
                 if ($driver === 'mssql' || $driver === 'dblib') {
-                    $pdoClass = 'yii\db\mssql\PDO';
+                    $pdoClass = 'Kant\Database\Mssql\PDO';
                 } elseif ($driver === 'sqlsrv') {
-                    $pdoClass = 'yii\db\mssql\SqlsrvPDO';
+                    $pdoClass = 'Kant\Database\Mssql\SqlsrvPDO';
                 }
             }
         }

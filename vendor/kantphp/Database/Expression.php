@@ -1,9 +1,10 @@
 <?php
 
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Database;
@@ -17,7 +18,7 @@ namespace Kant\Database;
  *
  * ```php
  * $expression = new Expression('NOW()');
- * $now = (new \yii\db\Query)->select($expression)->scalar();  // SELECT NOW();
+ * $now = (new \Kant\Database\Query)->select($expression)->scalar();  // SELECT NOW();
  * echo $now; // prints the current date
  * ```
  *

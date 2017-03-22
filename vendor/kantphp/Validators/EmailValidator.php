@@ -10,9 +10,9 @@
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\base\InvalidConfigException;
-use yii\web\JsExpression;
-use yii\helpers\Json;
+use Kant\Exception\InvalidConfigException;
+use Kant\Helper\JsExpression;
+use Kant\Helper\Json;
 
 /**
  * EmailValidator validates that the attribute value is a valid email address.
@@ -129,7 +129,7 @@ class EmailValidator extends Validator {
             PunycodeAsset::register($view);
         }
 
-        return 'yii.validation.email(value, messages, ' . Json::htmlEncode($options) . ');';
+        return 'kant.validation.email(value, messages, ' . Json::htmlEncode($options) . ');';
     }
 
 }

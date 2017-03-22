@@ -1,13 +1,16 @@
 <?php
+
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Kant Software LLC
- * @license http://www.yiiframework.com/license/
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Database;
 
 use Kant\Kant;
+use Kant\Foundation\Object;
 use Kant\Exception\InvalidConfigException;
 
 /**
@@ -39,24 +42,29 @@ use Kant\Exception\InvalidConfigException;
  * write-only.
  * @property integer $level The current nesting level of the transaction. This property is read-only.
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
-class Transaction extends \yii\base\Object
-{
+class Transaction extends Object {
+
     /**
      * A constant representing the transaction isolation level `READ UNCOMMITTED`.
      * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
     const READ_UNCOMMITTED = 'READ UNCOMMITTED';
+
     /**
      * A constant representing the transaction isolation level `READ COMMITTED`.
      * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
     const READ_COMMITTED = 'READ COMMITTED';
+
     /**
      * A constant representing the transaction isolation level `REPEATABLE READ`.
      * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
     const REPEATABLE_READ = 'REPEATABLE READ';
+
     /**
      * A constant representing the transaction isolation level `SERIALIZABLE`.
      * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
@@ -73,14 +81,12 @@ class Transaction extends \yii\base\Object
      */
     private $_level = 0;
 
-
     /**
      * Returns a value indicating whether this transaction is active.
      * @return boolean whether this transaction is active. Only an active transaction
      * can [[commit()]] or [[rollBack()]].
      */
-    public function getIsActive()
-    {
+    public function getIsActive() {
         return $this->_level > 0 && $this->db && $this->db->isActive;
     }
 
@@ -102,8 +108,7 @@ class Transaction extends \yii\base\Object
      * [isolation level]: http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      * @throws InvalidConfigException if [[db]] is `null`.
      */
-    public function begin($isolationLevel = null)
-    {
+    public function begin($isolationLevel = null) {
         if ($this->db === null) {
             throw new InvalidConfigException('Transaction::db must be set.');
         }
@@ -125,7 +130,7 @@ class Transaction extends \yii\base\Object
         $schema = $this->db->getSchema();
         if ($schema->supportsSavepoint()) {
             Kant::trace('Set savepoint ' . $this->_level, __METHOD__);
-            
+
             $schema->createSavepoint('LEVEL' . $this->_level);
         } else {
             Kant::info('Transaction not started: nested transaction not supported', __METHOD__);
@@ -137,8 +142,7 @@ class Transaction extends \yii\base\Object
      * Commits a transaction.
      * @throws Exception if the transaction is not active
      */
-    public function commit()
-    {
+    public function commit() {
         if (!$this->getIsActive()) {
             throw new Exception('Failed to commit transaction: transaction was inactive.');
         }
@@ -164,8 +168,7 @@ class Transaction extends \yii\base\Object
      * Rolls back a transaction.
      * @throws Exception if the transaction is not active
      */
-    public function rollBack()
-    {
+    public function rollBack() {
         if (!$this->getIsActive()) {
             // do nothing if transaction is not active: this could be the transaction is committed
             // but the event handler to "commitTransaction" throw an exception
@@ -203,8 +206,7 @@ class Transaction extends \yii\base\Object
      * @throws Exception if the transaction is not active
      * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
-    public function setIsolationLevel($level)
-    {
+    public function setIsolationLevel($level) {
         if (!$this->getIsActive()) {
             throw new Exception('Failed to set isolation level: transaction was inactive.');
         }
@@ -216,8 +218,8 @@ class Transaction extends \yii\base\Object
      * @return integer The current nesting level of the transaction.
      * @since 2.0.8
      */
-    public function getLevel()
-    {
+    public function getLevel() {
         return $this->_level;
     }
+
 }

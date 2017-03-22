@@ -399,7 +399,7 @@ class View extends BaseView {
 
     /**
      * Registers the asset manager being used by this view object.
-     * @return \yii\web\AssetManager the asset manager. Defaults to the "assetManager" application component.
+     * @return \Kant\View\AssetManager the asset manager. Defaults to the "assetManager" application component.
      */
     public function getAssetManager() {
         return $this->_assetManager ?: Kant::$app->getAssetManager();

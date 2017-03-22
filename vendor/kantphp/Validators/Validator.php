@@ -12,8 +12,7 @@ namespace Kant\Validators;
 use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Factory;
-
-//use yii\base\NotSupportedException;
+use Kant\Exception\NotSupportedException;
 
 /**
  * Validator is the base class for all validators.

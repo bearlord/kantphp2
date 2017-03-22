@@ -9,9 +9,9 @@
 
 namespace Kant\Validators;
 
-use yii\base\InvalidConfigException;
+use Kant\Exception\InvalidConfigException;
 use Kant\Kant;
-use yii\base\Model;
+use Kant\Model\Model;
 
 /**
  * EachValidator validates an array by checking each of its elements against an embedded validation rule.
@@ -44,7 +44,7 @@ class EachValidator extends Validator {
 
     /**
      * @var array|Validator definition of the validation rule, which should be used on array values.
-     * It should be specified in the same format as at [[yii\base\Model::rules()]], except it should not
+     * It should be specified in the same format as at [[Kant\Model\Model::rules()]], except it should not
      * contain attribute list as the first element.
      * For example:
      *
@@ -53,7 +53,7 @@ class EachValidator extends Validator {
      * ['match', 'pattern' => '/[a-z]/is']
      * ```
      *
-     * Please refer to [[yii\base\Model::rules()]] for more details.
+     * Please refer to [[Kant\Model\Model::rules()]] for more details.
      */
     public $rule;
 

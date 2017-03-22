@@ -40,7 +40,7 @@ use Kant\Exception\InvalidParamException;
  *
  * You may directly use Model to store model data, or extend it with customization.
  *
- * @property \yii\validators\Validator[] $activeValidators The validators applicable to the current
+ * @property \Kant\Validators\Validator[] $activeValidators The validators applicable to the current
  * [[scenario]]. This property is read-only.
  * @property array $attributes Attribute values (name => value).
  * @property array $errors An array of errors for all attributes. Empty array is returned if no error. The
@@ -51,7 +51,7 @@ use Kant\Exception\InvalidParamException;
  * @property ArrayIterator $iterator An iterator for traversing the items in the list. This property is
  * read-only.
  * @property string $scenario The scenario that this model is in. Defaults to [[SCENARIO_DEFAULT]].
- * @property ArrayObject|\yii\validators\Validator[] $validators All the validators declared in the model.
+ * @property ArrayObject|\Kant\Validators\Validator[] $validators All the validators declared in the model.
  * This property is read-only.
  * 
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -133,7 +133,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
      * can be accessed as `$this->$attribute`. Note the `$` before `attribute`; this is taking the value of the variable
      * `$attribute` and using it as the name of the property to access.
      *
-     * Yii also provides a set of [[Validator::builtInValidators|built-in validators]].
+     * Kant also provides a set of [[Validator::builtInValidators|built-in validators]].
      * Each one has an alias name which can be used when specifying a validation rule.
      *
      * Below are some examples:
@@ -235,7 +235,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
     /**
      * Returns the form name that this model class should use.
      *
-     * The form name is mainly used by [[\yii\widgets\ActiveForm]] to determine how to name
+     * The form name is mainly used by [[\Kant\Widget\ActiveForm]] to determine how to name
      * the input fields for the attributes in a model. If the form name is "A" and an attribute
      * name is "b", then the corresponding input name would be "A[b]". If the form name is
      * an empty string, then the input name would be "b".
@@ -401,7 +401,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
      * $model->validators[] = $newValidator;
      * ```
      *
-     * @return ArrayObject|\yii\validators\Validator[] all the validators declared in the model.
+     * @return ArrayObject|\Kant\Validators\Validator[] all the validators declared in the model.
      */
     public function getValidators() {
         if ($this->_validators === null) {
@@ -414,7 +414,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
      * Returns the validators applicable to the current [[scenario]].
      * @param string $attribute the name of the attribute whose applicable validators should be returned.
      * If this is null, the validators for ALL attributes in the model will be returned.
-     * @return \yii\validators\Validator[] the validators applicable to the current [[scenario]].
+     * @return \Kant\Validators\Validator[] the validators applicable to the current [[scenario]].
      */
     public function getActiveValidators($attribute = null) {
         $validators = [];
@@ -451,11 +451,11 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
     /**
      * Returns a value indicating whether the attribute is required.
      * This is determined by checking if the attribute is associated with a
-     * [[\yii\validators\RequiredValidator|required]] validation rule in the
+     * [[\Kant\Validators\RequiredValidator|required]] validation rule in the
      * current [[scenario]].
      *
      * Note that when the validator has a conditional validation applied using
-     * [[\yii\validators\RequiredValidator::$when|$when]] this method will return
+     * [[\Kant\Validators\RequiredValidator::$when|$when]] this method will return
      * `false` regardless of the `when` condition because it may be called be
      * before the model is loaded with data.
      *
@@ -687,7 +687,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
 
     /**
      * This method is invoked when an unsafe attribute is being massively assigned.
-     * The default implementation will log a warning message if YII_DEBUG is on.
+     * The default implementation will log a warning message if DEBUG is on.
      * It does nothing otherwise.
      * @param string $name the unsafe attribute name
      * @param mixed $value the attribute value

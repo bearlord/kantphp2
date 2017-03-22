@@ -90,7 +90,7 @@ class BaseHtml {
 
     /**
      * Encodes special characters into HTML entities.
-     * The [[\yii\base\Application::charset|application charset]] will be used for encoding.
+     * The [[\Kant\Application::charset|application charset]] will be used for encoding.
      * @param string $content the content to be encoded
      * @param boolean $doubleEncode whether to encode HTML entities in `$content`. If false,
      * HTML entities in `$content` will not be further encoded.
@@ -292,7 +292,7 @@ class BaseHtml {
      * @param string $method the form submission method, such as "post", "get", "put", "delete" (case-insensitive).
      * Since most browsers only support "post" and "get", if other methods are given, they will
      * be simulated using "post", and a hidden input will be added which contains the actual method type.
-     * See [[\yii\web\Request::methodParam]] for more details.
+     * See [[\Kant\Http\Request::methodParam]] for more details.
      * @param array $options the tag options in terms of name-value pairs. These will be rendered as
      * the attributes of the resulting tag. The values will be HTML-encoded using [[encode()]].
      * If a value is null, the corresponding attribute will not be rendered.
@@ -379,7 +379,7 @@ class BaseHtml {
      * If a value is null, the corresponding attribute will not be rendered.
      * See [[renderTagAttributes()]] for details on how attributes are being rendered.
      * @return string the generated hyperlink
-     * @see \yii\helpers\Url::to()
+     * @see \Kant\Helper\Url::to()
      */
     public static function a($text, $url = null, $options = []) {
         if ($url !== null) {
@@ -714,7 +714,7 @@ class BaseHtml {
      * are the corresponding option labels. The array can also be nested (i.e. some array values are arrays too).
      * For each sub-array, an option group will be generated whose label is the key associated with the sub-array.
      * If you have a list of data models, you may convert them into the format described above using
-     * [[\yii\helpers\ArrayHelper::map()]].
+     * [[\Kant\Helper\ArrayHelper::map()]].
      *
      * Note, the values and labels will be automatically HTML-encoded by this method, and the blank spaces in
      * the labels will also be HTML-encoded.
@@ -762,7 +762,7 @@ class BaseHtml {
      * are the corresponding option labels. The array can also be nested (i.e. some array values are arrays too).
      * For each sub-array, an option group will be generated whose label is the key associated with the sub-array.
      * If you have a list of data models, you may convert them into the format described above using
-     * [[\yii\helpers\ArrayHelper::map()]].
+     * [[\Kant\Helper\ArrayHelper::map()]].
      *
      * Note, the values and labels will be automatically HTML-encoded by this method, and the blank spaces in
      * the labels will also be HTML-encoded.
@@ -1114,7 +1114,7 @@ class BaseHtml {
      * @return string the generated error summary
      */
     public static function errorSummary($models, $options = []) {
-        $header = isset($options['header']) ? $options['header'] : '<p>' . Kant::t('yii', 'Please fix the following errors:') . '</p>';
+        $header = isset($options['header']) ? $options['header'] : '<p>' . Kant::t('kant', 'Please fix the following errors:') . '</p>';
         $footer = ArrayHelper::remove($options, 'footer', '');
         $encode = ArrayHelper::remove($options, 'encode', true);
         unset($options['header']);
@@ -1191,7 +1191,7 @@ class BaseHtml {
 
     /**
      * If `maxlength` option is set true and the model attribute is validated by a string validator,
-     * the `maxlength` option will take the value of [[\yii\validators\StringValidator::max]].
+     * the `maxlength` option will take the value of [[\Kant\Validators\StringValidator::max]].
      * @param Model $model the model object
      * @param string $attribute the attribute name or expression.
      * @param array $options the tag options in terms of name-value pairs.
@@ -1222,7 +1222,7 @@ class BaseHtml {
      * The following special options are recognized:
      *
      * - maxlength: integer|boolean, when `maxlength` is set true and the model attribute is validated
-     *   by a string validator, the `maxlength` option will take the value of [[\yii\validators\StringValidator::max]].
+     *   by a string validator, the `maxlength` option will take the value of [[\Kant\Validators\StringValidator::max]].
      *   This is available since version 2.0.3.
      *
      * @return string the generated input tag
@@ -1261,7 +1261,7 @@ class BaseHtml {
      * The following special options are recognized:
      *
      * - maxlength: integer|boolean, when `maxlength` is set true and the model attribute is validated
-     *   by a string validator, the `maxlength` option will take the value of [[\yii\validators\StringValidator::max]].
+     *   by a string validator, the `maxlength` option will take the value of [[\Kant\Validators\StringValidator::max]].
      *   This option is available since version 2.0.6.
      *
      * @return string the generated input tag
@@ -1306,7 +1306,7 @@ class BaseHtml {
      * The following special options are recognized:
      *
      * - maxlength: integer|boolean, when `maxlength` is set true and the model attribute is validated
-     *   by a string validator, the `maxlength` option will take the value of [[\yii\validators\StringValidator::max]].
+     *   by a string validator, the `maxlength` option will take the value of [[\Kant\Validators\StringValidator::max]].
      *   This option is available since version 2.0.6.
      *
      * @return string the generated textarea tag
@@ -1401,7 +1401,7 @@ class BaseHtml {
      * are the corresponding option labels. The array can also be nested (i.e. some array values are arrays too).
      * For each sub-array, an option group will be generated whose label is the key associated with the sub-array.
      * If you have a list of data models, you may convert them into the format described above using
-     * [[\yii\helpers\ArrayHelper::map()]].
+     * [[\Kant\Helper\ArrayHelper::map()]].
      *
      * Note, the values and labels will be automatically HTML-encoded by this method, and the blank spaces in
      * the labels will also be HTML-encoded.
@@ -1449,7 +1449,7 @@ class BaseHtml {
      * are the corresponding option labels. The array can also be nested (i.e. some array values are arrays too).
      * For each sub-array, an option group will be generated whose label is the key associated with the sub-array.
      * If you have a list of data models, you may convert them into the format described above using
-     * [[\yii\helpers\ArrayHelper::map()]].
+     * [[\Kant\Helper\ArrayHelper::map()]].
      *
      * Note, the values and labels will be automatically HTML-encoded by this method, and the blank spaces in
      * the labels will also be HTML-encoded.
@@ -1603,7 +1603,7 @@ class BaseHtml {
      * are the corresponding option labels. The array can also be nested (i.e. some array values are arrays too).
      * For each sub-array, an option group will be generated whose label is the key associated with the sub-array.
      * If you have a list of data models, you may convert them into the format described above using
-     * [[\yii\helpers\ArrayHelper::map()]].
+     * [[\Kant\Helper\ArrayHelper::map()]].
      *
      * Note, the values and labels will be automatically HTML-encoded by this method, and the blank spaces in
      * the labels will also be HTML-encoded.
@@ -1670,10 +1670,10 @@ class BaseHtml {
      *
      * The "data" attribute is specially handled when it is receiving an array value. In this case,
      * the array will be "expanded" and a list data attributes will be rendered. For example,
-     * if `'data' => ['id' => 1, 'name' => 'yii']`, then this will be rendered:
-     * `data-id="1" data-name="yii"`.
-     * Additionally `'data' => ['params' => ['id' => 1, 'name' => 'yii'], 'status' => 'ok']` will be rendered as:
-     * `data-params='{"id":1,"name":"yii"}' data-status="ok"`.
+     * if `'data' => ['id' => 1, 'name' => 'kant']`, then this will be rendered:
+     * `data-id="1" data-name="kant"`.
+     * Additionally `'data' => ['params' => ['id' => 1, 'name' => 'kant'], 'status' => 'ok']` will be rendered as:
+     * `data-params='{"id":1,"name":"kant"}' data-status="ok"`.
      *
      * @param array $attributes attributes to be rendered. The attribute values will be HTML-encoded using [[encode()]].
      * @return string the rendering result. If the attributes are not empty, they will be rendered
@@ -1966,7 +1966,6 @@ class BaseHtml {
             }
         }
 
-        // https://github.com/yiisoft/yii2/issues/1457
         if (is_array($value)) {
             foreach ($value as $i => $v) {
                 if ($v instanceof ActiveRecordInterface) {

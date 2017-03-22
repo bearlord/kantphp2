@@ -11,7 +11,7 @@ namespace Kant\Widget;
 
 use Kant\Kant;
 use Kant\Foundation\Component;
-//use yii\base\ErrorHandler;
+use Kant\Exception\KantException;
 use Kant\Helper\ArrayHelper;
 use Kant\Helper\Html;
 use Kant\Model\Model;
@@ -47,11 +47,11 @@ class ActiveField extends Component {
      * The following special options are recognized:
      *
      * - tag: the tag name of the container element. Defaults to "div". Setting it to `false` will not render a container tag.
-     *   See also [[\yii\helpers\Html::tag()]].
+     *   See also [[\Kant\Helper\Html::tag()]].
      *
      * If you set a custom `id` for the container element, you may need to adjust the [[$selectors]] accordingly.
      *
-     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $options = ['class' => 'form-group'];
 
@@ -67,7 +67,7 @@ class ActiveField extends Component {
      *
      * If you set a custom `id` for the input element, you may need to adjust the [[$selectors]] accordingly.
      *
-     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $inputOptions = ['class' => 'form-control'];
 
@@ -77,19 +77,19 @@ class ActiveField extends Component {
      * The following special options are recognized:
      *
      * - tag: the tag name of the container element. Defaults to "div". Setting it to `false` will not render a container tag.
-     *   See also [[\yii\helpers\Html::tag()]].
+     *   See also [[\Kant\Helper\Html::tag()]].
      * - encode: whether to encode the error output. Defaults to `true`.
      *
      * If you set a custom `id` for the error element, you may need to adjust the [[$selectors]] accordingly.
      *
-     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $errorOptions = ['class' => 'help-block'];
 
     /**
      * @var array the default options for the label tags. The parameter passed to [[label()]] will be
      * merged with this property when rendering the label tag.
-     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $labelOptions = ['class' => 'control-label'];
 
@@ -99,9 +99,9 @@ class ActiveField extends Component {
      * The following special options are recognized:
      *
      * - tag: the tag name of the container element. Defaults to "div". Setting it to `false` will not render a container tag.
-     *   See also [[\yii\helpers\Html::tag()]].
+     *   See also [[\Kant\Helper\Html::tag()]].
      *
-     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $hintOptions = ['class' => 'hint-block'];
 
@@ -180,7 +180,7 @@ class ActiveField extends Component {
         try {
             return $this->render();
         } catch (\Exception $e) {
-            ErrorHandler::convertExceptionToError($e);
+            throw new KantException($e->getMessage());
             return '';
         }
     }
@@ -296,7 +296,7 @@ class ActiveField extends Component {
      * The following options are specially handled:
      *
      * - tag: this specifies the tag name. If not set, "div" will be used.
-     *   See also [[\yii\helpers\Html::tag()]].
+     *   See also [[\Kant\Helper\Html::tag()]].
      *
      * If you set a custom `id` for the error element, you may need to adjust the [[$selectors]] accordingly.
      * @see $errorOptions
@@ -322,7 +322,7 @@ class ActiveField extends Component {
      * The following options are specially handled:
      *
      * - tag: this specifies the tag name. If not set, "div" will be used.
-     *   See also [[\yii\helpers\Html::tag()]].
+     *   See also [[\Kant\Helper\Html::tag()]].
      *
      * @return $this the field object itself
      */
@@ -362,7 +362,7 @@ class ActiveField extends Component {
      * The following special options are recognized:
      *
      * - maxlength: integer|boolean, when `maxlength` is set true and the model attribute is validated
-     *   by a string validator, the `maxlength` option will take the value of [[\yii\validators\StringValidator::max]].
+     *   by a string validator, the `maxlength` option will take the value of [[\Kant\Validators\StringValidator::max]].
      *   This is available since version 2.0.3.
      *
      * Note that if you set a custom `id` for the input element, you may need to adjust the value of [[selectors]] accordingly.
@@ -382,7 +382,7 @@ class ActiveField extends Component {
      *
      * Note that this method is provided for completeness. In most cases because you do not need
      * to validate a hidden input, you should not need to use this method. Instead, you should
-     * use [[\yii\helpers\Html::activeHiddenInput()]].
+     * use [[\Kant\Helper\Html::activeHiddenInput()]].
      *
      * This method will generate the "name" and "value" tag attributes automatically for the model attribute
      * unless they are explicitly specified in `$options`.
@@ -432,11 +432,10 @@ class ActiveField extends Component {
      * @return $this the field object itself
      */
     public function fileInput($options = []) {
-        // https://github.com/yiisoft/yii2/pull/795
         if ($this->inputOptions !== ['class' => 'form-control']) {
             $options = array_merge($this->inputOptions, $options);
         }
-        // https://github.com/yiisoft/yii2/issues/8779
+        
         if (!isset($this->form->options['enctype'])) {
             $this->form->options['enctype'] = 'multipart/form-data';
         }
@@ -567,7 +566,7 @@ class ActiveField extends Component {
      * the labels will also be HTML-encoded.
      * @param array $options the tag options in terms of name-value pairs.
      *
-     * For the list of available options please refer to the `$options` parameter of [[\yii\helpers\Html::activeDropDownList()]].
+     * For the list of available options please refer to the `$options` parameter of [[\Kant\Helper\Html::activeDropDownList()]].
      *
      * If you set a custom `id` for the input element, you may need to adjust the [[$selectors]] accordingly.
      *
@@ -588,13 +587,13 @@ class ActiveField extends Component {
      * are the corresponding option labels. The array can also be nested (i.e. some array values are arrays too).
      * For each sub-array, an option group will be generated whose label is the key associated with the sub-array.
      * If you have a list of data models, you may convert them into the format described above using
-     * [[\yii\helpers\ArrayHelper::map()]].
+     * [[\Kant\Helper\ArrayHelper::map()]].
      *
      * Note, the values and labels will be automatically HTML-encoded by this method, and the blank spaces in
      * the labels will also be HTML-encoded.
      * @param array $options the tag options in terms of name-value pairs.
      *
-     * For the list of available options please refer to the `$options` parameter of [[\yii\helpers\Html::activeListBox()]].
+     * For the list of available options please refer to the `$options` parameter of [[\Kant\Helper\Html::activeListBox()]].
      *
      * If you set a custom `id` for the input element, you may need to adjust the [[$selectors]] accordingly.
      *
@@ -616,7 +615,7 @@ class ActiveField extends Component {
      * @param array $items the data item used to generate the checkboxes.
      * The array values are the labels, while the array keys are the corresponding checkbox values.
      * @param array $options options (name => config) for the checkbox list.
-     * For the list of available options please refer to the `$options` parameter of [[\yii\helpers\Html::activeCheckboxList()]].
+     * For the list of available options please refer to the `$options` parameter of [[\Kant\Helper\Html::activeCheckboxList()]].
      * @return $this the field object itself
      */
     public function checkboxList($items, $options = []) {
@@ -633,7 +632,7 @@ class ActiveField extends Component {
      * @param array $items the data item used to generate the radio buttons.
      * The array values are the labels, while the array keys are the corresponding radio values.
      * @param array $options options (name => config) for the radio button list.
-     * For the list of available options please refer to the `$options` parameter of [[\yii\helpers\Html::activeRadioList()]].
+     * For the list of available options please refer to the `$options` parameter of [[\Kant\Helper\Html::activeRadioList()]].
      * @return $this the field object itself
      */
     public function radioList($items, $options = []) {
@@ -656,7 +655,7 @@ class ActiveField extends Component {
      * the following code, assuming that `$form` is your [[ActiveForm]] instance:
      *
      * ```php
-     * $form->field($model, 'date')->widget(\yii\widgets\MaskedInput::className(), [
+     * $form->field($model, 'date')->widget(\Kant\Widget\MaskedInput::className(), [
      *     'mask' => '99/99/9999',
      * ]);
      * ```
@@ -668,7 +667,7 @@ class ActiveField extends Component {
      * @return $this the field object itself
      */
     public function widget($class, $config = []) {
-        /* @var $class \yii\base\Widget */
+        /* @var $class \Kant\View\Widget */
         $config['model'] = $this->model;
         $config['attribute'] = $this->attribute;
         $config['view'] = $this->form->getView();
@@ -707,7 +706,7 @@ class ActiveField extends Component {
         if ($enableClientValidation) {
             $validators = [];
             foreach ($this->model->getActiveValidators($attribute) as $validator) {
-                /* @var $validator \yii\validators\Validator */
+                /* @var $validator \Kant\Validators\Validator */
                 $js = $validator->clientValidateAttribute($this->model, $attribute, $this->form->getView());
                 if ($validator->enableClientValidation && $js != '') {
                     if ($validator->whenClient !== null) {
@@ -750,7 +749,7 @@ class ActiveField extends Component {
             $options['validate'] = new JsExpression("function (attribute, value, messages, deferred, \$form) {" . implode('', $validators) . '}');
         }
         
-        // only get the options that are different from the default ones (set in yii.activeForm.js)
+        // only get the options that are different from the default ones (set in kant.activeForm.js)
         return array_diff_assoc($options, [
             'validateOnChange' => true,
             'validateOnBlur' => true,

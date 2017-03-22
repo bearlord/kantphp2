@@ -1,23 +1,22 @@
 /**
- * Yii JavaScript module.
- *
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
+ * Kant JavaScript module.
+ * 
+ * @author  Qiang Xue <qiang.xue@gmail.com>
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 /**
- * yii is the root module for all Yii JavaScript modules.
- * It implements a mechanism of organizing JavaScript code in modules through the function "yii.initModule()".
+ * kant is the root module for all Kant JavaScript modules.
+ * It implements a mechanism of organizing JavaScript code in modules through the function "kant.initModule()".
  *
- * Each module should be named as "x.y.z", where "x" stands for the root module (for the Yii core code, this is "yii").
+ * Each module should be named as "x.y.z", where "x" stands for the root module (for the Kant core code, this is "kant").
  *
  * A module may be structured as follows:
  *
  * ```javascript
- * yii.sample = (function($) {
+ * kant.sample = (function($) {
  *     var pub = {
  *         // whether this module is currently active. If false, init() will not be called for this module
  *         // it will also not be called for all its child modules. If this property is undefined, it means true.
@@ -37,11 +36,11 @@
  *
  * Using this structure, you can define public and private functions/properties for a module.
  * Private functions/properties are only visible within the module, while public functions/properties
- * may be accessed outside of the module. For example, you can access "yii.sample.isActive".
+ * may be accessed outside of the module. For example, you can access "kant.sample.isActive".
  *
- * You must call "yii.initModule()" once for the root module of all your modules.
+ * You must call "kant.initModule()" once for the root module of all your modules.
  */
-yii = (function ($) {
+kant = (function ($) {
     var pub = {
         /**
          * List of JS or CSS URLs that can be loaded multiple times via AJAX requests. Each script can be represented
@@ -96,7 +95,7 @@ yii = (function ($) {
         /**
          * Displays a confirmation dialog.
          * The default implementation simply displays a js confirmation dialog.
-         * You may override this by setting `yii.confirm`.
+         * You may override this by setting `kant.confirm`.
          * @param message the confirmation message.
          * @param ok a callback to be called when the user confirms the message
          * @param cancel a callback to be called when the user cancels the confirmation
@@ -127,8 +126,8 @@ yii = (function ($) {
          * such a link:
          *
          * ```php
-         * use yii\helpers\Html;
-         * use yii\helpers\Json;
+         * use kant\helpers\Html;
+         * use kant\helpers\Json;
          *
          * echo Html::a('submit', ['site/foobar'], [
          *     'data' => [
@@ -224,9 +223,9 @@ yii = (function ($) {
                 $form.hide().appendTo('body');
             }
 
-            var activeFormData = $form.data('yiiActiveForm');
+            var activeFormData = $form.data('kantActiveForm');
             if (activeFormData) {
-                // remember who triggers the form submission. This is used by yii.activeForm.js
+                // remember who triggers the form submission. This is used by kant.activeForm.js
                 activeFormData.submitObject = $e;
             }
 
@@ -250,7 +249,7 @@ yii = (function ($) {
                 })
             }
             $form.trigger('submit');
-            $.when($form.data('yiiSubmitFinalizePromise')).then(
+            $.when($form.data('kantSubmitFinalizePromise')).then(
                 function () {
                     if (oldAction != null) {
                         $form.attr('action', oldAction);
@@ -364,8 +363,8 @@ yii = (function ($) {
         };
 
         // handle data-confirm and data-method for clickable and changeable elements
-        $(document).on('click.yii', pub.clickableSelector, handler)
-            .on('change.yii', pub.changeableSelector, handler);
+        $(document).on('click.kant', pub.clickableSelector, handler)
+            .on('change.kant', pub.changeableSelector, handler);
     }
 
     function initScriptFilter() {
@@ -412,6 +411,6 @@ yii = (function ($) {
 })(jQuery);
 
 jQuery(function () {
-    yii.initModule(yii);
+    kant.initModule(kant);
 });
 

@@ -10,8 +10,8 @@
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\db\ActiveRecordInterface;
-use yii\helpers\Inflector;
+use Kant\Database\ActiveRecordInterface;
+use Kant\Helper\Inflector;
 
 /**
  * UniqueValidator validates that the attribute value is unique in the specified database table.

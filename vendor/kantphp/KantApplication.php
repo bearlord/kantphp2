@@ -49,6 +49,7 @@ class KantApplication extends Module {
      * @see language
      */
     public $sourceLanguage = 'zh-CN';
+    private $_runtimePath;
 
     /**
      * Dispathc info
@@ -321,7 +322,7 @@ class KantApplication extends Module {
      */
     public function run() {
         $request = $this->getRequest();
-        
+
         $response = $this->getResponse();
 
         $this->setCache($this->config->get('cache'));
@@ -335,6 +336,27 @@ class KantApplication extends Module {
 
         $response->send();
         $this->end();
+    }
+
+    /**
+     * Returns the directory that stores runtime files.
+     * @return string the directory that stores runtime files.
+     * Defaults to the "runtime" subdirectory under [[basePath]].
+     */
+    public function getRuntimePath() {
+        if ($this->_runtimePath === null) {
+            $this->setRuntimePath(APP_PATH . 'Runtime');
+        }
+
+        return $this->_runtimePath;
+    }
+
+    /**
+     * Sets the directory that stores runtime files.
+     * @param string $path the directory that stores runtime files.
+     */
+    public function setRuntimePath($path) {
+        $this->_runtimePath = $path;
     }
 
     /**

@@ -226,11 +226,11 @@ class ServiceLocator extends Component {
      * ```php
      * [
      *     'db' => [
-     *         'class' => 'yii\db\Connection',
+     *         'class' => 'Kant\Database\Connection',
      *         'dsn' => 'sqlite:path/to/file.db',
      *     ],
      *     'cache' => [
-     *         'class' => 'yii\caching\DbCache',
+     *         'class' => 'Kant\Cache\Cache',
      *         'db' => 'db',
      *     ],
      * ]

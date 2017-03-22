@@ -10,9 +10,9 @@
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\base\InvalidConfigException;
-use yii\web\JsExpression;
-use yii\helpers\Json;
+use Kant\Exception\InvalidConfigException;
+use Kant\Helper\JsExpression;
+use Kant\Helper\Json;
 
 /**
  * UrlValidator validates that the attribute value is a valid http or https URL.
@@ -138,7 +138,7 @@ class UrlValidator extends Validator {
             PunycodeAsset::register($view);
         }
 
-        return 'yii.validation.url(value, messages, ' . Json::htmlEncode($options) . ');';
+        return 'kant.validation.url(value, messages, ' . Json::htmlEncode($options) . ');';
     }
 
 }

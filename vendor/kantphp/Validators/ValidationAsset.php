@@ -19,9 +19,9 @@ use Kant\View\AssetBundle;
  */
 class ValidationAsset extends AssetBundle {
 
-    public $sourcePath = '@yii/assets';
+    public $sourcePath = '@kant/assets';
     public $js = [
-        'yii.validation.js',
+        'kant.validation.js',
     ];
     public $depends = [
         'Kant\View\KantAsset',
