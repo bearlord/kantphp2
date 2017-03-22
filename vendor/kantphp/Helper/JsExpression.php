@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package KantPHP
  * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
@@ -19,21 +20,19 @@ use Kant\Foundation\Object;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class JsExpression extends Object
-{
+class JsExpression extends Object {
+
     /**
      * @var string the JavaScript expression represented by this object
      */
     public $expression;
-
 
     /**
      * Constructor.
      * @param string $expression the JavaScript expression represented by this object
      * @param array $config additional configurations for this object
      */
-    public function __construct($expression, $config = [])
-    {
+    public function __construct($expression, $config = []) {
         $this->expression = $expression;
         parent::__construct($config);
     }
@@ -42,8 +41,8 @@ class JsExpression extends Object
      * The PHP magic function converting an object into a string.
      * @return string the JavaScript expression.
      */
-    public function __toString()
-    {
+    public function __toString() {
         return $this->expression;
     }
+
 }

@@ -9,7 +9,7 @@
 
 namespace Kant\Validators;
 
-//use yii\web\AssetBundle;
+use Kant\View\AssetBundle;
 
 /**
  * This asset bundle provides the javascript files for client validation.
@@ -17,14 +17,14 @@ namespace Kant\Validators;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class ValidationAsset {
+class ValidationAsset extends AssetBundle {
 
     public $sourcePath = '@yii/assets';
     public $js = [
         'yii.validation.js',
     ];
     public $depends = [
-        'yii\web\KantAsset',
+        'Kant\View\KantAsset',
     ];
 
 }

@@ -380,7 +380,7 @@ class FileValidator extends Validator {
      * @inheritdoc
      */
     public function clientValidateAttribute($model, $attribute, $view) {
-//        ValidationAsset::register($view);
+        ValidationAsset::register($view);
         $options = $this->getClientOptions($model, $attribute);
         return 'yii.validation.file(attribute, messages, ' . Json::encode($options) . ');';
     }

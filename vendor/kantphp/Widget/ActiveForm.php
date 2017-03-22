@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package KantPHP
  * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
@@ -23,13 +24,14 @@ use Kant\Helper\Json;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class ActiveForm extends Widget
-{
+class ActiveForm extends Widget {
+
     /**
      * @var array|string $action the form action URL. This parameter will be processed by [[\yii\helpers\Url::to()]].
      * @see method for specifying the HTTP method for this form.
      */
     public $action = '';
+
     /**
      * @var string the form submission method. This should be either 'post' or 'get'. Defaults to 'post'.
      *
@@ -46,16 +48,19 @@ class ActiveForm extends Widget
      * ```
      */
     public $method = 'post';
+
     /**
      * @var array the HTML attributes (name-value pairs) for the form tag.
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $options = [];
+
     /**
      * @var string the default field class name when calling [[field()]] to create a new field.
      * @see fieldConfig
      */
     public $fieldClass = 'Kant\Widget\ActiveField';
+
     /**
      * @var array|\Closure the default configuration used by [[field()]] when creating a new field object.
      * This can be either a configuration array or an anonymous function returning a configuration array.
@@ -70,41 +75,50 @@ class ActiveForm extends Widget
      * @see fieldClass
      */
     public $fieldConfig = [];
+
     /**
      * @var boolean whether to perform encoding on the error summary.
      */
     public $encodeErrorSummary = true;
+
     /**
      * @var string the default CSS class for the error summary container.
      * @see errorSummary()
      */
     public $errorSummaryCssClass = 'error-summary';
+
     /**
      * @var string the CSS class that is added to a field container when the associated attribute is required.
      */
     public $requiredCssClass = 'required';
+
     /**
      * @var string the CSS class that is added to a field container when the associated attribute has validation error.
      */
     public $errorCssClass = 'has-error';
+
     /**
      * @var string the CSS class that is added to a field container when the associated attribute is successfully validated.
      */
     public $successCssClass = 'has-success';
+
     /**
      * @var string the CSS class that is added to a field container when the associated attribute is being validated.
      */
     public $validatingCssClass = 'validating';
+
     /**
      * @var boolean whether to enable client-side data validation.
      * If [[ActiveField::enableClientValidation]] is set, its value will take precedence for that input field.
      */
     public $enableClientValidation = true;
+
     /**
      * @var boolean whether to enable AJAX-based data validation.
      * If [[ActiveField::enableAjaxValidation]] is set, its value will take precedence for that input field.
      */
     public $enableAjaxValidation = false;
+
     /**
      * @var boolean whether to hook up yii.activeForm JavaScript plugin.
      * This property must be set true if you want to support client validation and/or AJAX validation, or if you
@@ -112,51 +126,61 @@ class ActiveForm extends Widget
      * any JavaScript.
      */
     public $enableClientScript = true;
+
     /**
      * @var array|string the URL for performing AJAX-based validation. This property will be processed by
      * [[Url::to()]]. Please refer to [[Url::to()]] for more details on how to configure this property.
      * If this property is not set, it will take the value of the form's action attribute.
      */
     public $validationUrl;
+
     /**
      * @var boolean whether to perform validation when the form is submitted.
      */
     public $validateOnSubmit = true;
+
     /**
      * @var boolean whether to perform validation when the value of an input field is changed.
      * If [[ActiveField::validateOnChange]] is set, its value will take precedence for that input field.
      */
     public $validateOnChange = true;
+
     /**
      * @var boolean whether to perform validation when an input field loses focus.
      * If [[ActiveField::$validateOnBlur]] is set, its value will take precedence for that input field.
      */
     public $validateOnBlur = true;
+
     /**
      * @var boolean whether to perform validation while the user is typing in an input field.
      * If [[ActiveField::validateOnType]] is set, its value will take precedence for that input field.
      * @see validationDelay
      */
     public $validateOnType = false;
+
     /**
      * @var integer number of milliseconds that the validation should be delayed when the user types in the field
      * and [[validateOnType]] is set true.
      * If [[ActiveField::validationDelay]] is set, its value will take precedence for that input field.
      */
     public $validationDelay = 500;
+
     /**
      * @var string the name of the GET parameter indicating the validation request is an AJAX request.
      */
     public $ajaxParam = 'ajax';
+
     /**
      * @var string the type of data that you're expecting back from the server.
      */
     public $ajaxDataType = 'json';
+
     /**
      * @var boolean whether to scroll to the first error after validation.
      * @since 2.0.6
      */
     public $scrollToError = true;
+
     /**
      * @var array the client validation options for individual attributes. Each element of the array
      * represents the validation options for a particular attribute.
@@ -169,13 +193,11 @@ class ActiveForm extends Widget
      */
     private $_fields = [];
 
-
     /**
      * Initializes the widget.
      * This renders the form open tag.
      */
-    public function init()
-    {
+    public function init() {
         if (!isset($this->options['id'])) {
             $this->options['id'] = $this->getId();
         }
@@ -188,8 +210,7 @@ class ActiveForm extends Widget
      * This registers the necessary javascript code and renders the form close tag.
      * @throws InvalidCallException if `beginField()` and `endField()` calls are not matching
      */
-    public function run()
-    {
+    public function run() {
         if (!empty($this->_fields)) {
             throw new InvalidCallException('Each beginField() should have a matching endField() call.');
         }
@@ -214,8 +235,7 @@ class ActiveForm extends Widget
      * Returns the options for the form JS widget.
      * @return array the options
      */
-    protected function getClientOptions()
-    {
+    protected function getClientOptions() {
         $options = [
             'encodeErrorSummary' => $this->encodeErrorSummary,
             'errorSummary' => '.' . implode('.', preg_split('/\s+/', $this->errorSummaryCssClass, -1, PREG_SPLIT_NO_EMPTY)),
@@ -259,8 +279,7 @@ class ActiveForm extends Widget
      * @return string the generated error summary
      * @see errorSummaryCssClass
      */
-    public function errorSummary($models, $options = [])
-    {
+    public function errorSummary($models, $options = []) {
         Html::addCssClass($options, $this->errorSummaryCssClass);
         $options['encode'] = $this->encodeErrorSummary;
         return Html::errorSummary($models, $options);
@@ -278,8 +297,7 @@ class ActiveForm extends Widget
      * @return ActiveField the created ActiveField object
      * @see fieldConfig
      */
-    public function field($model, $attribute, $options = [])
-    {
+    public function field($model, $attribute, $options = []) {
         $config = $this->fieldConfig;
         if ($config instanceof \Closure) {
             $config = call_user_func($config, $model, $attribute);
@@ -288,9 +306,9 @@ class ActiveForm extends Widget
             $config['class'] = $this->fieldClass;
         }
         return Kant::createObject(ArrayHelper::merge($config, $options, [
-            'model' => $model,
-            'attribute' => $attribute,
-            'form' => $this,
+                            'model' => $model,
+                            'attribute' => $attribute,
+                            'form' => $this,
         ]));
     }
 
@@ -306,8 +324,7 @@ class ActiveForm extends Widget
      * @see endField()
      * @see field()
      */
-    public function beginField($model, $attribute, $options = [])
-    {
+    public function beginField($model, $attribute, $options = []) {
         $field = $this->field($model, $attribute, $options);
         $this->_fields[] = $field;
         return $field->begin();
@@ -319,8 +336,7 @@ class ActiveForm extends Widget
      * @return string the closing tag of the form field
      * @throws InvalidCallException if this method is called without a prior [[beginField()]] call.
      */
-    public function endField()
-    {
+    public function endField() {
         $field = array_pop($this->_fields);
         if ($field instanceof ActiveField) {
             return $field->end();
@@ -363,8 +379,7 @@ class ActiveForm extends Widget
      *
      * @return array the error message array indexed by the attribute IDs.
      */
-    public static function validate($model, $attributes = null)
-    {
+    public static function validate($model, $attributes = null) {
         $result = [];
         if ($attributes instanceof Model) {
             // validating multiple models
@@ -406,8 +421,7 @@ class ActiveForm extends Widget
      * validation rules should be validated.
      * @return array the error message array indexed by the attribute IDs.
      */
-    public static function validateMultiple($models, $attributes = null)
-    {
+    public static function validateMultiple($models, $attributes = null) {
         $result = [];
         /* @var $model Model */
         foreach ($models as $i => $model) {
@@ -419,4 +433,5 @@ class ActiveForm extends Widget
 
         return $result;
     }
+
 }

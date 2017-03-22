@@ -11,7 +11,7 @@ namespace Kant\Helper;
 
 use Kant\Exception\InvalidParamException;
 use Kant\Foundation\Arrayable;
-use yii\web\JsExpression;
+use Kant\Helper\JsExpression;
 
 /**
  * BaseJson provides concrete implementation for [[Json]].
