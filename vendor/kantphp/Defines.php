@@ -27,9 +27,7 @@ defined('KANT_BEGIN_TIME') or define('KANT_BEGIN_TIME', microtime(true));
 if (!defined('LOG_PATH')) {
     define('LOG_PATH', RUNTIME_PATH . 'Logs/');
 }
-if (!defined('PATH_INFO_REPAIR')) {
-    define("PATH_INFO_REPAIR", FALSE);
-}
+
 //Web root
 if (!defined('APP_URL')) {
     define('APP_URL', substr(dirname($_SERVER['SCRIPT_NAME']), -1, 1) == '/' ? dirname($_SERVER['SCRIPT_NAME']) : trim(dirname($_SERVER['SCRIPT_NAME']), "\\") . '/' );

@@ -5,8 +5,7 @@ namespace Kant\Filesystem;
 use ErrorException;
 use FilesystemIterator;
 use Symfony\Component\Finder\Finder;
-use Illuminate\Support\Traits\Macroable;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Kant\Http\File\Exception\FileNotFoundException;
 
 class Filesystem {
 
@@ -27,7 +26,7 @@ class Filesystem {
      * @param  bool  $lock
      * @return string
      *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws \Kant\Http\File\Exception\FileNotFoundException
      */
     public function get($path, $lock = false) {
         if ($this->isFile($path)) {
@@ -71,7 +70,7 @@ class Filesystem {
      * @param  string  $path
      * @return mixed
      *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws \Kant\Http\File\Exception\FileNotFoundException
      */
     public function getRequire($path) {
         if ($this->isFile($path)) {

@@ -12,7 +12,6 @@ namespace Kant\Database;
 use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Database\QueryInterface;
-use Kant\Factory;
 
 /**
  * Query represents a SELECT SQL statement in a way that is independent of DBMS.

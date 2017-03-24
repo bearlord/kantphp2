@@ -10,7 +10,6 @@
 namespace Kant\View;
 
 use Kant\Kant;
-use Kant\Factory;
 use Kant\Helper\Html;
 use Kant\Helper\ArrayHelper;
 
@@ -319,7 +318,7 @@ class View extends BaseView {
         if (is_file($view)) {
             return $view;
         }
-        $ext = Factory::getConfig()->get("view.ext");
+        $ext = Kant::$app->config->get("view.ext");
         $viewPath = $this->getViewPath();
         if (empty($view)) {
             $viewFile = $viewPath . strtolower($this->dispatcher[1]) . DIRECTORY_SEPARATOR . strtolower($this->dispatcher[2]) . $ext;
@@ -339,7 +338,7 @@ class View extends BaseView {
         if (is_string($this->layout)) {
             $layout = $this->layout;
         }
-        $ext = Factory::getConfig()->get("view.ext");
+        $ext = Kant::$app->config->get("view.ext");
         if (strncmp($layout, '/', 1) === 0) {
             $file = $this->getLayoutPath() . DIRECTORY_SEPARATOR . substr($layout, 1) . $ext;
         } else {
@@ -355,7 +354,7 @@ class View extends BaseView {
         $ext = pathinfo($viewFile, PATHINFO_EXTENSION);
         if (isset($this->renderers[$ext])) {
             if (is_array($this->renderers[$ext]) || is_string($this->renderers[$ext])) {
-                $class = ucfirst(Factory::getConfig()->get($this->renderers[$ext]));
+                $class = ucfirst(Kant::$app->config->get($this->renderers[$ext]));
                 $this->renderers[$ext] = Kant::createObject(["class" => "Kant\\View\\$class"]);
             }
             /* @var $renderer ViewRenderer */
@@ -388,7 +387,7 @@ class View extends BaseView {
         if ($module == '') {
             $module = isset($this->dispatcher[0]) ? strtolower($this->dispatcher[0]) : '';
         }
-        $theme = Factory::getConfig()->get('view.theme');
+        $theme = Kant::$app->config->get('view.theme');
         if ($module) {
             $viewPath = TPL_PATH . $theme . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR;
         } else {

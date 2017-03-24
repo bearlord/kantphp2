@@ -10,7 +10,6 @@
 namespace Kant\I18n;
 
 use Kant\Kant;
-use Kant\Factory;
 use Kant\Foundation\Component;
 use Kant\Exception\InvalidConfigException;
 

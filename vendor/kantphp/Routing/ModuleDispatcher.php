@@ -3,7 +3,6 @@
 namespace Kant\Routing;
 
 use Kant\Kant;
-use Kant\Factory;
 use Kant\Registry\KantRegistry;
 use ReflectionMethod;
 use ReflectionParameter;
@@ -140,8 +139,8 @@ class ModuleDispatcher {
 
 
         //action name
-        $action = $dispatcher[2] ?: ucfirst(Factory::getConfig()->get('route.act'));
-        $data = $this->callClass($controller . "@" . $action . Factory::getConfig()->get('actionSuffix'));
+        $action = $dispatcher[2] ?: ucfirst(Kant::$app->config->get('route.act'));
+        $data = $this->callClass($controller . "@" . $action . Kant::$app->config->get('actionSuffix'));
         return $data;
     }
 
@@ -152,7 +151,7 @@ class ModuleDispatcher {
     protected function setModuleConfig($module) {
         $configFilePath = MODULE_PATH . $module . DIRECTORY_SEPARATOR . 'Config.php';
         if (file_exists($configFilePath)) {
-            Factory::getConfig()->merge(require $configFilePath);
+            Kant::$app->config->merge(require $configFilePath);
         }
     }
 
@@ -173,7 +172,7 @@ class ModuleDispatcher {
      * @return string
      */
     protected function getModuleName($name) {
-        return ucfirst($name ?: Factory::getConfig()->get('route.module'));
+        return ucfirst($name ?: Kant::$app->config->get('route.module'));
     }
 
     /**
@@ -183,7 +182,7 @@ class ModuleDispatcher {
      * @return string
      */
     protected function getControllerName($name) {
-        return ucfirst($name ?: Factory::getConfig()->get('route.ctrl'));
+        return ucfirst($name ?: Kant::$app->config->get('route.ctrl'));
     }
 
     /**

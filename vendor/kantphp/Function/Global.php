@@ -22,7 +22,7 @@ if (!function_exists('hash')) {
      */
     function hash($string, $operation = 'DECODE', $key = '', $expiry = 0) {
         $ckey_length = 4;
-        $key = sha1($key ? $key : \Kant\Factory::getConfig()->get('auth_key'));
+        $key = sha1($key ? $key : \Kant\Kant::$app->config->get('auth_key'));
 
         //Key a is used to participate in encryption and decryption
         $keya = sha1(substr($key, 0, 20));

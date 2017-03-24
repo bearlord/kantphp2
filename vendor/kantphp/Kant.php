@@ -9,7 +9,6 @@
 
 namespace Kant;
 
-use Kant\Factory;
 use Kant\Log\Logger;
 use Kant\Exception\InvalidConfigException;
 use Kant\Exception\InvalidParamException;
@@ -300,7 +299,7 @@ class Kant {
      * @param string $category the category of the message.
      */
     public static function trace($message, $category = 'application') {
-        if (Factory::getConfig()->get('debug')) {
+        if (Kant::$app->config->get('debug')) {
             static::getLogger()->log($message, Logger::LEVEL_TRACE, $category);
         }
     }

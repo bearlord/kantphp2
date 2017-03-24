@@ -11,7 +11,6 @@ namespace Kant\Validators;
 
 use Kant\Kant;
 use Kant\Foundation\Component;
-use Kant\Factory;
 use Kant\Exception\NotSupportedException;
 
 /**
@@ -383,7 +382,7 @@ class Validator extends Component {
                 $params['value'] = $value;
             }
         }
-        $model->addError($attribute, Kant::$app->getI18n()->format($message, $params, Factory::getConfig()->get('language')));
+        $model->addError($attribute, Kant::$app->getI18n()->format($message, $params, Kant::$app->config->get('language')));
     }
 
     /**

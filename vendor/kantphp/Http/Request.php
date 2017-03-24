@@ -14,7 +14,7 @@ use ArrayAccess;
 use Closure;
 use Kant\Support\Str;
 use Kant\Support\Arr;
-use Kant\Session\SessionInterface;
+use Kant\Session\Session;
 use Kant\Http\File\UploadedFile;
 use RuntimeException;
 
@@ -767,7 +767,7 @@ class Request implements Arrayable, ArrayAccess {
      *
      * @param SessionInterface $session The Session
      */
-    public function setSession(SessionInterface $session) {
+    public function setSession(Session $session) {
         $this->session = $session;
     }
 

@@ -11,7 +11,6 @@ namespace Kant\View;
 
 use Kant\Kant;
 use Kant\Foundation\Component;
-use Kant\Factory;
 use Kant\Exception\KantException;
 
 /**
@@ -110,7 +109,7 @@ class AssetConverter extends Component implements AssetConverterInterface {
 
         if ($status === 0) {
             Kant::trace("Converted $asset into $result:\nSTDOUT:\n$stdout\nSTDERR:\n$stderr", __METHOD__);
-        } elseif (Factory::getConfig()->get('debug')) {
+        } elseif (Kant::$app->config->get('debug')) {
             throw new KantException("AssetConverter command '$command' failed with exit code $status:\nSTDOUT:\n$stdout\nSTDERR:\n$stderr");
         } else {
             Kant::error("AssetConverter command '$command' failed with exit code $status:\nSTDOUT:\n$stdout\nSTDERR:\n$stderr", __METHOD__);

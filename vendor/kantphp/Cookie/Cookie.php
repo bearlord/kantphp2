@@ -93,7 +93,7 @@ final class Cookie {
      * @param  string  $domain
      * @param  bool    $secure
      * @param  bool    $httpOnly
-     * @return \Symfony\Component\HttpFoundation\Cookie
+     * @return \Kant\View\Http\Cookie
      */
     public function forever($name, $value, $path = null, $domain = null, $secure = false, $httpOnly = true) {
         return $this->make($name, $value, 2628000, $path, $domain, $secure, $httpOnly);

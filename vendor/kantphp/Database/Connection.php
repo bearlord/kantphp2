@@ -12,7 +12,6 @@ namespace Kant\Database;
 use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Exception\KantException;
-use Kant\Factory;
 use InvalidArgumentException;
 use Kant\Exception\InvalidConfigException;
 use PDO;
@@ -396,9 +395,9 @@ class Connection extends Component {
      */
     protected function parseConfig($config = "") {
         if ($config == '') {
-            $config = Factory::getConfig()->get('database.default');
+            $config = Kant::$app->config->get('database.default');
         } elseif (is_string($config) && false === strpos($config, '/')) {
-            $config = Factory::getConfig()->get('database.' . $config);
+            $config = Kant::$app->config->get('database.' . $config);
         }
 
         if (is_string($config)) {

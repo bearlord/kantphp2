@@ -12,7 +12,6 @@ namespace Kant;
 use Kant\Foundation\Component;
 use Kant\Foundation\Module;
 use Kant\Helper\ArrayHelper;
-use Kant\Factory;
 use Kant\Config\Config;
 use Kant\Http\Request;
 use Kant\Http\Response;
@@ -122,7 +121,7 @@ class KantApplication extends Module {
                     'config_path' => CFG_PATH . $env . DIRECTORY_SEPARATOR
                         ]
         );
-        return Factory::getConfig()->merge($appConfig);
+        return $this->getConfig()->merge($appConfig);
     }
 
     /**
@@ -151,8 +150,8 @@ class KantApplication extends Module {
      * @return type
      */
     protected function setSession($config, $request, $response) {
-        $this->set('session', Kant::createObject([
-                    'class' => \Kant\Session\Session::class], [$config, $request, $response]
+        Kant::$container->set('Kant\Session\Session', Kant::createObject([
+                    'class' => \Kant\Session\StartSession::class], [$config, $request, $response]
                 )->handle());
     }
 
@@ -189,19 +188,19 @@ class KantApplication extends Module {
     }
 
     /**
-     * Set the view Object
+     * Get Configure instance
      */
-    public function setView() {
-        Kant::$container->set('Kant\View\View', Kant::createObject('Kant\View\View'));
+    public function getConfig() {
+        return Kant::createObject('Kant\Config\Config');
     }
 
     /**
-     * Get session instance
+     * Get Session instance
      * 
      * @return object
      */
     public function getSession() {
-        return $this->get('session');
+        return Kant::$container->get('Kant\Session\Session');
     }
 
     /**
@@ -253,8 +252,20 @@ class KantApplication extends Module {
         return $this->get('i18n');
     }
 
+    /**
+     * Returns the files component
+     * @return Kant\Filesystem\Filesystem
+     */
     public function getFiles() {
         return $this->get('files');
+    }
+
+    /**
+     * Returns the asset manager.
+     * @return \Kant\View\AssetManager the asset manager application component.
+     */
+    public function getAssetManager() {
+        return $this->get('assetManager');
     }
 
     /**
@@ -273,6 +284,10 @@ class KantApplication extends Module {
         return Kant::$container->get('Kant\Http\Response');
     }
 
+    /**
+     * Returns the router component
+     * @return type
+     */
     public function getRouter() {
         return Kant::createObject('Kant\Routing\Router');
     }
@@ -282,15 +297,7 @@ class KantApplication extends Module {
      * @return View|\Kant\View\View the view application component that is used to render various view files.
      */
     public function getView() {
-        return Kant::$container->get('Kant\View\View');
-    }
-
-    /**
-     * Returns the asset manager.
-     * @return \Kant\View\AssetManager the asset manager application component.
-     */
-    public function getAssetManager() {
-        return $this->get('assetManager');
+        return Kant::createObject('Kant\View\View');
     }
 
     /**
@@ -331,7 +338,6 @@ class KantApplication extends Module {
         $this->setCookie($this->config->get('cookie'), $request, $response);
         $this->setSession($this->config->get('session'), $request, $response);
 
-        $this->setView();
         $this->getRouter()->dispatch($request, $response);
 
         $response->send();
@@ -443,7 +449,7 @@ class KantApplication extends Module {
      * End
      */
     protected function end() {
-        if (Factory::getConfig()->get('debug')) {
+        if (Kant::$app->config->get('debug')) {
             Runtime::mark('end');
         }
     }

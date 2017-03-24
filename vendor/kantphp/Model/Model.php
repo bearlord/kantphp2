@@ -12,7 +12,6 @@ namespace Kant\Model;
 use Kant\Foundation\Component;
 use Kant\Foundation\Arrayable;
 use Kant\Kant;
-use Kant\Factory;
 use ArrayAccess;
 use ArrayObject;
 use ArrayIterator;
@@ -693,7 +692,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
      * @param mixed $value the attribute value
      */
     public function onUnsafeAttribute($name, $value) {
-        if (Factory::getConfig()->get('debug')) {
+        if (Kant::$app->config->get('debug')) {
             Kant::trace("Failed to set unsafe attribute '$name' in '" . get_class($this) . "'.", __METHOD__);
         }
     }

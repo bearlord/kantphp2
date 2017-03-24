@@ -6,7 +6,6 @@ use SessionHandlerInterface;
 use Kant\Filesystem\Filesystem;
 
 //use Symfony\Component\Finder\Finder;
-//use Illuminate\Filesystem\Filesystem;
 
 class FileSessionHandler implements SessionHandlerInterface {
 

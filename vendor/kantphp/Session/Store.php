@@ -15,10 +15,10 @@ use Kant\Support\Str;
 use SessionHandlerInterface;
 use InvalidArgumentException;
 use Kant\Http\Request;
-use Kant\Session\SessionInterface;
+use Kant\Session\Session;
 use Kant\Session\Storage\MetadataBag;
 
-class Store implements SessionInterface {
+class Store implements Session {
 
     /**
      * The session ID.

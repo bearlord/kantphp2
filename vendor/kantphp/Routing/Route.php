@@ -11,7 +11,6 @@ namespace Kant\Routing;
 
 use ReflectionFunction;
 use Kant\Kant;
-use Kant\Factory;
 use Kant\Registry\KantRegistry;
 use Kant\Support\Arr;
 use Kant\Support\Str;

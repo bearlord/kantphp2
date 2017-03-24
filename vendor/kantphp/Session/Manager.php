@@ -11,7 +11,6 @@
 namespace Kant\Session;
 
 use Kant\Kant;
-use Kant\Factory;
 use Kant\Support\Str;
 use Kant\Exception\InvalidArgumentException;
 
@@ -30,7 +29,7 @@ class Manager {
      * @return string
      */
     public function getDefaultDriver() {
-        return Factory::getConfig()->get('session.driver');
+        return Kant::$app->config->get('session.driver');
     }
 
     public function driver($driver = null) {
@@ -108,9 +107,9 @@ class Manager {
         
         $files = $this->getFileSystem();
         
-        $path = Factory::getConfig()->get('session.files');
+        $path = Kant::$app->config->get('session.files');
 
-        $lifetime = Factory::getConfig()->get('session.lifetime');
+        $lifetime = Kant::$app->config->get('session.lifetime');
 
         return $this->buildSession(new FileSessionHandler($files, $path, $lifetime));
     }
@@ -130,9 +129,9 @@ class Manager {
     protected function createDatabaseDriver() {
         $connection = $this->getDatabaseConnection();
 
-        $table = Factory::getConfig()->get('session.table');
+        $table = Kant::$app->config->get('session.table');
 
-        $lifetime = Factory::getConfig()->get('session.maxlifetime');
+        $lifetime = Kant::$app->config->get('session.maxlifetime');
 
         return $this->buildSession(new DatabaseSessionHandler($connection, $table, $lifetime));
     }
@@ -215,12 +214,12 @@ class Manager {
      * @return \Kant\Session\Store
      */
     protected function buildSession($handler) {
-        if (Factory::getConfig()->get('session.encrypt')) {
+        if (Kant::$app->config->get('session.encrypt')) {
             return new EncryptedStore(
-                    Factory::getConfig()->get('cookie'), $handler, $this->app['encrypter']
+                    Kant::$app->config->get('cookie'), $handler, $this->app['encrypter']
             );
         } else {
-            return new Store(Factory::getConfig()->get('session.cookie'), $handler);
+            return new Store(Kant::$app->config->get('session.cookie'), $handler);
         }
     }
 
@@ -230,7 +229,7 @@ class Manager {
      * @return array
      */
     public function getSessionConfig() {
-        return Factory::getConfig()->get('session');
+        return Kant::$app->config->get('session');
     }
 
     /**
