@@ -233,25 +233,10 @@ return [
             'tablePrefix' => 'kant_'
         ]
     ],
-    //cache config
-    /*
-     * memcache type
-
-      'type' => 'memcache',
-      'hostname' => 'localhost',
-      'port' => 11211
-
-      redis cache type
-
-      'type' => 'redis',
-      'hostname' => '127.0.0.1',
-      'port' => 6379
-
-     */
     'cache' => [
         /**
           |--------------------------------------------------------------------------
-          | Default Cache Driver
+          | Default Cache Store
           |--------------------------------------------------------------------------
           |
           | This option controls the default cache "driver".
@@ -262,7 +247,19 @@ return [
           |
          */
         'type' => 'file',
+        /**
+          |--------------------------------------------------------------------------
+          | Cache Driver Hostname
+          |--------------------------------------------------------------------------
+          |
+         */
         'hostname' => 'localhost',
+        /**
+          |--------------------------------------------------------------------------
+          | Cache Driver Port
+          |--------------------------------------------------------------------------
+          |
+         */
         'port' => 11211
     ],
     'filesystems' => [
@@ -308,7 +305,7 @@ return [
             ],
             'public' => [
                 'driver' => 'local',
-                'root' => APP_PATH . 'storage',
+                'root' => PUBLIC_PATH . 'storage',
                 'url' => APP_URL . 'storage',
                 'visibility' => 'public',
             ],

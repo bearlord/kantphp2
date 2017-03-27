@@ -19,13 +19,6 @@ use League\Flysystem\AwsS3v3\AwsS3Adapter as S3Adapter;
 class FilesystemManager {
 
     /**
-     * The application instance.
-     *
-     * @var \Illuminate\Contracts\Foundation\Application
-     */
-    protected $app;
-
-    /**
      * The array of resolved filesystem drivers.
      *
      * @var array
@@ -50,7 +43,7 @@ class FilesystemManager {
      * Get a filesystem instance.
      *
      * @param  string  $name
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return \Kant\Filesystem\Contracts\Filesystem
      */
     public function drive($name = null) {
         return $this->disk($name);
@@ -60,7 +53,7 @@ class FilesystemManager {
      * Get a filesystem instance.
      *
      * @param  string  $name
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return \Kant\Filesystem\Contracts\Filesystem
      */
     public function disk($name = null) {
         $name = $name ?: $this->getDefaultDriver();
@@ -70,7 +63,7 @@ class FilesystemManager {
     /**
      * Get a default cloud filesystem instance.
      *
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return \Kant\Filesystem\Contracts\Filesystem
      */
     public function cloud() {
         $name = $this->getDefaultCloudDriver();
@@ -82,7 +75,7 @@ class FilesystemManager {
      * Attempt to get the disk from the local cache.
      *
      * @param  string  $name
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return \Kant\Filesystem\Contracts\Filesystem
      */
     protected function get($name) {
         return isset($this->disks[$name]) ? $this->disks[$name] : $this->resolve($name);
@@ -92,7 +85,7 @@ class FilesystemManager {
      * Resolve the given disk.
      *
      * @param  string  $name
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return \Kant\Filesystem\Contracts\Filesystem
      *
      * @throws \Kant\Exception\InvalidArgumentException
      */
@@ -114,10 +107,10 @@ class FilesystemManager {
      * Call a custom driver creator.
      *
      * @param  array  $config
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return \Kant\Filesystem\Contracts\Filesystem
      */
     protected function callCustomCreator(array $config) {
-        $driver = $this->customCreators[$config['driver']]($this->app, $config);
+        $driver = $this->customCreators[$config['driver']]($config);
 
         if ($driver instanceof FilesystemInterface) {
             return $this->adapt($driver);
@@ -130,7 +123,7 @@ class FilesystemManager {
      * Create an instance of the local driver.
      *
      * @param  array  $config
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return \Kant\Filesystem\Contracts\Filesystem
      */
     public function createLocalDriver(array $config) {
         $permissions = isset($config['permissions']) ? $config['permissions'] : [];
@@ -146,7 +139,7 @@ class FilesystemManager {
      * Create an instance of the ftp driver.
      *
      * @param  array  $config
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return \Kant\Filesystem\Contracts\Filesystem
      */
     public function createFtpDriver(array $config) {
         $ftpConfig = Arr::only($config, [
@@ -162,7 +155,7 @@ class FilesystemManager {
      * Create an instance of the Amazon S3 driver.
      *
      * @param  array  $config
-     * @return \Illuminate\Contracts\Filesystem\Cloud
+     * @return \Kant\Filesystem\Contracts\Cloud
      */
     public function createS3Driver(array $config) {
         $s3Config = $this->formatS3Config($config);
@@ -196,7 +189,7 @@ class FilesystemManager {
      * Create an instance of the Rackspace driver.
      *
      * @param  array  $config
-     * @return \Illuminate\Contracts\Filesystem\Cloud
+     * @return \Kant\Filesystem\Contracts\Cloud
      */
     public function createRackspaceDriver(array $config) {
         $client = new Rackspace($config['endpoint'], [
@@ -242,7 +235,7 @@ class FilesystemManager {
      * Adapt the filesystem implementation.
      *
      * @param  \League\Flysystem\FilesystemInterface  $filesystem
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return \Kant\Filesystem\Contracts\Filesystem
      */
     protected function adapt(FilesystemInterface $filesystem) {
         return new FilesystemAdapter($filesystem);
@@ -273,7 +266,7 @@ class FilesystemManager {
      * @return string
      */
     public function getDefaultCloudDriver() {
-        return $this->app['config']['filesystems.cloud'];
+        return Kant::$app->config->get('filesystems.cloud');
     }
 
     /**
@@ -297,7 +290,7 @@ class FilesystemManager {
      * @return mixed
      */
     public function __call($method, $parameters) {
-        return $this->disk()->$method(...$parameters);
+        return call_user_func_array([$this->disk(), $method], $parameters);
     }
 
 }

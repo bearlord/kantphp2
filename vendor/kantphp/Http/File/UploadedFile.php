@@ -110,7 +110,7 @@ class UploadedFile extends BaseUploadedFile {
 
         $disk = Arr::pull($options, 'disk');
 
-        return Kant::$app->filesystemManager->disk($disk)->putFileAs(
+        return Kant::$app->store->disk($disk)->putFileAs(
                         $path, $this, $name, $options
         );
     }

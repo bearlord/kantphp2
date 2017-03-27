@@ -107,7 +107,7 @@ class KantApplication extends Module {
             'i18n' => ['class' => 'Kant\I18n\I18N'],
             'formatter' => ['class' => 'Kant\I18n\Formatter'],
             'assetManager' => ['class' => 'Kant\View\AssetManager'],
-            'filesystemManager' => ['class' => 'Kant\Filesystem\FilesystemManager'],
+            'store' => ['class' => 'Kant\Filesystem\FilesystemManager'],
             'files' => ['class' => 'Kant\Filesystem\Filesystem']
         ];
     }
@@ -299,6 +299,10 @@ class KantApplication extends Module {
      */
     public function getAssetManager() {
         return $this->get('assetManager');
+    }
+
+    public function getFilesManager(){
+        return $this->get('filesManager');
     }
 
     /**

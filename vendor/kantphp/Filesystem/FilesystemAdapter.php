@@ -298,12 +298,12 @@ class FilesystemAdapter implements FilesystemContract, CloudFilesystemContract {
      */
     protected function getLocalUrl($path) {
         $config = $this->driver->getConfig();
-
+        var_dump($config);
         // If an explicit base URL has been set on the disk configuration then we will use
         // it as the base URL instead of the default path. This allows the developer to
         // have full control over the base path for this filesystem's generated URLs.
         if ($config->has('url')) {
-            return trim($config->get('url'), '/') . '/' . ltrim($path, '/');
+            return rtrim($config->get('url'), '/') . '/' . ltrim($path, '/');
         }
 
         $path = '/storage/' . $path;
