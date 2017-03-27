@@ -107,6 +107,7 @@ class KantApplication extends Module {
             'i18n' => ['class' => 'Kant\I18n\I18N'],
             'formatter' => ['class' => 'Kant\I18n\Formatter'],
             'assetManager' => ['class' => 'Kant\View\AssetManager'],
+            'filesystemManager' => ['class' => 'Kant\Filesystem\FilesystemManager'],
             'files' => ['class' => 'Kant\Filesystem\Filesystem']
         ];
     }
@@ -165,6 +166,13 @@ class KantApplication extends Module {
     }
 
     /**
+     * Set the view Object
+     */
+    public function setView() {
+        Kant::$container->set('Kant\View\View', Kant::createObject('Kant\View\View'));
+    }
+
+    /**
      * Register cache
      * 
      * @param type $config
@@ -188,10 +196,19 @@ class KantApplication extends Module {
     }
 
     /**
-     * Get Configure instance
+     * Returns the request component.
+     * @return Request the request component.
      */
-    public function getConfig() {
-        return Kant::createObject('Kant\Config\Config');
+    public function getRequest() {
+        return Kant::$container->get('Kant\Http\Request');
+    }
+
+    /**
+     * Returns the response component.
+     * @return Response the response component.
+     */
+    public function getResponse() {
+        return Kant::$container->get('Kant\Http\Response');
     }
 
     /**
@@ -201,6 +218,22 @@ class KantApplication extends Module {
      */
     public function getSession() {
         return Kant::$container->get('Kant\Session\Session');
+    }
+
+    /**
+     * Returns the view object.
+     * @return View|\Kant\View\View the view application component that is used to render various view files.
+     */
+    public function getView() {
+        return Kant::$container->get('Kant\View\View');
+    }
+
+    /**
+     * Returns the formatter component.
+     * @return \Kant\I18n\Formatter the formatter application component.
+     */
+    public function getFormatter() {
+        return Kant::$container->get('Kant\I18n\Formatter');
     }
 
     /**
@@ -269,19 +302,10 @@ class KantApplication extends Module {
     }
 
     /**
-     * Returns the request component.
-     * @return Request the request component.
+     * Get Configure instance
      */
-    public function getRequest() {
-        return Kant::$container->get('Kant\Http\Request');
-    }
-
-    /**
-     * Returns the response component.
-     * @return Response the response component.
-     */
-    public function getResponse() {
-        return Kant::$container->get('Kant\Http\Response');
+    public function getConfig() {
+        return Kant::createObject('Kant\Config\Config');
     }
 
     /**
@@ -290,22 +314,6 @@ class KantApplication extends Module {
      */
     public function getRouter() {
         return Kant::createObject('Kant\Routing\Router');
-    }
-
-    /**
-     * Returns the view object.
-     * @return View|\Kant\View\View the view application component that is used to render various view files.
-     */
-    public function getView() {
-        return Kant::createObject('Kant\View\View');
-    }
-
-    /**
-     * Returns the formatter component.
-     * @return \Kant\I18n\Formatter the formatter application component.
-     */
-    public function getFormatter() {
-        return Kant::$container->get('Kant\I18n\Formatter');
     }
 
     /**
@@ -338,6 +346,7 @@ class KantApplication extends Module {
         $this->setCookie($this->config->get('cookie'), $request, $response);
         $this->setSession($this->config->get('session'), $request, $response);
 
+        $this->setView();
         $this->getRouter()->dispatch($request, $response);
 
         $response->send();

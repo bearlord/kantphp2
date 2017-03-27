@@ -59,7 +59,7 @@ class Config {
             if (!isset($ret[$key])) {
                 return $default;
             }
-            $ret = $ret[$key];
+            $ret = $ret[$key];      
         }
         return $ret;
     }

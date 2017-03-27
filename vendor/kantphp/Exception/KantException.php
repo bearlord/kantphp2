@@ -9,6 +9,7 @@
 
 namespace Kant\Exception;
 
+use Kant\Kant;
 use Exception;
 use Kant\Log\Log;
 

@@ -10,6 +10,20 @@ class ComposerStaticInit22ec75112c6a5b86c23db22bea57d55d
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
     );
 
+    public static $prefixLengthsPsr4 = array (
+        'L' => 
+        array (
+            'League\\Flysystem\\' => 17,
+        ),
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'League\\Flysystem\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/flysystem/src',
+        ),
+    );
+
     public static $prefixesPsr0 = array (
         'H' => 
         array (
@@ -23,6 +37,8 @@ class ComposerStaticInit22ec75112c6a5b86c23db22bea57d55d
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
+            $loader->prefixLengthsPsr4 = ComposerStaticInit22ec75112c6a5b86c23db22bea57d55d::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit22ec75112c6a5b86c23db22bea57d55d::$prefixDirsPsr4;
             $loader->prefixesPsr0 = ComposerStaticInit22ec75112c6a5b86c23db22bea57d55d::$prefixesPsr0;
 
         }, null, ClassLoader::class);

@@ -15,7 +15,8 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "ezyang/htmlpurifier": "^4.9"
+        "ezyang/htmlpurifier": "^4.9",
+        "league/flysystem": "^1.0"
     },
     "autoload": {
         "psr-4": {
