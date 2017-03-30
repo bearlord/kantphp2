@@ -165,20 +165,19 @@ class UrlGenerator {
         }
 
         if ($path === '') {
-            $path = Kant::$app->getRequest()->getUri();
+            $path = Kant::$app->getRequest()->getPathInfo();
         }
 
         // First we will check if the URL is already a valid URL. If it is we will not
         // try to generate a new one but will simply return the URL as is, which is
         // convenient since developers do not always have to check if it's valid.
-
         if ($this->isValidUrl($path)) {
             return $path;
         }
 
         $tail = array_map(
                 'rawurlencode', (array) $this->formatParameters($extra));
-
+        
         // Once we have the scheme we will compile the "tail" by collapsing the values
         // into a single string delimited by slashes. This just makes it convenient
         // for passing the array of parameters to this URL as a list of segments.
@@ -609,7 +608,7 @@ class UrlGenerator {
             parse_str(ltrim($query, "?"), $params);
             return "?" . http_build_query(array_merge($params, $tail));
         } else {
-            return http_build_query($tail);
+            return "?" . http_build_query($tail);
         }
     }
 

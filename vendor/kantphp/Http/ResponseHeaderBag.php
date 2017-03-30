@@ -101,6 +101,7 @@ class ResponseHeaderBag extends HeaderBag {
             $this->headerNames['cache-control'] = 'Cache-Control';
             $this->computedCacheControl = $this->parseCacheControl($computed);
         }
+        return $this;
     }
 
     /**

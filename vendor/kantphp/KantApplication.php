@@ -139,9 +139,7 @@ class KantApplication extends Module {
      * @param type $type
      */
     public function setResponse(Request $request, $type) {
-        Kant::$container->set('Kant\Http\Response', Response::create($request, Response::HTTP_OK, [
-                    'Content-Type' => $this->outputType[$type]
-        ]));
+        Kant::$container->set('Kant\Http\Response', Response::create($request, Response::HTTP_OK));
     }
 
     /**

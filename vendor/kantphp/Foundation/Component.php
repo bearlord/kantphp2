@@ -467,7 +467,7 @@ class Component extends Object {
             }
         }
         // invoke class-level attached handlers
-//        Event::trigger($this, $name, $event);
+        Event::trigger($this, $name, $event);
     }
 
     /**

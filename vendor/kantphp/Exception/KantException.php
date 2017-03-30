@@ -11,7 +11,6 @@ namespace Kant\Exception;
 
 use Kant\Kant;
 use Exception;
-use Kant\Log\Log;
 
 class KantException extends Exception {
 
@@ -41,6 +40,8 @@ class KantException extends Exception {
             parent::__construct($msg, (int) $code);
             $this->_previous = $previous;
         } else {
+            Kant::trace($this->getTraceAsString());
+            
             $error = array();
             $error['message'] = $msg;
             $trace = $this->getTrace();
@@ -54,7 +55,7 @@ class KantException extends Exception {
             $error['trace'] = $this->getTraceAsString();
             $exceptionFile = KANT_PATH . 'View/system/exception.php';
             include $exceptionFile;
-
+            
             exit();
 //            parent::__construct($msg, (int) $code, $previous);
         }
