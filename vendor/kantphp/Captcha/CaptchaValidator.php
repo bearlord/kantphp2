@@ -65,13 +65,13 @@ class CaptchaValidator extends Validator {
 
     /**
      * Creates the CAPTCHA action object from the route specified by [[captchaAction]].
-     * @return \yii\captcha\CaptchaAction the action object
+     * @return \Kant\captcha\CaptchaAction the action object
      * @throws InvalidConfigException
      */
     public function createCaptchaAction() {
         $ca = Kant::$app->createController($this->captchaAction);
         if ($ca !== false) {
-            /* @var $controller \yii\base\Controller */
+            /* @var $controller \Kant\base\Controller */
             list($controller, $actionID) = $ca;
             $action = $controller->createAction($actionID);
             if ($action !== null) {

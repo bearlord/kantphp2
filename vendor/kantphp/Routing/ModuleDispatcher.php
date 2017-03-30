@@ -173,15 +173,7 @@ class ModuleDispatcher {
      * @throws KantException
      */
     protected function controller($controller, $module) {
-        $controller = ucfirst($controller) . "Controller";
-        $filepath = APP_PATH . "Module/{$module}/Controller/{$controller}.php";
-        if (!file_exists($filepath)) {
-            throw new KantException(sprintf("File does not exists:%s", $filepath));
-        }
-        include $filepath;
-
-        $namespace = "App\\{$module}\\Controller\\";
-        $controller = $namespace . $controller;
+        $controller =  "App\\{$module}\\Controller\\" . ucfirst($controller) . "Controller";;
         return $controller;
     }
 }

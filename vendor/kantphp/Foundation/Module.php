@@ -111,11 +111,7 @@ class Module extends ServiceLocator {
      *
      * The route should be relative to this module. The method implements the following algorithm
      * to resolve the given route:
-     *
-     * 1. If the route is empty, use [[defaultRoute]];
-     * 2. The given route is in the format of `abc/def/xyz`. Try either `abc\DefController`
-     *    or `abc\def\XyzController` class within the [[controllerNamespace|controller namespace]].
-     *
+     * 
      * If any of the above steps resolves into a controller, it is returned together with the rest
      * part of the route which will be treated as the action ID. Otherwise, false will be returned.
      *
@@ -125,10 +121,6 @@ class Module extends ServiceLocator {
      * @throws InvalidConfigException if the controller class and its file do not match.
      */
     public function createController($route) {
-        if ($route === '') {
-            $route = $this->defaultRoute;
-        }
-
         // double slashes or leading/ending slashes may cause substr problem
         $route = trim($route, '/');
         if (strpos($route, '//') !== false) {
@@ -143,18 +135,7 @@ class Module extends ServiceLocator {
 
             $controller = $this->createControllerByID($route);
             return $controller === null ? false : [$controller, end($path)];
-        } else {
-            $id = $route;
-            $route = '';
-        }
-
-        $controller = $this->createControllerByID($id);
-        if ($controller === null && $route !== '') {
-            $controller = $this->createControllerByID($id . '/' . $route);
-            $route = '';
-        }
-
-        return $controller === null ? false : [$controller, $route];
+        } 
     }
 
     /**
@@ -172,12 +153,11 @@ class Module extends ServiceLocator {
      */
     public function createControllerByID($id) {
         if (strrpos($id, '/') === false) {
-            $className = $id;
-        } else {
-            $path = explode("/", $id);
+            return null;
+        } 
+        
+        $path = explode("/", $id);
             $className = sprintf("App\%s\Controller\%sController", ucfirst($path[0]), ucfirst($path[1]));
-        }
-
         if (strpos($className, '-') !== false || !class_exists($className)) {
             return null;
         }
