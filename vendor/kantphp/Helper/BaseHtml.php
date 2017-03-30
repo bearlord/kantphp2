@@ -416,7 +416,7 @@ class BaseHtml {
      * @return string the generated image tag
      */
     public static function img($src, $options = []) {
-        $options['src'] = Url::to($src);
+        $options['src'] = Url::to($src[0], array_slice($src, 1));
         if (!isset($options['alt'])) {
             $options['alt'] = '';
         }

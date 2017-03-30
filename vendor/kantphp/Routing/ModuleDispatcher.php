@@ -124,9 +124,9 @@ class ModuleDispatcher {
         if (empty($moduleName)) {
             throw new KantException('No Module found');
         }
-        $this->setModuleConfig($moduleName);
+        Kant::$app->setModuleConfig($moduleName);
 
-        $this->setViewDispatcher($dispatcher);
+        Kant::$app->setViewDispatcher($dispatcher);
 
         //controller name
         $controllerName = $this->getControllerName($dispatcher[1]);
@@ -143,27 +143,6 @@ class ModuleDispatcher {
 
         $data = Kant::$container->callClass($controller . "@" . 'runAction', [$action]);
         return $data;
-    }
-
-    /**
-     * Init Module Config;
-     * @param type $module
-     */
-    protected function setModuleConfig($module) {
-        $configFilePath = MODULE_PATH . $module . DIRECTORY_SEPARATOR . 'Config.php';
-        if (file_exists($configFilePath)) {
-            Kant::$app->config->merge(require $configFilePath);
-        }
-    }
-
-    /**
-     * Set view dispatcher
-     * 
-     * @param type $dispatcher
-     */
-    public function setViewDispatcher($dispatcher) {
-        KantRegistry::set('dispatcher', $dispatcher);
-        Kant::$app->getView()->setDispatcher($dispatcher);
     }
 
     /**

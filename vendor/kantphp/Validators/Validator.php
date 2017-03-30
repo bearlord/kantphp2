@@ -24,7 +24,7 @@ use Kant\Exception\NotSupportedException;
  * be referenced using short names. They are listed as follows:
  *
  * - `boolean`: [[BooleanValidator]]
- * - `captcha`: [[\Kant\captcha\CaptchaValidator]]
+ * - `captcha`: [[\Kant\Captcha\CaptchaValidator]]
  * - `compare`: [[CompareValidator]]
  * - `date`: [[DateValidator]]
  * - `default`: [[DefaultValueValidator]]
@@ -56,7 +56,7 @@ class Validator extends Component {
      */
     public static $builtInValidators = [
         'boolean' => 'Kant\Validators\BooleanValidator',
-        'captcha' => 'yii\captcha\CaptchaValidator',
+        'captcha' => 'Kant\Captcha\CaptchaValidator',
         'compare' => 'Kant\Validators\CompareValidator',
         'date' => 'Kant\Validators\DateValidator',
         'default' => 'Kant\Validators\DefaultValueValidator',

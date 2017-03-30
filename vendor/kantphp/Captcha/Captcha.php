@@ -1,12 +1,13 @@
 <?php
+
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Captcha;
-
 
 use Kant\Exception\InvalidConfigException;
 use Kant\Helper\Url;
@@ -58,37 +59,38 @@ use Kant\Widget\InputWidget;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Captcha extends InputWidget
-{
+class Captcha extends InputWidget {
+
     /**
      * @var string|array the route of the action that generates the CAPTCHA images.
      * The action represented by this route must be an action of [[CaptchaAction]].
      * Please refer to [[\yii\helpers\Url::toRoute()]] for acceptable formats.
      */
-    public $captchaAction = 'site/captcha';
+    public $captchaAction = 'common/service/captcha';
+
     /**
      * @var array HTML attributes to be applied to the CAPTCHA image tag.
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $imageOptions = [];
+
     /**
      * @var string the template for arranging the CAPTCHA image tag and the text input tag.
      * In this template, the token `{image}` will be replaced with the actual image tag,
      * while `{input}` will be replaced with the text input tag.
      */
     public $template = '{image} {input}';
+
     /**
      * @var array the HTML attributes for the input tag.
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $options = ['class' => 'form-control'];
 
-
     /**
      * Initializes the widget.
      */
-    public function init()
-    {
+    public function init() {
         parent::init();
 
         static::checkRequirements();
@@ -101,8 +103,7 @@ class Captcha extends InputWidget
     /**
      * Renders the widget.
      */
-    public function run()
-    {
+    public function run() {
         $this->registerClientScript();
         if ($this->hasModel()) {
             $input = Html::activeTextInput($this->model, $this->attribute, $this->options);
@@ -125,32 +126,32 @@ class Captcha extends InputWidget
     /**
      * Registers the needed JavaScript.
      */
-    public function registerClientScript()
-    {
+    public function registerClientScript() {
         $options = $this->getClientOptions();
         $options = empty($options) ? '' : Json::htmlEncode($options);
         $id = $this->imageOptions['id'];
         $view = $this->getView();
         CaptchaAsset::register($view);
-        $view->registerJs("jQuery('#$id').yiiCaptcha($options);");
+        $view->registerJs("jQuery('#$id').kantCaptcha($options);");
     }
 
     /**
      * Returns the options for the captcha JS widget.
      * @return array the options
      */
-    protected function getClientOptions()
-    {
+    protected function getClientOptions() {
         $route = $this->captchaAction;
-        if (is_array($route)) {
-            $route[CaptchaAction::REFRESH_GET_VAR] = 1;
-        } else {
-            $route = [$route, CaptchaAction::REFRESH_GET_VAR => 1];
-        }
 
+        /*
+          if (is_array($route)) {
+          $route[CaptchaAction::REFRESH_GET_VAR] = 1;
+          } else {
+          $route = [$route, CaptchaAction::REFRESH_GET_VAR => 1];
+          }
+         */
         $options = [
-            'refreshUrl' => Url::toRoute($route),
-            'hashKey' => 'yiiCaptcha/' . trim($route[0], '/'),
+            'refreshUrl' => Url::to($route, [CaptchaAction::REFRESH_GET_VAR => 1]),
+            'hashKey' => 'kantCaptcha/' . trim($route[0], '/'),
         ];
 
         return $options;
@@ -162,8 +163,7 @@ class Captcha extends InputWidget
      * @return string the name of the graphic extension, either "imagick" or "gd".
      * @throws InvalidConfigException if neither ImageMagick nor GD is installed.
      */
-    public static function checkRequirements()
-    {
+    public static function checkRequirements() {
         if (extension_loaded('imagick')) {
             $imagickFormats = (new \Imagick())->queryFormats('PNG');
             if (in_array('PNG', $imagickFormats, true)) {
@@ -178,4 +178,5 @@ class Captcha extends InputWidget
         }
         throw new InvalidConfigException('Either GD PHP extension with FreeType support or ImageMagick PHP extension with PNG support is required.');
     }
+
 }

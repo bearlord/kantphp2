@@ -177,7 +177,7 @@ class UrlGenerator {
 
         $tail = array_map(
                 'rawurlencode', (array) $this->formatParameters($extra));
-        
+
         // Once we have the scheme we will compile the "tail" by collapsing the values
         // into a single string delimited by slashes. This just makes it convenient
         // for passing the array of parameters to this URL as a list of segments.
@@ -607,7 +607,8 @@ class UrlGenerator {
         if (!empty($query)) {
             parse_str(ltrim($query, "?"), $params);
             return "?" . http_build_query(array_merge($params, $tail));
-        } else {
+        }
+        if (!empty($tail)) {
             return "?" . http_build_query($tail);
         }
     }

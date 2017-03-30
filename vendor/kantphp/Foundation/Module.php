@@ -15,6 +15,36 @@ use Kant\Di\ServiceLocator;
 class Module extends ServiceLocator {
 
     /**
+     * @var array mapping from controller ID to controller configurations.
+     * Each name-value pair specifies the configuration of a single controller.
+     * A controller configuration can be either a string or an array.
+     * If the former, the string should be the fully qualified class name of the controller.
+     * If the latter, the array must contain a 'class' element which specifies
+     * the controller's fully qualified class name, and the rest of the name-value pairs
+     * in the array are used to initialize the corresponding controller properties. For example,
+     *
+     * ```php
+     * [
+     *   'account' => 'app\controllers\UserController',
+     *   'article' => [
+     *      'class' => 'app\controllers\PostController',
+     *      'pageTitle' => 'something new',
+     *   ],
+     * ]
+     * ```
+     */
+    public $controllerMap = [];
+
+    /**
+     * @var string the default route of this module. Defaults to 'default'.
+     * The route may consist of child module ID, controller ID, and/or action ID.
+     * For example, `help`, `post/create`, `admin/post/create`.
+     * If action ID is not given, it will take the default value as specified in
+     * [[Controller::defaultAction]].
+     */
+    public $defaultRoute = 'default';
+
+    /**
      * @var string the root directory of the module.
      */
     private $_basePath;
@@ -56,7 +86,112 @@ class Module extends ServiceLocator {
         Kant::setAlias('@bower', $this->_vendorPath . DIRECTORY_SEPARATOR . 'bower');
     }
 
-    
+    /**
+     * Init Module Config;
+     * @param type $module
+     */
+    public function setModuleConfig($module) {
+        $configFilePath = MODULE_PATH . $module . DIRECTORY_SEPARATOR . 'Config.php';
+        if (file_exists($configFilePath)) {
+            Kant::$app->config->merge(require $configFilePath);
+        }
+    }
+
+    /**
+     * Set view dispatcher
+     * 
+     * @param type $dispatcher
+     */
+    public function setViewDispatcher($dispatcher) {
+        Kant::$app->view->setDispatcher($dispatcher);
+    }
+
+    /**
+     * Creates a controller instance based on the given route.
+     *
+     * The route should be relative to this module. The method implements the following algorithm
+     * to resolve the given route:
+     *
+     * 1. If the route is empty, use [[defaultRoute]];
+     * 2. The given route is in the format of `abc/def/xyz`. Try either `abc\DefController`
+     *    or `abc\def\XyzController` class within the [[controllerNamespace|controller namespace]].
+     *
+     * If any of the above steps resolves into a controller, it is returned together with the rest
+     * part of the route which will be treated as the action ID. Otherwise, false will be returned.
+     *
+     * @param string $route the route consisting of module, controller and action IDs.
+     * @return array|boolean If the controller is created successfully, it will be returned together
+     * with the requested action ID. Otherwise false will be returned.
+     * @throws InvalidConfigException if the controller class and its file do not match.
+     */
+    public function createController($route) {
+        if ($route === '') {
+            $route = $this->defaultRoute;
+        }
+
+        // double slashes or leading/ending slashes may cause substr problem
+        $route = trim($route, '/');
+        if (strpos($route, '//') !== false) {
+            return false;
+        }
+
+        if (strpos($route, '/') !== false) {
+            $path = explode("/", $route);
+            if (count($path) !== 3) {
+                return false;
+            }
+
+            $controller = $this->createControllerByID($route);
+            return $controller === null ? false : [$controller, end($path)];
+        } else {
+            $id = $route;
+            $route = '';
+        }
+
+        $controller = $this->createControllerByID($id);
+        if ($controller === null && $route !== '') {
+            $controller = $this->createControllerByID($id . '/' . $route);
+            $route = '';
+        }
+
+        return $controller === null ? false : [$controller, $route];
+    }
+
+    /**
+     * Creates a controller based on the given controller ID.
+     *
+     * The controller ID is relative to this module. The controller class
+     * should be namespaced under [[controllerNamespace]].
+     *
+     * Note that this method does not check [[modules]] or [[controllerMap]].
+     *
+     * @param string $id the controller ID
+     * @return Controller the newly created controller instance, or null if the controller ID is invalid.
+     * @throws InvalidConfigException if the controller class and its file name do not match.
+     * This exception is only thrown when in debug mode.
+     */
+    public function createControllerByID($id) {
+        if (strrpos($id, '/') === false) {
+            $className = $id;
+        } else {
+            $path = explode("/", $id);
+            $className = sprintf("App\%s\Controller\%sController", ucfirst($path[0]), ucfirst($path[1]));
+        }
+
+        if (strpos($className, '-') !== false || !class_exists($className)) {
+            return null;
+        }
+
+        if (is_subclass_of($className, 'Kant\Controller\Controller')) {
+            $controller = Kant::createObject($className);
+            return get_class($controller) === $className ? $controller : null;
+        } elseif (Kant::$app->config->get('debug')) {
+            throw new InvalidConfigException("Controller class must extend from \\Kant\\Controller\\Controller.");
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Call the given Closure / class@method and inject its dependencies.
      *
@@ -69,7 +204,7 @@ class Module extends ServiceLocator {
         if ($this->isCallableWithAtSign($callback) || $defaultMethod) {
             return $this->callClass($callback, $parameters, $defaultMethod);
         }
-        $dependencies = $this->getMethodDependencies($callback, $parameters);       
+        $dependencies = $this->getMethodDependencies($callback, $parameters);
         return call_user_func_array($callback, $dependencies);
     }
 
@@ -189,4 +324,5 @@ class Module extends ServiceLocator {
         return (isset($options['only']) && !in_array($method, (array) $options['only'])) ||
                 (!empty($options['except']) && in_array($method, (array) $options['except']));
     }
+
 }
