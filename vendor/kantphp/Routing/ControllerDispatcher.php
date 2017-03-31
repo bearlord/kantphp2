@@ -2,7 +2,7 @@
 
 namespace Kant\Routing;
 
-use Kant\Exception\UnknownMethodException;
+use Kant\Kant;
 
 class ControllerDispatcher {
 
@@ -38,17 +38,7 @@ class ControllerDispatcher {
                 $route->parametersWithoutNulls(), $controller, $method
         );
 
-        if (method_exists($controller, 'callAction')) {
-            return $controller->callAction($method, $parameters);
-        }
-
-        //compliant for PHP5.4
-        if (method_exists($controller, $method)) {
-            return call_user_func_array([$controller, $method], $parameters);
-        } else {
-            throw new UnknownMethodException(sprintf("Method Not Found:%s@%s", get_class($controller), $method));
-        }
-//        return $controller->{$method}(...array_values($parameters));
+        return Kant::$container->callClass($controller::className() . "@" . 'runAction', [$method, $parameters]);
     }
 
     /**

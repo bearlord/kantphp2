@@ -130,7 +130,7 @@ class ModuleDispatcher {
 
         //controller name
         $controllerName = $this->getControllerName($dispatcher[1]);
-        $controller = $this->controller($controllerName, $moduleName);
+        $controller = $this->getControllerClass($controllerName, $moduleName);
         if (!$controller) {
             if (empty($controller)) {
                 throw new KantException(sprintf("No controller exists:%s", ucfirst($dispatcher[1]) . $this->controllerSuffix));
@@ -172,8 +172,7 @@ class ModuleDispatcher {
      * @return boolean|array|\classname
      * @throws KantException
      */
-    protected function controller($controller, $module) {
-        $controller =  "App\\{$module}\\Controller\\" . ucfirst($controller) . "Controller";;
-        return $controller;
+    protected function getControllerClass($controllerName, $moduleName) {
+        return "App\\{$moduleName}\\Controller\\" . ucfirst($controllerName) . "Controller";
     }
 }

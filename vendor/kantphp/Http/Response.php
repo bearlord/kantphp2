@@ -180,8 +180,7 @@ class Response extends BaseResponse {
      *
      * @return Response
      */
-    public function sendContent() {     
-        ob_end_clean();
+    public function sendContent() {
         if ($this->stream === null) {
             echo $this->content;
             return $this;

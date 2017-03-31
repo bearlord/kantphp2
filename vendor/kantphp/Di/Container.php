@@ -13,6 +13,7 @@ use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Helper\ArrayHelper;
 use Kant\Exception\InvalidConfigException;
+use Kant\Exception\NotFoundHttpException;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionFunction;
@@ -352,6 +353,9 @@ class Container extends Component {
         }
 
         $dependencies = [];
+        if (class_exists($class) == false) {
+            throw  new NotFoundHttpException('Class not exists: ' . $class);
+        }
         $reflection = new ReflectionClass($class);
 
         $constructor = $reflection->getConstructor();

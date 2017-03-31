@@ -339,7 +339,7 @@ class KantApplication extends Module {
      */
     public function run() {
         $request = $this->getRequest();
-
+        
         $response = $this->getResponse();
 
         $this->setCache($this->config->get('cache'));

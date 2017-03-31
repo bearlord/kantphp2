@@ -1,3 +1,6 @@
+<?php
+use Kant\Kant;
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -45,7 +48,7 @@
             </div>
         </div>
         <div class="copyright">
-            <p><a title="Kantphp Framework" href="http://www.kantphp.com">Kantphp Framework 2.0</a></p>
+            <p><a title="Kantphp Framework" href="http://www.kantphp.com">Kantphp Framework <?= Kant::getVersion(); ?></a></p>
         </div>
     </body>
 </html>

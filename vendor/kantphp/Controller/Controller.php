@@ -162,10 +162,10 @@ class Controller extends Component {
         }
 
         $actionMap = $this->actions();
-
+        
         if (isset($actionMap[$id])) {
             return Kant::createObject($actionMap[$id], [$id, $this]);
-        } elseif (preg_match('/^[a-z0-9\\-_]+$/', $id) && strpos($id, '--') === false && trim($id, '-') === $id) {
+        } elseif (preg_match('/^[\w+\\-]+$/', $id) && strpos($id, '--') === false && trim($id, '-') === $id) {
             $methodName = $this->formatMethodName($id);
             if (method_exists($this, $methodName)) {
                 $method = new \ReflectionMethod($this, $methodName);
@@ -186,6 +186,9 @@ class Controller extends Component {
      * @return type
      */
     protected function formatMethodName($id) {
+        if (strpos($id, $this->actionSuffix) > 1) {
+            return $id;
+        }
         return str_replace(' ', '', strtolower(implode(' ', explode('-', $id)))) . $this->actionSuffix;
     }
 
