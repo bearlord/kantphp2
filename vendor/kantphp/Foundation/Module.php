@@ -87,26 +87,6 @@ class Module extends ServiceLocator {
     }
 
     /**
-     * Init Module Config;
-     * @param type $module
-     */
-    public function setModuleConfig($module) {
-        $configFilePath = MODULE_PATH . $module . DIRECTORY_SEPARATOR . 'Config.php';
-        if (file_exists($configFilePath)) {
-            Kant::$app->config->merge(require $configFilePath);
-        }
-    }
-
-    /**
-     * Set view dispatcher
-     * 
-     * @param type $dispatcher
-     */
-    public function setViewDispatcher($dispatcher) {
-        Kant::$app->view->setDispatcher($dispatcher);
-    }
-
-    /**
      * Creates a controller instance based on the given route.
      *
      * The route should be relative to this module. The method implements the following algorithm

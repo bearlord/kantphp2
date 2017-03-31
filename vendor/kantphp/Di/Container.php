@@ -554,17 +554,17 @@ class Container extends Component {
         if (is_array($callback)) {
             list($class, $name) = $callback;
             if (!preg_match('/^[A-Za-z](\w)*$/', $name)) {
-                throw new ReflectionException('Method not exists: ' . $class::className() . "::" . $name);
+                throw new ReflectionException('Method not exists: ' . get_class($class) . "::" . $name);
             }
             if (method_exists($class, $name)) {
                 $method = new ReflectionMethod($class, $name);
 
                 if (!$method->isPublic()) {
-                    throw new ReflectionException('Method not exists: ' . $class::className() . "::" . $name);
+                    throw new ReflectionException('Method not exists: ' . get_class($class) . "::" . $name);
                 }
                 return $method;
             } else {
-                throw new InvalidConfigException('Method not exists: ' . $class::className() . "::" . $name);
+                throw new InvalidConfigException('Method not exists: ' . get_class($class) . "::" . $name);
             }
         }
         return new ReflectionFunction($callback);

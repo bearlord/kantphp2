@@ -41,7 +41,7 @@ return [
       |--------------------------------------------------------------------------
      */
     'enableDebugLogs' => true,
-    'returnType' => 'html',
+    'responseFormat' => 'html',
     'pathinfo_repair' => false,
     'debug' => true,
     'urlSuffix' => '.html',

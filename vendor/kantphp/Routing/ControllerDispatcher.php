@@ -37,8 +37,12 @@ class ControllerDispatcher {
         $parameters = $this->resolveClassMethodDependencies(
                 $route->parametersWithoutNulls(), $controller, $method
         );
-
-        return Kant::$container->callClass($controller::className() . "@" . 'runAction', [$method, $parameters]);
+ 
+        $controllerClassName = get_class($controller);
+        $path = explode("\\", $controllerClassName);
+        $moduelName = ucfirst($path[1]);
+        Kant::$app->setModuleConfig($moduelName);
+        return Kant::$container->callClass($controllerClassName . "@" . 'runAction', [$method, $parameters]);
     }
 
     /**

@@ -91,6 +91,10 @@ class Response extends BaseResponse {
         }
         $this->formatters = array_merge($this->defaultFormatters(), $this->formatters);
     }
+    
+    public function setFormat($format) {
+        $this->format = $format;
+    }
 
     /**
      * Factory method for chainability.

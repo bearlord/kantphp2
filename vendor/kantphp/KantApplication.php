@@ -90,9 +90,9 @@ class KantApplication extends Module {
      * If you override this method, make sure you also call the parent implementation.
      */
     public function bootstrap() {
-        $type = strtolower($this->config->get('returnType'));
+        $format = strtolower($this->config->get('responseFormat'));
         $request = $this->getRequest();
-        $this->setResponse($request, $type);
+        $this->setResponse($request);
         Kant::setAlias('@webroot', dirname($request->getScriptName()));
         Kant::setAlias('@web', $request->getBaseUrl());
     }
@@ -136,9 +136,9 @@ class KantApplication extends Module {
      * Register Response
      * 
      * @param Request $request
-     * @param type $type
+     * @param type $format
      */
-    public function setResponse(Request $request, $type) {
+    public function setResponse(Request $request) {
         Kant::$container->set('Kant\Http\Response', Response::create($request, Response::HTTP_OK));
     }
 
@@ -466,25 +466,6 @@ class KantApplication extends Module {
     }
 
     /**
-     * Parse Data
-     * 
-     * @param type $data
-     * @param type $type
-     * @return type
-     * @throws KantException
-     */
-    protected function parseData($data, $type) {
-        if (in_array($type, array_keys($this->outputType)) == false) {
-            throw new KantException("Unsupported output type:" . $type);
-        }
-        $classname = "Kant\\Http\\" . ucfirst($type);
-        $OutputObj = new $classname;
-        $method = new ReflectionMethod($OutputObj, 'output');
-        $result = $method->invokeArgs($OutputObj, array($data));
-        return $result;
-    }
-
-    /**
      * Register an existing instance as shared in the container.
      *
      * @param  string  $class
@@ -496,4 +477,25 @@ class KantApplication extends Module {
         return $this->get($class);
     }
 
+        /**
+     * Init Module Config;
+     * @param type $module
+     */
+    public function setModuleConfig($module) {
+        $configFilePath = MODULE_PATH . $module . DIRECTORY_SEPARATOR . 'Config.php';
+        if (file_exists($configFilePath)) {
+            $this->config->merge(require $configFilePath);
+            $this->getResponse()->format = $this->config->get('responseFormat');
+        }
+    }
+
+    /**
+     * Set view dispatcher
+     * 
+     * @param type $dispatcher
+     */
+    public function setViewDispatcher($dispatcher) {
+        $this->getView()->setDispatcher($dispatcher);
+    }
+    
 }
