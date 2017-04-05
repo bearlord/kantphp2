@@ -15,6 +15,7 @@ use Kant\Helper\ArrayHelper;
 use Kant\Config\Config;
 use Kant\Http\Request;
 use Kant\Http\Response;
+use Kant\Routing\Router;
 use Kant\Runtime\Runtime;
 use Kant\Exception\KantException;
 use ReflectionMethod;
@@ -29,7 +30,7 @@ class KantApplication extends Module {
 
     /**
      * Config object instance
-     * @var type 
+     * @var object 
      */
     public $config;
     public $env = 'Dev';
@@ -56,12 +57,6 @@ class KantApplication extends Module {
      * @var array
      */
     protected $dispatcher = null;
-    protected $outputType = [
-        'html' => 'text/html',
-        'json' => 'application/json',
-        'jsonp' => 'application/javascript',
-        'xml' => 'text/xml'
-    ];
 
     /**
      * Constructs
@@ -341,6 +336,8 @@ class KantApplication extends Module {
         $request = $this->getRequest();
         
         $response = $this->getResponse();
+        
+        $router = $this->getRouter();
 
         $this->setCache($this->config->get('cache'));
         $this->setDb($this->config->get('database'));
@@ -349,7 +346,7 @@ class KantApplication extends Module {
         $this->setSession($this->config->get('session'), $request, $response);
 
         $this->setView();
-        $this->getRouter()->dispatch($request, $response);
+        $router->dispatch($request, $response);
 
         $response->send();
         $this->end();
@@ -484,9 +481,9 @@ class KantApplication extends Module {
     public function setModuleConfig($module) {
         $configFilePath = MODULE_PATH . $module . DIRECTORY_SEPARATOR . 'Config.php';
         if (file_exists($configFilePath)) {
-            $this->config->merge(require $configFilePath);
-            $this->getResponse()->format = $this->config->get('responseFormat');
+            $this->config->merge(require $configFilePath);        
         }
+        $this->getResponse()->format = $this->config->get('responseFormat');
     }
 
     /**
@@ -498,4 +495,16 @@ class KantApplication extends Module {
         $this->getView()->setDispatcher($dispatcher);
     }
     
+    /**
+     * Register the route middleware
+     * 
+     * @param object $config
+     * @param Router $router
+     */
+    public function setRouteMiddleware($config, Router $router){
+        $routeMiddleware = $config->get('routeMiddleware');
+        foreach ($routeMiddleware as $key => $middleware) {
+            $router->aliasMiddleware($key, $middleware);
+        }
+    }
 }

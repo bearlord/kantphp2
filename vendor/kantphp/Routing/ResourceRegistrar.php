@@ -9,7 +9,7 @@ class ResourceRegistrar {
     /**
      * The router instance.
      *
-     * @var \Illuminate\Routing\Router
+     * @var \Kant\Routing\Router
      */
     protected $router;
 
@@ -54,7 +54,7 @@ class ResourceRegistrar {
     /**
      * Create a new resource registrar instance.
      *
-     * @param  \Illuminate\Routing\Router  $router
+     * @param  \Kant\Routing\Router  $router
      * @return void
      */
     public function __construct(Router $router) {
@@ -158,7 +158,7 @@ class ResourceRegistrar {
      * @param  string  $base
      * @param  string  $controller
      * @param  array   $options
-     * @return \Illuminate\Routing\Route
+     * @return \Kant\Routing\Route
      */
     protected function addResourceIndex($name, $base, $controller, $options) {
         $uri = $this->getResourceUri($name);
@@ -175,7 +175,7 @@ class ResourceRegistrar {
      * @param  string  $base
      * @param  string  $controller
      * @param  array   $options
-     * @return \Illuminate\Routing\Route
+     * @return \Kant\Routing\Route
      */
     protected function addResourceCreate($name, $base, $controller, $options) {
         $uri = $this->getResourceUri($name) . '/' . static::$verbs['create'];
@@ -192,7 +192,7 @@ class ResourceRegistrar {
      * @param  string  $base
      * @param  string  $controller
      * @param  array   $options
-     * @return \Illuminate\Routing\Route
+     * @return \Kant\Routing\Route
      */
     protected function addResourceStore($name, $base, $controller, $options) {
         $uri = $this->getResourceUri($name);
@@ -209,7 +209,7 @@ class ResourceRegistrar {
      * @param  string  $base
      * @param  string  $controller
      * @param  array   $options
-     * @return \Illuminate\Routing\Route
+     * @return \Kant\Routing\Route
      */
     protected function addResourceShow($name, $base, $controller, $options) {
         $uri = $this->getResourceUri($name) . '/{' . $base . '}';
@@ -226,7 +226,7 @@ class ResourceRegistrar {
      * @param  string  $base
      * @param  string  $controller
      * @param  array   $options
-     * @return \Illuminate\Routing\Route
+     * @return \Kant\Routing\Route
      */
     protected function addResourceEdit($name, $base, $controller, $options) {
         $uri = $this->getResourceUri($name) . '/{' . $base . '}/' . static::$verbs['edit'];
@@ -243,7 +243,7 @@ class ResourceRegistrar {
      * @param  string  $base
      * @param  string  $controller
      * @param  array   $options
-     * @return \Illuminate\Routing\Route
+     * @return \Kant\Routing\Route
      */
     protected function addResourceUpdate($name, $base, $controller, $options) {
         $uri = $this->getResourceUri($name) . '/{' . $base . '}';
@@ -260,7 +260,7 @@ class ResourceRegistrar {
      * @param  string  $base
      * @param  string  $controller
      * @param  array   $options
-     * @return \Illuminate\Routing\Route
+     * @return \Kant\Routing\Route
      */
     protected function addResourceDestroy($name, $base, $controller, $options) {
         $uri = $this->getResourceUri($name) . '/{' . $base . '}';

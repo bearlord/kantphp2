@@ -81,6 +81,13 @@ class Route {
     public $actionSuffix = 'Action';
 
     /**
+     * The computed gathered middleware.
+     *
+     * @var array|null
+     */
+    public $computedMiddleware;
+
+    /**
      * The compiled version of the route.
      *
      * @var \Symfony\Component\Routing\CompiledRoute
@@ -486,6 +493,23 @@ class Route {
     }
 
     /**
+     * Get all middleware, including the ones from the controller.
+     *
+     * @return array
+     */
+    public function gatherMiddleware() {
+        if (!is_null($this->computedMiddleware)) {
+            return $this->computedMiddleware;
+        }
+
+        $this->computedMiddleware = [];
+
+        return $this->computedMiddleware = array_unique(array_merge(
+                        $this->middleware(), $this->controllerMiddleware()
+                ), SORT_REGULAR);
+    }
+
+    /**
      * Get or set the middlewares attached to the route.
      *
      * @param  array|string|null $middleware
@@ -505,6 +529,21 @@ class Route {
         );
 
         return $this;
+    }
+
+    /**
+     * Get the middleware for the route's controller.
+     *
+     * @return array
+     */
+    public function controllerMiddleware() {
+        if (!$this->isControllerAction()) {
+            return [];
+        }
+
+        return ControllerDispatcher::getMiddleware(
+                        $this->getController(), $this->getControllerMethod()
+        );
     }
 
     /**

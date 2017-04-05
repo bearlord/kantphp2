@@ -3,15 +3,16 @@
 namespace Kant\Routing;
 
 use Kant\Kant;
+use Kant\Foundation\Component;
 use Kant\Routing\RouteCollection;
 use Kant\Routing\RouteGroup;
 use Closure;
-use Kant\Helper\DirHelper;
+use Kant\Support\Collection;
 use Kant\Helper\StringHelper;
 use Kant\Http\Request;
 use Kant\Http\Response;
 
-class Router extends \Kant\Foundation\Component {
+class Router extends Component {
 
     protected $mapFileExt = ".php";
 
@@ -64,6 +65,29 @@ class Router extends \Kant\Foundation\Component {
      */
     protected $currentRequest;
 
+    /**
+     * All of the short-hand keys for middlewares.
+     *
+     * @var array
+     */
+    protected $middleware = [];
+
+    /**
+     * All of the middleware groups.
+     *
+     * @var array
+     */
+    protected $middlewareGroups = [];
+
+    /**
+     * The priority-sorted list of middleware.
+     *
+     * Forces the listed middleware to always be in the given order.
+     *
+     * @var array
+     */
+    public $middlewarePriority = [];
+
     public function __construct() {
         $this->routes = Kant::createObject(RouteCollection::class);
         $this->mapRoutes();
@@ -77,16 +101,16 @@ class Router extends \Kant\Foundation\Component {
      * @return void
      */
     public function mapRoutes() {
-        $mapFiles = DirHelper::lists(CFG_PATH . "Route", trim($this->mapFileExt, "."));
-        foreach ($mapFiles as $map) {
+        foreach (glob(CFG_PATH . "Route/*.php") as $map) {
             $mapName = StringHelper::basename($map, $this->mapFileExt);
             $this->group([
-                'middleware' => $mapName,
+                'prefix' => strtolower($mapName),
+                'middleware' => strtolower($mapName),
                 'namespace' => "App\\{$mapName}\\Controllers"
                     ], $map);
         }
     }
-    
+
     /**
      * Get the Route Collection object.
      * 
@@ -388,6 +412,21 @@ class Router extends \Kant\Foundation\Component {
     }
 
     /**
+     * Get the prefix from the last group on the stack.
+     *
+     * @return string
+     */
+    public function getLastGroupPrefix() {
+        if (!empty($this->groupStack)) {
+            $last = end($this->groupStack);
+
+            return isset($last['prefix']) ? $last['prefix'] : '';
+        }
+
+        return '';
+    }
+
+    /**
      * Add the necessary where clauses to the route based on its initial registration.
      *
      * @param  \Kant\Routing\Route  $route
@@ -441,7 +480,7 @@ class Router extends \Kant\Foundation\Component {
         $request->setRouteResolver(function () use ($route) {
             return $route;
         });
-        
+
         $this->runRouteWithinStack($route, $response);
     }
 
@@ -470,18 +509,27 @@ class Router extends \Kant\Foundation\Component {
     }
 
     /**
-     * Get the prefix from the last group on the stack.
+     * Gather the middleware for the given route with resolved class names.
      *
-     * @return string
+     * @param  \Kant\Routing\Route  $route
+     * @return array
      */
-    public function getLastGroupPrefix() {
-        if (!empty($this->groupStack)) {
-            $last = end($this->groupStack);
+    public function gatherRouteMiddleware(Route $route) {
+        $middleware = (new Collection($route->gatherMiddleware()))->map(function ($name) {
+                    return (array) MiddlewareNameResolver::resolve($name, $this->middleware, $this->middlewareGroups);
+                })->flatten();
 
-            return isset($last['prefix']) ? $last['prefix'] : '';
-        }
+        return $this->sortMiddleware($middleware);
+    }
 
-        return '';
+    /**
+     * Sort the given middleware by priority.
+     *
+     * @param  \Kant\Support\Collection  $middlewares
+     * @return array
+     */
+    protected function sortMiddleware(Collection $middlewares) {
+        return (new SortedMiddleware($this->middlewarePriority, $middlewares))->all();
     }
 
     /**
@@ -504,6 +552,19 @@ class Router extends \Kant\Foundation\Component {
                         (new ModuleDispatcher())->dispatch(
                                 $request)
         );
+    }
+
+    /**
+     * Register a short-hand name for a middleware.
+     *
+     * @param  string  $name
+     * @param  string  $class
+     * @return $this
+     */
+    public function aliasMiddleware($name, $class) {
+        $this->middleware[$name] = $class;
+
+        return $this;
     }
 
     /**

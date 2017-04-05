@@ -4,7 +4,7 @@ namespace Kant\Http;
 
 use Kant\Kant;
 use Exception;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use Kant\Http\Exceptions\HttpResponseException;
 
 trait ResponseTrait
 {
@@ -127,7 +127,7 @@ trait ResponseTrait
     /**
      * Throws the response in a HttpResponseException instance.
      *
-     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     * @throws \Kant\Http\Exceptions\HttpResponseException
      */
     public function throwResponse()
     {

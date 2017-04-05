@@ -222,7 +222,7 @@ class RouteCollection {
      * Get a route instance by its name.
      *
      * @param  string  $name
-     * @return \Illuminate\Routing\Route|null
+     * @return \Kant\Routing\Route|null
      */
     public function getByName($name) {
         return isset($this->nameList[$name]) ? $this->nameList[$name] : null;
@@ -232,7 +232,7 @@ class RouteCollection {
      * Get a route instance by its controller action.
      *
      * @param  string  $action
-     * @return \Illuminate\Routing\Route|null
+     * @return \Kant\Routing\Route|null
      */
     public function getByAction($action) {
         return isset($this->actionList[$action]) ? $this->actionList[$action] : null;

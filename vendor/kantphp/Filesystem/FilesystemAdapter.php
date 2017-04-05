@@ -7,7 +7,7 @@ use Kant\Http\File\File;
 use Kant\Support\Str;
 use Kant\Exception\InvalidArgumentException;
 use Kant\Http\File\UploadedFile;
-use Illuminate\Support\Collection;
+use Kant\Support\Collection;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\FilesystemInterface;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
@@ -52,7 +52,7 @@ class FilesystemAdapter implements FilesystemContract, CloudFilesystemContract {
      * @param  string  $path
      * @return string
      *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws \Kant\Contracts\Filesystem\FileNotFoundException
      */
     public function get($path) {
         try {
@@ -90,7 +90,7 @@ class FilesystemAdapter implements FilesystemContract, CloudFilesystemContract {
      * Store the uploaded file on the disk.
      *
      * @param  string  $path
-     * @param  \Illuminate\Http\UploadedFile  $file
+     * @param  \Kant\Http\UploadedFile  $file
      * @param  array  $options
      * @return string|false
      */
@@ -102,7 +102,7 @@ class FilesystemAdapter implements FilesystemContract, CloudFilesystemContract {
      * Store the uploaded file on the disk with a given name.
      *
      * @param  string  $path
-     * @param  \Illuminate\Http\File|\Illuminate\Http\UploadedFile  $file
+     * @param  \Kant\Http\File|\Kant\Http\UploadedFile  $file
      * @param  string  $name
      * @param  array  $options
      * @return string|false

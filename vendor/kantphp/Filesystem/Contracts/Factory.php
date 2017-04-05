@@ -1,6 +1,6 @@
 <?php
 
-namespace Illuminate\Contracts\Filesystem;
+namespace Kant\Contracts\Filesystem;
 
 interface Factory
 {
@@ -8,7 +8,7 @@ interface Factory
      * Get a filesystem implementation.
      *
      * @param  string  $name
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return \Kant\Contracts\Filesystem\Filesystem
      */
     public function disk($name = null);
 }
