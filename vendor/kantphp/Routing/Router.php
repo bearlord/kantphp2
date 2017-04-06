@@ -103,6 +103,11 @@ class Router extends Component {
     public function mapRoutes() {
         foreach (glob(CFG_PATH . "Route/*.php") as $map) {
             $mapName = StringHelper::basename($map, $this->mapFileExt);
+            if (strtolower($mapName) === 'route') {
+                $this->group([
+                        ], $map);
+                continue;
+            }
             $this->group([
                 'prefix' => strtolower($mapName),
                 'middleware' => strtolower($mapName),
@@ -472,7 +477,7 @@ class Router extends Component {
         // route resolver on the request so middlewares assigned to the route will
         // receive access to this route instance for checking of the parameters.
         $route = $this->findRoute($request);
-        
+
         if (!$route) {
             return $this->dispatchToModule($request, $response);
         }
