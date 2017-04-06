@@ -28,7 +28,7 @@ use Kant\Http\Response;
  *
  * Using CAPTCHA involves the following steps:
  *
- * 1. Override [[\yii\web\Controller::actions()]] and register an action of class CaptchaAction with ID 'captcha'
+ * 1. Override [[\Kant\Controller\Controller::actions()]] and register an action of class CaptchaAction with ID 'captcha'
  * 2. In the form model, declare an attribute to store user-entered verification code, and declare the attribute
  *    to be validated by the 'captcha' validator.
  * 3. In the controller view, insert a [[Captcha]] widget in the form.

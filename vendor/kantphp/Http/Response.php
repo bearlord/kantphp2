@@ -91,7 +91,7 @@ class Response extends BaseResponse {
         }
         $this->formatters = array_merge($this->defaultFormatters(), $this->formatters);
     }
-    
+
     public function setFormat($format) {
         $this->format = $format;
     }
@@ -138,7 +138,7 @@ class Response extends BaseResponse {
         if ($this->stream !== null) {
             return;
         }
-        
+
         if (isset($this->formatters[$this->format])) {
             $formatter = $this->formatters[$this->format];
             if (!is_object($formatter)) {
@@ -157,7 +157,7 @@ class Response extends BaseResponse {
         } else {
             throw new InvalidConfigException("Unsupported response format: {$this->format}");
         }
-        
+
         if (is_array($this->content)) {
             throw new InvalidParamException('Response content must not be an array.');
         } elseif (is_object($this->content)) {
@@ -222,6 +222,56 @@ class Response extends BaseResponse {
     public function send() {
         $this->ready();
         parent::send();
+    }
+
+    /**
+     * Set a header on the Response.
+     *
+     * @param  string  $key
+     * @param  array|string  $values
+     * @param  bool    $replace
+     * @return $this
+     */
+    public function header($key, $values, $replace = true) {
+        $this->headers->set($key, $values, $replace);
+
+        return $this;
+    }
+
+    /**
+     * Add an array of headers to the response.
+     *
+     * @param  array  $headers
+     * @return $this
+     */
+    public function withHeaders(array $headers) {
+        foreach ($headers as $key => $value) {
+            $this->headers->set($key, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add a cookie to the response.
+     *
+     * @param  \Symfony\Component\HttpFoundation\Cookie|mixed  $cookie
+     * @return $this
+     */
+    public function cookie($cookie) {
+        return call_user_func_array([$this, 'withCookie'], func_get_args());
+    }
+
+    /**
+     * Add a cookie to the response.
+     *
+     * @param  \Symfony\Component\HttpFoundation\Cookie|mixed  $cookie
+     * @return $this
+     */
+    public function withCookie($cookie) {
+        $this->headers->setCookie($cookie);
+
+        return $this;
     }
 
 }

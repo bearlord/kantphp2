@@ -27,7 +27,7 @@ use Kant\Widget\InputWidget;
  * When the user clicks on the CAPTCHA image, it will cause the CAPTCHA image
  * to be refreshed with a new CAPTCHA.
  *
- * You may use [[\yii\captcha\CaptchaValidator]] to validate the user input matches
+ * You may use [[\Kant\Captcha\CaptchaValidator]] to validate the user input matches
  * the current CAPTCHA verification code.
  *
  * The following example shows how to use this widget with a model attribute:

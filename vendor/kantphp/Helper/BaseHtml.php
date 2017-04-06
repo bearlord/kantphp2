@@ -318,7 +318,7 @@ class BaseHtml {
                 $method = 'post';
             }
             $csrf = ArrayHelper::remove($options, 'csrf', true);
-
+            
             if ($csrf && $request->enableCsrfValidation && strcasecmp($method, 'post') === 0) {
                 $hiddenInputs[] = static::hiddenInput($request->csrfParam, $request->getCsrfToken());
             }

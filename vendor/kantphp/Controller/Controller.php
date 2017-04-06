@@ -14,6 +14,7 @@ use Kant\Foundation\Component;
 use Kant\Controller\ActionEvent;
 use Kant\Action\InlineAction;
 use Kant\Exception\InvalidArgumentException;
+use Kant\Exception\BadRequestHttpException;
 
 /**
  * Base Controller 
@@ -49,7 +50,7 @@ class Controller extends Component {
      * in the request. Defaults to 'index'.
      */
     public $defaultAction = 'index';
-    
+
     /**
      * The Action suffix
      * @var type 
@@ -78,6 +79,12 @@ class Controller extends Component {
      * by [[run()]] when it is called by [[Application]] to run an action.
      */
     public $action;
+    
+    /**
+     * @var boolean whether to enable CSRF validation for the actions in this controller.
+     * CSRF validation is enabled only when both this property and [[\yii\web\Request::enableCsrfValidation]] are true.
+     */
+    public $enableCsrfValidation = true;
 
     /**
      * Construct
@@ -134,7 +141,7 @@ class Controller extends Component {
         $this->action = $action;
 
         $result = null;
-        
+
         if ($this->beforeAction($action)) {
             // run the action
             $result = $action->runWithParams($params);
@@ -162,7 +169,7 @@ class Controller extends Component {
         }
 
         $actionMap = $this->actions();
-        
+
         if (isset($actionMap[$id])) {
             return Kant::createObject($actionMap[$id], [$id, $this]);
         } elseif (preg_match('/^[\w+\\-]+$/', $id) && strpos($id, '--') === false && trim($id, '-') === $id) {
@@ -178,7 +185,7 @@ class Controller extends Component {
 
         return null;
     }
-    
+
     /**
      * Retrun the formatted method name
      * 
@@ -225,7 +232,13 @@ class Controller extends Component {
     public function beforeAction($action) {
         $event = new ActionEvent($action);
         $this->trigger(self::EVENT_BEFORE_ACTION, $event);
-        return $event->isValid;
+//        return $event->isValid;
+        if ($event->isValid) {
+            if ($this->enableCsrfValidation && !Kant::$app->getRequest()->validateCsrfToken()) {
+                throw new BadRequestHttpException(Kant::t('kant', 'Unable to verify your data submission.'));
+            }
+            return true;
+        }
     }
 
     /**

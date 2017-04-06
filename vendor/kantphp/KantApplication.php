@@ -102,6 +102,7 @@ class KantApplication extends Module {
             'i18n' => ['class' => 'Kant\I18n\I18N'],
             'formatter' => ['class' => 'Kant\I18n\Formatter'],
             'assetManager' => ['class' => 'Kant\View\AssetManager'],
+            'security' => ['class' => 'Kant\Foundation\Security'],
             'store' => ['class' => 'Kant\Filesystem\FilesystemManager'],
             'files' => ['class' => 'Kant\Filesystem\Filesystem']
         ];
@@ -294,7 +295,15 @@ class KantApplication extends Module {
         return $this->get('assetManager');
     }
 
-    public function getFilesManager(){
+    /**
+     * Returns the security component.
+     * @return \Kant\Foundation\Security the security application component.
+     */
+    public function getSecurity() {
+        return $this->get('security');
+    }
+
+    public function getFilesManager() {
         return $this->get('filesManager');
     }
 
@@ -334,9 +343,9 @@ class KantApplication extends Module {
      */
     public function run() {
         $request = $this->getRequest();
-        
+
         $response = $this->getResponse();
-        
+
         $router = $this->getRouter();
 
         $this->setCache($this->config->get('cache'));
@@ -474,14 +483,14 @@ class KantApplication extends Module {
         return $this->get($class);
     }
 
-        /**
+    /**
      * Init Module Config;
      * @param type $module
      */
     public function setModuleConfig($module) {
         $configFilePath = MODULE_PATH . $module . DIRECTORY_SEPARATOR . 'Config.php';
         if (file_exists($configFilePath)) {
-            $this->config->merge(require $configFilePath);        
+            $this->config->merge(require $configFilePath);
         }
         $this->getResponse()->format = $this->config->get('responseFormat');
     }
@@ -494,17 +503,18 @@ class KantApplication extends Module {
     public function setViewDispatcher($dispatcher) {
         $this->getView()->setDispatcher($dispatcher);
     }
-    
+
     /**
      * Register the route middleware
      * 
      * @param object $config
      * @param Router $router
      */
-    public function setRouteMiddleware($config, Router $router){
+    public function setRouteMiddleware($config, Router $router) {
         $routeMiddleware = $config->get('routeMiddleware');
         foreach ($routeMiddleware as $key => $middleware) {
             $router->aliasMiddleware($key, $middleware);
         }
     }
+
 }
