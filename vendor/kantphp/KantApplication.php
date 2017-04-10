@@ -413,12 +413,6 @@ class KantApplication extends Module {
         }
 
         Component::__construct($components);
-
-        if ($config->get('enableDebugLogs')) {
-            foreach (Kant::$app->getLog()->targets as $target) {
-                $target->enabled = true;
-            }
-        }
     }
 
     /**

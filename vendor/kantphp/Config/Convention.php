@@ -30,7 +30,7 @@ return [
             'targets' => [
                 [
                     'class' => 'Kant\Log\FileTarget',
-                    'levels' => ['trace', 'info'],
+                    'levels' => ['error', 'warning', 'trace', 'info'],
                 ],
             ],
         ],
