@@ -6,14 +6,13 @@ use SessionHandlerInterface;
 use Kant\Filesystem\Filesystem;
 
 //use Symfony\Component\Finder\Finder;
-//use Illuminate\Filesystem\Filesystem;
 
 class FileSessionHandler implements SessionHandlerInterface {
 
     /**
      * The filesystem instance.
      *
-     * @var \Illuminate\Filesystem\Filesystem
+     * @var \Kant\Filesystem\Filesystem
      */
     protected $files;
 
@@ -34,7 +33,7 @@ class FileSessionHandler implements SessionHandlerInterface {
     /**
      * Create a new file driven handler instance.
      *
-     * @param  \Illuminate\Filesystem\Filesystem  $files
+     * @param  \Kant\Filesystem\Filesystem  $files
      * @param  string  $path
      * @param  int  $minutes
      * @return void

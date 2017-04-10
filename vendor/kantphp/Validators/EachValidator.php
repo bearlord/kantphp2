@@ -2,16 +2,16 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Validators;
 
-use yii\base\InvalidConfigException;
+use Kant\Exception\InvalidConfigException;
 use Kant\Kant;
-use yii\base\Model;
+use Kant\Model\Model;
 
 /**
  * EachValidator validates an array by checking each of its elements against an embedded validation rule.
@@ -36,12 +36,15 @@ use yii\base\Model;
  *
  * > Note: EachValidator is meant to be used only in basic cases, you should consider usage of tabular input,
  *   using several models for the more complex case.
+ *
+ * @author Paul Klimov <klimov.paul@gmail.com>
+ * @since 2.0.4
  */
 class EachValidator extends Validator {
 
     /**
      * @var array|Validator definition of the validation rule, which should be used on array values.
-     * It should be specified in the same format as at [[yii\base\Model::rules()]], except it should not
+     * It should be specified in the same format as at [[Kant\Model\Model::rules()]], except it should not
      * contain attribute list as the first element.
      * For example:
      *
@@ -50,7 +53,7 @@ class EachValidator extends Validator {
      * ['match', 'pattern' => '/[a-z]/is']
      * ```
      *
-     * Please refer to [[yii\base\Model::rules()]] for more details.
+     * Please refer to [[Kant\Model\Model::rules()]] for more details.
      */
     public $rule;
 
@@ -72,7 +75,7 @@ class EachValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = Kant::t('yii', '{attribute} is invalid.');
+            $this->message = Kant::t('kant', '{attribute} is invalid.');
         }
     }
 

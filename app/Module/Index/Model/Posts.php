@@ -2,20 +2,17 @@
 
 namespace App\Index\Model;
 
-class Posts extends \Kant\Database\ActiveRecord {
-    
-    protected $table = "{{%posts}}";
-    
-    public function rules() {
-        return [
-            [['p_title'], 'required'],
-            [['p_content'], 'required', 'message'=> '内容不能为空'],
-        ];
+use Kant\Database\ActiveRecord;
+
+class Posts extends ActiveRecord {
+
+    public $verifyCode;
+
+    /**
+     * @inheritdoc
+     */
+    public static function tableName() {
+        return '{{%posts}}';
     }
-    
-    public function attributeLabels() {
-        return [
-            'p_title' => '标题'
-        ];
-    }
+
 }

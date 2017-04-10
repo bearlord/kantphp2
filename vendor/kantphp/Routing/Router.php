@@ -2,14 +2,19 @@
 
 namespace Kant\Routing;
 
+use Kant\Kant;
+use Kant\Foundation\Component;
 use Kant\Routing\RouteCollection;
 use Kant\Routing\RouteGroup;
 use Closure;
-use Kant\Support\Str;
+use Kant\Support\Collection;
+use Kant\Helper\StringHelper;
 use Kant\Http\Request;
 use Kant\Http\Response;
 
-class Router extends \Kant\Foundation\Component {
+class Router extends Component {
+
+    protected $mapFileExt = ".php";
 
     /**
      * The route collection instance.
@@ -60,9 +65,63 @@ class Router extends \Kant\Foundation\Component {
      */
     protected $currentRequest;
 
+    /**
+     * All of the short-hand keys for middlewares.
+     *
+     * @var array
+     */
+    protected $middleware = [];
+
+    /**
+     * All of the middleware groups.
+     *
+     * @var array
+     */
+    protected $middlewareGroups = [];
+
+    /**
+     * The priority-sorted list of middleware.
+     *
+     * Forces the listed middleware to always be in the given order.
+     *
+     * @var array
+     */
+    public $middlewarePriority = [];
+
     public function __construct() {
-        $this->routes = new RouteCollection;
-//        $this->routes = \Kant\Kant::createObject(\Kant\Routing\RouteCollection::class);
+        $this->routes = Kant::createObject(RouteCollection::class);
+        $this->mapRoutes();
+    }
+
+    /**
+     * Define routes for the application.
+     *
+     * These routes all receive session state, CSRF protection, etc.
+     *
+     * @return void
+     */
+    public function mapRoutes() {
+        foreach (glob(CFG_PATH . "Route/*.php") as $map) {
+            $mapName = StringHelper::basename($map, $this->mapFileExt);
+            if (strtolower($mapName) === 'route') {
+                $this->group([
+                        ], $map);
+                continue;
+            }
+            $this->group([
+                'prefix' => strtolower($mapName),
+                'middleware' => strtolower($mapName),
+                'namespace' => "App\\{$mapName}\\Controllers"
+                    ], $map);
+        }
+    }
+
+    /**
+     * Get the Route Collection object.
+     * 
+     */
+    public function getRoutes() {
+        return $this->routes;
     }
 
     /**
@@ -73,9 +132,7 @@ class Router extends \Kant\Foundation\Component {
      * @return \Kant\Routing\Route
      */
     public function get($uri, $action = null) {
-        $ss = $this->addRoute(['GET', 'HEAD'], $uri, $action);
-        //添加routes之后
-        return $ss;
+        return $this->addRoute(['GET', 'HEAD'], $uri, $action);
     }
 
     /**
@@ -164,11 +221,11 @@ class Router extends \Kant\Foundation\Component {
      * @param  array  $resources
      * @return void
      */
-//    public function resources(array $resources) {
-//        foreach ($resources as $name => $controller) {
-//            $this->resource($name, $controller);
-//        }
-//    }
+    public function resources(array $resources) {
+        foreach ($resources as $name => $controller) {
+            $this->resource($name, $controller);
+        }
+    }
 
     /**
      * Route a resource to a controller.
@@ -178,15 +235,11 @@ class Router extends \Kant\Foundation\Component {
      * @param  array  $options
      * @return void
      */
-//    public function resource($name, $controller, array $options = []) {
-//        if ($this->container && $this->container->bound(ResourceRegistrar::class)) {
-//            $registrar = $this->container->make(ResourceRegistrar::class);
-//        } else {
-//            $registrar = new ResourceRegistrar($this);
-//        }
-//
-//        $registrar->register($name, $controller, $options);
-//    }
+    public function resource($name, $controller, array $options = []) {
+        $registrar = new ResourceRegistrar($this);
+
+        $registrar->register($name, $controller, $options);
+    }
 
     /**
      * Create a route group with shared attributes.
@@ -284,7 +337,7 @@ class Router extends \Kant\Foundation\Component {
         }
 
         $this->addWhereClausesToRoute($route);
-//        var_dump($route);
+
         return $route;
     }
 
@@ -364,6 +417,21 @@ class Router extends \Kant\Foundation\Component {
     }
 
     /**
+     * Get the prefix from the last group on the stack.
+     *
+     * @return string
+     */
+    public function getLastGroupPrefix() {
+        if (!empty($this->groupStack)) {
+            $last = end($this->groupStack);
+
+            return isset($last['prefix']) ? $last['prefix'] : '';
+        }
+
+        return '';
+    }
+
+    /**
      * Add the necessary where clauses to the route based on its initial registration.
      *
      * @param  \Kant\Routing\Route  $route
@@ -410,6 +478,9 @@ class Router extends \Kant\Foundation\Component {
         // receive access to this route instance for checking of the parameters.
         $route = $this->findRoute($request);
 
+        if (!$route) {
+            return $this->dispatchToModule($request, $response);
+        }
 
         $request->setRouteResolver(function () use ($route) {
             return $route;
@@ -443,18 +514,27 @@ class Router extends \Kant\Foundation\Component {
     }
 
     /**
-     * Get the prefix from the last group on the stack.
+     * Gather the middleware for the given route with resolved class names.
      *
-     * @return string
+     * @param  \Kant\Routing\Route  $route
+     * @return array
      */
-    public function getLastGroupPrefix() {
-        if (!empty($this->groupStack)) {
-            $last = end($this->groupStack);
+    public function gatherRouteMiddleware(Route $route) {
+        $middleware = (new Collection($route->gatherMiddleware()))->map(function ($name) {
+                    return (array) MiddlewareNameResolver::resolve($name, $this->middleware, $this->middlewareGroups);
+                })->flatten();
 
-            return isset($last['prefix']) ? $last['prefix'] : '';
-        }
+        return $this->sortMiddleware($middleware);
+    }
 
-        return '';
+    /**
+     * Sort the given middleware by priority.
+     *
+     * @param  \Kant\Support\Collection  $middlewares
+     * @return array
+     */
+    protected function sortMiddleware(Collection $middlewares) {
+        return (new SortedMiddleware($this->middlewarePriority, $middlewares))->all();
     }
 
     /**
@@ -467,6 +547,32 @@ class Router extends \Kant\Foundation\Component {
     }
 
     /**
+     * Dispatch the request to a module and return the response.
+     *
+     * @param  \Kant\Http\Request  $request
+     * @return mixed
+     */
+    public function dispatchToModule(Request $request, Response $response) {
+        return $response->setContent(
+                        (new ModuleDispatcher())->dispatch(
+                                $request)
+        );
+    }
+
+    /**
+     * Register a short-hand name for a middleware.
+     *
+     * @param  string  $name
+     * @param  string  $class
+     * @return $this
+     */
+    public function aliasMiddleware($name, $class) {
+        $this->middleware[$name] = $class;
+
+        return $this;
+    }
+
+    /**
      * Handle dynamic, static calls to the object.
      *
      * @param  string  $method
@@ -476,7 +582,7 @@ class Router extends \Kant\Foundation\Component {
      * @throws \RuntimeException
      */
     public static function __callStatic($method, $args) {
-        $instance = Kant::createObject(\Kant\Routing\Router::class);
+        $instance = $this;
 
         switch (count($args)) {
             case 0:

@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -152,7 +152,7 @@ class ServiceLocator extends Component {
      * });
      *
      * // an instance
-     * $locator->set('cache', new \yii\caching\FileCache);
+     * $locator->set('cache', new \Kant\Cache\Cache);
      * ```
      *
      * If a component definition with the same ID already exists, it will be overwritten.
@@ -226,11 +226,11 @@ class ServiceLocator extends Component {
      * ```php
      * [
      *     'db' => [
-     *         'class' => 'yii\db\Connection',
+     *         'class' => 'Kant\Database\Connection',
      *         'dsn' => 'sqlite:path/to/file.db',
      *     ],
      *     'cache' => [
-     *         'class' => 'yii\caching\DbCache',
+     *         'class' => 'Kant\Cache\Cache',
      *         'db' => 'db',
      *     ],
      * ]

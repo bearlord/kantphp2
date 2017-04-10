@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -142,7 +142,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface {
         // multiple times.
         if (!empty($this->joinWith)) {
             $this->buildJoinWith();
-            $this->joinWith = null;    // clean it up to avoid issue https://github.com/yiisoft/yii2/issues/2687
+            $this->joinWith = null;
         }
 
         if (empty($this->from)) {
@@ -372,7 +372,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface {
      * Order::find()->joinWith('books', true, 'INNER JOIN')->all();
      * // find all orders, eager loading "books", and sort the orders and books by the book names.
      * Order::find()->joinWith([
-     *     'books' => function (\yii\db\ActiveQuery $query) {
+     *     'books' => function (\Kant\Database\ActiveQuery $query) {
      *         $query->orderBy('item.name');
      *     }
      * ])->all();
@@ -457,7 +457,6 @@ class ActiveQuery extends Query implements ActiveQueryInterface {
 
         if (!empty($join)) {
             // append explicit join to joinWith()
-            // https://github.com/yiisoft/yii2/issues/2880
             $this->join = empty($this->join) ? $join : array_merge($this->join, $join);
         }
     }

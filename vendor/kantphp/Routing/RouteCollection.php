@@ -5,7 +5,8 @@ namespace Kant\Routing;
 use Kant\Routing\Route;
 use Kant\Http\Request;
 use Kant\Support\Arr;
-use Kant\Exception\NotFoundHttpException;
+//use Kant\Exception\NotFoundHttpException;
+use Kant\Exception\MethodNotAllowedHttpException;
 
 class RouteCollection {
 
@@ -15,6 +16,27 @@ class RouteCollection {
      * @var array
      */
     protected $routes = [];
+
+    /**
+     * An flattened array of all of the routes.
+     *
+     * @var array
+     */
+    protected $allRoutes = [];
+
+    /**
+     * A look-up table of routes by their names.
+     *
+     * @var array
+     */
+    protected $nameList = [];
+
+    /**
+     * A look-up table of routes by controller action.
+     *
+     * @var array
+     */
+    protected $actionList = [];
 
     public function __construct() {
         $this->time = microtime(true);
@@ -48,8 +70,6 @@ class RouteCollection {
         }
 
         $this->allRoutes[$method . $domainAndUri] = $route;
-
-//        var_dump($this->get("GET"));
     }
 
     /**
@@ -93,11 +113,10 @@ class RouteCollection {
      * @param  \Kant\Http\Request  $request
      * @return \Kant\Routing\Route
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @throws \Kant\Exception\NotFoundHttpException
      */
     public function match(Request $request) {
         $routes = $this->get($request->getMethod());
-        
 
         // First, we will see if we can find a matching route for this current request
         // method. If we can, great, we can just return it so that it can be called
@@ -117,7 +136,7 @@ class RouteCollection {
             return $this->getRouteForMethods($request, $others);
         }
 
-        throw new NotFoundHttpException;
+//        throw new NotFoundHttpException;
     }
 
     /**
@@ -129,7 +148,7 @@ class RouteCollection {
      * @return \Kant\Routing\Route|null
      */
     protected function matchAgainstRoutes(array $routes, $request, $includingMethod = true) {
-        
+
         return Arr::first($routes, function ($value) use ($request, $includingMethod) {
                     return $value->matches($request, $includingMethod);
                 });
@@ -165,7 +184,7 @@ class RouteCollection {
      * @param  array  $methods
      * @return \Kant\Routing\Route
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
+     * @throws \Kant\Exception\MethodNotAllowedHttpException
      */
     protected function getRouteForMethods($request, array $methods) {
         if ($request->method() == 'OPTIONS') {
@@ -173,8 +192,19 @@ class RouteCollection {
                 return new Response('', 200, ['Allow' => implode(',', $methods)]);
             }))->bind($request);
         }
-
         $this->methodNotAllowed($methods);
+    }
+
+    /**
+     * Throw a method not allowed HTTP exception.
+     *
+     * @param  array  $others
+     * @return void
+     *
+     * @throws \Kant\Exception\MethodNotAllowedHttpException
+     */
+    protected function methodNotAllowed(array $others) {
+        throw new MethodNotAllowedHttpException($others);
     }
 
     /**
@@ -185,6 +215,62 @@ class RouteCollection {
      */
     public function get($method = null) {
         return is_null($method) ? $this->getRoutes() : Arr::get($this->routes, $method, []);
+    }
+
+    /**
+     * Get a route instance by its name.
+     *
+     * @param  string  $name
+     * @return \Kant\Routing\Route|null
+     */
+    public function getByName($name) {
+        return isset($this->nameList[$name]) ? $this->nameList[$name] : null;
+    }
+
+    /**
+     * Get a route instance by its controller action.
+     *
+     * @param  string  $action
+     * @return \Kant\Routing\Route|null
+     */
+    public function getByAction($action) {
+        return isset($this->actionList[$action]) ? $this->actionList[$action] : null;
+    }
+
+    /**
+     * Get all of the routes in the collection.
+     *
+     * @return array
+     */
+    public function getRoutes() {
+        return array_values($this->allRoutes);
+    }
+
+    /**
+     * Get all of the routes keyed by their HTTP verb / method.
+     *
+     * @return array
+     */
+    public function getRoutesByMethod() {
+        return $this->routes;
+    }
+
+    /**
+     * Get an iterator for the items.
+     *
+     * @return \ArrayIterator
+     */
+    public function getIterator() {
+        return new ArrayIterator($this->getRoutes());
+    }
+
+    /**
+     * Count the number of items in the collection.
+     *
+     * @return int
+     */
+    public function count() {
+        return count($this->getRoutes());
     }
 
 }

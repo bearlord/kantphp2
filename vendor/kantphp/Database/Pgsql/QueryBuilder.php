@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -214,7 +214,6 @@ class QueryBuilder extends \Kant\Database\QueryBuilder {
      * @return string the SQL statement for changing the definition of a column.
      */
     public function alterColumn($table, $column, $type) {
-        // https://github.com/yiisoft/yii2/issues/4492
         // http://www.postgresql.org/docs/9.1/static/sql-altertable.html
         if (!preg_match('/^(DROP|SET|RESET)\s+/i', $type)) {
             $type = 'TYPE ' . $this->getColumnType($type);

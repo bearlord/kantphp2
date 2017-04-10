@@ -2,16 +2,15 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Exception;
 
+use Kant\Kant;
 use Exception;
-use Kant\Log\Log;
-use Kant\Factory;
 
 class KantException extends Exception {
 
@@ -29,7 +28,7 @@ class KantException extends Exception {
      * @return void
      */
     public function __construct($msg = '', $code = 0, Exception $previous = null) {
-        $debug = Factory::getConfig()->get('debug');
+        $debug = Kant::$app->config->get('debug');
         if ($debug == false) {
             header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
             header("Status: 404 Not Found");
@@ -41,6 +40,8 @@ class KantException extends Exception {
             parent::__construct($msg, (int) $code);
             $this->_previous = $previous;
         } else {
+            Kant::trace($this->getTraceAsString());
+            
             $error = array();
             $error['message'] = $msg;
             $trace = $this->getTrace();
@@ -52,12 +53,11 @@ class KantException extends Exception {
                 $error['line'] = $this->getLine();
             }
             $error['trace'] = $this->getTraceAsString();
-//            Log::write($error['message'], Log::ERR);
             $exceptionFile = KANT_PATH . 'View/system/exception.php';
-            include $exceptionFile;
+            Kant::$app->view->error = $error;
+            echo Kant::$app->view->fetch($exceptionFile);
             
             exit();
-//            parent::__construct($msg, (int) $code, $previous);
         }
     }
 

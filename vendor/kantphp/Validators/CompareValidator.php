@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -11,7 +11,7 @@ namespace Kant\Validators;
 
 use Kant\Kant;
 use Kant\Exception\InvalidConfigException;
-use yii\helpers\Html;
+use Kant\Helper\Html;
 
 /**
  * CompareValidator compares the specified attribute value with another value.
@@ -26,6 +26,8 @@ use yii\helpers\Html;
  * CompareValidator supports different comparison operators, specified
  * via the [[operator]] property.
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 class CompareValidator extends Validator {
 
@@ -90,28 +92,28 @@ class CompareValidator extends Validator {
         if ($this->message === null) {
             switch ($this->operator) {
                 case '==':
-                    $this->message = Kant::t('yii', '{attribute} must be equal to "{compareValueOrAttribute}".');
+                    $this->message = Kant::t('kant', '{attribute} must be equal to "{compareValueOrAttribute}".');
                     break;
                 case '===':
-                    $this->message = Kant::t('yii', '{attribute} must be equal to "{compareValueOrAttribute}".');
+                    $this->message = Kant::t('kant', '{attribute} must be equal to "{compareValueOrAttribute}".');
                     break;
                 case '!=':
-                    $this->message = Kant::t('yii', '{attribute} must not be equal to "{compareValueOrAttribute}".');
+                    $this->message = Kant::t('kant', '{attribute} must not be equal to "{compareValueOrAttribute}".');
                     break;
                 case '!==':
-                    $this->message = Kant::t('yii', '{attribute} must not be equal to "{compareValueOrAttribute}".');
+                    $this->message = Kant::t('kant', '{attribute} must not be equal to "{compareValueOrAttribute}".');
                     break;
                 case '>':
-                    $this->message = Kant::t('yii', '{attribute} must be greater than "{compareValueOrAttribute}".');
+                    $this->message = Kant::t('kant', '{attribute} must be greater than "{compareValueOrAttribute}".');
                     break;
                 case '>=':
-                    $this->message = Kant::t('yii', '{attribute} must be greater than or equal to "{compareValueOrAttribute}".');
+                    $this->message = Kant::t('kant', '{attribute} must be greater than or equal to "{compareValueOrAttribute}".');
                     break;
                 case '<':
-                    $this->message = Kant::t('yii', '{attribute} must be less than "{compareValueOrAttribute}".');
+                    $this->message = Kant::t('kant', '{attribute} must be less than "{compareValueOrAttribute}".');
                     break;
                 case '<=':
-                    $this->message = Kant::t('yii', '{attribute} must be less than or equal to "{compareValueOrAttribute}".');
+                    $this->message = Kant::t('kant', '{attribute} must be less than or equal to "{compareValueOrAttribute}".');
                     break;
                 default:
                     throw new InvalidConfigException("Unknown operator: {$this->operator}");
@@ -125,7 +127,7 @@ class CompareValidator extends Validator {
     public function validateAttribute($model, $attribute) {
         $value = $model->$attribute;
         if (is_array($value)) {
-            $this->addError($model, $attribute, Kant::t('yii', '{attribute} is invalid.'));
+            $this->addError($model, $attribute, Kant::t('kant', '{attribute} is invalid.'));
 
             return;
         }
@@ -225,16 +227,16 @@ class CompareValidator extends Validator {
             $options['skipOnEmpty'] = 1;
         }
 
-        $options['message'] = Yii::$app->getI18n()->format($this->message, [
+        $options['message'] = Kant::$app->getI18n()->format($this->message, [
             'attribute' => $model->getAttributeLabel($attribute),
             'compareAttribute' => $compareLabel,
             'compareValue' => $compareValue,
             'compareValueOrAttribute' => $compareValueOrAttribute,
-                ], Yii::$app->language);
+                ], Kant::$app->language);
 
         ValidationAsset::register($view);
 
-        return 'yii.validation.compare(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
+        return 'kant.validation.compare(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
     }
 
 }

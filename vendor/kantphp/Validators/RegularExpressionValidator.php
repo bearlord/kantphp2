@@ -2,24 +2,26 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\base\InvalidConfigException;
-use yii\helpers\Html;
-use yii\web\JsExpression;
-use yii\helpers\Json;
+use Kant\Exception\InvalidConfigException;
+use Kant\Helper\Html;
+use Kant\Helper\JsExpression;
+use Kant\Helper\Json;
 
 /**
  * RegularExpressionValidator validates that the attribute value matches the specified [[pattern]].
  *
  * If the [[not]] property is set true, the validator will ensure the attribute value do NOT match the [[pattern]].
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 class RegularExpressionValidator extends Validator {
 
@@ -43,7 +45,7 @@ class RegularExpressionValidator extends Validator {
             throw new InvalidConfigException('The "pattern" property must be set.');
         }
         if ($this->message === null) {
-            $this->message = Kant::t('yii', '{attribute} is invalid.');
+            $this->message = Kant::t('kant', '{attribute} is invalid.');
         }
     }
 
@@ -66,9 +68,9 @@ class RegularExpressionValidator extends Validator {
         $options = [
             'pattern' => new JsExpression($pattern),
             'not' => $this->not,
-            'message' => Yii::$app->getI18n()->format($this->message, [
+            'message' => Kant::$app->getI18n()->format($this->message, [
                 'attribute' => $model->getAttributeLabel($attribute),
-                    ], Yii::$app->language),
+                    ], Kant::$app->language),
         ];
         if ($this->skipOnEmpty) {
             $options['skipOnEmpty'] = 1;
@@ -76,7 +78,7 @@ class RegularExpressionValidator extends Validator {
 
         ValidationAsset::register($view);
 
-        return 'yii.validation.regularExpression(value, messages, ' . Json::htmlEncode($options) . ');';
+        return 'kant.validation.regularExpression(value, messages, ' . Json::htmlEncode($options) . ');';
     }
 
 }

@@ -2,9 +2,9 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
  * @original-author Laravel/Symfony
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -15,10 +15,10 @@ use Kant\Support\Str;
 use SessionHandlerInterface;
 use InvalidArgumentException;
 use Kant\Http\Request;
-use Kant\Session\SessionInterface;
+use Kant\Session\Session;
 use Kant\Session\Storage\MetadataBag;
 
-class Store implements SessionInterface {
+class Store implements Session {
 
     /**
      * The session ID.

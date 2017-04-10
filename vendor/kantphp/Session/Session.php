@@ -2,212 +2,197 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
  * @original-author Laravel/Symfony
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Session;
 
 use Kant\Http\Request;
-use Kant\Http\Response;
-use Kant\Http\Cookie;
-use Kant\Session\Manager;
-use Kant\Support\Arr;
 
-final class Session {
-
-    public static $_session;
-    protected $config;
-    protected $manager;
-    protected $request;
-    protected $response;
+interface Session {
 
     /**
-     * Indicates if the session was handled for the current request.
+     * Starts the session storage.
      *
-     * @var bool
-     */
-    protected $sessionHandled = false;
-
-    public function __construct($config, Request $request, Response $response) {
-        $this->config = $config;
-        $this->request = $request;
-        $this->response = $response;
-    }
-
-    /**
-     * Register the session manager instance.
+     * @return bool True if session started
      *
-     * @return void
+     * @throws \RuntimeException If session fails to start.
      */
-    public function handle() {
-        $this->manager = new Manager($this->config);
-        $this->sessionHandled = true;
-        // If a session driver has been configured, we will need to start the session here
-        // so that the data is ready for an application. Note that the Laravel sessions
-        // do not make use of PHP "native" sessions in any way since they are crappy.
-        if ($this->sessionConfigured()) {
-            $session = $this->startSession($this->request);
-            $this->request->setSession($session);
-
-            $this->collectGarbage($session);
-        }
-
-        // Again, if the session has been configured we will need to close out the session
-        // so that the attributes may be persisted to some storage medium. We will also
-        // add the session identifier cookie to the application response headers now.
-        if ($this->sessionConfigured()) {
-            $this->storeCurrentUrl($this->request, $session);
-
-            $this->addCookieToResponse($this->response, $session);
-        }
-
-        return $session;
-    }
+    public function start();
 
     /**
-     * Determine if a session driver has been configured.
+     * Returns the session ID.
      *
-     * @return bool
+     * @return string The session ID
      */
-    protected function sessionConfigured() {
-        return !is_null(Arr::get($this->manager->getSessionConfig(), 'driver'));
-    }
+    public function getId();
 
     /**
-     * Start the session for the given request.
+     * Sets the session ID.
      *
-     * @param  \Kant\Http\Request  $request
-     * @return \Kant\Session\SessionInterface
+     * @param string $id
      */
-    protected function startSession(Request $request) {
-        $session = $this->getSession($request);
-
-        $session->setRequestOnHandler($request);
-
-        $session->start();
-
-        return $session;
-    }
+    public function setId($id);
 
     /**
-     * Get the session implementation from the manager.
+     * Returns the session name.
      *
-     * @param  \Kant\Http\Request  $request
-     * @return \Kant\Session\SessionInterface
+     * @return mixed The session name
      */
-    public function getSession(Request $request) {
-        $session = $this->manager->driver();
-        $session->setId($request->cookies->get($session->getName()));
-        return $session;
-    }
+    public function getName();
 
     /**
-     * Store the current URL for the request if necessary.
+     * Sets the session name.
      *
-     * @param  \Kant\Http\Request  $request
-     * @param  \Kant\Session\SessionInterface  $session
-     * @return void
+     * @param string $name
      */
-    protected function storeCurrentUrl(Request $request, $session) {
-        if ($request->method() === 'GET' && $request->route() && !$request->ajax()) {
-            $session->setPreviousUrl($request->fullUrl());
-        }
-    }
+    public function setName($name);
 
     /**
-     * Remove the garbage from the session if necessary.
+     * Invalidates the current session.
      *
-     * @param  \Kant\Session\SessionInterface  $session
-     * @return void
-     */
-    protected function collectGarbage($session) {
-        $config = $this->manager->getSessionConfig();
-
-        // Here we will see if this request hits the garbage collection lottery by hitting
-        // the odds needed to perform garbage collection on any given request. If we do
-        // hit it, we'll call this handler to let it delete all the expired sessions.
-        if ($this->configHitsLottery($config)) {
-            $session->getHandler()->gc($this->getSessionLifetimeInSeconds());
-        }
-    }
-
-    /**
-     * Determine if the configuration odds hit the lottery.
+     * Clears all session attributes and flashes and regenerates the
+     * session and deletes the old session from persistence.
      *
-     * @param  array  $config
-     * @return bool
-     */
-    protected function configHitsLottery(array $config) {
-        return mt_rand(1, $config['lottery'][1]) <= $config['lottery'][0];
-    }
-
-    /**
-     * Add the session cookie to the application response.
+     * @param int $lifetime Sets the cookie lifetime for the session cookie. A null value
+     *                      will leave the system settings unchanged, 0 sets the cookie
+     *                      to expire with browser session. Time is in seconds, and is
+     *                      not a Unix timestamp.
      *
-     * @param  \Kant\Http\Response  $response
-     * @param  \Kant\Session\SessionInterface  $session
-     * @return void
+     * @return bool True if session invalidated, false if error
      */
-    protected function addCookieToResponse(Response $response, SessionInterface $session) {
-        if ($this->usingCookieSessions()) {
-            $this->manager->driver()->save();
-        }
-
-        if ($this->sessionIsPersistent($config = $this->manager->getSessionConfig())) {
-            $response->headers->setCookie(new Cookie(
-                    $session->getName(), $session->getId(), $this->getCookieExpirationDate(), $config['path'], $config['domain'], Arr::get($config, 'secure', false), Arr::get($config, 'http_only', true)
-            ));
-        }
-    }
+    public function invalidate($lifetime = null);
 
     /**
-     * Get the session lifetime in seconds.
+     * Migrates the current session to a new session id while maintaining all
+     * session attributes.
      *
-     * @return int
-     */
-    protected function getSessionLifetimeInSeconds() {
-        return Arr::get($this->manager->getSessionConfig(), 'lifetime') * 60;
-    }
-
-    /**
-     * Get the cookie lifetime in seconds.
+     * @param bool $destroy  Whether to delete the old session or leave it to garbage collection
+     * @param int  $lifetime Sets the cookie lifetime for the session cookie. A null value
+     *                       will leave the system settings unchanged, 0 sets the cookie
+     *                       to expire with browser session. Time is in seconds, and is
+     *                       not a Unix timestamp.
      *
-     * @return int
+     * @return bool True if session migrated, false if error
      */
-    protected function getCookieExpirationDate() {
-        $config = $this->manager->getSessionConfig();
-
-        return $config['expire_on_close'] ? 0 : time() + $config['lifetime'];
-    }
-
+    public function migrate($destroy = false, $lifetime = null);
 
     /**
-     * Determine if the configured session driver is persistent.
+     * Force the session to be saved and closed.
      *
-     * @param  array|null  $config
-     * @return bool
+     * This method is generally not required for real sessions as
+     * the session will be automatically saved at the end of
+     * code execution.
      */
-    protected function sessionIsPersistent(array $config = null) {
-        $config = $config ?: $this->manager->getSessionConfig();
-
-        return !in_array($config['driver'], [null, 'array']);
-    }
+    public function save();
 
     /**
-     * Determine if the session is using cookie sessions.
+     * Checks if an attribute is defined.
+     *
+     * @param string $name The attribute name
+     *
+     * @return bool true if the attribute is defined, false otherwise
+     */
+    public function has($name);
+
+    /**
+     * Returns an attribute.
+     *
+     * @param string $name    The attribute name
+     * @param mixed  $default The default value if not found
+     *
+     * @return mixed
+     */
+    public function get($name, $default = null);
+
+    /**
+     * Sets an attribute.
+     *
+     * @param string $name
+     * @param mixed  $value
+     */
+    public function set($name, $value);
+
+    /**
+     * Returns attributes.
+     *
+     * @return array Attributes
+     */
+    public function all();
+
+    /**
+     * Sets attributes.
+     *
+     * @param array $attributes Attributes
+     */
+    public function replace(array $attributes);
+
+    /**
+     * Removes an attribute.
+     *
+     * @param string $name
+     *
+     * @return mixed The removed value or null when it does not exist
+     */
+    public function remove($name);
+
+    /**
+     * Clears all attributes.
+     */
+    public function clear();
+
+    /**
+     * Checks if the session was started.
      *
      * @return bool
      */
-    protected function usingCookieSessions() {
-        if (!$this->sessionConfigured()) {
-            return false;
-        }
+    public function isStarted();
 
-        return $this->manager->driver()->getHandler() instanceof CookieSessionHandler;
-    }
+    /**
+     * Registers a SessionBagInterface with the session.
+     *
+     * @param SessionBagInterface $bag
+     */
+    public function registerBag(SessionBagInterface $bag);
+
+    /**
+     * Gets a bag instance by name.
+     *
+     * @param string $name
+     *
+     * @return SessionBagInterface
+     */
+    public function getBag($name);
+
+    /**
+     * Gets session meta.
+     *
+     * @return MetadataBag
+     */
+    public function getMetadataBag();
+
+    /**
+     * Get the session handler instance.
+     *
+     * @return \SessionHandlerInterface
+     */
+    public function getHandler();
+
+    /**
+     * Determine if the session handler needs a request.
+     *
+     * @return bool
+     */
+    public function handlerNeedsRequest();
+
+    /**
+     * Set the request on the handler instance.
+     *
+     * @param  \Symfony\Component\HttpFoundation\Request  $request
+     * @return void
+     */
+    public function setRequestOnHandler(Request $request);
 }
-
-?>

@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -16,6 +16,8 @@ use Kant\Kant;
  *
  * Note, this validator should only be used with string-typed attributes.
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 class StringValidator extends Validator {
 
@@ -87,19 +89,19 @@ class StringValidator extends Validator {
             $this->length = null;
         }
         if ($this->encoding === null) {
-            $this->encoding = Yii::$app->charset;
+            $this->encoding = Kant::$app->charset;
         }
         if ($this->message === null) {
-            $this->message = Kant::t('yii', '{attribute} must be a string.');
+            $this->message = Kant::t('kant', '{attribute} must be a string.');
         }
         if ($this->min !== null && $this->tooShort === null) {
-            $this->tooShort = Kant::t('yii', '{attribute} should contain at least {min, number} {min, plural, one{character} other{characters}}.');
+            $this->tooShort = Kant::t('kant', '{attribute} should contain at least {min, number} {min, plural, one{character} other{characters}}.');
         }
         if ($this->max !== null && $this->tooLong === null) {
-            $this->tooLong = Kant::t('yii', '{attribute} should contain at most {max, number} {max, plural, one{character} other{characters}}.');
+            $this->tooLong = Kant::t('kant', '{attribute} should contain at most {max, number} {max, plural, one{character} other{characters}}.');
         }
         if ($this->length !== null && $this->notEqual === null) {
-            $this->notEqual = Kant::t('yii', '{attribute} should contain {length, number} {length, plural, one{character} other{characters}}.');
+            $this->notEqual = Kant::t('kant', '{attribute} should contain {length, number} {length, plural, one{character} other{characters}}.');
         }
     }
 
@@ -158,31 +160,31 @@ class StringValidator extends Validator {
         $label = $model->getAttributeLabel($attribute);
 
         $options = [
-            'message' => Yii::$app->getI18n()->format($this->message, [
+            'message' => Kant::$app->getI18n()->format($this->message, [
                 'attribute' => $label,
-                    ], Yii::$app->language),
+                    ], Kant::$app->language),
         ];
 
         if ($this->min !== null) {
             $options['min'] = $this->min;
-            $options['tooShort'] = Yii::$app->getI18n()->format($this->tooShort, [
+            $options['tooShort'] = Kant::$app->getI18n()->format($this->tooShort, [
                 'attribute' => $label,
                 'min' => $this->min,
-                    ], Yii::$app->language);
+                    ], Kant::$app->language);
         }
         if ($this->max !== null) {
             $options['max'] = $this->max;
-            $options['tooLong'] = Yii::$app->getI18n()->format($this->tooLong, [
+            $options['tooLong'] = Kant::$app->getI18n()->format($this->tooLong, [
                 'attribute' => $label,
                 'max' => $this->max,
-                    ], Yii::$app->language);
+                    ], Kant::$app->language);
         }
         if ($this->length !== null) {
             $options['is'] = $this->length;
-            $options['notEqual'] = Yii::$app->getI18n()->format($this->notEqual, [
+            $options['notEqual'] = Kant::$app->getI18n()->format($this->notEqual, [
                 'attribute' => $label,
                 'length' => $this->length,
-                    ], Yii::$app->language);
+                    ], Kant::$app->language);
         }
         if ($this->skipOnEmpty) {
             $options['skipOnEmpty'] = 1;
@@ -190,7 +192,7 @@ class StringValidator extends Validator {
 
         ValidationAsset::register($view);
 
-        return 'yii.validation.string(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
+        return 'kant.validation.string(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
     }
 
 }

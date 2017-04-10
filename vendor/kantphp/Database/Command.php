@@ -2,13 +2,14 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Database;
 
+use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Cache\Cache;
 
@@ -87,7 +88,7 @@ class Command extends Component {
     public $queryCacheDuration;
 
     /**
-     * @var \yii\caching\Dependency the dependency to be associated with the cached query result for this command
+     * @var \Kant\Cache\Dependency the dependency to be associated with the cached query result for this command
      * @see cache()
      */
     public $queryCacheDependency;
@@ -112,7 +113,7 @@ class Command extends Component {
      * @param integer $duration the number of seconds that query result of this command can remain valid in the cache.
      * If this is not set, the value of [[Connection::queryCacheDuration]] will be used instead.
      * Use 0 to indicate that the cached data will never expire.
-     * @param \yii\caching\Dependency $dependency the cache dependency associated with the cached query result.
+     * @param \Kant\Cache\Dependency $dependency the cache dependency associated with the cached query result.
      * @return $this the command object itself
      */
     public function cache($duration = null, $dependency = null) {
@@ -559,7 +560,7 @@ class Command extends Component {
      * Creates a SQL command for adding a new DB column.
      * @param string $table the table that the new column will be added to. The table name will be properly quoted by the method.
      * @param string $column the name of the new column. The name will be properly quoted by the method.
-     * @param string $type the column type. [[\yii\db\QueryBuilder::getColumnType()]] will be called
+     * @param string $type the column type. [[\Kant\Database\QueryBuilder::getColumnType()]] will be called
      * to convert the give column type to the physical one. For example, `string` will be converted
      * as `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      * @return $this the command object itself
@@ -599,7 +600,7 @@ class Command extends Component {
      * Creates a SQL command for changing the definition of a column.
      * @param string $table the table whose column is to be changed. The table name will be properly quoted by the method.
      * @param string $column the name of the column to be changed. The name will be properly quoted by the method.
-     * @param string $type the column type. [[\yii\db\QueryBuilder::getColumnType()]] will be called
+     * @param string $type the column type. [[\Kant\Database\QueryBuilder::getColumnType()]] will be called
      * to convert the give column type to the physical one. For example, `string` will be converted
      * as `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      * @return $this the command object itself
@@ -789,18 +790,31 @@ class Command extends Component {
      */
     public function execute() {
         $sql = $this->getSql();
+        
         $rawSql = $this->getRawSql();
+        
+        Kant::info($rawSql, __METHOD__);
+        
         if ($sql == '') {
             return 0;
         }
+        
         $this->prepare(false);
+        
         $token = $rawSql;
         try {
+            Kant::beginProfile($token, __METHOD__);
+            
             $this->pdoStatement->execute();
             $n = $this->pdoStatement->rowCount();
+            
+            Kant::endProfile($token, __METHOD__);
+            
             $this->refreshTableSchema();
             return $n;
         } catch (\Exception $e) {
+            Kant::endProfile($token, __METHOD__);
+            
             throw $this->db->getSchema()->convertException($e, $rawSql);
         }
     }
@@ -815,6 +829,9 @@ class Command extends Component {
      */
     protected function queryInternal($method, $fetchMode = null) {
         $rawSql = $this->getRawSql();
+        
+        Kant::info($rawSql, 'Kant\Database\Command::query');
+        
         if ($method !== '') {
             $info = $this->db->getQueryCacheInfo($this->queryCacheDuration, $this->queryCacheDependency);
             if (is_array($info)) {
@@ -828,7 +845,9 @@ class Command extends Component {
                     $rawSql,
                 ];
                 $result = Cache::get($cacheKey);
-                if (is_array($result)) {
+                if (is_array($result)) {                  
+                    Kant::trace('Query result served from cache', 'Kant\Database\Command::query');
+                    
                     return $result;
                 }
             }

@@ -2,17 +2,23 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Di;
+
 use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Helper\ArrayHelper;
 use Kant\Exception\InvalidConfigException;
+use Kant\Exception\NotFoundHttpException;
 use ReflectionClass;
+use ReflectionMethod;
+use ReflectionFunction;
+use ReflectionParameter;
+use ReflectionException;
 
 /**
  * Container implements a [dependency injection](http://en.wikipedia.org/wiki/Dependency_injection) container.
@@ -66,7 +72,7 @@ class Container extends Component {
      * You may provide constructor parameters (`$params`) and object configurations (`$config`)
      * that will be used during the creation of the instance.
      *
-     * If the class implements [[\yii\base\Configurable]], the `$config` parameter will be passed as the last
+     * If the class implements [[\Kant\Foundation\Configurable]], the `$config` parameter will be passed as the last
      * parameter to the class constructor; Otherwise, the configuration will be applied *after* the object is
      * instantiated.
      *
@@ -131,20 +137,20 @@ class Container extends Component {
      *
      * ```php
      * // register a class name as is. This can be skipped.
-     * $container->set('yii\db\Connection');
+     * $container->set('Kant\Database\Connection');
      *
      * // register an interface
      * // When a class depends on the interface, the corresponding class
      * // will be instantiated as the dependent object
-     * $container->set('yii\mail\MailInterface', 'yii\swiftmailer\Mailer');
+     * $container->set('Kant\Mail\MailInterface', 'Kant\Swiftmailer\Mailer');
      *
      * // register an alias name. You can use $container->get('foo')
      * // to create an instance of Connection
-     * $container->set('foo', 'yii\db\Connection');
+     * $container->set('foo', 'Kant\Database\Connection');
      *
      * // register a class with configuration. The configuration
      * // will be applied when the class is instantiated by get()
-     * $container->set('yii\db\Connection', [
+     * $container->set('Kant\Database\Connection', [
      *     'dsn' => 'mysql:host=127.0.0.1;dbname=demo',
      *     'username' => 'root',
      *     'password' => '',
@@ -154,7 +160,7 @@ class Container extends Component {
      * // register an alias name with class configuration
      * // In this case, a "class" element is required to specify the class
      * $container->set('db', [
-     *     'class' => 'yii\db\Connection',
+     *     'class' => 'Kant\Database\Connection',
      *     'dsn' => 'mysql:host=127.0.0.1;dbname=demo',
      *     'username' => 'root',
      *     'password' => '',
@@ -164,7 +170,7 @@ class Container extends Component {
      * // register a PHP callable
      * // The callable will be executed when $container->get('db') is called
      * $container->set('db', function ($container, $params, $config) {
-     *     return new \yii\db\Connection($config);
+     *     return new \Kant\Database\Connection($config);
      * });
      * ```
      *
@@ -347,6 +353,9 @@ class Container extends Component {
         }
 
         $dependencies = [];
+        if (class_exists($class) == false) {
+            throw  new NotFoundHttpException('Class not exists: ' . $class);
+        }
         $reflection = new ReflectionClass($class);
 
         $constructor = $reflection->getConstructor();
@@ -398,7 +407,7 @@ class Container extends Component {
      * For example, the following callback may be invoked using the Container to resolve the formatter dependency:
      *
      * ```php
-     * $formatString = function($string, \yii\i18n\Formatter $formatter) {
+     * $formatString = function($string, \Kant\I18n\Formatter $formatter) {
      *    // ...
      * }
      * Kant::$container->invoke($formatString, ['string' => 'Hello World!']);
@@ -490,14 +499,141 @@ class Container extends Component {
     }
 
     /**
-     * Register an existing instance as shared in the container.
+     * Call the given Closure / class@method and inject its dependencies.
      *
-     * @param  string  $class
-     * @param  mixed   $instance
-     * @return void
+     * @param  callable|string  $callback
+     * @param  array  $parameters
+     * @param  string|null  $defaultMethod
+     * @return mixed
      */
-    public function singleton($class, $instance) {
-        $this->_singletons[$class] = $instance;
-        return $instance;
+    public function call($callback, array $parameters = [], $defaultMethod = null) {
+        if ($this->isCallableWithAtSign($callback) || $defaultMethod) {
+            return $this->callClass($callback, $parameters, $defaultMethod);
+        }
+        $dependencies = $this->getMethodDependencies($callback, $parameters);
+        return call_user_func_array($callback, $dependencies);
     }
+
+    /**
+     * Determine if the given string is in Class@method syntax.
+     *
+     * @param  mixed  $callback
+     * @return bool
+     */
+    protected function isCallableWithAtSign($callback) {
+        return is_string($callback) && strpos($callback, '@') !== false;
+    }
+
+    /**
+     * Get all dependencies for a given method.
+     *
+     * @param  callable|string  $callback
+     * @param  array  $parameters
+     * @return array
+     */
+    protected function getMethodDependencies($callback, array $parameters = []) {
+        $dependencies = [];
+
+        foreach ($this->getCallReflector($callback)->getParameters() as $parameter) {
+            $this->addDependencyForCallParameter($parameter, $parameters, $dependencies);
+        }
+        return array_merge($parameters, $dependencies);
+//        return array_merge($dependencies, $parameters);
+    }
+
+    /**
+     * Get the proper reflection instance for the given callback.
+     *
+     * @param  callable|string  $callback
+     * @return \ReflectionFunctionAbstract
+     */
+    protected function getCallReflector($callback) {
+        if (is_string($callback) && strpos($callback, '::') !== false) {
+            $callback = explode('::', $callback);
+        }
+        if (is_array($callback)) {
+            list($class, $name) = $callback;
+            if (!preg_match('/^[A-Za-z](\w)*$/', $name)) {
+                throw new ReflectionException('Method not exists: ' . get_class($class) . "::" . $name);
+            }
+            if (method_exists($class, $name)) {
+                $method = new ReflectionMethod($class, $name);
+
+                if (!$method->isPublic()) {
+                    throw new ReflectionException('Method not exists: ' . get_class($class) . "::" . $name);
+                }
+                return $method;
+            } else {
+                throw new InvalidConfigException('Method not exists: ' . get_class($class) . "::" . $name);
+            }
+        }
+        return new ReflectionFunction($callback);
+    }
+
+    /**
+     * Get the dependency for the given call parameter.
+     *
+     * @param  \ReflectionParameter  $parameter
+     * @param  array  $parameters
+     * @param  array  $dependencies
+     * @return mixed
+     */
+    protected function addDependencyForCallParameter(ReflectionParameter $parameter, array &$parameters, &$dependencies) {
+        if (array_key_exists($parameter->name, $parameters)) {
+            $dependencies[] = $parameters[$parameter->name];
+
+            unset($parameters[$parameter->name]);
+        } elseif ($parameter->getClass()) {
+            $dependencies[] = $this->make($parameter->getClass()->name);
+        } elseif ($parameter->isDefaultValueAvailable()) {
+            $dependencies[] = $parameter->getDefaultValue();
+        }
+    }
+
+    /**
+     * Call a string reference to a class using Class@method syntax.
+     *
+     * @param  string  $target
+     * @param  array  $parameters
+     * @param  string|null  $defaultMethod
+     * @return mixed
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function callClass($target, array $parameters = [], $defaultMethod = null) {
+        $segments = explode('@', $target);
+
+        // If the listener has an @ sign, we will assume it is being used to delimit
+        // the class name from the handle method name. This allows for handlers
+        // to run multiple handler methods in a single class for convenience.
+        $method = count($segments) == 2 ? $segments[1] : $defaultMethod;
+
+        if (is_null($method)) {
+            throw new InvalidArgumentException('Method not provided.');
+        }
+
+        return $this->call([$this->make($segments[0]), $method], $parameters);
+
+//        return $this->call([Kant::$container->get($segments[0]), $method], $parameters);
+    }
+
+    /**
+     * Resolve the given type from the container.
+     */
+    public function make($class) {
+        return $this->get($class);
+    }
+
+    /**
+     * Determine if the given options exclude a particular method.
+     *
+     * @param  string  $method
+     * @param  array  $options
+     * @return bool
+     */
+    protected static function methodExcludedByOptions($method, array $options) {
+        return (isset($options['only']) && !in_array($method, (array) $options['only'])) ||
+                (!empty($options['except']) && in_array($method, (array) $options['except']));
+    }
+
 }

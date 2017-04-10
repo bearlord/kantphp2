@@ -23,10 +23,13 @@ return [
         ]
     ],
     'session' => [
-        'driver' => 'database',
+        'driver' => 'file',
         'table' => 'session',
         'cookie' => 'kant_session',
         'maxlifetime' => 1800,
+    ],
+    'filesystems' => [
+        'default' => 'public'
     ],
 ];
 ?>

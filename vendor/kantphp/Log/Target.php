@@ -1,9 +1,10 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Log;
@@ -24,8 +25,8 @@ class Target extends Component {
     /**
      * @var array list of message categories that this target is interested in. Defaults to empty, meaning all categories.
      * You can use an asterisk at the end of a category so that the category may be used to
-     * match those categories sharing the same common prefix. For example, 'yii\db\*' will match
-     * categories starting with 'yii\db\', such as 'yii\db\Connection'.
+     * match those categories sharing the same common prefix. For example, 'Kant\Database\*' will match
+     * categories starting with 'Kant\Database\', such as 'Kant\Database\Connection'.
      */
     public $categories = [];
 
@@ -33,8 +34,8 @@ class Target extends Component {
      * @var array list of message categories that this target is NOT interested in. Defaults to empty, meaning no uninteresting messages.
      * If this property is not empty, then any category listed here will be excluded from [[categories]].
      * You can use an asterisk at the end of a category so that the category can be used to
-     * match those categories sharing the same common prefix. For example, 'yii\db\*' will match
-     * categories starting with 'yii\db\', such as 'yii\db\Connection'.
+     * match those categories sharing the same common prefix. For example, 'Kant\Database\*' will match
+     * categories starting with 'Kant\Database\', such as 'Kant\Database\Connection'.
      * @see categories
      */
     public $except = [];
@@ -52,7 +53,7 @@ class Target extends Component {
      * - `var.key` - only `var[key]` key will be logged.
      * - `!var.key` - `var[key]` key will be excluded.
      *
-     * @see \yii\helpers\ArrayHelper::filter()
+     * @see \Kant\Helper\ArrayHelper::filter()
      */
     public $logVars = ['_GET', '_POST', '_FILES', '_COOKIE', '_SESSION', '_SERVER'];
 
@@ -91,6 +92,7 @@ class Target extends Component {
     public function collect($messages, $final) {
         $this->messages = array_merge($this->messages, static::filterMessages($messages, $this->getLevels(), $this->categories, $this->except));
         $count = count($this->messages);
+        
         if ($count > 0 && ($final || $this->exportInterval > 0 && $count >= $this->exportInterval)) {
             if (($context = $this->getContextMessage()) !== '') {
                 $this->messages[] = [$context, Logger::LEVEL_INFO, 'application', KANT_BEGIN_TIME];
@@ -261,7 +263,6 @@ class Target extends Component {
         
         $ip = get_client_ip();
 
-        /* @var $session \yii\web\Session */
         $session = Kant::$app->has('session', true) ? Kant::$app->get('session') : null;
         $sessionID = $session && $session->getIsActive() ? $session->getId() : '-';
 

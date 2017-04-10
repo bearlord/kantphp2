@@ -2,16 +2,14 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant;
 
 use Kant\Config\Config;
-use Kant\Routing\Route;
-use Kant\Session\Session;
 use Kant\Pathinfo\Pathinfo;
 
 class Factory {
@@ -37,27 +35,6 @@ class Factory {
             self::$container['config'] = new Config();
         }
         return self::$container['config'];
-    }
-
-    /**
-     * Get config object
-     */
-    public static function getRoute() {
-        if (!self::$container['route']) {
-            self::$container['route'] = Route::getInstance();
-        }
-        return self::$container['route'];
-    }
-
-    /**
-     * Get session object
-     * 
-     */
-    public static function getSession($config) {
-        if (!self::$container['session']) {
-            self::$container['session'] = Session::getInstance($config);
-        }
-        return self::$container['session'];
     }
 
     /**

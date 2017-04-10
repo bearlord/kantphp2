@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -407,7 +407,7 @@ class ActiveRecord extends BaseActiveRecord{
      */
     public function insert($runValidation = true, $attributes = null) {
         if ($runValidation && !$this->validate($attributes)) {
-            Log::write('Model not inserted due to validation error.', Log::ERR);
+            Kant::info('Model not inserted due to validation error.', __METHOD__);
             return false;
         }
 
@@ -511,7 +511,7 @@ class ActiveRecord extends BaseActiveRecord{
      */
     public function update($runValidation = true, $attributeNames = null) {
         if ($runValidation && !$this->validate($attributeNames)) {
-            Log::write('Model not updated due to validation error.', Log::ERR);
+            Kant::info('Model not updated due to validation error.', __METHOD__);
             return false;
         }
 

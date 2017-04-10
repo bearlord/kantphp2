@@ -2,19 +2,19 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\helpers\Html;
-use yii\helpers\Json;
-use yii\web\JsExpression;
-use yii\web\UploadedFile;
-use yii\helpers\FileHelper;
+use Kant\Helper\Html;
+use Kant\Helper\Json;
+use Kant\Helper\JsExpression;
+use Kant\Http\File\UploadedFile;
+use Kant\Helper\FileHelper;
 
 /**
  * FileValidator verifies if an attribute is receiving a valid uploaded file.
@@ -23,6 +23,8 @@ use yii\helpers\FileHelper;
  *
  * @property integer $sizeLimit The size limit for uploaded files. This property is read-only.
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 class FileValidator extends Validator {
 
@@ -158,22 +160,22 @@ class FileValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = Kant::t('yii', 'File upload failed.');
+            $this->message = Kant::t('kant', 'File upload failed.');
         }
         if ($this->uploadRequired === null) {
-            $this->uploadRequired = Kant::t('yii', 'Please upload a file.');
+            $this->uploadRequired = Kant::t('kant', 'Please upload a file.');
         }
         if ($this->tooMany === null) {
-            $this->tooMany = Kant::t('yii', 'You can upload at most {limit, number} {limit, plural, one{file} other{files}}.');
+            $this->tooMany = Kant::t('kant', 'You can upload at most {limit, number} {limit, plural, one{file} other{files}}.');
         }
         if ($this->wrongExtension === null) {
-            $this->wrongExtension = Kant::t('yii', 'Only files with these extensions are allowed: {extensions}.');
+            $this->wrongExtension = Kant::t('kant', 'Only files with these extensions are allowed: {extensions}.');
         }
         if ($this->tooBig === null) {
-            $this->tooBig = Kant::t('yii', 'The file "{file}" is too big. Its size cannot exceed {formattedLimit}.');
+            $this->tooBig = Kant::t('kant', 'The file "{file}" is too big. Its size cannot exceed {formattedLimit}.');
         }
         if ($this->tooSmall === null) {
-            $this->tooSmall = Kant::t('yii', 'The file "{file}" is too small. Its size cannot be smaller than {formattedLimit}.');
+            $this->tooSmall = Kant::t('kant', 'The file "{file}" is too small. Its size cannot be smaller than {formattedLimit}.');
         }
         if (!is_array($this->extensions)) {
             $this->extensions = preg_split('/[\s,]+/', strtolower($this->extensions), -1, PREG_SPLIT_NO_EMPTY);
@@ -181,7 +183,7 @@ class FileValidator extends Validator {
             $this->extensions = array_map('strtolower', $this->extensions);
         }
         if ($this->wrongMimeType === null) {
-            $this->wrongMimeType = Kant::t('yii', 'Only files with these MIME types are allowed: {mimeTypes}.');
+            $this->wrongMimeType = Kant::t('kant', 'Only files with these MIME types are allowed: {mimeTypes}.');
         }
         if (!is_array($this->mimeTypes)) {
             $this->mimeTypes = preg_split('/[\s,]+/', strtolower($this->mimeTypes), -1, PREG_SPLIT_NO_EMPTY);
@@ -242,44 +244,44 @@ class FileValidator extends Validator {
                     return [
                         $this->tooBig,
                         [
-                            'file' => $file->name,
+                            'file' => $file->getClientOriginalName(),
                             'limit' => $this->getSizeLimit(),
-                            'formattedLimit' => Yii::$app->formatter->asShortSize($this->getSizeLimit()),
+                            'formattedLimit' => Kant::$app->formatter->asShortSize($this->getSizeLimit()),
                         ],
                     ];
                 } elseif ($this->minSize !== null && $file->size < $this->minSize) {
                     return [
                         $this->tooSmall,
                         [
-                            'file' => $file->name,
+                            'file' => $file->getClientOriginalName(),
                             'limit' => $this->minSize,
-                            'formattedLimit' => Yii::$app->formatter->asShortSize($this->minSize),
+                            'formattedLimit' => Kant::$app->formatter->asShortSize($this->minSize),
                         ],
                     ];
                 } elseif (!empty($this->extensions) && !$this->validateExtension($file)) {
-                    return [$this->wrongExtension, ['file' => $file->name, 'extensions' => implode(', ', $this->extensions)]];
+                    return [$this->wrongExtension, ['file' => $file->getClientOriginalName(), 'extensions' => implode(', ', $this->extensions)]];
                 } elseif (!empty($this->mimeTypes) && !$this->validateMimeType($file)) {
-                    return [$this->wrongMimeType, ['file' => $file->name, 'mimeTypes' => implode(', ', $this->mimeTypes)]];
+                    return [$this->wrongMimeType, ['file' => $file->getClientOriginalName(), 'mimeTypes' => implode(', ', $this->mimeTypes)]];
                 }
                 return null;
             case UPLOAD_ERR_INI_SIZE:
             case UPLOAD_ERR_FORM_SIZE:
                 return [$this->tooBig, [
-                        'file' => $file->name,
+                        'file' => $file->getClientOriginalName(),
                         'limit' => $this->getSizeLimit(),
-                        'formattedLimit' => Yii::$app->formatter->asShortSize($this->getSizeLimit()),
+                        'formattedLimit' => Kant::$app->formatter->asShortSize($this->getSizeLimit()),
                 ]];
             case UPLOAD_ERR_PARTIAL:
-                Yii::warning('File was only partially uploaded: ' . $file->name, __METHOD__);
+                Kant::warning('File was only partially uploaded: ' . $file->getClientOriginalName(), __METHOD__);
                 break;
             case UPLOAD_ERR_NO_TMP_DIR:
-                Yii::warning('Missing the temporary folder to store the uploaded file: ' . $file->name, __METHOD__);
+                Kant::warning('Missing the temporary folder to store the uploaded file: ' . $file->getClientOriginalName(), __METHOD__);
                 break;
             case UPLOAD_ERR_CANT_WRITE:
-                Yii::warning('Failed to write the uploaded file to disk: ' . $file->name, __METHOD__);
+                Kant::warning('Failed to write the uploaded file to disk: ' . $file->getClientOriginalName(), __METHOD__);
                 break;
             case UPLOAD_ERR_EXTENSION:
-                Yii::warning('File upload was stopped by some PHP extension: ' . $file->name, __METHOD__);
+                Kant::warning('File upload was stopped by some PHP extension: ' . $file->getClientOriginalName(), __METHOD__);
                 break;
             default:
                 break;
@@ -304,7 +306,7 @@ class FileValidator extends Validator {
         $limit = $this->sizeToBytes(ini_get('upload_max_filesize'));
         $postLimit = $this->sizeToBytes(ini_get('post_max_size'));
         if ($postLimit > 0 && $postLimit < $limit) {
-            Yii::warning('PHP.ini\'s \'post_max_size\' is less than \'upload_max_filesize\'.', __METHOD__);
+            Kant::warning('PHP.ini\'s \'post_max_size\' is less than \'upload_max_filesize\'.', __METHOD__);
             $limit = $postLimit;
         }
         if ($this->maxSize !== null && $limit > 0 && $this->maxSize < $limit) {
@@ -353,11 +355,9 @@ class FileValidator extends Validator {
      * @return boolean
      */
     protected function validateExtension($file) {
-        $extension = mb_strtolower($file->extension, 'UTF-8');
-
+        $extension = mb_strtolower($file->extension(), 'UTF-8');
         if ($this->checkExtensionByMimeType) {
-
-            $mimeType = FileHelper::getMimeType($file->tempName, null, false);
+            $mimeType = FileHelper::getMimeType($file->getPathname(), null, false);
             if ($mimeType === null) {
                 return false;
             }
@@ -382,7 +382,7 @@ class FileValidator extends Validator {
     public function clientValidateAttribute($model, $attribute, $view) {
         ValidationAsset::register($view);
         $options = $this->getClientOptions($model, $attribute);
-        return 'yii.validation.file(attribute, messages, ' . Json::encode($options) . ');';
+        return 'kant.validation.file(attribute, messages, ' . Json::encode($options) . ');';
     }
 
     /**
@@ -396,17 +396,17 @@ class FileValidator extends Validator {
 
         $options = [];
         if ($this->message !== null) {
-            $options['message'] = Yii::$app->getI18n()->format($this->message, [
+            $options['message'] = Kant::$app->getI18n()->format($this->message, [
                 'attribute' => $label,
-                    ], Yii::$app->language);
+                    ], Kant::$app->language);
         }
 
         $options['skipOnEmpty'] = $this->skipOnEmpty;
 
         if (!$this->skipOnEmpty) {
-            $options['uploadRequired'] = Yii::$app->getI18n()->format($this->uploadRequired, [
+            $options['uploadRequired'] = Kant::$app->getI18n()->format($this->uploadRequired, [
                 'attribute' => $label,
-                    ], Yii::$app->language);
+                    ], Kant::$app->language);
         }
 
         if ($this->mimeTypes !== null) {
@@ -415,44 +415,44 @@ class FileValidator extends Validator {
                 $mimeTypes[] = new JsExpression(Html::escapeJsRegularExpression($this->buildMimeTypeRegexp($mimeType)));
             }
             $options['mimeTypes'] = $mimeTypes;
-            $options['wrongMimeType'] = Yii::$app->getI18n()->format($this->wrongMimeType, [
+            $options['wrongMimeType'] = Kant::$app->getI18n()->format($this->wrongMimeType, [
                 'attribute' => $label,
                 'mimeTypes' => implode(', ', $this->mimeTypes),
-                    ], Yii::$app->language);
+                    ], Kant::$app->language);
         }
 
         if ($this->extensions !== null) {
             $options['extensions'] = $this->extensions;
-            $options['wrongExtension'] = Yii::$app->getI18n()->format($this->wrongExtension, [
+            $options['wrongExtension'] = Kant::$app->getI18n()->format($this->wrongExtension, [
                 'attribute' => $label,
                 'extensions' => implode(', ', $this->extensions),
-                    ], Yii::$app->language);
+                    ], Kant::$app->language);
         }
 
         if ($this->minSize !== null) {
             $options['minSize'] = $this->minSize;
-            $options['tooSmall'] = Yii::$app->getI18n()->format($this->tooSmall, [
+            $options['tooSmall'] = Kant::$app->getI18n()->format($this->tooSmall, [
                 'attribute' => $label,
                 'limit' => $this->minSize,
-                'formattedLimit' => Yii::$app->formatter->asShortSize($this->minSize),
-                    ], Yii::$app->language);
+                'formattedLimit' => Kant::$app->formatter->asShortSize($this->minSize),
+                    ], Kant::$app->language);
         }
 
         if ($this->maxSize !== null) {
             $options['maxSize'] = $this->maxSize;
-            $options['tooBig'] = Yii::$app->getI18n()->format($this->tooBig, [
+            $options['tooBig'] = Kant::$app->getI18n()->format($this->tooBig, [
                 'attribute' => $label,
                 'limit' => $this->getSizeLimit(),
-                'formattedLimit' => Yii::$app->formatter->asShortSize($this->getSizeLimit()),
-                    ], Yii::$app->language);
+                'formattedLimit' => Kant::$app->formatter->asShortSize($this->getSizeLimit()),
+                    ], Kant::$app->language);
         }
 
         if ($this->maxFiles !== null) {
             $options['maxFiles'] = $this->maxFiles;
-            $options['tooMany'] = Yii::$app->getI18n()->format($this->tooMany, [
+            $options['tooMany'] = Kant::$app->getI18n()->format($this->tooMany, [
                 'attribute' => $label,
                 'limit' => $this->maxFiles,
-                    ], Yii::$app->language);
+                    ], Kant::$app->language);
         }
 
         return $options;

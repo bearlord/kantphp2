@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -11,9 +11,7 @@ namespace Kant\Validators;
 
 use Kant\Kant;
 use Kant\Foundation\Component;
-use Kant\Factory;
-
-//use yii\base\NotSupportedException;
+use Kant\Exception\NotSupportedException;
 
 /**
  * Validator is the base class for all validators.
@@ -26,7 +24,7 @@ use Kant\Factory;
  * be referenced using short names. They are listed as follows:
  *
  * - `boolean`: [[BooleanValidator]]
- * - `captcha`: [[\Kant\captcha\CaptchaValidator]]
+ * - `captcha`: [[\Kant\Captcha\CaptchaValidator]]
  * - `compare`: [[CompareValidator]]
  * - `date`: [[DateValidator]]
  * - `default`: [[DefaultValueValidator]]
@@ -48,6 +46,8 @@ use Kant\Factory;
  * - `url`: [[UrlValidator]]
  * - `ip`: [[IpValidator]]
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 class Validator extends Component {
 
@@ -55,36 +55,36 @@ class Validator extends Component {
      * @var array list of built-in validators (name => class or configuration)
      */
     public static $builtInValidators = [
-        'boolean' => 'Kant\ValidatorsBooleanValidator',
-        'captcha' => 'yii\captcha\CaptchaValidator',
-        'compare' => 'Kant\ValidatorsCompareValidator',
-        'date' => 'Kant\ValidatorsDateValidator',
-        'default' => 'Kant\ValidatorsDefaultValueValidator',
-        'double' => 'Kant\ValidatorsNumberValidator',
-        'each' => 'Kant\ValidatorsEachValidator',
-        'email' => 'Kant\ValidatorsEmailValidator',
-        'exist' => 'Kant\ValidatorsExistValidator',
-        'file' => 'Kant\ValidatorsFileValidator',
-        'filter' => 'Kant\ValidatorsFilterValidator',
-        'image' => 'Kant\ValidatorsImageValidator',
-        'in' => 'Kant\ValidatorsRangeValidator',
+        'boolean' => 'Kant\Validators\BooleanValidator',
+        'captcha' => 'Kant\Captcha\CaptchaValidator',
+        'compare' => 'Kant\Validators\CompareValidator',
+        'date' => 'Kant\Validators\DateValidator',
+        'default' => 'Kant\Validators\DefaultValueValidator',
+        'double' => 'Kant\Validators\NumberValidator',
+        'each' => 'Kant\Validators\EachValidator',
+        'email' => 'Kant\Validators\EmailValidator',
+        'exist' => 'Kant\Validators\ExistValidator',
+        'file' => 'Kant\Validators\FileValidator',
+        'filter' => 'Kant\Validators\FilterValidator',
+        'image' => 'Kant\Validators\ImageValidator',
+        'in' => 'Kant\Validators\RangeValidator',
         'integer' => [
-            'class' => 'Kant\ValidatorsNumberValidator',
+            'class' => 'Kant\Validators\NumberValidator',
             'integerOnly' => true,
         ],
-        'match' => 'Kant\ValidatorsRegularExpressionValidator',
-        'number' => 'Kant\ValidatorsNumberValidator',
-        'required' => 'Kant\Validators\RequiredValidator',
-        'safe' => 'Kant\ValidatorsSafeValidator',
-        'string' => 'Kant\ValidatorsStringValidator',
+        'match' => 'Kant\Validators\RegularExpressionValidator',
+        'number' => 'Kant\Validators\NumberValidator',
+        'required' => 'Kant\Validators\\RequiredValidator',
+        'safe' => 'Kant\Validators\SafeValidator',
+        'string' => 'Kant\Validators\StringValidator',
         'trim' => [
-            'class' => 'Kant\ValidatorsFilterValidator',
+            'class' => 'Kant\Validators\FilterValidator',
             'filter' => 'trim',
             'skipOnArray' => true,
         ],
-        'unique' => 'Kant\ValidatorsUniqueValidator',
-        'url' => 'Kant\ValidatorsUrlValidator',
-        'ip' => 'Kant\ValidatorsIpValidator',
+        'unique' => 'Kant\Validators\UniqueValidator',
+        'url' => 'Kant\Validators\UrlValidator',
+        'ip' => 'Kant\Validators\IpValidator',
     ];
 
     /**
@@ -251,9 +251,8 @@ class Validator extends Component {
                 $attributes[] = $attribute[0] === '!' ? substr($attribute, 1) : $attribute;
             }
         }
-
         foreach ($attributes as $attribute) {
-            $skip = $this->skipOnError && $model->hasErrors($attribute) || $this->skipOnEmpty && $this->isEmpty($model->$attribute);
+            $skip = ($this->skipOnError && $model->hasErrors($attribute)) || ($this->skipOnEmpty && $this->isEmpty($model->$attribute));
             if (!$skip) {
                 if ($this->when === null || call_user_func($this->when, $model, $attribute)) {
                     $this->validateAttribute($model, $attribute);
@@ -289,7 +288,7 @@ class Validator extends Component {
         }
 
         list($message, $params) = $result;
-        $params['attribute'] = Kant::t('yii', 'the input value');
+        $params['attribute'] = Kant::t('kant', 'the input value');
         if (is_array($value)) {
             $params['value'] = 'array()';
         } elseif (is_object($value)) {
@@ -383,7 +382,7 @@ class Validator extends Component {
                 $params['value'] = $value;
             }
         }
-        $model->addError($attribute, Kant::$app->getI18n()->format($message, $params, Factory::getConfig()->get('language')));
+        $model->addError($attribute, Kant::$app->getI18n()->format($message, $params, Kant::$app->config->get('language')));
     }
 
     /**

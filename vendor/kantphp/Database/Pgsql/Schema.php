@@ -1,9 +1,10 @@
 <?php
 
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Database\Pgsql;
@@ -353,7 +354,6 @@ SQL;
             $column = $row['columnname'];
             if (!empty($column) && $column[0] === '"') {
                 // postgres will quote names that are not lowercase-only
-                // https://github.com/yiisoft/yii2/issues/10613
                 $column = substr($column, 1, -1);
             }
             $uniqueIndexes[$row['indexname']][] = $column;

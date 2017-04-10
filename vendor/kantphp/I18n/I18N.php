@@ -2,22 +2,21 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\I18n;
 
 use Kant\Kant;
-use Kant\Factory;
 use Kant\Foundation\Component;
 use Kant\Exception\InvalidConfigException;
 
 /**
  * I18N provides features related with internationalization (I18N) and localization (L10N).
  *
- * I18N is configured as an application component in [[\yii\base\Application]] by default.
+ * I18N is configured as an application component in [[\Kant\Application]] by default.
  * You can access that instance via `Kant::$app->i18n`.
  *
  * @property MessageFormatter $messageFormatter The message formatter to be used to format message via ICU
@@ -40,10 +39,10 @@ class I18N extends Component {
      * This property may be modified on the fly by extensions who want to have their own message sources
      * registered under their own namespaces.
      *
-     * The category "yii" and "app" are always defined. The former refers to the messages used in the Kant core
+     * The category "kant" and "app" are always defined. The former refers to the messages used in the Kant core
      * framework code, while the latter refers to the default message category for custom application code.
      * By default, both of these categories use [[PhpMessageSource]] and the corresponding message files are
-     * stored under "@yii/messages" and "@app/messages", respectively.
+     * stored under "@kant/messages" and "@app/messages", respectively.
      *
      * You may override the configuration of both categories.
      */
@@ -59,13 +58,15 @@ class I18N extends Component {
                 'class' => 'Kant\I18n\PhpMessageSource',
                 'sourceLanguage' => 'en-US',
                 'basePath' => KANT_PATH . 'Messages/',
+//                'basePath' => '@kant/messages',
             ];
         }
         if (!isset($this->translations['app']) && !isset($this->translations['app*'])) {
             $this->translations['app'] = [
                 'class' => 'Kant\I18n\PhpMessageSource',
-                'sourceLanguage' => Factory::getConfig()->get('language'),
+                'sourceLanguage' => Kant::$app->sourceLanguage,
                 'basePath' => APP_PATH . 'Messages/',
+//                'basePath' => '@app/messages',
             ];
         }
     }

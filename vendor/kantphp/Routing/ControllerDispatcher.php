@@ -2,6 +2,7 @@
 
 namespace Kant\Routing;
 
+use Kant\Kant;
 
 class ControllerDispatcher {
 
@@ -36,14 +37,12 @@ class ControllerDispatcher {
         $parameters = $this->resolveClassMethodDependencies(
                 $route->parametersWithoutNulls(), $controller, $method
         );
-
-        if (method_exists($controller, 'callAction')) {
-            return $controller->callAction($method, $parameters);
-        }
-
-        //compliant for PHP5.4
-        return call_user_func_array([$controller, $method], $parameters);
-//        return $controller->{$method}(...array_values($parameters));
+ 
+        $controllerClassName = get_class($controller);
+        $path = explode("\\", $controllerClassName);
+        $moduelName = ucfirst($path[1]);
+        Kant::$app->setModuleConfig($moduelName);
+        return Kant::$container->callClass($controllerClassName . "@" . 'runAction', [$method, $parameters]);
     }
 
     /**

@@ -2,17 +2,17 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\base\InvalidConfigException;
-use yii\web\JsExpression;
-use yii\helpers\Json;
+use Kant\Exception\InvalidConfigException;
+use Kant\Helper\JsExpression;
+use Kant\Helper\Json;
 
 /**
  * UrlValidator validates that the attribute value is a valid http or https URL.
@@ -20,6 +20,8 @@ use yii\helpers\Json;
  * Note that this validator only checks if the URL scheme and host part are correct.
  * It does not check the remaining parts of a URL.
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 class UrlValidator extends Validator {
 
@@ -60,7 +62,7 @@ class UrlValidator extends Validator {
             throw new InvalidConfigException('In order to use IDN validation intl extension must be installed and enabled.');
         }
         if ($this->message === null) {
-            $this->message = Kant::t('yii', '{attribute} is not a valid URL.');
+            $this->message = Kant::t('kant', '{attribute} is not a valid URL.');
         }
     }
 
@@ -119,9 +121,9 @@ class UrlValidator extends Validator {
 
         $options = [
             'pattern' => new JsExpression($pattern),
-            'message' => Yii::$app->getI18n()->format($this->message, [
+            'message' => Kant::$app->getI18n()->format($this->message, [
                 'attribute' => $model->getAttributeLabel($attribute),
-                    ], Yii::$app->language),
+                    ], Kant::$app->language),
             'enableIDN' => (bool) $this->enableIDN,
         ];
         if ($this->skipOnEmpty) {
@@ -136,7 +138,7 @@ class UrlValidator extends Validator {
             PunycodeAsset::register($view);
         }
 
-        return 'yii.validation.url(value, messages, ' . Json::htmlEncode($options) . ');';
+        return 'kant.validation.url(value, messages, ' . Json::htmlEncode($options) . ');';
     }
 
 }

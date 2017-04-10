@@ -2,11 +2,12 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 use Kant\Kant;
+
 if (!function_exists('hash')) {
 
     /**
@@ -21,7 +22,7 @@ if (!function_exists('hash')) {
      */
     function hash($string, $operation = 'DECODE', $key = '', $expiry = 0) {
         $ckey_length = 4;
-        $key = sha1($key ? $key : \Kant\Factory::getConfig()->get('auth_key'));
+        $key = sha1($key ? $key : \Kant\Kant::$app->config->get('auth_key'));
 
         //Key a is used to participate in encryption and decryption
         $keya = sha1(substr($key, 0, 20));
@@ -166,6 +167,20 @@ if (function_exists('random')) {
             $code .= $charset[rand(1, $charset_len)];
         }
         return $code;
+    }
+
+}
+
+if (!function_exists('array_wrap')) {
+
+    /**
+     * If the given value is not an array, wrap it in one.
+     *
+     * @param  mixed  $value
+     * @return array
+     */
+    function array_wrap($value) {
+        return !is_array($value) ? [$value] : $value;
     }
 
 }

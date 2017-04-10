@@ -2,18 +2,20 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Helper;
 
 /**
- * BaseInflector provides concrete implementation for [[Inflector]].
+ * BaseHtmlPurifier provides concrete implementation for [[HtmlPurifier]].
  *
- * Do not use BaseInflector. Use [[Inflector]] instead.
+ * Do not use BaseHtmlPurifier. Use [[HtmlPurifier]] instead.
  *
+ * @author Alexander Makarov <sam@rmcreative.ru>
+ * @since 2.0
  */
 class BaseInflector {
 

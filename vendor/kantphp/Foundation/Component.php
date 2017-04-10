@@ -2,13 +2,14 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Foundation;
 
+use Kant\Kant;
 use Kant\Foundation\Object;
 use Kant\Exception\InvalidCallException;
 use Kant\Exception\UnknownMethodException;
@@ -96,7 +97,7 @@ class Component extends Object {
         } elseif (strncmp($name, 'as ', 3) === 0) {
             // as behavior: attach behavior
             $name = trim(substr($name, 3));
-            $this->attachBehavior($name, $value instanceof Behavior ? $value : Yii::createObject($value));
+            $this->attachBehavior($name, $value instanceof Behavior ? $value : Kant::createObject($value));
 
             return;
         } else {
@@ -466,7 +467,7 @@ class Component extends Object {
             }
         }
         // invoke class-level attached handlers
-//        Event::trigger($this, $name, $event);
+        Event::trigger($this, $name, $event);
     }
 
     /**
@@ -498,7 +499,7 @@ class Component extends Object {
      *
      *  - a [[Behavior]] object
      *  - a string specifying the behavior class
-     *  - an object configuration array that will be passed to [[Yii::createObject()]] to create the behavior object.
+     *  - an object configuration array that will be passed to [[Kant::createObject()]] to create the behavior object.
      *
      * @return Behavior the behavior object
      * @see detachBehavior()
@@ -572,7 +573,7 @@ class Component extends Object {
      */
     private function attachBehaviorInternal($name, $behavior) {
         if (!($behavior instanceof Behavior)) {
-            $behavior = Yii::createObject($behavior);
+            $behavior = Kant::createObject($behavior);
         }
         if (is_int($name)) {
             $behavior->attach($this);

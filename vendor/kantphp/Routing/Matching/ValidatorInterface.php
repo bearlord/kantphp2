@@ -5,8 +5,8 @@ namespace Kant\Routing\Matching;
 use Kant\Http\Request;
 use Kant\Routing\Route;
 
-interface ValidatorInterface
-{
+interface ValidatorInterface {
+
     /**
      * Validate a given rule against a route and request.
      *

@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -93,7 +93,7 @@ final class Cookie {
      * @param  string  $domain
      * @param  bool    $secure
      * @param  bool    $httpOnly
-     * @return \Symfony\Component\HttpFoundation\Cookie
+     * @return \Kant\View\Http\Cookie
      */
     public function forever($name, $value, $path = null, $domain = null, $secure = false, $httpOnly = true) {
         return $this->make($name, $value, 2628000, $path, $domain, $secure, $httpOnly);

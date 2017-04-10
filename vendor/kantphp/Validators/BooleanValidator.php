@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -17,6 +17,8 @@ use Kant\Kant;
  * Possible boolean values can be configured via the [[trueValue]] and [[falseValue]] properties.
  * And the comparison can be either [[strict]] or not.
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 class BooleanValidator extends Validator {
 
@@ -43,7 +45,7 @@ class BooleanValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = Kant::t('yii', '{attribute} must be either "{true}" or "{false}".');
+            $this->message = Kant::t('kant', '{attribute} must be either "{true}" or "{false}".');
         }
     }
 
@@ -70,11 +72,11 @@ class BooleanValidator extends Validator {
         $options = [
             'trueValue' => $this->trueValue,
             'falseValue' => $this->falseValue,
-            'message' => Yii::$app->getI18n()->format($this->message, [
+            'message' => Kant::$app->getI18n()->format($this->message, [
                 'attribute' => $model->getAttributeLabel($attribute),
                 'true' => $this->trueValue === true ? 'true' : $this->trueValue,
                 'false' => $this->falseValue === false ? 'false' : $this->falseValue,
-                    ], Yii::$app->language),
+                    ], Kant::$app->language),
         ];
         if ($this->skipOnEmpty) {
             $options['skipOnEmpty'] = 1;
@@ -85,7 +87,7 @@ class BooleanValidator extends Validator {
 
         ValidationAsset::register($view);
 
-        return 'yii.validation.boolean(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
+        return 'kant.validation.boolean(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
     }
 
 }

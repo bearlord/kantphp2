@@ -2,21 +2,23 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
 namespace Kant\Validators;
 
 use Kant\Kant;
-use yii\base\InvalidConfigException;
-use yii\web\JsExpression;
-use yii\helpers\Json;
+use Kant\Exception\InvalidConfigException;
+use Kant\Helper\JsExpression;
+use Kant\Helper\Json;
 
 /**
  * EmailValidator validates that the attribute value is a valid email address.
  * 
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 class EmailValidator extends Validator {
 
@@ -63,7 +65,7 @@ class EmailValidator extends Validator {
             throw new InvalidConfigException('In order to use IDN validation intl extension must be installed and enabled.');
         }
         if ($this->message === null) {
-            $this->message = Kant::t('yii', '{attribute} is not a valid email address.');
+            $this->message = Kant::t('kant', '{attribute} is not a valid email address.');
         }
     }
 
@@ -113,9 +115,9 @@ class EmailValidator extends Validator {
             'pattern' => new JsExpression($this->pattern),
             'fullPattern' => new JsExpression($this->fullPattern),
             'allowName' => $this->allowName,
-            'message' => Yii::$app->getI18n()->format($this->message, [
+            'message' => Kant::$app->getI18n()->format($this->message, [
                 'attribute' => $model->getAttributeLabel($attribute),
-                    ], Yii::$app->language),
+                    ], Kant::$app->language),
             'enableIDN' => (bool) $this->enableIDN,
         ];
         if ($this->skipOnEmpty) {
@@ -127,7 +129,7 @@ class EmailValidator extends Validator {
             PunycodeAsset::register($view);
         }
 
-        return 'yii.validation.email(value, messages, ' . Json::htmlEncode($options) . ');';
+        return 'kant.validation.email(value, messages, ' . Json::htmlEncode($options) . ');';
     }
 
 }

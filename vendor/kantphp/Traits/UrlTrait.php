@@ -1,13 +1,12 @@
 <?php
 
 namespace Kant\Traits;
-use Kant\Factory;
 
 trait UrlTrait {
 
     public function url($url = '', $vars = '', $suffix = true) {
         $originalparams = array();
-        $config = Factory::getConfig()->reference();
+        $config = Kant::$app->config->reference();
         if (strpos($url, $config['urlSuffix']) !== false) {
             $url = rtrim($url, $config['urlSuffix']);
         }
@@ -47,10 +46,9 @@ trait UrlTrait {
         }
         $url = APP_URL . implode($depr, ($var));
         $vars = array_merge($originalparams, $vars);
-        if (!empty($vars)) { // 添加参数
+        if (!empty($vars)) {
             foreach ($vars as $var => $val) {
                 if ('' !== trim($val)) {
-//					$url .= $depr . $var . "," . urlencode($val);
                     $url .= $depr . $var . "," . $val;
                 }
             }
@@ -81,7 +79,7 @@ trait UrlTrait {
      * @param integer $second
      */
     public function redirect($message, $url = 'goback', $second = 3) {
-        $redirectTpl = Factory::getConfig()->get('redirectTpl');
+        $redirectTpl = Kant::$app->config->get('redirectTpl');
         if ($redirectTpl) {
             include TPL_PATH . $redirectTpl . '.php';
         } else {

@@ -2,9 +2,9 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
  * @original-author Laravel/Symfony
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -83,11 +83,11 @@ class DatabaseSessionHandler implements SessionHandlerInterface {
      */
     public function read($sessionId) {
         $session = $this->connection->createCommand("SELECT * FROM {$this->table} WHERE sess_id = :sessionid", [':sessionid' => $sessionId])->queryOne();
-        if ($session['last_activity']) {
-            if ($session['last_activity'] < time() - $this->lifetime) {
-                $this->exists = true;
-                return;
-            }
+
+        if ($this->expired($session)) {
+            $this->exists = true;
+
+            return;
         }
 
         if (isset($session['sess_data'])) {
@@ -95,6 +95,17 @@ class DatabaseSessionHandler implements SessionHandlerInterface {
 
             return base64_decode($session['sess_data']);
         }
+    }
+
+    /**
+     * Determine if the session is expired.
+     *
+     * @param  \StdClass  $session
+     * @return bool
+     */
+    protected function expired($session) {
+        return isset($session['last_activity']) &&
+                $session['last_activity'] < time() - $this->lifetime;
     }
 
     /**
@@ -128,7 +139,7 @@ class DatabaseSessionHandler implements SessionHandlerInterface {
             'sess_data' => base64_encode($data),
             'last_activity' => time(),
             'ip_address' => get_client_ip(),
-            'user_agent' => substr($_SERVER['HTTP_USER_AGENT'], 0,500)
+            'user_agent' => substr($_SERVER['HTTP_USER_AGENT'], 0, 500)
         ];
 
         return $data;

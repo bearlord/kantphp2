@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -13,7 +13,7 @@ use DateTime;
 use IntlDateFormatter;
 use Kant\Kant;
 use Kant\Exception\InvalidConfigException;
-use yii\helpers\FormatConverter;
+use Kant\Helper\FormatConverter;
 
 /**
  * DateValidator verifies if the attribute represents a date, time or datetime in a proper [[format]].
@@ -29,6 +29,10 @@ use yii\helpers\FormatConverter;
  * property and the target timeZone will be UTC when [[timestampAttributeFormat]] is `null` (exporting as UNIX timestamp)
  * or [[timestampAttributeTimeZone]] otherwise. If you want to avoid the time zone conversion, make sure that [[timeZone]] and
  * [[timestampAttributeTimeZone]] are the same.
+ * 
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Carsten Brandt <mail@cebe.cc>
+ * @since 2.0
  */
 class DateValidator extends Validator {
 
@@ -77,7 +81,7 @@ class DateValidator extends Validator {
      * Alternatively this can be a string prefixed with `php:` representing a format that can be recognized by the PHP Datetime class.
      * Please refer to <http://php.net/manual/en/datetime.createfromformat.php> on supported formats.
      *
-     * If this property is not set, the default value will be obtained from `Yii::$app->formatter->dateFormat`, see [[\Kant\i18n\Formatter::dateFormat]] for details.
+     * If this property is not set, the default value will be obtained from `Kant::$app->formatter->dateFormat`, see [[\Kant\i18n\Formatter::dateFormat]] for details.
      * Since version 2.0.8 the default value will be determined from different formats of the formatter class,
      * dependent on the value of [[type]]:
      *
@@ -217,30 +221,30 @@ class DateValidator extends Validator {
     public function init() {
         parent::init();
         if ($this->message === null) {
-            $this->message = Kant::t('yii', 'The format of {attribute} is invalid.');
+            $this->message = Kant::t('kant', 'The format of {attribute} is invalid.');
         }
         if ($this->format === null) {
             if ($this->type === self::TYPE_DATE) {
-                $this->format = Yii::$app->formatter->dateFormat;
+                $this->format = Kant::$app->formatter->dateFormat;
             } elseif ($this->type === self::TYPE_DATETIME) {
-                $this->format = Yii::$app->formatter->datetimeFormat;
+                $this->format = Kant::$app->formatter->datetimeFormat;
             } elseif ($this->type === self::TYPE_TIME) {
-                $this->format = Yii::$app->formatter->timeFormat;
+                $this->format = Kant::$app->formatter->timeFormat;
             } else {
                 throw new InvalidConfigException('Unknown validation type set for DateValidator::$type: ' . $this->type);
             }
         }
         if ($this->locale === null) {
-            $this->locale = Yii::$app->language;
+            $this->locale = Kant::$app->language;
         }
         if ($this->timeZone === null) {
-            $this->timeZone = Yii::$app->timeZone;
+            $this->timeZone = Kant::$app->timeZone;
         }
         if ($this->min !== null && $this->tooSmall === null) {
-            $this->tooSmall = Kant::t('yii', '{attribute} must be no less than {min}.');
+            $this->tooSmall = Kant::t('kant', '{attribute} must be no less than {min}.');
         }
         if ($this->max !== null && $this->tooBig === null) {
-            $this->tooBig = Kant::t('yii', '{attribute} must be no greater than {max}.');
+            $this->tooBig = Kant::t('kant', '{attribute} must be no greater than {max}.');
         }
         if ($this->maxString === null) {
             $this->maxString = (string) $this->max;
@@ -373,10 +377,9 @@ class DateValidator extends Validator {
         $formatter->setLenient(false);
 
         // There should not be a warning thrown by parse() but this seems to be the case on windows so we suppress it here
-        // See https://github.com/yiisoft/yii2/issues/5962 and https://bugs.php.net/bug.php?id=68528
         $parsePos = 0;
         $parsedDate = @$formatter->parse($value, $parsePos);
-        if ($parsedDate === false || $parsePos !== mb_strlen($value, Yii::$app ? Yii::$app->charset : 'UTF-8')) {
+        if ($parsedDate === false || $parsePos !== mb_strlen($value, Kant::$app ? Kant::$app->charset : 'UTF-8')) {
             return false;
         }
 

@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
@@ -12,7 +12,6 @@ namespace Kant\Database;
 use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Exception\KantException;
-use Kant\Factory;
 use InvalidArgumentException;
 use Kant\Exception\InvalidConfigException;
 use PDO;
@@ -232,7 +231,7 @@ class Connection extends Component {
     ];
 
     /**
-     * @var string Custom PDO wrapper class. If not set, it will use [[PDO]] or [[yii\db\mssql\PDO]] when MSSQL is used.
+     * @var string Custom PDO wrapper class. If not set, it will use [[PDO]] or [[Kant\Database\Mssql\PDO]] when MSSQL is used.
      * @see pdo
      */
     public $pdoClass;
@@ -396,9 +395,9 @@ class Connection extends Component {
      */
     protected function parseConfig($config = "") {
         if ($config == '') {
-            $config = Factory::getConfig()->get('database.default');
+            $config = Kant::$app->config->get('database.default');
         } elseif (is_string($config) && false === strpos($config, '/')) {
-            $config = Factory::getConfig()->get('database.' . $config);
+            $config = Kant::$app->config->get('database.' . $config);
         }
 
         if (is_string($config)) {
@@ -466,7 +465,7 @@ class Connection extends Component {
      * @param integer $duration the number of seconds that query results can remain valid in the cache. If this is
      * not set, the value of [[queryCacheDuration]] will be used instead.
      * Use 0 to indicate that the cached data will never expire.
-     * @param \yii\caching\Dependency $dependency the cache dependency associated with the cached query results.
+     * @param \Kant\Cache\Dependency $dependency the cache dependency associated with the cached query results.
      * @return mixed the return result of the callable
      * @throws \Exception if there is any exception during query
      * @see enableQueryCache
@@ -525,7 +524,7 @@ class Connection extends Component {
      * Returns the current query cache information.
      * This method is used internally by [[Command]].
      * @param integer $duration the preferred caching duration. If null, it will be ignored.
-     * @param \yii\caching\Dependency $dependency the preferred caching dependency. If null, it will be ignored.
+     * @param \Kant\Cache\Dependency $dependency the preferred caching dependency. If null, it will be ignored.
      * @return array the current query cache information, or null if query cache is not enabled.
      * @internal
      */
@@ -581,10 +580,18 @@ class Connection extends Component {
         if (empty($this->dsn)) {
             throw new InvalidConfigException('Connection::dsn cannot be empty.');
         }
+        
+        $token = 'Opening DB connection: ' . $this->dsn;
         try {
+            Kant::info($token, __METHOD__);
+            Kant::beginProfile($token, __METHOD__);
+            
             $this->pdo = $this->createPdoInstance();
             $this->initConnection();
+            
+            Kant::endProfile($token, __METHOD__);
         } catch (\PDOException $e) {
+            Kant::endProfile($token, __METHOD__);
             throw new Exception($e->getMessage(), $e->errorInfo, (int) $e->getCode(), $e);
         }
     }
@@ -596,6 +603,7 @@ class Connection extends Component {
     public function close() {
         if ($this->pdo !== null) {
             Kant::trace('Closing DB connection: ' . $this->dsn, __METHOD__);
+            
             $this->pdo = null;
             $this->_schema = null;
             $this->_transaction = null;
@@ -625,9 +633,9 @@ class Connection extends Component {
             }
             if (isset($driver)) {
                 if ($driver === 'mssql' || $driver === 'dblib') {
-                    $pdoClass = 'yii\db\mssql\PDO';
+                    $pdoClass = 'Kant\Database\Mssql\PDO';
                 } elseif ($driver === 'sqlsrv') {
-                    $pdoClass = 'yii\db\mssql\SqlsrvPDO';
+                    $pdoClass = 'Kant\Database\Mssql\SqlsrvPDO';
                 }
             }
         }

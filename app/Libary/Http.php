@@ -2,15 +2,15 @@
 
 class Http {
 
-    var $method;
-    var $cookie;
-    var $post;
-    var $header;
-    var $ContentType;
-    var $errno;
-    var $errstr;
+    public $method;
+    public $cookie;
+    public $post;
+    public $header;
+    public $ContentType;
+    public $errno;
+    public $errstr;
 
-    function __construct() {
+    public function __construct() {
         $this->method = 'GET';
         $this->cookie = '';
         $this->post = '';
@@ -19,7 +19,7 @@ class Http {
         $this->errstr = '';
     }
 
-    function post($url, $data = array(), $referer = '', $limit = 0, $timeout = 30, $block = TRUE) {
+    public function post($url, $data = array(), $referer = '', $limit = 0, $timeout = 30, $block = TRUE) {
         $this->method = 'POST';
         $this->ContentType = "Content-Type: application/x-www-form-urlencoded\r\n";
         if ($data) {
@@ -32,12 +32,12 @@ class Http {
         return $this->request($url, $referer, $limit, $timeout, $block);
     }
 
-    function get($url, $referer = '', $limit = 0, $timeout = 30, $block = TRUE) {
+    public function get($url, $referer = '', $limit = 0, $timeout = 30, $block = TRUE) {
         $this->method = 'GET';
         return $this->request($url, $referer, $limit, $timeout, $block);
     }
 
-    function upload($url, $data = array(), $files = array(), $referer = '', $limit = 0, $timeout = 30, $block = TRUE) {
+    public function upload($url, $data = array(), $files = array(), $referer = '', $limit = 0, $timeout = 30, $block = TRUE) {
         $this->method = 'POST';
         $boundary = "AaB03x";
         $this->ContentType = "Content-Type: multipart/form-data; boundary=$boundary\r\n";
@@ -60,7 +60,7 @@ class Http {
         return $this->request($url, $referer, $limit, $timeout, $block);
     }
 
-    function request($url, $referer = '', $limit = 0, $timeout = 30, $block = TRUE) {
+    public function request($url, $referer = '', $limit = 0, $timeout = 30, $block = TRUE) {
         $matches = parse_url($url);
         $host = $matches['host'];
         $path = isset($matches['path']) ? $matches['path'] . (isset($matches['query']) ? '?' . $matches['query'] : '') : '/';
@@ -121,16 +121,16 @@ class Http {
         }
     }
 
-    function save($file) {
+    public function save($file) {
         dir_create(dirname($file));
         return file_put_contents($file, $this->data);
     }
 
-    function set_cookie($name, $value) {
+    public function set_cookie($name, $value) {
         $this->cookie .= "$name=$value;";
     }
 
-    function get_cookie() {
+    public function get_cookie() {
         $cookies = array();
         if (preg_match_all("|Set-Cookie: ([^;]*);|", $this->header, $m)) {
             foreach ($m[1] as $c) {
@@ -141,7 +141,7 @@ class Http {
         return $cookies;
     }
 
-    function get_data() {
+    public function get_data() {
         if (strpos($this->header, 'chunk')) {
             $data = explode(chr(13), $this->data);
             return $data[1];
@@ -150,16 +150,16 @@ class Http {
         }
     }
 
-    function get_header() {
+    public function get_header() {
         return $this->header;
     }
 
-    function get_status() {
+    public function get_status() {
         preg_match("|^HTTP/1.1 ([0-9]{3}) (.*)|", $this->header, $m);
         return array($m[1], $m[2]);
     }
 
-    function get_mime($file) {
+    public function get_mime($file) {
         $ext = strtolower(trim(substr(strrchr($file, '.'), 1, 10)));
         if ($ext == '')
             return '';
@@ -360,7 +360,7 @@ class Http {
         return isset($mime_types[$ext]) ? $mime_types[$ext] : '';
     }
 
-    function is_ok() {
+    public function is_ok() {
         $status = $this->get_status();
         if (intval($status[0]) != 200) {
             $this->errno = $status[0];
@@ -370,11 +370,11 @@ class Http {
         return true;
     }
 
-    function errno() {
+    public function errno() {
         return $this->errno;
     }
 
-    function errmsg() {
+    public function errmsg() {
         return $this->errstr;
     }
 

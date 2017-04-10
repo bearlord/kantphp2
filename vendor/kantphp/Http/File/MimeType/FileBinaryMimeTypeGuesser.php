@@ -2,13 +2,13 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
  * @original-author Laravel/Symfony
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kan\Http\File\MimeType;
+namespace Kant\Http\File\MimeType;
 
 use Kant\Http\File\Exception\FileNotFoundException;
 use Kant\Http\File\Exception\AccessDeniedException;

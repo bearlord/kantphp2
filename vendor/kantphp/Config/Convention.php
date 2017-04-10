@@ -2,8 +2,8 @@
 
 /**
  * @package KantPHP
- * @author  Zhenqiang Zhang <565364226@qq.com>
- * @copyright (c) 2011 KantPHP Studio, All rights reserved.
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 return [
@@ -30,10 +30,9 @@ return [
             'targets' => [
                 [
                     'class' => 'Kant\Log\FileTarget',
-                    'levels' => ['error', 'warning'],
+                    'levels' => ['error', 'warning', 'trace', 'info'],
                 ],
             ],
-            
         ],
     ],
     /**
@@ -42,7 +41,7 @@ return [
       |--------------------------------------------------------------------------
      */
     'enableDebugLogs' => true,
-    'returnType' => 'html',
+    'responseFormat' => 'html',
     'pathinfo_repair' => false,
     'debug' => true,
     'urlSuffix' => '.html',
@@ -234,34 +233,90 @@ return [
             'tablePrefix' => 'kant_'
         ]
     ],
-    //cache config
-    /*
-     * memcache type
-
-      'type' => 'memcache',
-      'hostname' => 'localhost',
-      'port' => 11211
-
-      redis cache type
-
-      'type' => 'redis',
-      'hostname' => '127.0.0.1',
-      'port' => 6379
-
-     */
     'cache' => [
-        'type' => 'file'
+        /**
+          |--------------------------------------------------------------------------
+          | Default Cache Store
+          |--------------------------------------------------------------------------
+          |
+          | This option controls the default cache "driver".
+          | By default, we will use the lightweight native driver but
+          | you may specify any of the other wonderful drivers provided here.
+          |
+          | Supported: "file",  "memcached", "redis"
+          |
+         */
+        'type' => 'file',
+        /**
+          |--------------------------------------------------------------------------
+          | Cache Driver Hostname
+          |--------------------------------------------------------------------------
+          |
+         */
+        'hostname' => 'localhost',
+        /**
+          |--------------------------------------------------------------------------
+          | Cache Driver Port
+          |--------------------------------------------------------------------------
+          |
+         */
+        'port' => 11211
     ],
-    'token' => [
-        'switch' => false,
-        'name' => '__hash__',
-        'type' => 'md5',
-        'reset' => false
-    ],
-    'tags' => [
-        'app_begin' => [],
-        'app_end' => [],
-        'view_filter' => ['Kant\Behavior\TokenBuildBehavior']
+    'filesystems' => [
+        /*
+          |--------------------------------------------------------------------------
+          | Default Filesystem Disk
+          |--------------------------------------------------------------------------
+          |
+          | Here you may specify the default filesystem disk that should be used
+          | by the framework. The "local" disk, as well as a variety of cloud
+          | based disks are available to your application. Just store away!
+          |
+         */
+
+        'default' => 'local',
+        /*
+          |--------------------------------------------------------------------------
+          | Default Cloud Filesystem Disk
+          |--------------------------------------------------------------------------
+          |
+          | Many applications store files both locally and in the cloud. For this
+          | reason, you may specify a default "cloud" driver here. This driver
+          | will be bound as the Cloud disk implementation in the container.
+          |
+         */
+        'cloud' => 's3',
+        /*
+          |--------------------------------------------------------------------------
+          | Filesystem Disks
+          |--------------------------------------------------------------------------
+          |
+          | Here you may configure as many filesystem "disks" as you wish, and you
+          | may even configure multiple disks of the same driver. Defaults have
+          | been setup for each driver as an example of the required options.
+          |
+          | Supported Drivers: "local", "ftp", "s3", "rackspace"
+          |
+         */
+        'disks' => [
+            'local' => [
+                'driver' => 'local',
+                'root' => APP_PATH . 'storage',
+            ],
+            'public' => [
+                'driver' => 'local',
+                'root' => PUBLIC_PATH . 'storage',
+                'url' => APP_URL . 'storage',
+                'visibility' => 'public',
+            ],
+            's3' => [
+                'driver' => 's3',
+                'key' => '',
+                'secret' => '',
+                'region' => '',
+                'bucket' => '',
+            ],
+        ],
     ]
 ];
 
