@@ -104,7 +104,8 @@ class KantApplication extends Module {
             'assetManager' => ['class' => 'Kant\View\AssetManager'],
             'security' => ['class' => 'Kant\Foundation\Security'],
             'store' => ['class' => 'Kant\Filesystem\FilesystemManager'],
-            'files' => ['class' => 'Kant\Filesystem\Filesystem']
+            'files' => ['class' => 'Kant\Filesystem\Filesystem'],
+            'redirect' => ['class' => 'Kant\Routing\Redirector']
         ];
     }
 
@@ -460,6 +461,7 @@ class KantApplication extends Module {
      * End
      */
     protected function end() {
+        $this->getSession()->save();
         if (Kant::$app->config->get('debug')) {
             Runtime::mark('end');
         }

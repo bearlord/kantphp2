@@ -12,6 +12,8 @@ namespace Kant\View;
 use Kant\Kant;
 use Kant\Helper\Html;
 use Kant\Helper\ArrayHelper;
+use Kant\Support\Arr;
+use Kant\Support\ViewErrorBag;
 
 /**
  * View class
@@ -154,7 +156,7 @@ class View extends BaseView {
      * This property mainly affects the behavior of [[render()]].
      * If false, no layout will be applied.
      */
-    public $layout = 'main';
+    public $layout = '';
 
     /**
      *
@@ -163,8 +165,61 @@ class View extends BaseView {
     private $_layoutPath;
     private $_assetManager;
 
+    /**
+     * Data that should be available to all templates.
+     *
+     * @var array
+     */
+    protected $shared = [];
+    
+    public function init() {
+        $this->ShareErrorsFromSession();
+    }
+
     public function setDispatcher($dispatcher) {
         $this->dispatcher = $dispatcher;
+    }
+
+    /**
+     * Add a piece of shared data to the environment.
+     *
+     * @param  array|string  $key
+     * @param  mixed  $value
+     * @return mixed
+     */
+    public function share($key, $value = null) {
+        $keys = is_array($key) ? $key : [$key => $value];
+
+        foreach ($keys as $key => $value) {
+            $this->shared[$key] = $value;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Get an item from the shared data.
+     *
+     * @param  string  $key
+     * @param  mixed   $default
+     * @return mixed
+     */
+    public function shared($key, $default = null) {
+        return Arr::get($this->shared, $key, $default);
+    }
+
+    /**
+     *  Putting the errors in the view for every view allows the developer to just
+     *  assume that some errors are always available, which is convenient since
+     *  they don't have to continually run checks for the presence of errors.
+     */
+    public function ShareErrorsFromSession() {
+        // If the current session has an "errors" variable bound to it, we will share
+        // its value with all view instances so the views can easily access errors
+        // without having to bind. An empty bag is set when there aren't errors.
+        $this->share(
+                'errors', Kant::$app->getSession()->get('errors') ?: new ViewErrorBag
+        );
     }
 
     /**
@@ -352,6 +407,7 @@ class View extends BaseView {
      */
     public function renderFile($viewFile, $params = []) {
         $ext = pathinfo($viewFile, PATHINFO_EXTENSION);
+        $params['errors'] = $this->shared("errors");
         if (isset($this->renderers[$ext])) {
             if (is_array($this->renderers[$ext]) || is_string($this->renderers[$ext])) {
                 $class = ucfirst(Kant::$app->config->get($this->renderers[$ext]));

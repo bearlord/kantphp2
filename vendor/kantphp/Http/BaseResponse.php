@@ -349,7 +349,6 @@ class BaseResponse {
      * @return Response
      */
     public function sendContent() {
-//        ob_end_clean();
         echo $this->content;
 
         return $this;
