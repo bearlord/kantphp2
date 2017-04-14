@@ -112,6 +112,7 @@ class Controller extends Component {
      */
     protected function initView() {
         $this->view = Kant::$app->getView();
+        $this->view->layout = $this->layout;
         return $this->view;
     }
 
