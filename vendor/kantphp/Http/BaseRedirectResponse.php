@@ -73,9 +73,9 @@ class BaseRedirectResponse extends BaseResponse {
         if (empty($url)) {
             throw new \InvalidArgumentException('Cannot redirect to an empty URL.');
         }
-
+        
         $this->targetUrl = $url;
-
+        
         $this->setContent(
                 sprintf('<!DOCTYPE html>
 <html>
@@ -89,7 +89,7 @@ class BaseRedirectResponse extends BaseResponse {
         Redirecting to <a href="%1$s">%1$s</a>.
     </body>
 </html>', htmlspecialchars($url, ENT_QUOTES, 'UTF-8')));
-
+        
         $this->headers->set('Location', $url);
 
         return $this;

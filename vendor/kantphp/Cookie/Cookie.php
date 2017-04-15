@@ -71,17 +71,17 @@ final class Cookie {
      * @param  string  $domain
      * @param  bool    $secure
      * @param  bool    $httpOnly
-     * @return \Symfony\Component\HttpFoundation\Cookie
+     * @return \Kant\Http\Cookie
      */
     public function make($name, $value, $minutes = 0, $path = null, $domain = null, $secure = false, $httpOnly = true) {
         list($path, $domain, $secure) = $this->getPathAndDomain($path, $domain, $secure);
 
         $time = ($minutes == 0) ? 0 : time() + ($minutes * 60);
-
-        $response = $this->response;
-        return $response->headers->setCookie(
-                        new \Kant\Http\Cookie($name, $value, $time, $path, $domain, $secure, $httpOnly)
-        );
+        return new \Kant\Http\Cookie($name, $value, $time, $path, $domain, $secure, $httpOnly);
+//        $response = $this->response;
+//        return $response->headers->setCookie(
+//                        new \Kant\Http\Cookie($name, $value, $time, $path, $domain, $secure, $httpOnly)
+//        );
     }
 
     /**

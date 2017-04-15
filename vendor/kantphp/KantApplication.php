@@ -105,7 +105,9 @@ class KantApplication extends Module {
             'security' => ['class' => 'Kant\Foundation\Security'],
             'store' => ['class' => 'Kant\Filesystem\FilesystemManager'],
             'files' => ['class' => 'Kant\Filesystem\Filesystem'],
-            'redirect' => ['class' => 'Kant\Routing\Redirector']
+            'redirect' => ['class' => 'Kant\Routing\Redirector'],
+            'user' => ['class' => 'Kant\Identity\User'],
+//            'manager' => ['class' => 'Kant\Identity\User'],
         ];
     }
 
@@ -307,6 +309,15 @@ class KantApplication extends Module {
     public function getFilesManager() {
         return $this->get('filesManager');
     }
+    
+    
+    /**
+     * Returns the user component.
+     * @return User the user component.
+     */
+    public function geManager() {
+        return $this->get('manager');
+    }
 
     /**
      * Get Configure instance
@@ -404,15 +415,17 @@ class KantApplication extends Module {
         $this->setLanguage($config->get('language'));
 
         // merge core components with custom components
-        foreach ($this->coreComponents() as $id => $component) {
-            if (!isset($config->get('components')[$id])) {
-                $components['components'][$id] = $component;
-            } elseif (is_array($config->get('components')[$id]) && !isset($config->get('components')[$id]['class'])) {
+        $componentsKeys = array_merge(array_keys($this->coreComponents()), array_keys($config->get('components')));
+        foreach ($componentsKeys as $id) {
+             if (!isset($config->get('components')[$id])) {
+                $components['components'][$id] = $this->coreComponents()[$id];
+            } else {
                 $components['components'][$id] = $config->get('components')[$id];
-                $components['components'][$id]['class'] = $component['class'];
-            }
+                 if (is_array($config->get('components')[$id]) && !isset($config->get('components')[$id]['class'])) {
+                    $components['components'][$id]['class'] = $this->coreComponents()[$id]['class'];
+                }
+            } 
         }
-
         Component::__construct($components);
     }
 
