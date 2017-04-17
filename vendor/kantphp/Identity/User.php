@@ -12,6 +12,7 @@ namespace Kant\Identity;
 use Kant\Foundation\Component;
 use Kant\Kant;
 use Kant\Cookie\Cookie;
+use Kant\Exception\InvalidValueException;
 
 class User extends Component {
 
@@ -58,6 +59,16 @@ class User extends Component {
      * Note that this will not work if [[enableAutoLogin]] is true.
      */
     public $absoluteAuthTimeout;
+
+    /**
+     * @var boolean whether to automatically renew the identity cookie each time a page is requested.
+     * This property is effective only when [[enableAutoLogin]] is true.
+     * When this is false, the identity cookie will expire after the specified duration since the user
+     * is initially logged in. When this is true, the identity cookie will expire after the specified duration
+     * since the user visits the site the last time.
+     * @see enableAutoLogin
+     */
+    public $autoRenewCookie = true;
 
     /**
      * @var string the session variable name used to store the value of [[id]].
@@ -163,7 +174,7 @@ class User extends Component {
      * Note that if [[enableSession]] is false, this parameter will be ignored.
      * @return boolean whether the user is logged in
      */
-    public function login(IdentityInterface $identity, $minutes = 0) {     
+    public function login(IdentityInterface $identity, $minutes = 0) {
         if ($this->beforeLogin($identity, false, $minutes)) {
             $this->switchIdentity($identity, $minutes);
             $id = $identity->getId();
@@ -178,6 +189,27 @@ class User extends Component {
         }
 
         return !$this->getIsGuest();
+    }
+
+    /**
+     * Logs in a user by cookie.
+     *
+     * This method attempts to log in a user using the ID and authKey information
+     * provided by the [[identityCookie|identity cookie]].
+     */
+    protected function loginByCookie() {
+        $data = $this->getIdentityAndDurationFromCookie();
+        if (isset($data['identity'], $data['duration'])) {
+            $identity = $data['identity'];
+            $duration = $data['duration'];
+            if ($this->beforeLogin($identity, true, $duration)) {
+                $this->switchIdentity($identity, $this->autoRenewCookie ? $duration : 0);
+                $id = $identity->getId();
+                $ip = Kant::$app->getRequest()->ip();
+                Kant::info("User '$id' logged in from $ip via cookie.", __METHOD__);
+                $this->afterLogin($identity, true, $duration);
+            }
+        }
     }
 
     /**
@@ -294,7 +326,7 @@ class User extends Component {
         if ($value !== null) {
             $data = json_decode($value, true);
             if (is_array($data) && isset($data[2])) {
-                 $cookie = Kant::$app->getCookie()->make($name, $value, (int) $data[2]);
+                $cookie = Kant::$app->getCookie()->make($name, $value, (int) $data[2]);
                 Kant::$app->getResponse()->withCookie($cookie);
             }
         }
@@ -316,8 +348,41 @@ class User extends Component {
             $identity->getAuthKey(),
             $duration,
                         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), $duration);
-        
+
         Kant::$app->getResponse()->withCookie($cookie);
+    }
+
+    /**
+     * Determines if an identity cookie has a valid format and contains a valid auth key.
+     * This method is used when [[enableAutoLogin]] is true.
+     * This method attempts to authenticate a user using the information in the identity cookie.
+     * @return array|null Returns an array of 'identity' and 'duration' if valid, otherwise null.
+     * @see loginByCookie()
+     * @since 2.0.9
+     */
+    protected function getIdentityAndDurationFromCookie() {
+        $value = Kant::$app->getRequest()->cookie($this->identityCookie['name']);
+        if ($value === null) {
+            return null;
+        }
+        $data = json_decode($value, true);
+        if (count($data) == 3) {
+            list ($id, $authKey, $duration) = $data;
+            /* @var $class IdentityInterface */
+            $class = $this->identityClass;
+            $identity = $class::findIdentity($id);
+            if ($identity !== null) {
+                if (!$identity instanceof IdentityInterface) {
+                    throw new InvalidValueException("$class::findIdentity() must return an object implementing IdentityInterface.");
+                } elseif (!$identity->validateAuthKey($authKey)) {
+                    Kant::warning("Invalid auth key attempted for user '$id': $authKey", __METHOD__);
+                } else {
+                    return ['identity' => $identity, 'duration' => $duration];
+                }
+            }
+        }
+        $this->removeIdentityCookie();
+        return null;
     }
 
     /**
@@ -370,12 +435,13 @@ class User extends Component {
             if ($this->absoluteAuthTimeout !== null) {
                 $session->set($this->absoluteAuthTimeoutParam, time() + $this->absoluteAuthTimeout);
             }
+            $session->save();
             if ($duration > 0 && $this->enableAutoLogin) {
                 $this->sendIdentityCookie($identity, $duration);
             }
         }
     }
-    
+
     /**
      * Updates the authentication status using the information from session and cookie.
      *
@@ -386,10 +452,9 @@ class User extends Component {
      * If the user identity cannot be determined by session, this method will try to [[loginByCookie()|login by cookie]]
      * if [[enableAutoLogin]] is true.
      */
-    protected function renewAuthStatus()
-    {
+    protected function renewAuthStatus() {
         $session = Kant::$app->getSession();
-        $id = $session->getId() || $session->get($this->idParam);
+        $id = $session->getId() ? $session->get($this->idParam) : null;
 
         if ($id === null) {
             $identity = null;

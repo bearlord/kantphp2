@@ -345,7 +345,6 @@ class View extends BaseView {
      */
     public function fetch($view = '', $params = []) {
         $viewFile = $this->findViewFile($view);
-        $params = array_merge($this->params, $params);
         return $this->renderFile($viewFile, $params);
     }
 
@@ -354,11 +353,11 @@ class View extends BaseView {
      *
      * @param type $view
      */
-    public function render($view = "", $params = []) {
+    public function render($view = "", $params = []) {       
         $content = $this->fetch($view, $params);
         $layoutFile = $this->findLayoutFile();
         if ($layoutFile !== false) {
-            return $this->renderFile($layoutFile, ['content' => $content]);
+            return $this->renderFile($layoutFile, array_merge(['content' => $content], $params));
         } else {
             return $content;
         }
@@ -407,7 +406,7 @@ class View extends BaseView {
      */
     public function renderFile($viewFile, $params = []) {
         $ext = pathinfo($viewFile, PATHINFO_EXTENSION);
-        $params['errors'] = $this->shared("errors");
+        $params = array_merge($this->params, $params, ['errors' => $this->shared("errors")]);
         if (isset($this->renderers[$ext])) {
             if (is_array($this->renderers[$ext]) || is_string($this->renderers[$ext])) {
                 $class = ucfirst(Kant::$app->config->get($this->renderers[$ext]));

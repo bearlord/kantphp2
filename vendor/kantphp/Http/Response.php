@@ -225,6 +225,7 @@ class Response extends BaseResponse {
     public function send() {
         $this->ready();
         parent::send();
+        exit();
     }
 
 }
