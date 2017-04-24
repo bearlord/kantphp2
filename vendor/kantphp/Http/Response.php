@@ -218,6 +218,15 @@ class Response extends BaseResponse {
     }
 
     /**
+     * Add queued cookies to response
+     */
+    public function AddQueuedCookiesToResponse() {
+        foreach (Kant::$app->cookie->getQueuedCookies() as $cookie) {
+            $this->headers->setCookie($cookie);
+        }
+    }
+
+    /**
      * Sends HTTP headers and content.
      *
      * @return Response

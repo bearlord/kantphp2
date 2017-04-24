@@ -48,7 +48,7 @@ class KantApplication extends Module {
      * the language that the messages and view files are written in.
      * @see language
      */
-    public $sourceLanguage = 'zh-CN';
+    public $sourceLanguage = 'en-US';
     private $_runtimePath;
 
     /**
@@ -107,7 +107,7 @@ class KantApplication extends Module {
             'files' => ['class' => 'Kant\Filesystem\Filesystem'],
             'redirect' => ['class' => 'Kant\Routing\Redirector'],
             'user' => ['class' => 'Kant\Identity\User'],
-//            'manager' => ['class' => 'Kant\Identity\User'],
+            'manager' => ['class' => 'Kant\Identity\User'],
         ];
     }
 

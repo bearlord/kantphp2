@@ -106,7 +106,7 @@ class RequiredValidator extends Validator {
             'attribute' => $model->getAttributeLabel($attribute),
                 ], Kant::$app->language);
 
-//        ValidationAsset::register($view);
+        ValidationAsset::register($view);
 
         return 'kant.validation.required(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
     }

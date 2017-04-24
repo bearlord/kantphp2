@@ -84,9 +84,9 @@ class Manager {
      * @return \Kant\Session\Store
      */
     protected function createCookieDriver() {
-        $lifetime = $this->app['config']['session.lifetime'];
-
-        return $this->buildSession(new CookieSessionHandler($this->app['cookie'], $lifetime));
+        $lifetime =  Kant::$app->config->get('session.lifetime');
+        
+        return $this->buildSession(new CookieSessionHandler(Kant::$app->cookie, $lifetime));
     }
 
     /**
@@ -202,7 +202,7 @@ class Manager {
      * @return \Kant\Session\CacheBasedSessionHandler
      */
     protected function createCacheHandler($driver) {
-        $minutes = $this->app['config']['session.lifetime'];
+        $minutes = Kant::$app->config->get('session.lifetime');
 
         return new CacheBasedSessionHandler(clone $this->app['cache']->driver($driver), $minutes);
     }

@@ -11,6 +11,7 @@ namespace Kant\Controller;
 
 use Kant\Kant;
 use Kant\Foundation\Component;
+use Kant\View\View;
 use Kant\Controller\ActionEvent;
 use Kant\Action\InlineAction;
 use Kant\Exception\InvalidArgumentException;
@@ -25,9 +26,7 @@ use Kant\Exception\BadRequestHttpException;
  */
 class Controller extends Component {
 
-    use \Kant\Traits\UrlTrait,
-        \Kant\Traits\LangTrait,
-        \Kant\Traits\WidgetTrait;
+    use \Kant\Traits\UrlTrait;
 
     /**
      * @event ActionEvent an event raised right before executing a controller action.
@@ -91,7 +90,8 @@ class Controller extends Component {
      */
     public function __construct() {
         parent::__construct();
-        $this->initView();
+        $this->view = Kant::$app->getView();
+        $this->view->layout = $this->layout;
     }
 
     public function actions() {
@@ -103,17 +103,6 @@ class Controller extends Component {
      */
     public function init() {
 
-    }
-
-    /**
-     * initView
-     * 
-     * @return type
-     */
-    protected function initView() {
-        $this->view = Kant::$app->getView();
-        $this->view->layout = $this->layout;
-        return $this->view;
     }
 
     /**

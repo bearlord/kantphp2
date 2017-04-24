@@ -147,7 +147,7 @@ return [
           | happen on a given request. By default, the odds are 2 out of 100.
           |
          */
-        'lottery' => [99, 100],
+        'lottery' => [2, 100],
         /*
           |--------------------------------------------------------------------------
           | Session Cookie Name
