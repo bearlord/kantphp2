@@ -162,7 +162,6 @@ class Response extends BaseResponse {
             throw new InvalidParamException('Response content must not be an array.');
         } else if ($this->content instanceof BaseResponse) {
             return $this->content->send();
-            exit();
         } elseif (is_object($this->content)) {
             if (method_exists($this->content, '__toString')) {
                 $this->content = $this->content->__toString();
@@ -234,7 +233,6 @@ class Response extends BaseResponse {
     public function send() {
         $this->ready();
         parent::send();
-        exit();
     }
 
 }

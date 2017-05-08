@@ -73,7 +73,7 @@ class CaptchaValidator extends Validator {
         if ($ca !== false) {
             /* @var $controller \Kant\base\Controller */
             list($controller, $actionID) = $ca;
-            $action = $controller->createAction($actionID);
+            $action = $controller->createActions($actionID);
             if ($action !== null) {
                 return $action;
             }

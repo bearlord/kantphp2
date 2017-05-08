@@ -257,7 +257,7 @@ class User extends Component {
      * @return boolean whether the user should continue to be logged in
      */
     protected function beforeLogin($identity, $cookieBased, $duration) {
-        $event = new ManagerEvent([
+        $event = new UserEvent([
             'identity' => $identity,
             'cookieBased' => $cookieBased,
             'duration' => $duration,
@@ -278,7 +278,7 @@ class User extends Component {
      * If 0, it means login till the user closes the browser or the session is manually destroyed.
      */
     protected function afterLogin($identity, $cookieBased, $duration) {
-        $this->trigger(self::EVENT_AFTER_LOGIN, new ManagerEvent([
+        $this->trigger(self::EVENT_AFTER_LOGIN, new UserEvent([
             'identity' => $identity,
             'cookieBased' => $cookieBased,
             'duration' => $duration,
@@ -294,7 +294,7 @@ class User extends Component {
      * @return boolean whether the user should continue to be logged out
      */
     protected function beforeLogout($identity) {
-        $event = new ManagerEvent([
+        $event = new UserEvent([
             'identity' => $identity,
         ]);
         $this->trigger(self::EVENT_BEFORE_LOGOUT, $event);
@@ -310,7 +310,7 @@ class User extends Component {
      * @param IdentityInterface $identity the user identity information
      */
     protected function afterLogout($identity) {
-        $this->trigger(self::EVENT_AFTER_LOGOUT, new ManagerEvent([
+        $this->trigger(self::EVENT_AFTER_LOGOUT, new UserEvent([
             'identity' => $identity,
         ]));
     }

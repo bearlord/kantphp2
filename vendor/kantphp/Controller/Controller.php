@@ -122,7 +122,7 @@ class Controller extends Component {
      * @see createAction()
      */
     public function runAction($id, $params = []) {
-        $action = $this->createAction($id);
+        $action = $this->createActions($id);
         if ($action === null) {
             throw new InvalidArgumentException('Unable to resolve the request: ' . $this->getUniqueId() . '/' . $id);
         }
@@ -153,7 +153,7 @@ class Controller extends Component {
      * @param string $id the action ID.
      * @return Action the newly created action instance. Null if the ID doesn't resolve into any action.
      */
-    public function createAction($id) {
+    public function createActions($id) {
         if ($id === '') {
             $id = $this->defaultAction;
         }

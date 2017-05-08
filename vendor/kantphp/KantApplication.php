@@ -368,7 +368,8 @@ class KantApplication extends Module {
 
         $this->setView();
         $router->dispatch($request, $response);
-
+        
+        $this->getSession()->save();
         $response->send();
         $this->end();
     }
@@ -474,7 +475,6 @@ class KantApplication extends Module {
      * End
      */
     protected function end() {
-        $this->getSession()->save();
         if (Kant::$app->config->get('debug')) {
             Runtime::mark('end');
         }
