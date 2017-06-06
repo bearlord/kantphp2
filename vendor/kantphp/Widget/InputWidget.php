@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package KantPHP
  * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
@@ -32,37 +33,39 @@ use Kant\Helper\Html;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class InputWidget extends Widget
-{
+class InputWidget extends Widget {
+
     /**
      * @var Model the data model that this widget is associated with.
      */
     public $model;
+
     /**
      * @var string the model attribute that this widget is associated with.
      */
     public $attribute;
+
     /**
      * @var string the input name. This must be set if [[model]] and [[attribute]] are not set.
      */
     public $name;
+
     /**
      * @var string the input value.
      */
     public $value;
+
     /**
      * @var array the HTML attributes for the input tag.
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $options = [];
 
-
     /**
      * Initializes the widget.
      * If you override this method, make sure you call the parent implementation first.
      */
-    public function init()
-    {
+    public function init() {
         if ($this->name === null && !$this->hasModel()) {
             throw new InvalidConfigException("Either 'name', or 'model' and 'attribute' properties must be specified.");
         }
@@ -75,8 +78,8 @@ class InputWidget extends Widget
     /**
      * @return boolean whether this widget is associated with a data model.
      */
-    protected function hasModel()
-    {
+    protected function hasModel() {
         return $this->model instanceof Model && $this->attribute !== null;
     }
+
 }

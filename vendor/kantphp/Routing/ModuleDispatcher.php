@@ -125,8 +125,8 @@ class ModuleDispatcher {
             throw new KantException('No Module found');
         }
         Kant::$app->setModuleConfig($moduleName);
-
-        Kant::$app->setViewDispatcher($dispatcher);
+        
+        Kant::$app->setDispatcher($dispatcher);
 
         //controller name
         $controllerName = $this->getControllerName($dispatcher[1]);

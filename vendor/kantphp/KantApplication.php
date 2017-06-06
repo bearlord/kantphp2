@@ -20,6 +20,28 @@ use Kant\Runtime\Runtime;
 use Kant\Exception\KantException;
 use ReflectionMethod;
 
+/**
+ * Application is the base class for all application classes.
+ * 
+ * @property \Kant\View\AssetManager $assetManager The asset manager application component. This property is read-only.
+ * @property \Kant\Cache\Cache $cache The cache application component. Null if the component is not enabled. This property is read-only.
+ * @property \Kant\Config\Config $config The config application component. This property is read-only.
+ * @property \Kant\Database\Connection $db The database connection. This property is read-only.
+ * @property \Kant\Filesystem\Filesystem $formatter The formatter application component. This property is read-only.
+ * @property \Kant\I18n\Formatter $formatter The formatter application component. This property is read-only.
+ * @property \Kant\I18n\I18N $i18n The internationalization application component. This property is read-only.
+ * @property \Kant\Log\Dispatcher $log The log dispatcher application component. This property is read-only.
+ * @property \Kant\Routing\Redirector $redirect The request component. This property is read-only.
+ * @property \Kant\Http\Request $request The request component. This property is read-only.
+ * @property \Kant\Http\Response $response The response component. This property is read-only.
+ * @property \Kant\Routing\Router $router The router component. This property is read-only.
+ * @property \Kant\Session\Session $session The session component. This property is read-only.
+ * @property \Kant\Foundation\Security $security The security component. This property is read-only.
+ * @property \Kant\Filesystem\FilesystemManager $store The store component. This property is read-only.
+ * @property string $timeZone The time zone used by this application.
+ * @property \Kant\View\View $view The view application component that is used to render various view files. This property is read-only. 
+ * 
+ */
 class KantApplication extends Module {
 
     /**
@@ -33,7 +55,6 @@ class KantApplication extends Module {
      * @var object 
      */
     public $config;
-    public $env = 'Dev';
 
     /**
      * @var string the language that is meant to be used for end users. It is recommended that you
@@ -50,13 +71,14 @@ class KantApplication extends Module {
      */
     public $sourceLanguage = 'en-US';
     private $_runtimePath;
+    private $_homeUrl;
 
     /**
      * Dispathc info
      *
      * @var array
      */
-    protected $dispatcher = null;
+    public $dispatcher = null;
 
     /**
      * Constructs
@@ -66,7 +88,6 @@ class KantApplication extends Module {
      */
     public function __construct($env) {
         Kant::$app = $this;
-        $this->env = $env;
         $this->config = $config = $this->initConfig($env);
         $this->preInit($config);
     }
@@ -306,8 +327,8 @@ class KantApplication extends Module {
         return $this->get('security');
     }
 
-    public function getFilesManager() {
-        return $this->get('filesManager');
+    public function getStore() {
+        return $this->get('store');
     }
     
     
@@ -315,7 +336,7 @@ class KantApplication extends Module {
      * Returns the user component.
      * @return User the user component.
      */
-    public function geManager() {
+    public function getManager() {
         return $this->get('manager');
     }
 
@@ -334,6 +355,18 @@ class KantApplication extends Module {
         return Kant::createObject('Kant\Routing\Router');
     }
 
+    /**
+     * @return string the homepage URL
+     */
+    public function getHomeUrl()
+    {
+        if ($this->_homeUrl === null) {
+            return $this->getRequest()->getBaseUrl() . '/';
+        } else {
+            return $this->_homeUrl;
+        }
+    }
+    
     /**
      * Singleton instance
      * 
@@ -507,9 +540,10 @@ class KantApplication extends Module {
     /**
      * Set view dispatcher
      * 
-     * @param type $dispatcher
+     * @param array $dispatcher
      */
-    public function setViewDispatcher($dispatcher) {
+    public function setDispatcher($dispatcher) {
+        $this->dispatcher = implode("/", $dispatcher);
         $this->getView()->setDispatcher($dispatcher);
     }
 

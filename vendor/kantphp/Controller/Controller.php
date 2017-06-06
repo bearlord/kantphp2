@@ -18,15 +18,12 @@ use Kant\Exception\InvalidArgumentException;
 use Kant\Exception\BadRequestHttpException;
 
 /**
- * Base Controller 
+ * Base Controller
+
+ * @property \Kant\View\View $view The view application component that is used to render various view files. This property is read-only.
  * 
- * @access public
- * @since version 1.0
- * @todo .etc
  */
 class Controller extends Component {
-
-    use \Kant\Traits\UrlTrait;
 
     /**
      * @event ActionEvent an event raised right before executing a controller action.
@@ -61,12 +58,6 @@ class Controller extends Component {
      * @var type 
      */
     protected $view;
-
-    /**
-     *
-     * @var type 
-     */
-    protected $dispatcher;
 
     /**
      * Layout

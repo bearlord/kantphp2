@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package KantPHP
  * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
@@ -14,8 +15,8 @@ use Kant\View\AssetBundle;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class ActiveFormAsset extends AssetBundle
-{
+class ActiveFormAsset extends AssetBundle {
+
     public $sourcePath = '@kant/assets';
     public $js = [
         'kant.activeForm.js',
@@ -23,4 +24,5 @@ class ActiveFormAsset extends AssetBundle
     public $depends = [
         'Kant\View\KantAsset',
     ];
+
 }

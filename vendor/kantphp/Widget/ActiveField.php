@@ -435,7 +435,7 @@ class ActiveField extends Component {
         if ($this->inputOptions !== ['class' => 'form-control']) {
             $options = array_merge($this->inputOptions, $options);
         }
-        
+
         if (!isset($this->form->options['enctype'])) {
             $this->form->options['enctype'] = 'multipart/form-data';
         }
@@ -744,11 +744,11 @@ class ActiveField extends Component {
         foreach (['validateOnChange', 'validateOnBlur', 'validateOnType', 'validationDelay'] as $name) {
             $options[$name] = $this->$name === null ? $this->form->$name : $this->$name;
         }
-        
+
         if (!empty($validators)) {
             $options['validate'] = new JsExpression("function (attribute, value, messages, deferred, \$form) {" . implode('', $validators) . '}');
         }
-        
+
         // only get the options that are different from the default ones (set in kant.activeForm.js)
         return array_diff_assoc($options, [
             'validateOnChange' => true,

@@ -156,7 +156,7 @@ class View extends BaseView {
      * This property mainly affects the behavior of [[render()]].
      * If false, no layout will be applied.
      */
-    public $layout = '';
+    public $layout = 'main';
 
     /**
      *

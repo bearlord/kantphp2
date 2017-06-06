@@ -7,22 +7,21 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\View;
+namespace Kant\Bootstrap;
+
+use Kant\View\AssetBundle;
 
 /**
- * This asset bundle provides the [jquery javascript library](http://jquery.com/)
+ * Asset bundle for the Twitter bootstrap css files.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class JqueryAsset extends AssetBundle {
+class BootstrapAsset extends AssetBundle {
 
-    public $sourcePath = '@bower/jquery/dist';
-    public $js = [
-        'jquery.js',
-    ];
-    public $jsOptions = [
-        'position' => View::POS_HEAD
+    public $sourcePath = '@bower/bootstrap/dist';
+    public $css = [
+        'css/bootstrap.css',
     ];
 
 }

@@ -185,8 +185,7 @@ class Route {
      * @param type $dispatcher
      */
     public function setViewDispatcher($dispatcher) {
-        KantRegistry::set('dispatcher', $dispatcher);
-        Kant::$app->getView()->setDispatcher($dispatcher);
+        Kant::$app->setDispatcher($dispatcher);
     }
 
     /**

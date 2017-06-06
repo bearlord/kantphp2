@@ -16,7 +16,7 @@ use Kant\Exception\InvalidParamException;
 class Kant {
 
     /**
-     * @var the application instance
+     * @var \Kant\KantApplication the application instancethe application instance
      */
     public static $app;
 
