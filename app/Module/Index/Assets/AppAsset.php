@@ -18,6 +18,7 @@ class AppAsset extends AssetBundle
     ];
     public $depends = [
         'Kant\View\KantAsset',
-        'Kant\View\BootstrapAsset',
+        'Kant\Bootstrap\BootstrapAsset',
+        'Kant\Bootstrap\BootstrapPluginAsset',
     ];
 }
