@@ -7,21 +7,20 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Bootstrap;
-
+namespace Kant\FontAwesome;
 use Kant\View\AssetBundle;
 
 /**
- * Asset bundle for the Twitter bootstrap css files.
+ * This asset bundle provides the [Font Awesome library](http://fontawesome.io/)
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
  * @since 2.0
  */
-class BootstrapAsset extends AssetBundle {
+class FontAwesomeAsset extends AssetBundle {
 
-    public $sourcePath = '@bower/bootstrap/dist';
+    public $sourcePath = '@bower/font-awesome';
     public $css = [
-        'css/bootstrap.min.css',
+        'css/font-awesome.min.css',
     ];
 
 }
