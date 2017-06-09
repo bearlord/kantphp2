@@ -105,6 +105,7 @@ class Router extends Component {
             $mapName = StringHelper::basename($map, $this->mapFileExt);
             if (strtolower($mapName) === 'route') {
                 $this->group([
+                    'middleware' => null,
                         ], $map);
                 continue;
             }
@@ -477,7 +478,7 @@ class Router extends Component {
         // route resolver on the request so middlewares assigned to the route will
         // receive access to this route instance for checking of the parameters.
         $route = $this->findRoute($request);
-
+        
         if (!$route) {
             return $this->dispatchToModule($request, $response);
         }

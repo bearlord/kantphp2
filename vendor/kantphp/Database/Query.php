@@ -897,10 +897,4 @@ class Query extends Component implements QueryInterface {
         ]);
     }
 
-    public function find($id) {
-//        $res = $this->db->query("SELECT VERSION()");
-//        var_dump($res);
-        return $id + 10000;
-    }
-
 }

@@ -170,22 +170,24 @@ class Route {
      * @throws \Kant\Exception\NotFoundHttpException
      */
     protected function runController() {
-        $this->setViewDispatcher([
-            $this->action['middleware'],
-            StringHelper::basename($this->parseControllerCallback()[0], $this->controllerSuffix), $this->parseControllerCallback()[1]
-        ]);
+        $this->setDispatcher();
+        
         return (new ControllerDispatcher())->dispatch(
                         $this, $this->getController(), $this->getControllerMethod()
         );
     }
 
     /**
-     * Set view dispatcher
-     * 
-     * @param type $dispatcher
+     * Set dispatcher
      */
-    public function setViewDispatcher($dispatcher) {
-        Kant::$app->setDispatcher($dispatcher);
+    protected function setDispatcher() {
+        $class = StringHelper::basename($this->parseControllerCallback()[0], $this->controllerSuffix);
+        $method = StringHelper::basename($this->parseControllerCallback()[1], $this->actionSuffix);
+        $module = explode('\\', $this->parseControllerCallback()[0])[1];
+        
+        Kant::$app->setDispatcher([
+            $module, $class, $method
+        ]);
     }
 
     /**
@@ -208,7 +210,8 @@ class Route {
      * @return string
      */
     protected function getControllerMethod() {
-        return $this->parseControllerCallback()[1] . $this->actionSuffix;
+//        return $this->parseControllerCallback()[1] . $this->actionSuffix;
+        return $this->parseControllerCallback()[1];
     }
 
     /**
