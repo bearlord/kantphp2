@@ -823,5 +823,39 @@ class ArrayHelper {
 
         return $result;
     }
+    
+    
+    /**
+     * Converts an array into an tree array.
+     * 
+     * @param array $list the subject array
+     * @param type $pk the primary key of the array
+     * @param type $pid the parent id flag
+     * @param type $child the child flag
+     * @param type $root the root id since its childrens to be converted
+     * @return array
+     */
+    public static function toTree($list, $pk = 'id', $pid = 'pid', $child = '_child', $root = 0) {
+        $tree = [];
+        if (is_array($list)) {
+            $refer = [];
+            foreach ($list as $key => $data) {
+                $refer[$data[$pk]] = & $list[$key];
+            }
+
+            foreach ($list as $key => $data) {
+                $parentId = $data[$pid];
+                if ($root == $parentId) {
+                    $tree[$data[$pk]] = & $list[$key];
+                } else {
+                    if (isset($refer[$parentId])) {
+                        $parent = & $refer[$parentId];
+                        $parent[$child][$list[$key][$pk]] = & $list[$key];
+                    }
+                }
+            }
+        }
+        return $tree;
+    }
 
 }

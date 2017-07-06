@@ -126,7 +126,7 @@ class ModuleDispatcher {
         }
         Kant::$app->setModuleConfig($moduleName);
         
-        Kant::$app->setDispatcher($dispatcher);
+        Kant::$app->setDispatcher('module', $dispatcher);
 
         //controller name
         $controllerName = $this->getControllerName($dispatcher[1]);

@@ -171,7 +171,7 @@ class Route {
      */
     protected function runController() {
         $this->setDispatcher();
-        
+
         return (new ControllerDispatcher())->dispatch(
                         $this, $this->getController(), $this->getControllerMethod()
         );
@@ -185,8 +185,8 @@ class Route {
         $method = StringHelper::basename($this->parseControllerCallback()[1], $this->actionSuffix);
         $module = explode('\\', $this->parseControllerCallback()[0])[1];
         
-        Kant::$app->setDispatcher([
-            $module, $class, $method
+        Kant::$app->setDispatcher('route', [
+                $module, $class, $method
         ]);
     }
 

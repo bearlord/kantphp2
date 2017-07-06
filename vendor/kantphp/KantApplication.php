@@ -74,7 +74,13 @@ class KantApplication extends Module {
     private $_homeUrl;
 
     /**
-     * Dispathc info
+     * Dispatcher type
+     * @string type 
+     */
+    public $dispatcherType = null;
+
+    /**
+     * Dispatcher info
      *
      * @var array
      */
@@ -330,8 +336,7 @@ class KantApplication extends Module {
     public function getStore() {
         return $this->get('store');
     }
-    
-    
+
     /**
      * Returns the user component.
      * @return User the user component.
@@ -358,15 +363,14 @@ class KantApplication extends Module {
     /**
      * @return string the homepage URL
      */
-    public function getHomeUrl()
-    {
+    public function getHomeUrl() {
         if ($this->_homeUrl === null) {
             return $this->getRequest()->getBaseUrl() . '/';
         } else {
             return $this->_homeUrl;
         }
     }
-    
+
     /**
      * Singleton instance
      * 
@@ -401,7 +405,7 @@ class KantApplication extends Module {
 
         $this->setView();
         $router->dispatch($request, $response);
-        
+
         $this->getSession()->save();
         $response->send();
         $this->end();
@@ -451,14 +455,14 @@ class KantApplication extends Module {
         // merge core components with custom components
         $componentsKeys = array_merge(array_keys($this->coreComponents()), array_keys($config->get('components')));
         foreach ($componentsKeys as $id) {
-             if (!isset($config->get('components')[$id])) {
+            if (!isset($config->get('components')[$id])) {
                 $components['components'][$id] = $this->coreComponents()[$id];
             } else {
                 $components['components'][$id] = $config->get('components')[$id];
-                 if (is_array($config->get('components')[$id]) && !isset($config->get('components')[$id]['class'])) {
+                if (is_array($config->get('components')[$id]) && !isset($config->get('components')[$id]['class'])) {
                     $components['components'][$id]['class'] = $this->coreComponents()[$id]['class'];
                 }
-            } 
+            }
         }
         Component::__construct($components);
     }
@@ -542,7 +546,8 @@ class KantApplication extends Module {
      * 
      * @param array $dispatcher
      */
-    public function setDispatcher($dispatcher) {
+    public function setDispatcher($type, $dispatcher) {
+        $this->dispatcherType = $type;
         $this->dispatcher = implode("/", $dispatcher);
         $this->getView()->setDispatcher($dispatcher);
     }
