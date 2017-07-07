@@ -116,7 +116,7 @@ class UrlGenerator {
      * @return string
      */
     public function current($params = []) {
-        return $this->to($this->request->getPathInfo());
+        return $this->to($this->request->getPathInfo(), $params);
     }
 
     /**

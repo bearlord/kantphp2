@@ -12,6 +12,7 @@ use Kant\Kant;
 use Kant\Database\BaseActiveRecord;
 use Kant\Database\ActiveQuery;
 use Kant\Helper\StringHelper;
+use Kant\Helper\ArrayHelper;
 
 /**
  * ActiveRecord is the base class for classes representing relational data in terms of objects.

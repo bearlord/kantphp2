@@ -14,6 +14,7 @@ use Kant\Foundation\Object;
 use Kant\Foundation\Link;
 use Kant\Foundation\Linkable;
 use Kant\Http\Request;
+use Kant\Helper\Url;
 
 /**
  * Pagination represents information relevant to pagination of data items.
@@ -99,12 +100,6 @@ class Pagination extends Object implements Linkable {
     public $forcePageParam = true;
 
     /**
-     * @var string the route of the controller action for displaying the paged contents.
-     * If not set, it means using the currently requested route.
-     */
-    public $route;
-
-    /**
      * @var array parameters (name => value) that should be used to obtain the current page number
      * and to create new pagination URLs. If not set, all parameters from $_GET will be used instead.
      *
@@ -114,12 +109,6 @@ class Pagination extends Object implements Linkable {
      * while the element indexed by [[pageSizeParam]] is treated as the page size (defaults to [[defaultPageSize]]).
      */
     public $params;
-
-    /**
-     * @var \yii\web\UrlManager the URL manager used for creating pagination URLs. If not set,
-     * the "urlManager" application component will be used.
-     */
-    public $urlManager;
 
     /**
      * @var boolean whether to check if [[page]] is within valid range.
@@ -264,7 +253,7 @@ class Pagination extends Object implements Linkable {
         $pageSize = (int) $pageSize;
         if (($params = $this->params) === null) {
             $request = Kant::$app->getRequest();
-            $params = $request instanceof Request ? $request->getQueryParams() : [];
+            $params = $request instanceof Request ? $request->query() : [];
         }
         if ($page > 0 || $page >= 0 && $this->forcePageParam) {
             $params[$this->pageParam] = $page + 1;
@@ -279,13 +268,7 @@ class Pagination extends Object implements Linkable {
         } else {
             unset($params[$this->pageSizeParam]);
         }
-        $params[0] = $this->route === null ? Kant::$app->controller->getRoute() : $this->route;
-        $urlManager = $this->urlManager === null ? Kant::$app->getUrlManager() : $this->urlManager;
-        if ($absolute) {
-            return $urlManager->createAbsoluteUrl($params);
-        } else {
-            return $urlManager->createUrl($params);
-        }
+        return Url::current($params);
     }
 
     /**
@@ -343,7 +326,7 @@ class Pagination extends Object implements Linkable {
     protected function getQueryParam($name, $defaultValue = null) {
         if (($params = $this->params) === null) {
             $request = Kant::$app->getRequest();
-            $params = $request instanceof Request ? $request->getQueryParams() : [];
+            $params = $request instanceof Request ? $request->query() : [];
         }
 
         return isset($params[$name]) && is_scalar($params[$name]) ? $params[$name] : $defaultValue;
