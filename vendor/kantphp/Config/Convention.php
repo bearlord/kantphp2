@@ -114,7 +114,7 @@ return [
           | location may be specified. This is only needed for file sessions.
           |
          */
-        'files' => RUNTIME_PATH . 'Session/',
+        'files' => RUNTIME_PATH . 'sessions/',
         /**
           |--------------------------------------------------------------------------
           | Session Database Connection

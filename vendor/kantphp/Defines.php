@@ -25,7 +25,7 @@ defined('KANT_BEGIN_TIME') or define('KANT_BEGIN_TIME', microtime(true));
 
 //Log path
 if (!defined('LOG_PATH')) {
-    define('LOG_PATH', RUNTIME_PATH . 'Logs/');
+    define('LOG_PATH', RUNTIME_PATH . 'logs/');
 }
 
 //Web root
