@@ -383,7 +383,12 @@ class BaseHtml {
      */
     public static function a($text, $url = null, $options = []) {
         if ($url !== null) {
-            $options['href'] = Url::to($url);
+            Kant::info($url);
+            if (is_array($url)) {
+                $options['href'] = Url::to($url[0], array_slice($url, 1));
+            } else {
+                $options['href'] = Url::to($url);
+            }         
         }
         return static::tag('a', $text, $options);
     }

@@ -15,6 +15,7 @@ use Kant\Exception\KantException;
 use InvalidArgumentException;
 use Kant\Exception\InvalidConfigException;
 use PDO;
+use Kant\Caching\Cache;
 
 /**
  * Command represents a SQL statement to be executed against a database.
@@ -65,7 +66,6 @@ class Connection extends Component {
      */
     public $options;
     protected $numRows = 0;
-    protected $ttl;
 
     /**
      * @event Event an event that is triggered after a DB connection is established
@@ -549,6 +549,7 @@ class Connection extends Component {
             } else {
                 $cache = $this->queryCache;
             }
+           
             if ($cache instanceof Cache) {
                 return [$cache, $duration, $dependency];
             }
@@ -677,7 +678,7 @@ class Connection extends Component {
             'db' => $this,
             'sql' => $sql,
         ]);
-
+        
         return $command->bindValues($params);
     }
 

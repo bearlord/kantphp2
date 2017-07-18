@@ -3,6 +3,7 @@
 namespace Kant\Routing;
 
 use Kant\Kant;
+use Kant\Http\Request;
 use Kant\Registry\KantRegistry;
 use ReflectionMethod;
 use ReflectionParameter;
@@ -38,7 +39,7 @@ class ModuleDispatcher {
      * @param  string  $method
      * @return mixed
      */
-    public function dispatch(\Kant\Http\Request $request) {
+    public function dispatch(Request $request) {
         $dispatcher = $this->parseUrl($request->path());
         return $this->module($dispatcher['route']);
     }
@@ -126,7 +127,7 @@ class ModuleDispatcher {
         }
         Kant::$app->setModuleConfig($moduleName);
         
-        Kant::$app->setDispatcher('module', $dispatcher);
+        Kant::$app->setDispatcher('implicit', $dispatcher);
 
         //controller name
         $controllerName = $this->getControllerName($dispatcher[1]);

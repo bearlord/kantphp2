@@ -159,6 +159,7 @@ class UrlGenerator {
      * @return string
      */
     public function to($path = "", $extra = [], $secure = null) {
+        
         if (is_array($path)) {
             list($name, $parameters) = $this->parsePathQuery($path);
             return $this->route($name, $parameters);

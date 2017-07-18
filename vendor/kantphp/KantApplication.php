@@ -24,7 +24,7 @@ use ReflectionMethod;
  * Application is the base class for all application classes.
  * 
  * @property \Kant\View\AssetManager $assetManager The asset manager application component. This property is read-only.
- * @property \Kant\Cache\Cache $cache The cache application component. Null if the component is not enabled. This property is read-only.
+ * @property \Kant\Caching\Cache $cache The cache application component. Null if the component is not enabled. This property is read-only.
  * @property \Kant\Config\Config $config The config application component. This property is read-only.
  * @property \Kant\Database\Connection $db The database connection. This property is read-only.
  * @property \Kant\Filesystem\Filesystem $formatter The formatter application component. This property is read-only.
@@ -197,18 +197,6 @@ class KantApplication extends Module {
     }
 
     /**
-     * Register cache
-     * 
-     * @param type $config
-     * @return null
-     */
-    protected function setCache($config) {
-        return $this->set('cache', Kant::createObject([
-                            'class' => \Kant\Cache\Cache::class], [$config]
-                        )->handle());
-    }
-
-    /**
      * Set the database connection component.
      */
     public function setDb($config) {
@@ -274,7 +262,7 @@ class KantApplication extends Module {
      * @return object
      */
     public function getCache() {
-        return $this->get('cache');
+        return $this->get('cache', false);
     }
 
     /**
@@ -397,7 +385,6 @@ class KantApplication extends Module {
 
         $router = $this->getRouter();
 
-        $this->setCache($this->config->get('cache'));
         $this->setDb($this->config->get('database'));
 
         $this->setCookie($this->config->get('cookie'), $request, $response);
@@ -430,6 +417,7 @@ class KantApplication extends Module {
      */
     public function setRuntimePath($path) {
         $this->_runtimePath = $path;
+        Kant::setAlias('@runtime', $this->_runtimePath);
     }
 
     /**
@@ -442,6 +430,14 @@ class KantApplication extends Module {
             // set "@vendor"
             $this->getVendorPath();
         }
+        
+        if ($config->get('runtimePath') != "") {
+            $this->setRuntimePath($config->get('runtimePath'));
+        } else {
+            // set "@runtime"
+            $this->getRuntimePath();
+        }
+
 
         //set default timezone
         if ($config->get('timezone') != "") {
@@ -548,7 +544,7 @@ class KantApplication extends Module {
      */
     public function setDispatcher($type, $dispatcher) {
         $this->dispatcherType = $type;
-        $this->dispatcher = implode("/", $dispatcher);
+        $this->dispatcher = $dispatcher;
         $this->getView()->setDispatcher($dispatcher);
     }
 

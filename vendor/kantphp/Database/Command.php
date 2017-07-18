@@ -790,31 +790,31 @@ class Command extends Component {
      */
     public function execute() {
         $sql = $this->getSql();
-        
+
         $rawSql = $this->getRawSql();
-        
+
         Kant::info($rawSql, __METHOD__);
-        
+
         if ($sql == '') {
             return 0;
         }
-        
+
         $this->prepare(false);
-        
+
         $token = $rawSql;
         try {
             Kant::beginProfile($token, __METHOD__);
-            
+
             $this->pdoStatement->execute();
             $n = $this->pdoStatement->rowCount();
-            
+
             Kant::endProfile($token, __METHOD__);
-            
+
             $this->refreshTableSchema();
             return $n;
         } catch (\Exception $e) {
             Kant::endProfile($token, __METHOD__);
-            
+
             throw $this->db->getSchema()->convertException($e, $rawSql);
         }
     }
@@ -829,13 +829,14 @@ class Command extends Component {
      */
     protected function queryInternal($method, $fetchMode = null) {
         $rawSql = $this->getRawSql();
-        
+
         Kant::info($rawSql, 'Kant\Database\Command::query');
-        
+
         if ($method !== '') {
             $info = $this->db->getQueryCacheInfo($this->queryCacheDuration, $this->queryCacheDependency);
             if (is_array($info)) {
-                Cache::setExpire($this->queryCacheDuration);
+                /* @var $cache \Kant\Caching\Cache */
+                $cache = $info[0];
                 $cacheKey = [
                     __CLASS__,
                     $method,
@@ -844,18 +845,20 @@ class Command extends Component {
                     $this->db->options['username'],
                     $rawSql,
                 ];
-                $result = Cache::get($cacheKey);
-                if (is_array($result)) {                  
+                $result = $cache->get($cacheKey);
+                if (is_array($result) && isset($result[0])) {
                     Kant::trace('Query result served from cache', 'Kant\Database\Command::query');
-                    
+
                     return $result;
                 }
             }
         }
 
         $this->prepare(true);
-        
+
+        $token = $rawSql;
         try {
+            Kant::beginProfile($token, 'Kant\Database\Command::query');
 
             $this->pdoStatement->execute();
 
@@ -868,12 +871,17 @@ class Command extends Component {
                 $result = call_user_func_array([$this->pdoStatement, $method], (array) $fetchMode);
                 $this->pdoStatement->closeCursor();
             }
+
+            Kant::endProfile($token, 'Kant\Database\Command::query');
         } catch (\Exception $e) {
+            Kant::endProfile($token, 'Kant\Database\Command::query');
+
             throw $this->db->getSchema()->convertException($e, $rawSql);
         }
 
-        if (isset($cacheKey)) {
-            Cache::set($cacheKey, $result);
+        if (isset($cache, $cacheKey, $info)) {
+            $cache->set($cacheKey, [$result], $info[1], $info[2]);
+            Kant::trace('Saved query result in cache', 'yii\db\Command::query');
         }
 
         return $result;
