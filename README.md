@@ -4,7 +4,7 @@
 > The licence of Yii2 is **BSD** and the licence of laravel is **MIT**. So I imitated them for better programming.
 
 ### How does Kantphp imitate Yii2 and Laravel Frameworks?
-> Kantphp2 imitate Yii's Components, DI, Model, Active record, Controller, Action, Behavior, View, Grid View, Widgets, GridView, Helpers, excluding Request, Response, Cookie, Session, Router and Urlmanager.
+> Kantphp2 imitate Yii's Components, DI, Model, Active record, Controller, Action, Behavior, View, Grid View, Widgets, Helpers, excluding Request, Response, Cookie, Session, Router and Urlmanager.
 
 > Kantphp2 imitate Laravel's DI, Router, Helpers, Request, Response, Cookie, and Session.
 >
