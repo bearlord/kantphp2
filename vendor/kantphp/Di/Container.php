@@ -14,6 +14,7 @@ use Kant\Foundation\Component;
 use Kant\Helper\ArrayHelper;
 use Kant\Exception\InvalidConfigException;
 use Kant\Exception\NotFoundHttpException;
+use Kant\Exception\NotInstantiableException;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionFunction;

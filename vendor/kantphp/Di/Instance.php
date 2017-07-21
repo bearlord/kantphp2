@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link http://www.Kantframework.com/
  * @copyright Copyright (c) 2008 Kant Software LLC
@@ -7,7 +8,7 @@
 
 namespace Kant\Di;
 
-use Kant;
+use Kant\Kant;
 use Kant\Exception\InvalidConfigException;
 
 /**
@@ -22,20 +23,18 @@ use Kant\Exception\InvalidConfigException;
  * - In classes which use service locator to obtain dependent objects.
  *
  */
-class Instance
-{
+class Instance {
+
     /**
      * @var string the component ID, class name, interface name or alias name
      */
     public $id;
 
-
     /**
      * Constructor.
      * @param string $id the component ID
      */
-    protected function __construct($id)
-    {
+    protected function __construct($id) {
         $this->id = $id;
     }
 
@@ -44,8 +43,7 @@ class Instance
      * @param string $id the component ID
      * @return Instance the new Instance object.
      */
-    public static function of($id)
-    {
+    public static function of($id) {
         return new static($id);
     }
 
@@ -56,7 +54,7 @@ class Instance
      * it will be treated as a component ID, a class/interface name or an alias, depending on the container type.
      *
      * If you do not specify a container, the method will first try `Kant::$app` followed by `Kant::$container`.
-     *`
+     * `
      *
      * @param object|string|array|static $reference an object or a reference to the desired object.
      * You may specify a reference in terms of a component ID or an Instance object.
@@ -67,8 +65,7 @@ class Instance
      * @return object the object referenced by the Instance, or `$reference` itself if it is an object.
      * @throws InvalidConfigException if the reference is invalid
      */
-    public static function ensure($reference, $type = null, $container = null)
-    {
+    public static function ensure($reference, $type = null, $container = null) {
         if (is_array($reference)) {
             $class = isset($reference['class']) ? $reference['class'] : $type;
             if (!$container instanceof Container) {
@@ -105,11 +102,15 @@ class Instance
      * If null, the method will first try `Kant::$app` then `Kant::$container`.
      * @return object the actual object referenced by this Instance object.
      */
-    public function get($container = null)
-    {
+    public function get($container = null) {
         if ($container) {
             return $container->get($this->id);
         }
-        return Kant::$container->get($this->id);
+        if (Kant::$app && Kant::$app->has($this->id)) {
+            return Kant::$app->get($this->id);
+        } else {
+            return Kant::$container->get($this->id);
+        }
     }
+
 }

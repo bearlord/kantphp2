@@ -880,7 +880,7 @@ class Command extends Component {
         }
 
         if (isset($cache, $cacheKey, $info)) {
-            $cache->set($cacheKey, [$result], $info[1], $info[2]);
+            $cache->set($cacheKey, $result, $info[1], $info[2]);
             Kant::trace('Saved query result in cache', 'yii\db\Command::query');
         }
 

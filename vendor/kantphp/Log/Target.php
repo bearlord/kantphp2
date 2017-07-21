@@ -259,12 +259,10 @@ class Target extends Component {
             return '';
         }
         
-//        $ip = $request instanceof Request ? $request->ip() : '-';
-        
-        $ip = get_client_ip();
+        $ip = Kant::$app->request->ip();
 
         $session = Kant::$app->has('session', true) ? Kant::$app->get('session') : null;
-        $sessionID = $session && $session->getIsActive() ? $session->getId() : '-';
+        $sessionID = $session ? $session->getId() : '-';
 
         return "[$ip][$sessionID]";
     }

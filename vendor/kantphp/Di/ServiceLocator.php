@@ -109,7 +109,7 @@ class ServiceLocator extends Component {
      * @see has()
      * @see set()
      */
-    public function get($id, $throwException = true) {        
+    public function get($id, $throwException = true) {
         if (isset($this->_components[$id])) {
             return $this->_components[$id];
         }

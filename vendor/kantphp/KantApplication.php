@@ -133,7 +133,9 @@ class KantApplication extends Module {
             'store' => ['class' => 'Kant\Filesystem\FilesystemManager'],
             'files' => ['class' => 'Kant\Filesystem\Filesystem'],
             'redirect' => ['class' => 'Kant\Routing\Redirector'],
+            'router' => ['class' => 'Kant\Routing\Router'],
             'user' => ['class' => 'Kant\Identity\User'],
+            'view' => ['class' => 'Kant\View\View'],
             'manager' => ['class' => 'Kant\Identity\User'],
         ];
     }
@@ -155,7 +157,7 @@ class KantApplication extends Module {
      * Register Request
      */
     public function setRequest() {
-        Kant::$container->set('Kant\Http\Request', Request::capture());
+        Kant::$container->set(Request::class, Request::capture());
     }
 
     /**
@@ -165,7 +167,7 @@ class KantApplication extends Module {
      * @param type $format
      */
     public function setResponse(Request $request) {
-        Kant::$container->set('Kant\Http\Response', Response::create($request, Response::HTTP_OK));
+        Kant::$container->set(Response::class, Response::create($request, Response::HTTP_OK));
     }
 
     /**
@@ -190,13 +192,6 @@ class KantApplication extends Module {
     }
 
     /**
-     * Set the view Object
-     */
-    public function setView() {
-        Kant::$container->set('Kant\View\View', Kant::createObject('Kant\View\View'));
-    }
-
-    /**
      * Set the database connection component.
      */
     public function setDb($config) {
@@ -212,7 +207,7 @@ class KantApplication extends Module {
      * @return Request the request component.
      */
     public function getRequest() {
-        return Kant::$container->get('Kant\Http\Request');
+        return Kant::$container->get(Request::class);
     }
 
     /**
@@ -220,7 +215,7 @@ class KantApplication extends Module {
      * @return Response the response component.
      */
     public function getResponse() {
-        return Kant::$container->get('Kant\Http\Response');
+        return Kant::$container->get(Response::class);
     }
 
     /**
@@ -237,7 +232,7 @@ class KantApplication extends Module {
      * @return View|\Kant\View\View the view application component that is used to render various view files.
      */
     public function getView() {
-        return Kant::$container->get('Kant\View\View');
+        return $this->get('view');
     }
 
     /**
@@ -245,7 +240,7 @@ class KantApplication extends Module {
      * @return \Kant\I18n\Formatter the formatter application component.
      */
     public function getFormatter() {
-        return Kant::$container->get('Kant\I18n\Formatter');
+        return $this->get('formatter');
     }
 
     /**
@@ -262,7 +257,7 @@ class KantApplication extends Module {
      * @return object
      */
     public function getCache() {
-        return $this->get('cache', false);
+        return $this->get('cache');
     }
 
     /**
@@ -345,7 +340,7 @@ class KantApplication extends Module {
      * @return type
      */
     public function getRouter() {
-        return Kant::createObject('Kant\Routing\Router');
+        return $this->get('router');
     }
 
     /**
@@ -390,12 +385,9 @@ class KantApplication extends Module {
         $this->setCookie($this->config->get('cookie'), $request, $response);
         $this->setSession($this->config->get('session'), $request, $response);
 
-        $this->setView();
         $router->dispatch($request, $response);
-
-        $this->getSession()->save();
-        $response->send();
-        $this->end();
+        
+        $this->end($response);
     }
 
     /**
@@ -430,7 +422,7 @@ class KantApplication extends Module {
             // set "@vendor"
             $this->getVendorPath();
         }
-        
+
         if ($config->get('runtimePath') != "") {
             $this->setRuntimePath($config->get('runtimePath'));
         } else {
@@ -507,10 +499,11 @@ class KantApplication extends Module {
     /**
      * End
      */
-    protected function end() {
-        if (Kant::$app->config->get('debug')) {
-            Runtime::mark('end');
-        }
+    protected function end($response = null) {
+        $this->getSession()->save();
+        $response = $response ?: $this->getResponse();
+        $response->send();
+        exit(0);
     }
 
     /**

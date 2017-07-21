@@ -14,6 +14,7 @@ use Kant\Helper\Html;
 use Kant\Helper\ArrayHelper;
 use Kant\Support\Arr;
 use Kant\Support\ViewErrorBag;
+use Kant\Widget\FragmentCache;
 
 /**
  * View class
@@ -172,6 +173,13 @@ class View extends BaseView {
      */
     protected $shared = [];
     
+    /**
+     * @var array a list of currently active fragment cache widgets. This property
+     * is used internally to implement the content caching feature. Do not modify it directly.
+     * @internal
+     */
+    public $cacheStack = [];
+
     public function init() {
         $this->ShareErrorsFromSession();
     }
@@ -353,7 +361,7 @@ class View extends BaseView {
      *
      * @param type $view
      */
-    public function render($view = "", $params = []) {       
+    public function render($view = "", $params = []) {
         $content = $this->fetch($view, $params);
         $layoutFile = $this->findLayoutFile();
         if ($layoutFile !== false) {
@@ -764,6 +772,45 @@ class View extends BaseView {
         }
 
         return (empty($lines) ? "" : implode("\n", $lines)) . "\n";
+    }
+
+    /**
+     * Begins fragment caching.
+     * This method will display cached content if it is available.
+     * If not, it will start caching and would expect an [[endCache()]]
+     * call to end the cache and save the content into cache.
+     * A typical usage of fragment caching is as follows,
+     *
+     * ```php
+     * if ($this->beginCache($id)) {
+     *     // ...generate content here
+     *     $this->endCache();
+     * }
+     * ```
+     *
+     * @param string $id a unique ID identifying the fragment to be cached.
+     * @param array $properties initial property values for [[FragmentCache]]
+     * @return bool whether you should generate the content for caching.
+     * False if the cached version is available.
+     */
+    public function beginCache($id, $properties = []) {
+        $properties['id'] = $id;
+        $properties['view'] = $this;
+        /* @var $cache FragmentCache */
+        $cache = FragmentCache::begin($properties);
+        if ($cache->getCachedContent() !== false) {
+            $this->endCache();
+
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Ends fragment caching.
+     */
+    public function endCache() {
+        FragmentCache::end();
     }
 
 }

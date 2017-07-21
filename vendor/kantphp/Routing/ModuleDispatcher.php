@@ -174,6 +174,6 @@ class ModuleDispatcher {
      * @throws KantException
      */
     protected function getControllerClass($controllerName, $moduleName) {
-        return "App\\{$moduleName}\\Controller\\" . ucfirst($controllerName) . "Controller";
+        return "App\\{$moduleName}\\Controllers\\" . ucfirst($controllerName) . $this->controllerSuffix ;
     }
 }
