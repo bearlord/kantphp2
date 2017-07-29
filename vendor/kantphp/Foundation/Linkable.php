@@ -10,8 +10,13 @@
 namespace Kant\Foundation;
 
 /**
- * Linkable is the interface that should be implemented by classes that typically represent locatable resources.
+ * ArrayableTrait provides a common implementation of the [[Arrayable]] interface.
  *
+ * ArrayableTrait implements [[toArray()]] by respecting the field definitions as declared
+ * in [[fields()]] and [[extraFields()]].
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 interface Linkable {
 

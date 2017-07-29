@@ -71,7 +71,7 @@ class CaptchaValidator extends Validator {
     public function createCaptchaAction() {
         $ca = Kant::$app->createController($this->captchaAction);
         if ($ca !== false) {
-            /* @var $controller \Kant\base\Controller */
+            /* @var $controller \Kant\Controller\Controller */
             list($controller, $actionID) = $ca;
             $action = $controller->createActions($actionID);
             if ($action !== null) {
@@ -90,7 +90,7 @@ class CaptchaValidator extends Validator {
         $hash = $captcha->generateValidationHash($this->caseSensitive ? $code : strtolower($code));
         $options = [
             'hash' => $hash,
-            'hashKey' => 'yiiCaptcha/' . $captcha->getUniqueId(),
+            'hashKey' => 'kantCaptcha/' . $captcha->getUniqueId(),
             'caseSensitive' => $this->caseSensitive,
             'message' => Kant::$app->getI18n()->format($this->message, [
                 'attribute' => $object->getAttributeLabel($attribute),
@@ -99,7 +99,7 @@ class CaptchaValidator extends Validator {
         if ($this->skipOnEmpty) {
             $options['skipOnEmpty'] = 1;
         }
-
+        $view->layout = 'console';
         ValidationAsset::register($view);
 
         return 'kant.validation.captcha(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';

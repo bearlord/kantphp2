@@ -15,7 +15,11 @@ namespace Kant\Foundation;
  *
  * That is, the last parameter of the constructor must accept a configuration array.
  *
- * 
+ * This interface is mainly used by [[\yii\di\Container]] so that it can pass object configuration as the
+ * last parameter to the implementing class' constructor.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0.3
  */
 interface Configurable {
     

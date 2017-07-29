@@ -14,6 +14,8 @@ use Kant\Foundation\Object;
 /**
  * Link represents a link object as defined in [JSON Hypermedia API Language](https://tools.ietf.org/html/draft-kelly-json-hal-03).
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 class Link extends Object {
 

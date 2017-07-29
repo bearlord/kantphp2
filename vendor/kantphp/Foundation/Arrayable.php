@@ -19,6 +19,8 @@ namespace Kant\Foundation;
  * The methods [[fields()]] and [[extraFields()]] allow the implementing classes to customize how and which of their data
  * should be formatted and put into the result of [[toArray()]].
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 interface Arrayable {
 

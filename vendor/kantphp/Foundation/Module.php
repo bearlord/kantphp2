@@ -12,6 +12,31 @@ namespace Kant\Foundation;
 use Kant\Kant;
 use Kant\Di\ServiceLocator;
 
+/**
+ * Module is the base class for module and application classes.
+ *
+ * A module represents a sub-application which contains MVC elements by itself, such as
+ * models, views, controllers, etc.
+ *
+ * A module may consist of [[modules|sub-modules]].
+ *
+ * [[components|Components]] may be registered with the module so that they are globally
+ * accessible within the module.
+ *
+ * @property array $aliases List of path aliases to be defined. The array keys are alias names (must start
+ * with '@') and the array values are the corresponding paths or aliases. See [[setAliases()]] for an example.
+ * This property is write-only.
+ * @property string $basePath The root directory of the module.
+ * @property string $controllerPath The directory that contains the controller classes. This property is
+ * read-only.
+ * @property string $layoutPath The root directory of layout files. Defaults to "[[viewPath]]/layouts".
+ * @property array $modules The modules (indexed by their IDs).
+ * @property string $uniqueId The unique ID of the module. This property is read-only.
+ * @property string $viewPath The root directory of view files. Defaults to "[[basePath]]/views".
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
+ */
 class Module extends ServiceLocator {
 
     /**
@@ -112,10 +137,9 @@ class Module extends ServiceLocator {
             if (count($path) !== 3) {
                 return false;
             }
-
             $controller = $this->createControllerByID($route);
             return $controller === null ? false : [$controller, end($path)];
-        } 
+        }
     }
 
     /**
@@ -134,10 +158,11 @@ class Module extends ServiceLocator {
     public function createControllerByID($id) {
         if (strrpos($id, '/') === false) {
             return null;
-        } 
-        
+        }
+
         $path = explode("/", $id);
-            $className = sprintf("App\%s\Controller\%sController", ucfirst($path[0]), ucfirst($path[1]));
+
+        $className = sprintf("App\%s\Controllers\%sController", ucfirst($path[0]), ucfirst($path[1]));
         if (strpos($className, '-') !== false || !class_exists($className)) {
             return null;
         }

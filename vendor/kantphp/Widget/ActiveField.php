@@ -672,7 +672,7 @@ class ActiveField extends Component {
         $config['attribute'] = $this->attribute;
         $config['view'] = $this->form->getView();
         $this->parts['{input}'] = $class::widget($config);
-
+        
         return $this;
     }
 

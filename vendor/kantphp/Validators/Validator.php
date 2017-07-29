@@ -337,11 +337,11 @@ class Validator extends Component {
      *
      * @param \Kant\Model\Model $model the data model being validated
      * @param string $attribute the name of the attribute to be validated.
-     * @param \Kant\web\View $view the view object that is going to be used to render views or view files
+     * @param \Kant\View\View $view the view object that is going to be used to render views or view files
      * containing a model form with this validator applied.
      * @return string the client-side validation script. Null if the validator does not support
      * client-side validation.
-     * @see \Kant\widgets\ActiveForm::enableClientValidation
+     * @see \Kant\Widget\ActiveForm::enableClientValidation
      */
     public function clientValidateAttribute($model, $attribute, $view) {
         return null;
