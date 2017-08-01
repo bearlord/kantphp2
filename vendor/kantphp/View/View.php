@@ -134,7 +134,7 @@ class View extends BaseView {
      *
      * @var string
      */
-    protected $dispatcher;
+    public $dispatcher;
 
     /**
      * template variables
@@ -181,11 +181,7 @@ class View extends BaseView {
     public $cacheStack = [];
 
     public function init() {
-        $this->ShareErrorsFromSession();
-    }
-
-    public function setDispatcher($dispatcher) {
-        $this->dispatcher = $dispatcher;
+        
     }
 
     /**
@@ -382,8 +378,9 @@ class View extends BaseView {
         }
         $ext = Kant::$app->config->get("view.ext");
         $viewPath = $this->getViewPath();
+        
         if (empty($view)) {
-            $viewFile = $viewPath . strtolower($this->dispatcher[1]) . DIRECTORY_SEPARATOR . strtolower($this->dispatcher[2]) . $ext;
+            $viewFile = $viewPath . Kant::$app->controller->id . DIRECTORY_SEPARATOR . strtolower(Kant::$app->controller->action->id) . $ext;
         } else {
             $viewFile = $viewPath . $view . $ext;
         }
@@ -448,7 +445,7 @@ class View extends BaseView {
      */
     protected function getViewPath($module = '') {
         if ($module == '') {
-            $module = isset($this->dispatcher[0]) ? strtolower($this->dispatcher[0]) : '';
+            $module = isset($this->dispatcher[0]) ? strtolower(Kant::$app->controller->moduleid) : '';
         }
         $theme = Kant::$app->config->get('view.theme');
         if ($module) {

@@ -44,6 +44,11 @@ class CaptchaValidator extends Validator {
     public $captchaAction = 'common/service/captcha';
 
     /**
+     * @var string layout 
+     */
+    public $layout = 'main';
+
+    /**
      * @inheritdoc
      */
     public function init() {
@@ -59,20 +64,22 @@ class CaptchaValidator extends Validator {
     protected function validateValue($value) {
         $captcha = $this->createCaptchaAction();
         $valid = !is_array($value) && $captcha->validate($value, $this->caseSensitive);
-
+        
         return $valid ? null : [$this->message, []];
     }
 
     /**
      * Creates the CAPTCHA action object from the route specified by [[captchaAction]].
-     * @return \Kant\captcha\CaptchaAction the action object
+     * @return \Kant\Captcha\CaptchaAction the action object
      * @throws InvalidConfigException
      */
     public function createCaptchaAction() {
-        $ca = Kant::$app->createController($this->captchaAction);
+        $ca = Kant::$app->createController($this->captchaAction, 'implicit');
         if ($ca !== false) {
             /* @var $controller \Kant\Controller\Controller */
             list($controller, $actionID) = $ca;
+            $controller->layout = $this->layout;
+            $controller->view->layout = $this->layout;
             $action = $controller->createActions($actionID);
             if ($action !== null) {
                 return $action;
@@ -84,25 +91,33 @@ class CaptchaValidator extends Validator {
     /**
      * @inheritdoc
      */
-    public function clientValidateAttribute($object, $attribute, $view) {
+    public function clientValidateAttribute($model, $attribute, $view) {
+        ValidationAsset::register($view);
+        $options = $this->getClientOptions($model, $attribute);
+
+        return 'kant.validation.captcha(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getClientOptions($model, $attribute) {
         $captcha = $this->createCaptchaAction();
         $code = $captcha->getVerifyCode(false);
         $hash = $captcha->generateValidationHash($this->caseSensitive ? $code : strtolower($code));
         $options = [
             'hash' => $hash,
-            'hashKey' => 'kantCaptcha/' . $captcha->getUniqueId(),
+            'hashKey' => 'kantCaptcha/' . $captcha->getUniqueId() . '/' . $captcha->id,
             'caseSensitive' => $this->caseSensitive,
             'message' => Kant::$app->getI18n()->format($this->message, [
-                'attribute' => $object->getAttributeLabel($attribute),
+                'attribute' => $model->getAttributeLabel($attribute),
                     ], Kant::$app->language),
         ];
         if ($this->skipOnEmpty) {
             $options['skipOnEmpty'] = 1;
         }
-        $view->layout = 'console';
-        ValidationAsset::register($view);
 
-        return 'kant.validation.captcha(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
+        return $options;
     }
 
 }

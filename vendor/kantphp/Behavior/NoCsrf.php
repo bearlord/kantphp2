@@ -40,7 +40,7 @@ class NoCsrf extends Behavior {
     public $controller;
 
     public function events() {
-        return [Controller::EVENT_BEFORE_ACTION => 'beforeAction'];
+        return [Controller::EVENT_BEFORE_ACTION => 'beforeActions'];
     }
 
     public function beforeAction($event) {

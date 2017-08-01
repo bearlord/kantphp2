@@ -43,7 +43,7 @@ class Action extends Component {
      * @return string the unique ID of this action among the whole application.
      */
     public function getUniqueId() {
-        return $this->controller->getUniqueId() . '/' . $this->id;
+        return $this->controller->getUniqueId();
     }
 
     /**

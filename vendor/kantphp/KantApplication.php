@@ -87,6 +87,11 @@ class KantApplication extends Module {
     public $dispatcher = null;
 
     /**
+     * @var Controller the currently active controller instance
+     */
+    public $controller;
+
+    /**
      * Constructs
      * Initialize Config,register Cache,Database,Session,Cookie
      * 
@@ -386,7 +391,7 @@ class KantApplication extends Module {
         $this->setSession($this->config->get('session'), $request, $response);
 
         $router->dispatch($request, $response);
-        
+
         $this->end($response);
     }
 
@@ -535,8 +540,7 @@ class KantApplication extends Module {
      * 
      * @param array $dispatcher
      */
-    public function setDispatcher($type, $dispatcher) {
-        $this->dispatcherType = $type;
+    public function setDispatcher($dispatcher) {
         $this->dispatcher = $dispatcher;
         $this->getView()->setDispatcher($dispatcher);
     }

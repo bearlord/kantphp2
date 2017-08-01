@@ -41,7 +41,7 @@ class ModuleDispatcher {
      */
     public function dispatch(Request $request) {
         $dispatcher = $this->parseUrl($request->path());
-        return $this->module($dispatcher['route']);
+        return $this->run($dispatcher['route']);
     }
 
     /**
@@ -49,7 +49,7 @@ class ModuleDispatcher {
      * @param type $url
      */
     public function parseUrl($url) {
-        $result = $this->parseRoute($url);
+        $result = $this->parseRoute(strtolower($url));
         return $result;
     }
 
@@ -82,6 +82,7 @@ class ModuleDispatcher {
         $module = !empty($module) ? $module : $routeConfig['module'];
         $controller = !empty($path) ? array_shift($path) : $routeConfig['ctrl'];
         $action = !empty($path) ? array_shift($path) : $routeConfig['act'];
+        /*
         if ($action) {
             if (strpos($action, "?") !== false) {
                 $action = substr($action, 0, strpos($action, "?"));
@@ -108,8 +109,9 @@ class ModuleDispatcher {
                 }
             }
         }
-
-        $route = [$module, $controller, $action];
+        */
+        
+        $route = "$module/$controller/$action";
         return ['route' => $route, 'var' => $var];
     }
 
@@ -119,61 +121,42 @@ class ModuleDispatcher {
      * @throws KantException
      * @throws ReflectionException
      */
-    public function module($dispatcher) {
-        //module name
-        $moduleName = $this->getModuleName($dispatcher[0]);
-        if (empty($moduleName)) {
-            throw new KantException('No Module found');
-        }
-        Kant::$app->setModuleConfig($moduleName);
-        
-        Kant::$app->setDispatcher('implicit', $dispatcher);
-
-        //controller name
-        $controllerName = $this->getControllerName($dispatcher[1]);
-        $controller = $this->getControllerClass($controllerName, $moduleName);
-        if (!$controller) {
-            if (empty($controller)) {
-                throw new KantException(sprintf("No controller exists:%s", ucfirst($dispatcher[1]) . $this->controllerSuffix));
-            }
-        }
-
-
-        //action name
-        $action = $dispatcher[2] ?: ucfirst(Kant::$app->config->get('route.act'));
-
-        $data = Kant::$container->callClass($controller . "@" . 'runAction', [$action]);
+    public function run($dispatcher) {        
+        $data = $this->runAction($dispatcher);
         return $data;
     }
-
+    
     /**
-     * Get module name
-     * 
-     * @param string $name
-     * @return string
+     * Runs a controller action specified by a route.
+     * This method parses the specified route and creates the corresponding child module(s), controller and action
+     * instances. It then calls [[Controller::runAction()]] to run the action with the given parameters.
+     * If the route is empty, the method will use [[defaultRoute]].
+     * @param string $route the route that specifies the action.
+     * @param array $params the parameters to be passed to the action
+     * @return mixed the result of the action.
+     * @throws InvalidRouteException if the requested route cannot be resolved into an action successfully.
      */
-    protected function getModuleName($name) {
-        return ucfirst($name ?: Kant::$app->config->get('route.module'));
-    }
+    public function runAction($route, $params = []) {
+        $parts = Kant::$app->createController($route);
 
-    /**
-     * Get controller name
-     * 
-     * @param string $name
-     * @return string
-     */
-    protected function getControllerName($name) {
-        return ucfirst($name ?: Kant::$app->config->get('route.ctrl'));
-    }
+        if (is_array($parts)) {
+            /* @var $controller \Kant\Controller\Controller */
+            list($controller, $actionID) = $parts;  
+            $controller->routePattern = 'implicit';
+            $controller->view->dispatcher = $route;
 
-    /**
-     * Controller
-     * 
-     * @staticvar array $classes
-     * @return boolean|array|\classname
-     * @throws KantException
-     */
-    protected function getControllerClass($controllerName, $moduleName) {
-        return "App\\{$moduleName}\\Controllers\\" . ucfirst($controllerName) . $this->controllerSuffix ;
+            $oldController = Kant::$app->controller;
+
+            Kant::$app->controller = $controller;
+            $result = $controller->runActions($actionID, $params);
+
+            if ($oldController !== null) {
+                Kant::$app->controller = $oldController;
+            }
+
+            return $result;
+        }
+
+        throw new InvalidRouteException('Unable to resolve the request "' . $route . '".');
     }
 }

@@ -184,10 +184,10 @@ class Route {
         $class = StringHelper::basename($this->parseControllerCallback()[0], $this->controllerSuffix);
         $method = StringHelper::basename($this->parseControllerCallback()[1], $this->actionSuffix);
         $module = explode('\\', $this->parseControllerCallback()[0])[1];
-        
-        Kant::$app->setDispatcher('explicit', [
-                $module, $class, $method
-        ]);
+
+//        Kant::$app->setDispatcher([
+//            $module, $class, $method
+//        ]);
     }
 
     /**

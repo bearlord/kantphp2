@@ -74,6 +74,16 @@ class Module extends ServiceLocator {
      */
     private $_basePath;
     private $_vendorPath;
+    
+    /*
+     * @var string the implicit controller template
+     */
+    public $implicitControllerClassTpl = "App\%s\Controllers\%sController";
+    
+    /**
+     * @var string the explicit controoler template 
+     */
+    public $explicitControllerClassTpl = "App\%s\Controllers\%sController";
 
     /**
      * Returns the root directory of the module.
@@ -110,6 +120,41 @@ class Module extends ServiceLocator {
         Kant::setAlias('@vendor', $this->_vendorPath);
         Kant::setAlias('@bower', $this->_vendorPath . DIRECTORY_SEPARATOR . 'bower');
     }
+    
+    /**
+     * Runs a controller action specified by a route.
+     * This method parses the specified route and creates the corresponding child module(s), controller and action
+     * instances. It then calls [[Controller::runAction()]] to run the action with the given parameters.
+     * If the route is empty, the method will use [[defaultRoute]].
+     * @param string $route the route that specifies the action.
+     * @param array $params the parameters to be passed to the action
+     * @return mixed the result of the action.
+     * @throws InvalidRouteException if the requested route cannot be resolved into an action successfully.
+     */
+    
+    public function runAction($route, $params = []) {
+        $parts = $this->createController($route);
+
+        if (is_array($parts)) {
+            /* @var $controller \Kant\Controller\Controller */
+            list($controller, $actionID) = $parts;  
+            $controller->routePattern = 'implicit';
+            $controller->view->dispatcher = $route;
+
+            $oldController = Kant::$app->controller;
+
+            Kant::$app->controller = $controller;
+            $result = $controller->runActions($actionID, $params);
+
+            if ($oldController !== null) {
+                Kant::$app->controller = $oldController;
+            }
+
+            return $result;
+        }
+
+        throw new InvalidRouteException('Unable to resolve the request "' . $route . '".');
+    }
 
     /**
      * Creates a controller instance based on the given route.
@@ -121,11 +166,13 @@ class Module extends ServiceLocator {
      * part of the route which will be treated as the action ID. Otherwise, false will be returned.
      *
      * @param string $route the route consisting of module, controller and action IDs.
+     * @param string $pattern the route pattern
+     * @param string $layout the layout
      * @return array|boolean If the controller is created successfully, it will be returned together
      * with the requested action ID. Otherwise false will be returned.
      * @throws InvalidConfigException if the controller class and its file do not match.
      */
-    public function createController($route) {
+    public function createController($route, $pattern = 'implicit') {
         // double slashes or leading/ending slashes may cause substr problem
         $route = trim($route, '/');
         if (strpos($route, '//') !== false) {
@@ -137,7 +184,12 @@ class Module extends ServiceLocator {
             if (count($path) !== 3) {
                 return false;
             }
-            $controller = $this->createControllerByID($route);
+            
+            $moduleName = explode("/", $route)[0];
+            Kant::$app->setModuleConfig($moduleName);
+            
+            $controller = $this->createControllerByID($route, $pattern);
+
             return $controller === null ? false : [$controller, end($path)];
         }
     }
@@ -155,20 +207,24 @@ class Module extends ServiceLocator {
      * @throws InvalidConfigException if the controller class and its file name do not match.
      * This exception is only thrown when in debug mode.
      */
-    public function createControllerByID($id) {
+    public function createControllerByID($id, $pattern = 'implicit') {
         if (strrpos($id, '/') === false) {
             return null;
         }
+        list($moduleName, $controllerName, $actionName) = explode("/", strtolower($id));
+        
+        if ($pattern == 'implicit') {
+            $className = sprintf("App\%s\Controllers\%sController", ucfirst($moduleName), ucfirst($controllerName));
+        } else {
+            $className = sprintf("App\%s\RouteControllers\%sController", ucfirst($moduleName), ucfirst($controllerName));
+        }
 
-        $path = explode("/", $id);
-
-        $className = sprintf("App\%s\Controllers\%sController", ucfirst($path[0]), ucfirst($path[1]));
         if (strpos($className, '-') !== false || !class_exists($className)) {
             return null;
         }
-
+          
         if (is_subclass_of($className, 'Kant\Controller\Controller')) {
-            $controller = Kant::createObject($className);
+            $controller = Kant::createObject($className, [$controllerName, $moduleName]);
             return get_class($controller) === $className ? $controller : null;
         } elseif (Kant::$app->config->get('debug')) {
             throw new InvalidConfigException("Controller class must extend from \\Kant\\Controller\\Controller.");
@@ -176,6 +232,7 @@ class Module extends ServiceLocator {
             return null;
         }
     }
+    
 
     /**
      * Call the given Closure / class@method and inject its dependencies.

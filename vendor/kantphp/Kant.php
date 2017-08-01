@@ -28,7 +28,7 @@ class Kant {
     public static $aliases = ['@kant' => __DIR__];
 
     /**
-     * @var Container the dependency injection (DI) container used by [[createObject()]].
+     * @var \Kant\Di\Container the dependency injection (DI) container used by [[createObject()]].
      * You may use [[Container::set()]] to set up the needed dependencies of classes and
      * their initial property values.
      * @see createObject()

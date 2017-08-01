@@ -29,17 +29,22 @@ class Controller extends Component {
      * @event ActionEvent an event raised right before executing a controller action.
      * You may set [[ActionEvent::isValid]] to be false to cancel the action execution.
      */
-    const EVENT_BEFORE_ACTION = 'beforeAction';
+    const EVENT_BEFORE_ACTION = 'beforeActions';
 
     /**
      * @event ActionEvent an event raised right after executing a controller action.
      */
-    const EVENT_AFTER_ACTION = 'afterAction';
+    const EVENT_AFTER_ACTION = 'afterActions';
 
     /**
      * @var string the ID of this controller.
      */
     public $id;
+
+    /**
+     * @var Module the moduleid that this controller belongs to.
+     */
+    public $moduleid;
 
     /**
      * @var string the ID of the action that is used when the action ID is not specified
@@ -57,7 +62,7 @@ class Controller extends Component {
      *
      * @var type 
      */
-    protected $view;
+    public $view;
 
     /**
      * Layout
@@ -65,24 +70,34 @@ class Controller extends Component {
     public $layout = 'main';
 
     /**
-     * @var Action the action that is currently being executed. This property will be set
+     * @var \Kant\Action\Action the action that is currently being executed. This property will be set
      * by [[run()]] when it is called by [[Application]] to run an action.
      */
     public $action;
-    
+
     /**
      * @var boolean whether to enable CSRF validation for the actions in this controller.
-     * CSRF validation is enabled only when both this property and [[\yii\web\Request::enableCsrfValidation]] are true.
+     * CSRF validation is enabled only when both this property and [[\Kant\Http\Request::enableCsrfValidation]] are true.
      */
     public $enableCsrfValidation = true;
 
     /**
+     * @var $routerPattern
+     */
+    public $routePattern;
+
+    /**
+     * @var $dispatcher
+     */
+    public $dispatcher;
+
+    /**
      * Construct
      */
-    public function __construct() {
-        parent::__construct();
-        $this->view = Kant::$app->getView();
-        $this->view->layout = $this->layout;
+    public function __construct($id = "", $moduleid = "", $config = []) {
+        $this->id = $id;
+        $this->moduleid = $moduleid;
+        parent::__construct($config);
     }
 
     public function actions() {
@@ -93,7 +108,8 @@ class Controller extends Component {
      * initialize
      */
     public function init() {
-
+        $this->view = Kant::$app->getView();
+        $this->view->layout = $this->layout;
     }
 
     /**
@@ -112,7 +128,7 @@ class Controller extends Component {
      * @throws InvalidRouteException if the requested action ID cannot be resolved into an action successfully.
      * @see createAction()
      */
-    public function runAction($id, $params = []) {
+    public function runActions($id, $params = []) {
         $action = $this->createActions($id);
         if ($action === null) {
             throw new InvalidArgumentException('Unable to resolve the request: ' . $this->getUniqueId() . '/' . $id);
@@ -122,11 +138,10 @@ class Controller extends Component {
         $this->action = $action;
 
         $result = null;
-
-        if ($this->beforeAction($action)) {
+        if ($this->beforeActions($action)) {
             // run the action
             $result = $action->runWithParams($params);
-            $result = $this->afterAction($action, $result);
+            $result = $this->afterActions($action, $result);
         }
 
         $this->action = $oldAction;
@@ -210,7 +225,7 @@ class Controller extends Component {
      * @param Action $action the action to be executed.
      * @return boolean whether the action should continue to run.
      */
-    public function beforeAction($action) {
+    public function beforeActions($action) {
         $event = new ActionEvent($action);
         $this->trigger(self::EVENT_BEFORE_ACTION, $event);
 //        return $event->isValid;
@@ -243,7 +258,7 @@ class Controller extends Component {
      * @param mixed $result the action return result.
      * @return mixed the processed action result.
      */
-    public function afterAction($action, $result) {
+    public function afterActions($action, $result) {
         $event = new ActionEvent($action);
         $event->result = $result;
         $this->trigger(self::EVENT_AFTER_ACTION, $event);
@@ -256,6 +271,27 @@ class Controller extends Component {
      */
     public function getUniqueId() {
         return $this->id;
+    }
+
+    /**
+     * Redirects the browser to the specified URL.
+     *
+     * @param string|array $url the URL to be redirected to. This can be in one of the following formats:
+     *
+     * - a string representing a URL (e.g. "http://example.com")
+     * - a string representing a URL alias (e.g. "@example.com")
+     * - an array in the format of `[$route, ...name-value pairs...]` (e.g. `['site/index', 'ref' => 1]`)
+     *   [[Url::to()]] will be used to convert the array into a URL.
+     *
+     * Any relative URL will be converted into an absolute one by prepending it with the host info
+     * of the current request.
+     *
+     * @return Object Kant\Http\RedirectResponse
+     */
+    public function redirect($url) {
+        return Kant::$app->redirect->to($url)
+                        ->withCookie(Kant::$app->response->headers->getCookies())
+                        ->send();
     }
 
 }

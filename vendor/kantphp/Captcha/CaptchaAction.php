@@ -110,7 +110,7 @@ class CaptchaAction extends Action {
      * the same verification code each time we run the tests.
      * If not set, it means the verification code will be randomly generated.
      */
-    public $fixedVerifyCode = '';
+    public $fixedVerifyCode;
 
     /**
      * @var string the rendering library to use. Currently supported only 'gd' and 'imagick'.
@@ -182,7 +182,7 @@ class CaptchaAction extends Action {
             $session->put($name . 'count', 1);
             $session->save();
         }
-        
+
         return $session->get($name);
     }
 
@@ -194,7 +194,7 @@ class CaptchaAction extends Action {
      */
     public function validate($input, $caseSensitive) {
         $code = $this->getVerifyCode();
-        $valid = $caseSensitive ? ($input === $code) : strcasecmp($input, $code) === 0;       
+        $valid = $caseSensitive ? ($input === $code) : strcasecmp($input, $code) === 0;
         $session = Kant::$app->getSession();
         $name = $this->getSessionKey() . 'count';
         $session->put($name, $session->get($name) + 1);
@@ -270,7 +270,7 @@ class CaptchaAction extends Action {
      * @return string image contents in PNG format.
      */
     protected function renderImageByGD($code) {
-        
+
         $image = imagecreatetruecolor($this->width, $this->height);
 
         $backColor = imagecolorallocate(

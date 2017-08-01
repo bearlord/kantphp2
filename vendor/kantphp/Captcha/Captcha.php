@@ -64,13 +64,13 @@ class Captcha extends InputWidget {
     /**
      * @var string|array the route of the action that generates the CAPTCHA images.
      * The action represented by this route must be an action of [[CaptchaAction]].
-     * Please refer to [[\yii\helpers\Url::toRoute()]] for acceptable formats.
+     * Please refer to [[\Kant\Helper\Url::toRoute()]] for acceptable formats.
      */
     public $captchaAction = 'common/service/captcha';
 
     /**
      * @var array HTML attributes to be applied to the CAPTCHA image tag.
-     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $imageOptions = [];
 
@@ -141,19 +141,12 @@ class Captcha extends InputWidget {
      */
     protected function getClientOptions() {
         $route = $this->captchaAction;
-
-        /*
-          if (is_array($route)) {
-          $route[CaptchaAction::REFRESH_GET_VAR] = 1;
-          } else {
-          $route = [$route, CaptchaAction::REFRESH_GET_VAR => 1];
-          }
-         */
+        
+        $_route = explode("/", $route);
         $options = [
             'refreshUrl' => Url::to($route, [CaptchaAction::REFRESH_GET_VAR => 1]),
-            'hashKey' => 'kantCaptcha/' . trim($route[0], '/'),
+            'hashKey' => 'kantCaptcha/' . $_route[1] . '/' . $_route[2],
         ];
-
         return $options;
     }
 
