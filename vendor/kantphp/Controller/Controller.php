@@ -53,12 +53,6 @@ class Controller extends Component {
     public $defaultAction = 'index';
 
     /**
-     * The Action suffix
-     * @var type 
-     */
-    public $actionSuffix = 'Action';
-
-    /**
      *
      * @var type 
      */
@@ -163,7 +157,7 @@ class Controller extends Component {
         if ($id === '') {
             $id = $this->defaultAction;
         }
-
+        
         $actionMap = $this->actions();
 
         if (isset($actionMap[$id])) {
@@ -189,10 +183,10 @@ class Controller extends Component {
      * @return type
      */
     protected function formatMethodName($id) {
-        if (strpos($id, $this->actionSuffix) > 1) {
+        if (strpos($id, Kant::$app->config->get('actionSuffix')) > 1) {
             return $id;
         }
-        return str_replace(' ', '', strtolower(implode(' ', explode('-', $id)))) . $this->actionSuffix;
+        return str_replace(' ', '', strtolower(implode(' ', explode('-', $id)))) . Kant::$app->config->get('actionSuffix');
     }
 
     /**
@@ -292,6 +286,14 @@ class Controller extends Component {
         return Kant::$app->redirect->to($url)
                         ->withCookie(Kant::$app->response->headers->getCookies())
                         ->send();
+    }
+
+    public function setIdOptions($options) {
+        foreach (['moduleid', 'id', 'routePattern'] as $value) {
+            if (!empty($options[$value])) {
+                $this->$value = $options[$value];
+            }
+        }
     }
 
 }

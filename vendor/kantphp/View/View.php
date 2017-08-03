@@ -172,7 +172,7 @@ class View extends BaseView {
      * @var array
      */
     protected $shared = [];
-    
+
     /**
      * @var array a list of currently active fragment cache widgets. This property
      * is used internally to implement the content caching feature. Do not modify it directly.
@@ -378,7 +378,7 @@ class View extends BaseView {
         }
         $ext = Kant::$app->config->get("view.ext");
         $viewPath = $this->getViewPath();
-        
+
         if (empty($view)) {
             $viewFile = $viewPath . Kant::$app->controller->id . DIRECTORY_SEPARATOR . strtolower(Kant::$app->controller->action->id) . $ext;
         } else {
@@ -443,16 +443,10 @@ class View extends BaseView {
     /**
      * Get view path
      */
-    protected function getViewPath($module = '') {
-        if ($module == '') {
-            $module = isset($this->dispatcher[0]) ? strtolower(Kant::$app->controller->moduleid) : '';
-        }
+    protected function getViewPath() {
+        $module = strtolower(Kant::$app->controller->moduleid);
         $theme = Kant::$app->config->get('view.theme');
-        if ($module) {
-            $viewPath = TPL_PATH . $theme . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR;
-        } else {
-            $viewPath = TPL_PATH . $theme . DIRECTORY_SEPARATOR;
-        }
+        $viewPath = TPL_PATH . $theme . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR;
         return $viewPath;
     }
 

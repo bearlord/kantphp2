@@ -111,7 +111,7 @@ class Router extends Component {
             }
             $this->group([
                 'prefix' => strtolower($mapName),
-                'middleware' => strtolower($mapName),
+                'middleware' => ($mapName),
                 'namespace' => "App\\{$mapName}\\RouteControllers"
                     ], $map);
         }

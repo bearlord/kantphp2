@@ -16,6 +16,7 @@ class ControllerDispatcher {
      * @var \Kant\Container\Container
      */
     protected $container;
+    protected $actionSuffix;
 
     /**
      * Create a new controller dispatcher instance.
@@ -31,7 +32,7 @@ class ControllerDispatcher {
      * Dispatch a request to a given controller and method.
      *
      * @param  \Kant\Routing\Route  $route
-     * @param  mixed  $controller
+     * @param  \Kant\Controller\Controller $controller
      * @param  string  $method
      * @return mixed
      */
@@ -40,138 +41,26 @@ class ControllerDispatcher {
                 $route->parametersWithoutNulls(), $controller, $method
         );
 
-        $controllerClassName = get_class($controller);
-        $path = explode("\\", $controllerClassName);
+        $controller->setIdOptions([
+            'id' => strtolower(str_replace('Controller', '', basename(get_class($controller)))),
+            'moduleid' => strtolower($route->middleware()[0]),
+            'routePattern' => 'explicit'
+        ]);
 
-        //module name
-        $moduleName = ucfirst($path[1]);
+        $oldController = Kant::$app->controller;
+        Kant::$app->controller = $controller;
         
-        //controller name
-        $controllerName = ucfirst(str_replace("Controller", "", $path[3]));
-        
-        //action name
-        $actionName = str_replace("Action", "", $method);
-        
-        $_route = "$moduleName/$controllerName/$actionName";
-
-        return $this->run($_route);
-    }
-    
-    /**
-     * Execution
-     * 
-     * @throws KantException
-     * @throws ReflectionException
-     */
-    public function run($dispatcher) {        
-        $data = $this->runAction($dispatcher);
-        return $data;
-    }
-
-    /**
-     * Runs a controller action specified by a route.
-     * This method parses the specified route and creates the corresponding child module(s), controller and action
-     * instances. It then calls [[Controller::runAction()]] to run the action with the given parameters.
-     * If the route is empty, the method will use [[defaultRoute]].
-     * @param string $route the route that specifies the action.
-     * @param array $params the parameters to be passed to the action
-     * @return mixed the result of the action.
-     * @throws InvalidRouteException if the requested route cannot be resolved into an action successfully.
-     */
-    public function runAction($route, $params = []) {
-        $parts = Kant::$app->createController($route, 'explicit');
-
-        if (is_array($parts)) {
-            /* @var $controller \Kant\Controller\Controller */
-            list($controller, $actionID) = $parts;  
-            $controller->routePattern = 'explicit';
-            $controller->view->dispatcher = $route;
-
-            $oldController = Kant::$app->controller;
-
-            Kant::$app->controller = $controller;
-            $result = $controller->runActions($actionID, $params);
-
-            if ($oldController !== null) {
-                Kant::$app->controller = $oldController;
-            }
-
-            return $result;
+        if (strpos($method, Kant::$app->config->get('actionSuffix')) > 1) {
+            $method = str_replace(Kant::$app->config->get('actionSuffix'), "", $method);
         }
 
-        throw new InvalidRouteException('Unable to resolve the request "' . $route . '".');
+        $result = Kant::$container->call([$controller, 'runActions'], [$method, $parameters]);
+
+        if ($oldController !== null) {
+            Kant::$app->controller = $oldController;
+        }
+        return $result;
     }
-
-    /**
-     * Creates a controller instance based on the given route.
-     *
-     * The route should be relative to this module. The method implements the following algorithm
-     * to resolve the given route:
-     * 
-     * If any of the above steps resolves into a controller, it is returned together with the rest
-     * part of the route which will be treated as the action ID. Otherwise, false will be returned.
-     *
-     * @param string $route the route consisting of module, controller and action IDs.
-     * @return array|boolean If the controller is created successfully, it will be returned together
-     * with the requested action ID. Otherwise false will be returned.
-     * @throws InvalidConfigException if the controller class and its file do not match.
-     */
-//    public function createController($route) {
-//        // double slashes or leading/ending slashes may cause substr problem
-//        $route = trim($route, '/');
-//        if (strpos($route, '//') !== false) {
-//            return false;
-//        }
-//
-//        if (strpos($route, '/') !== false) {
-//            $path = explode("/", $route);
-//            if (count($path) !== 3) {
-//                return false;
-//            }
-//            
-//            $moduleName = explode("/", $route)[0];
-//            Kant::$app->setModuleConfig($moduleName);
-//            
-//            $controller = $this->createControllerByID($route);
-//            return $controller === null ? false : [$controller, end($path)];
-//        }
-//    }
-
-    /**
-     * Creates a controller based on the given controller ID.
-     *
-     * The controller ID is relative to this module. The controller class
-     * should be namespaced under [[controllerNamespace]].
-     *
-     * Note that this method does not check [[modules]] or [[controllerMap]].
-     *
-     * @param string $id the controller ID
-     * @return Controller the newly created controller instance, or null if the controller ID is invalid.
-     * @throws InvalidConfigException if the controller class and its file name do not match.
-     * This exception is only thrown when in debug mode.
-     */
-//    public function createControllerByID($id) {
-//        if (strrpos($id, '/') === false) {
-//            return null;
-//        }
-//
-//        list($moduleName, $controllerName, $actionName) = explode("/", $id);
-//
-//        $className = sprintf("App\%s\RouteControllers\%sController", ucfirst($moduleName), ucfirst($controllerName));
-//
-//        if (strpos($className, '-') !== false || !class_exists($className)) {
-//            return null;
-//        }
-//
-//        if (is_subclass_of($className, 'Kant\Controller\Controller')) {
-//            $controller = Kant::createObject($className, [$controllerName, $moduleName]);
-//            return get_class($controller) === $className ? $controller : null;
-//        } elseif (Kant::$app->config->get('debug')) {
-//            throw new InvalidConfigException("Controller class must extend from \\Kant\\Controller\\Controller.");
-//        } else {
-//            return null;
-//        }
-//    }
 
     /**
      * Get the middleware for the controller instance.

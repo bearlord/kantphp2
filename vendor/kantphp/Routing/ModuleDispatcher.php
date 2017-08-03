@@ -9,6 +9,7 @@ use ReflectionMethod;
 use ReflectionParameter;
 use ReflectionException;
 use Kant\Exception\KantException;
+use Kant\Exception\InvalidRouteException;
 
 class ModuleDispatcher {
 
@@ -17,7 +18,7 @@ class ModuleDispatcher {
     /**
      *
      * The Controller suffix
-     * @var type 
+     * @var type
      */
     public $controllerSuffix = "Controller";
 
@@ -28,7 +29,7 @@ class ModuleDispatcher {
      * @return void
      */
     public function __construct() {
-        
+
     }
 
     /**
@@ -55,7 +56,7 @@ class ModuleDispatcher {
 
     /**
      * Parse route
-     * 
+     *
      * @param type $pathinfo
      */
     protected static function parseRoute($pathinfo) {
@@ -110,22 +111,22 @@ class ModuleDispatcher {
             }
         }
         */
-        
+
         $route = "$module/$controller/$action";
         return ['route' => $route, 'var' => $var];
     }
 
     /**
      * Execution
-     * 
+     *
      * @throws KantException
      * @throws ReflectionException
      */
-    public function run($dispatcher) {        
+    public function run($dispatcher) {
         $data = $this->runAction($dispatcher);
         return $data;
     }
-    
+
     /**
      * Runs a controller action specified by a route.
      * This method parses the specified route and creates the corresponding child module(s), controller and action
@@ -141,7 +142,7 @@ class ModuleDispatcher {
 
         if (is_array($parts)) {
             /* @var $controller \Kant\Controller\Controller */
-            list($controller, $actionID) = $parts;  
+            list($controller, $actionID) = $parts;
             $controller->routePattern = 'implicit';
             $controller->view->dispatcher = $route;
 
