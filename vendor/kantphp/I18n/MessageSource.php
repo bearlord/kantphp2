@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\I18n;
 
 use Kant\Kant;
@@ -22,7 +21,8 @@ use Kant\Foundation\Component;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class MessageSource extends Component {
+class MessageSource extends Component
+{
 
     /**
      * @event MissingTranslationEvent an event that is triggered when a message translation is not found.
@@ -30,22 +30,26 @@ class MessageSource extends Component {
     const EVENT_MISSING_TRANSLATION = 'missingTranslation';
 
     /**
+     *
      * @var boolean whether to force message translation when the source and target languages are the same.
-     * Defaults to false, meaning translation is only performed when source and target languages are different.
+     *      Defaults to false, meaning translation is only performed when source and target languages are different.
      */
     public $forceTranslation = false;
 
     /**
+     *
      * @var string the language that the original messages are in. If not set, it will use the value of
-     * [[\Kant\Application::sourceLanguage]].
+     *      [[\Kant\Application::sourceLanguage]].
      */
     public $sourceLanguage;
+
     private $_messages = [];
 
     /**
      * Initializes this component.
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
         if ($this->sourceLanguage === null) {
             $this->sourceLanguage = Kant::$app->sourceLanguage;
@@ -57,12 +61,15 @@ class MessageSource extends Component {
      * If translation for specific locale code such as `en-US` isn't found it
      * tries more generic `en`.
      *
-     * @param string $category the message category
-     * @param string $language the target language
+     * @param string $category
+     *            the message category
+     * @param string $language
+     *            the target language
      * @return array the loaded messages. The keys are original messages, and the values
-     * are translated messages.
+     *         are translated messages.
      */
-    protected function loadMessages($category, $language) {
+    protected function loadMessages($category, $language)
+    {
         return [];
     }
 
@@ -75,12 +82,16 @@ class MessageSource extends Component {
      *
      * If a translation is not found, a [[EVENT_MISSING_TRANSLATION|missingTranslation]] event will be triggered.
      *
-     * @param string $category the message category
-     * @param string $message the message to be translated
-     * @param string $language the target language
+     * @param string $category
+     *            the message category
+     * @param string $message
+     *            the message to be translated
+     * @param string $language
+     *            the target language
      * @return string|boolean the translated message or false if translation wasn't found or isn't required
      */
-    public function translate($category, $message, $language) {
+    public function translate($category, $message, $language)
+    {
         if ($this->forceTranslation || $language !== $this->sourceLanguage) {
             return $this->translateMessage($category, $message, $language);
         } else {
@@ -93,14 +104,19 @@ class MessageSource extends Component {
      * If the message is not found, a [[EVENT_MISSING_TRANSLATION|missingTranslation]] event will be triggered.
      * If there is an event handler, it may provide a [[MissingTranslationEvent::$translatedMessage|fallback translation]].
      * If no fallback translation is provided this method will return `false`.
-     * @param string $category the category that the message belongs to.
-     * @param string $message the message to be translated.
-     * @param string $language the target language.
+     * 
+     * @param string $category
+     *            the category that the message belongs to.
+     * @param string $message
+     *            the message to be translated.
+     * @param string $language
+     *            the target language.
      * @return string|boolean the translated message or false if translation wasn't found.
      */
-    protected function translateMessage($category, $message, $language) {
+    protected function translateMessage($category, $message, $language)
+    {
         $key = $language . '/' . $category;
-        if (!isset($this->_messages[$key])) {
+        if (! isset($this->_messages[$key])) {
             $this->_messages[$key] = $this->loadMessages($category, $language);
         }
         if (isset($this->_messages[$key][$message]) && $this->_messages[$key][$message] !== '') {
@@ -109,15 +125,14 @@ class MessageSource extends Component {
             $event = new MissingTranslationEvent([
                 'category' => $category,
                 'message' => $message,
-                'language' => $language,
+                'language' => $language
             ]);
             $this->trigger(self::EVENT_MISSING_TRANSLATION, $event);
             if ($event->translatedMessage !== null) {
                 return $this->_messages[$key][$message] = $event->translatedMessage;
             }
         }
-
+        
         return $this->_messages[$key][$message] = false;
     }
-
 }

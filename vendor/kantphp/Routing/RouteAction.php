@@ -1,5 +1,4 @@
 <?php
-
 namespace Kant\Routing;
 
 use LogicException;
@@ -9,11 +8,12 @@ use UnexpectedValueException;
 
 class RouteAction
 {
+
     /**
      * Parse the given action into an array.
      *
-     * @param  string  $uri
-     * @param  mixed  $action
+     * @param string $uri            
+     * @param mixed $action            
      * @return array
      */
     public static function parse($uri, $action)
@@ -24,13 +24,15 @@ class RouteAction
         if (is_null($action)) {
             return static::missingAction($uri);
         }
-
+        
         // If the action is already a Closure instance, we will just set that instance
         // as the "uses" property, because there is nothing else we need to do when
         // it is available. Otherwise we will need to find it in the action list.
         if (is_callable($action)) {
-            return ['uses' => $action];
-        }
+            return [
+                'uses' => $action
+            ];
+        }        
 
         // If no "uses" property has been set, we will dig through the array to find a
         // Closure instance within this list. We will set the first Closure we come
@@ -38,31 +40,33 @@ class RouteAction
         elseif (! isset($action['uses'])) {
             $action['uses'] = static::findCallable($action);
         }
-
+        
         if (is_string($action['uses']) && ! Str::contains($action['uses'], '@')) {
             $action['uses'] = static::makeInvokable($action['uses']);
         }
-
+        
         return $action;
     }
 
     /**
      * Get an action for a route that has no action.
      *
-     * @param  string  $uri
+     * @param string $uri            
      * @return array
      */
     protected static function missingAction($uri)
     {
-        return ['uses' => function () use ($uri) {
-            throw new LogicException("Route for [{$uri}] has no action.");
-        }];
+        return [
+            'uses' => function () use($uri) {
+                throw new LogicException("Route for [{$uri}] has no action.");
+            }
+        ];
     }
 
     /**
      * Find the callable in an action array.
      *
-     * @param  array  $action
+     * @param array $action            
      * @return callable
      */
     protected static function findCallable(array $action)
@@ -75,7 +79,7 @@ class RouteAction
     /**
      * Make an action for an invokable controller.
      *
-     * @param  string $action
+     * @param string $action            
      * @return string
      */
     protected static function makeInvokable($action)
@@ -83,7 +87,7 @@ class RouteAction
         if (! method_exists($action, '__invoke')) {
             throw new UnexpectedValueException("Invalid route action: [{$action}].");
         }
-
-        return $action.'@__invoke';
+        
+        return $action . '@__invoke';
     }
 }

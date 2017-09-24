@@ -6,64 +6,72 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Log;
 
 use Kant\Log\Target;
 use Kant\Helper\DirHelper;
 use Kant\Exception\InvalidConfigException;
 
-class FileTarget extends Target {
+class FileTarget extends Target
+{
 
     /**
+     *
      * @var string log file path or path alias. If not set, it will use the "@runtime/logs/app.log" file.
-     * The directory containing the log files will be automatically created if not existing.
+     *      The directory containing the log files will be automatically created if not existing.
      */
     public $logFile;
 
     /**
+     *
      * @var bool whether log files should be rotated when they reach a certain [[maxFileSize|maximum size]].
-     * Log rotation is enabled by default. This property allows you to disable it, when you have configured
-     * an external tools for log rotation on your server.
+     *      Log rotation is enabled by default. This property allows you to disable it, when you have configured
+     *      an external tools for log rotation on your server.
      * @since 2.0.3
      */
     public $enableRotation = true;
 
     /**
+     *
      * @var integer maximum log file size, in kilo-bytes. Defaults to 10240, meaning 10MB.
      */
-    public $maxFileSize = 10240; // in KB
+    public $maxFileSize = 10240;
+ // in KB
     /**
+     *
      * @var integer number of log files used for rotation. Defaults to 5.
      */
     public $maxLogFiles = 5;
 
     /**
+     *
      * @var integer the permission to be set for newly created log files.
-     * This value will be used by PHP chmod() function. No umask will be applied.
-     * If not set, the permission will be determined by the current environment.
+     *      This value will be used by PHP chmod() function. No umask will be applied.
+     *      If not set, the permission will be determined by the current environment.
      */
     public $fileMode;
 
     /**
+     *
      * @var integer the permission to be set for newly created directories.
-     * This value will be used by PHP chmod() function. No umask will be applied.
-     * Defaults to 0775, meaning the directory is read-writable by owner and group,
-     * but read-only for other users.
+     *      This value will be used by PHP chmod() function. No umask will be applied.
+     *      Defaults to 0775, meaning the directory is read-writable by owner and group,
+     *      but read-only for other users.
      */
     public $dirMode = 0775;
 
     /**
-     * @var boolean Whether to rotate log files by copy and truncate in contrast to rotation by
-     * renaming files. Defaults to `true` to be more compatible with log tailers and is windows
-     * systems which do not play well with rename on open files. Rotation by renaming however is
-     * a bit faster.
      *
-     * The problem with windows systems where the [rename()](http://www.php.net/manual/en/function.rename.php)
-     * function does not work with files that are opened by some process is described in a
-     * [comment by Martin Pelletier](http://www.php.net/manual/en/function.rename.php#102274) in
-     * the PHP documentation. By setting rotateByCopy to `true` you can work
-     * around this problem.
+     * @var boolean Whether to rotate log files by copy and truncate in contrast to rotation by
+     *      renaming files. Defaults to `true` to be more compatible with log tailers and is windows
+     *      systems which do not play well with rename on open files. Rotation by renaming however is
+     *      a bit faster.
+     *     
+     *      The problem with windows systems where the [rename()](http://www.php.net/manual/en/function.rename.php)
+     *      function does not work with files that are opened by some process is described in a
+     *      [comment by Martin Pelletier](http://www.php.net/manual/en/function.rename.php#102274) in
+     *      the PHP documentation. By setting rotateByCopy to `true` you can work
+     *      around this problem.
      */
     public $rotateByCopy = true;
 
@@ -71,13 +79,14 @@ class FileTarget extends Target {
      * Initializes the route.
      * This method is invoked after the route is created by the route manager.
      */
-    public function init() {
+    public function init()
+    {
         if ($this->logFile === null) {
-            $this->logFile = LOG_PATH  . date("Y-m-d") . '/app.log';
+            $this->logFile = LOG_PATH . date("Y-m-d") . '/app.log';
         }
-
+        
         $logPath = dirname($this->logFile);
-        if (!is_dir($logPath)) {
+        if (! is_dir($logPath)) {
             DirHelper::create($logPath, $this->dirMode, true);
         }
         if ($this->maxLogFiles < 1) {
@@ -90,11 +99,16 @@ class FileTarget extends Target {
 
     /**
      * Writes log messages to a file.
+     * 
      * @throws InvalidConfigException if unable to open the log file for writing
      */
-    public function export() {      
-        $text = implode("\n", array_map([$this, 'formatMessage'], $this->messages)) . "\n";
-
+    public function export()
+    {
+        $text = implode("\n", array_map([
+            $this,
+            'formatMessage'
+        ], $this->messages)) . "\n";
+        
         if (($fp = @fopen($this->logFile, 'a')) === false) {
             throw new InvalidConfigException("Unable to append to log file: {$this->logFile}");
         }
@@ -122,9 +136,10 @@ class FileTarget extends Target {
     /**
      * Rotates log files.
      */
-    protected function rotateFiles() {
+    protected function rotateFiles()
+    {
         $file = $this->logFile;
-        for ($i = $this->maxLogFiles; $i >= 0; --$i) {
+        for ($i = $this->maxLogFiles; $i >= 0; -- $i) {
             // $i == 0 is the original log file
             $rotateFile = $file . ($i === 0 ? '' : '.' . $i);
             if (is_file($rotateFile)) {
@@ -145,5 +160,4 @@ class FileTarget extends Target {
             }
         }
     }
-
 }

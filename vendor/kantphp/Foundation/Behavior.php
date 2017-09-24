@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Foundation;
 
 /**
@@ -20,9 +19,11 @@ namespace Kant\Foundation;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Behavior extends Object {
+class Behavior extends Object
+{
 
     /**
+     *
      * @var Component the owner of this behavior
      */
     public $owner;
@@ -48,14 +49,15 @@ class Behavior extends Object {
      *
      * ```php
      * [
-     *     Model::EVENT_BEFORE_VALIDATE => 'myBeforeValidate',
-     *     Model::EVENT_AFTER_VALIDATE => 'myAfterValidate',
+     * Model::EVENT_BEFORE_VALIDATE => 'myBeforeValidate',
+     * Model::EVENT_AFTER_VALIDATE => 'myAfterValidate',
      * ]
      * ```
      *
      * @return array events (array keys) and the corresponding event handler methods (array values).
      */
-    public function events() {
+    public function events()
+    {
         return [];
     }
 
@@ -64,12 +66,18 @@ class Behavior extends Object {
      * The default implementation will set the [[owner]] property
      * and attach event handlers as declared in [[events]].
      * Make sure you call the parent implementation if you override this method.
-     * @param Component $owner the component that this behavior is to be attached to.
+     * 
+     * @param Component $owner
+     *            the component that this behavior is to be attached to.
      */
-    public function attach($owner) {
+    public function attach($owner)
+    {
         $this->owner = $owner;
         foreach ($this->events() as $event => $handler) {
-            $owner->on($event, is_string($handler) ? [$this, $handler] : $handler);
+            $owner->on($event, is_string($handler) ? [
+                $this,
+                $handler
+            ] : $handler);
         }
     }
 
@@ -79,13 +87,16 @@ class Behavior extends Object {
      * and detach event handlers declared in [[events]].
      * Make sure you call the parent implementation if you override this method.
      */
-    public function detach() {
+    public function detach()
+    {
         if ($this->owner) {
             foreach ($this->events() as $event => $handler) {
-                $this->owner->off($event, is_string($handler) ? [$this, $handler] : $handler);
+                $this->owner->off($event, is_string($handler) ? [
+                    $this,
+                    $handler
+                ] : $handler);
             }
             $this->owner = null;
         }
     }
-
 }

@@ -8,21 +8,21 @@
  */
 return [
     /**
-      |--------------------------------------------------------------------------
-      | App language
-      |--------------------------------------------------------------------------
+     * |--------------------------------------------------------------------------
+     * | App language
+     * |--------------------------------------------------------------------------
      */
     'language' => 'zh-CN',
     /**
-      |--------------------------------------------------------------------------
-      | Time zone
-      |--------------------------------------------------------------------------
+     * |--------------------------------------------------------------------------
+     * | Time zone
+     * |--------------------------------------------------------------------------
      */
     'timezone' => 'Etc/GMT-8',
     /**
-      |--------------------------------------------------------------------------
-      | Additon components autoloaded
-      |--------------------------------------------------------------------------
+     * |--------------------------------------------------------------------------
+     * | Additon components autoloaded
+     * |--------------------------------------------------------------------------
      */
     'components' => [
         'log' => [
@@ -30,15 +30,20 @@ return [
             'targets' => [
                 [
                     'class' => 'Kant\Log\FileTarget',
-                    'levels' => ['error', 'warning', 'trace', 'info'],
-                ],
-            ],
-        ],
+                    'levels' => [
+                        'error',
+                        'warning',
+                        'trace',
+                        'info'
+                    ]
+                ]
+            ]
+        ]
     ],
     /**
-      |--------------------------------------------------------------------------
-      | Is enable Debug Logs
-      |--------------------------------------------------------------------------
+     * |--------------------------------------------------------------------------
+     * | Is enable Debug Logs
+     * |--------------------------------------------------------------------------
      */
     'enableDebugLogs' => true,
     'responseFormat' => 'html',
@@ -56,7 +61,7 @@ return [
     ],
     'view' => [
         'theme' => 'default',
-        'ext' => ".php",
+        'ext' => ".php"
     ],
     'cookie' => [
         'domain' => '',
@@ -68,62 +73,62 @@ return [
     ],
     'session' => [
         /**
-          |--------------------------------------------------------------------------
-          | Default Session Driver
-          |--------------------------------------------------------------------------
-          |
-          | This option controls the default session "driver" that will be used on
-          | requests. By default, we will use the lightweight native driver but
-          | you may specify any of the other wonderful drivers provided here.
-          |
-          | Supported: "file", "cookie", "database", "apc",
-          |            "memcached", "redis", "array"
-          |
+         * |--------------------------------------------------------------------------
+         * | Default Session Driver
+         * |--------------------------------------------------------------------------
+         * |
+         * | This option controls the default session "driver" that will be used on
+         * | requests. By default, we will use the lightweight native driver but
+         * | you may specify any of the other wonderful drivers provided here.
+         * |
+         * | Supported: "file", "cookie", "database", "apc",
+         * | "memcached", "redis", "array"
+         * |
          */
         'driver' => null,
         /**
-          |--------------------------------------------------------------------------
-          | Session Lifetime
-          |--------------------------------------------------------------------------
-          |
-          | Here you may specify the number of minutes that you wish the session
-          | to be allowed to remain idle before it expires. If you want them
-          | to immediately expire on the browser closing, set that option.
-          |
+         * |--------------------------------------------------------------------------
+         * | Session Lifetime
+         * |--------------------------------------------------------------------------
+         * |
+         * | Here you may specify the number of minutes that you wish the session
+         * | to be allowed to remain idle before it expires. If you want them
+         * | to immediately expire on the browser closing, set that option.
+         * |
          */
         'lifetime' => 120,
         'expire_on_close' => false,
         /**
-          |--------------------------------------------------------------------------
-          | Session Encryption
-          |--------------------------------------------------------------------------
-          |
-          | This option allows you to easily specify that all of your session data
-          | should be encrypted before it is stored. All encryption will be run
-          | automatically by Laravel and you can use the Session like normal.
-          |
+         * |--------------------------------------------------------------------------
+         * | Session Encryption
+         * |--------------------------------------------------------------------------
+         * |
+         * | This option allows you to easily specify that all of your session data
+         * | should be encrypted before it is stored. All encryption will be run
+         * | automatically by Laravel and you can use the Session like normal.
+         * |
          */
         'encrypt' => false,
         /**
-          |--------------------------------------------------------------------------
-          | Session File Location
-          |--------------------------------------------------------------------------
-          |
-          | When using the native session driver, we need a location where session
-          | files may be stored. A default has been set for you but a different
-          | location may be specified. This is only needed for file sessions.
-          |
+         * |--------------------------------------------------------------------------
+         * | Session File Location
+         * |--------------------------------------------------------------------------
+         * |
+         * | When using the native session driver, we need a location where session
+         * | files may be stored. A default has been set for you but a different
+         * | location may be specified. This is only needed for file sessions.
+         * |
          */
         'files' => RUNTIME_PATH . 'sessions/',
         /**
-          |--------------------------------------------------------------------------
-          | Session Database Connection
-          |--------------------------------------------------------------------------
-          |
-          | When using the "database" or "redis" session drivers, you may specify a
-          | connection that should be used to manage these sessions. This should
-          | correspond to a connection in your database configuration options.
-          |
+         * |--------------------------------------------------------------------------
+         * | Session Database Connection
+         * |--------------------------------------------------------------------------
+         * |
+         * | When using the "database" or "redis" session drivers, you may specify a
+         * | connection that should be used to manage these sessions. This should
+         * | correspond to a connection in your database configuration options.
+         * |
          */
         'connection' => null,
         /*
@@ -147,7 +152,10 @@ return [
           | happen on a given request. By default, the odds are 2 out of 100.
           |
          */
-        'lottery' => [2, 100],
+        'lottery' => [
+            2,
+            100
+        ],
         /*
           |--------------------------------------------------------------------------
           | Session Cookie Name
@@ -202,15 +210,15 @@ return [
           | the HTTP protocol. You are free to modify this option if needed.
           |
          */
-        'http_only' => true,
+        'http_only' => true
     ],
     'database' => [
         /*
-          |--------------------------------------------------------------------------
-          | MySQL example
-          |--------------------------------------------------------------------------
-          |
-          | Default database link is MySQL,
+         * |--------------------------------------------------------------------------
+         * | MySQL example
+         * |--------------------------------------------------------------------------
+         * |
+         * | Default database link is MySQL,
          */
         'db' => [
             'dsn' => 'mysql:host=localhost;dbname=kantphp',
@@ -235,45 +243,45 @@ return [
     ],
     'cache' => [
         /**
-          |--------------------------------------------------------------------------
-          | Default Cache Store
-          |--------------------------------------------------------------------------
-          |
-          | This option controls the default cache "driver".
-          | By default, we will use the lightweight native driver but
-          | you may specify any of the other wonderful drivers provided here.
-          |
-          | Supported: "file",  "memcached", "redis"
-          |
+         * |--------------------------------------------------------------------------
+         * | Default Cache Store
+         * |--------------------------------------------------------------------------
+         * |
+         * | This option controls the default cache "driver".
+         * | By default, we will use the lightweight native driver but
+         * | you may specify any of the other wonderful drivers provided here.
+         * |
+         * | Supported: "file", "memcached", "redis"
+         * |
          */
         'type' => 'file',
         /**
-          |--------------------------------------------------------------------------
-          | Cache Driver Hostname
-          |--------------------------------------------------------------------------
-          |
+         * |--------------------------------------------------------------------------
+         * | Cache Driver Hostname
+         * |--------------------------------------------------------------------------
+         * |
          */
         'hostname' => 'localhost',
         /**
-          |--------------------------------------------------------------------------
-          | Cache Driver Port
-          |--------------------------------------------------------------------------
-          |
+         * |--------------------------------------------------------------------------
+         * | Cache Driver Port
+         * |--------------------------------------------------------------------------
+         * |
          */
         'port' => 11211
     ],
     'filesystems' => [
         /*
-          |--------------------------------------------------------------------------
-          | Default Filesystem Disk
-          |--------------------------------------------------------------------------
-          |
-          | Here you may specify the default filesystem disk that should be used
-          | by the framework. The "local" disk, as well as a variety of cloud
-          | based disks are available to your application. Just store away!
-          |
+         * |--------------------------------------------------------------------------
+         * | Default Filesystem Disk
+         * |--------------------------------------------------------------------------
+         * |
+         * | Here you may specify the default filesystem disk that should be used
+         * | by the framework. The "local" disk, as well as a variety of cloud
+         * | based disks are available to your application. Just store away!
+         * |
          */
-
+        
         'default' => 'local',
         /*
           |--------------------------------------------------------------------------
@@ -301,22 +309,22 @@ return [
         'disks' => [
             'local' => [
                 'driver' => 'local',
-                'root' => APP_PATH . 'storage',
+                'root' => APP_PATH . 'storage'
             ],
             'public' => [
                 'driver' => 'local',
                 'root' => PUBLIC_PATH . 'storage',
                 'url' => APP_URL . 'storage',
-                'visibility' => 'public',
+                'visibility' => 'public'
             ],
             's3' => [
                 'driver' => 's3',
                 'key' => '',
                 'secret' => '',
                 'region' => '',
-                'bucket' => '',
-            ],
-        ],
+                'bucket' => ''
+            ]
+        ]
     ]
 ];
 

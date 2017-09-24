@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\captcha;
 
 use Kant\Kant;
@@ -26,32 +25,38 @@ use Kant\Validators\Validator;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class CaptchaValidator extends Validator {
+class CaptchaValidator extends Validator
+{
 
     /**
+     *
      * @var boolean whether to skip this validator if the input is empty.
      */
     public $skipOnEmpty = false;
 
     /**
+     *
      * @var boolean whether the comparison is case sensitive. Defaults to false.
      */
     public $caseSensitive = false;
 
     /**
+     *
      * @var string the route of the controller action that renders the CAPTCHA image.
      */
     public $captchaAction = 'common/service/captcha';
 
     /**
-     * @var string layout 
+     *
+     * @var string layout
      */
     public $layout = 'main';
 
     /**
      * @inheritdoc
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
         if ($this->message === null) {
             $this->message = Kant::t('kant', 'The verification code is incorrect.');
@@ -61,23 +66,29 @@ class CaptchaValidator extends Validator {
     /**
      * @inheritdoc
      */
-    protected function validateValue($value) {
+    protected function validateValue($value)
+    {
         $captcha = $this->createCaptchaAction();
-        $valid = !is_array($value) && $captcha->validate($value, $this->caseSensitive);
+        $valid = ! is_array($value) && $captcha->validate($value, $this->caseSensitive);
         
-        return $valid ? null : [$this->message, []];
+        return $valid ? null : [
+            $this->message,
+            []
+        ];
     }
 
     /**
      * Creates the CAPTCHA action object from the route specified by [[captchaAction]].
+     * 
      * @return \Kant\Captcha\CaptchaAction the action object
      * @throws InvalidConfigException
      */
-    public function createCaptchaAction() {
+    public function createCaptchaAction()
+    {
         $ca = Kant::$app->createController($this->captchaAction, 'implicit');
         if ($ca !== false) {
             /* @var $controller \Kant\Controller\Controller */
-            list($controller, $actionID) = $ca;
+            list ($controller, $actionID) = $ca;
             $controller->layout = $this->layout;
             $controller->view->layout = $this->layout;
             $action = $controller->createActions($actionID);
@@ -91,17 +102,19 @@ class CaptchaValidator extends Validator {
     /**
      * @inheritdoc
      */
-    public function clientValidateAttribute($model, $attribute, $view) {
+    public function clientValidateAttribute($model, $attribute, $view)
+    {
         ValidationAsset::register($view);
         $options = $this->getClientOptions($model, $attribute);
-
+        
         return 'kant.validation.captcha(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
     }
 
     /**
      * @inheritdoc
      */
-    public function getClientOptions($model, $attribute) {
+    public function getClientOptions($model, $attribute)
+    {
         $captcha = $this->createCaptchaAction();
         $code = $captcha->getVerifyCode(false);
         $hash = $captcha->generateValidationHash($this->caseSensitive ? $code : strtolower($code));
@@ -110,14 +123,13 @@ class CaptchaValidator extends Validator {
             'hashKey' => 'kantCaptcha/' . $captcha->getUniqueId() . '/' . $captcha->id,
             'caseSensitive' => $this->caseSensitive,
             'message' => Kant::$app->getI18n()->format($this->message, [
-                'attribute' => $model->getAttributeLabel($attribute),
-                    ], Kant::$app->language),
+                'attribute' => $model->getAttributeLabel($attribute)
+            ], Kant::$app->language)
         ];
         if ($this->skipOnEmpty) {
             $options['skipOnEmpty'] = 1;
         }
-
+        
         return $options;
     }
-
 }

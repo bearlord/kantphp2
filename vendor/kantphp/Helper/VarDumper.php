@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Helper;
 
 use Kant\Helper\BaseVarDumper;
@@ -26,6 +25,6 @@ use Kant\Helper\BaseVarDumper;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class VarDumper extends BaseVarDumper {
-    
+class VarDumper extends BaseVarDumper
+{
 }

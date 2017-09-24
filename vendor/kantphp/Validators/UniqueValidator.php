@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Validators;
 
 use Kant\Kant;
@@ -37,47 +36,53 @@ use Kant\Helper\Inflector;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class UniqueValidator extends Validator {
+class UniqueValidator extends Validator
+{
 
     /**
+     *
      * @var string the name of the ActiveRecord class that should be used to validate the uniqueness
-     * of the current attribute value. If not set, it will use the ActiveRecord class of the attribute being validated.
+     *      of the current attribute value. If not set, it will use the ActiveRecord class of the attribute being validated.
      * @see targetAttribute
      */
     public $targetClass;
 
     /**
+     *
      * @var string|array the name of the ActiveRecord attribute that should be used to
-     * validate the uniqueness of the current attribute value. If not set, it will use the name
-     * of the attribute currently being validated. You may use an array to validate the uniqueness
-     * of multiple columns at the same time. The array values are the attributes that will be
-     * used to validate the uniqueness, while the array keys are the attributes whose values are to be validated.
-     * If the key and the value are the same, you can just specify the value.
+     *      validate the uniqueness of the current attribute value. If not set, it will use the name
+     *      of the attribute currently being validated. You may use an array to validate the uniqueness
+     *      of multiple columns at the same time. The array values are the attributes that will be
+     *      used to validate the uniqueness, while the array keys are the attributes whose values are to be validated.
+     *      If the key and the value are the same, you can just specify the value.
      */
     public $targetAttribute;
 
     /**
+     *
      * @var string|array|\Closure additional filter to be applied to the DB query used to check the uniqueness of the attribute value.
-     * This can be a string or an array representing the additional query condition (refer to [[\Kant\db\Query::where()]]
-     * on the format of query condition), or an anonymous function with the signature `function ($query)`, where `$query`
-     * is the [[\Kant\db\Query|Query]] object that you can modify in the function.
+     *      This can be a string or an array representing the additional query condition (refer to [[\Kant\db\Query::where()]]
+     *      on the format of query condition), or an anonymous function with the signature `function ($query)`, where `$query`
+     *      is the [[\Kant\db\Query|Query]] object that you can modify in the function.
      */
     public $filter;
 
     /**
+     *
      * @var string the user-defined error message used when [[targetAttribute]] is an array. It may contain the following placeholders:
-     *
-     * - `{attributes}`: the labels of the attributes being validated.
-     * - `{values}`: the values of the attributes being validated.
-     *
-    .9
+     *     
+     *      - `{attributes}`: the labels of the attributes being validated.
+     *      - `{values}`: the values of the attributes being validated.
+     *     
+     *      .9
      */
     public $comboNotUnique;
 
     /**
      * @inheritdoc
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
         if ($this->message === null) {
             $this->message = Kant::t('kant', '{attribute} "{value}" has already been taken.');
@@ -90,38 +95,41 @@ class UniqueValidator extends Validator {
     /**
      * @inheritdoc
      */
-    public function validateAttribute($model, $attribute) {
+    public function validateAttribute($model, $attribute)
+    {
         /* @var $targetClass ActiveRecordInterface */
         $targetClass = $this->targetClass === null ? get_class($model) : $this->targetClass;
         $targetAttribute = $this->targetAttribute === null ? $attribute : $this->targetAttribute;
-
+        
         if (is_array($targetAttribute)) {
             $params = [];
             foreach ($targetAttribute as $k => $v) {
                 $params[$v] = is_int($k) ? $model->$v : $model->$k;
             }
         } else {
-            $params = [$targetAttribute => $model->$attribute];
+            $params = [
+                $targetAttribute => $model->$attribute
+            ];
         }
-
+        
         foreach ($params as $value) {
             if (is_array($value)) {
                 $this->addError($model, $attribute, Kant::t('kant', '{attribute} is invalid.'));
-
+                
                 return;
             }
         }
-
+        
         $query = $targetClass::find();
         $query->andWhere($params);
-
+        
         if ($this->filter instanceof \Closure) {
             call_user_func($this->filter, $query);
         } elseif ($this->filter !== null) {
             $query->andWhere($this->filter);
         }
-
-        if (!$model instanceof ActiveRecordInterface || $model->getIsNewRecord() || $model->className() !== $targetClass::className()) {
+        
+        if (! $model instanceof ActiveRecordInterface || $model->getIsNewRecord() || $model->className() !== $targetClass::className()) {
             // if current $model isn't in the database yet then it's OK just to call exists()
             // also there's no need to run check based on primary keys, when $targetClass is not the same as $model's class
             $exists = $query->exists();
@@ -146,7 +154,7 @@ class UniqueValidator extends Validator {
                 $exists = $n > 1;
             }
         }
-
+        
         if ($exists) {
             if (count($targetAttribute) > 1) {
                 $this->addComboNotUniqueError($model, $attribute);
@@ -158,10 +166,14 @@ class UniqueValidator extends Validator {
 
     /**
      * Builds and adds [[comboNotUnique]] error message to the specified model attribute.
-     * @param \Kant\Model\Model $model the data model.
-     * @param string $attribute the name of the attribute.
+     * 
+     * @param \Kant\Model\Model $model
+     *            the data model.
+     * @param string $attribute
+     *            the name of the attribute.
      */
-    private function addComboNotUniqueError($model, $attribute) {
+    private function addComboNotUniqueError($model, $attribute)
+    {
         $attributeCombo = [];
         $valueCombo = [];
         foreach ($this->targetAttribute as $key => $value) {
@@ -178,5 +190,4 @@ class UniqueValidator extends Validator {
             'values' => implode('-', $valueCombo)
         ]);
     }
-
 }

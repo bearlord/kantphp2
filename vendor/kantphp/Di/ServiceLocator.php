@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Di;
 
 use Kant\Kant;
@@ -27,27 +26,30 @@ use Kant\Exception\InvalidConfigException;
  * ```php
  * $locator = new \Kant\Di\ServiceLocator;
  * $locator->setComponents([
- *     'db' => [
- *         'class' => 'Kant\Database\Connection',
- *         'dsn' => 'sqlite:path/to/file.db',
- *     ]
+ * 'db' => [
+ * 'class' => 'Kant\Database\Connection',
+ * 'dsn' => 'sqlite:path/to/file.db',
+ * ]
  * ]);
  *
- * $db = $locator->get('db');  // or $locator->db
+ * $db = $locator->get('db'); // or $locator->db
  * ```
  *
  *
  * @property array $components The list of the component definitions or the loaded component instances (ID =>
- * definition or instance).
+ *           definition or instance).
  */
-class ServiceLocator extends Component {
+class ServiceLocator extends Component
+{
 
     /**
+     *
      * @var array shared component instances indexed by their IDs
      */
     private $_components = [];
 
     /**
+     *
      * @var array component definitions indexed by their IDs
      */
     private $_definitions = [];
@@ -55,10 +57,13 @@ class ServiceLocator extends Component {
     /**
      * Getter magic method.
      * This method is overridden to support accessing components like reading properties.
-     * @param string $name component or property name
+     * 
+     * @param string $name
+     *            component or property name
      * @return mixed the named property value
      */
-    public function __get($name) {
+    public function __get($name)
+    {
         if ($this->has($name)) {
             return $this->get($name);
         } else {
@@ -69,10 +74,13 @@ class ServiceLocator extends Component {
     /**
      * Checks if a property value is null.
      * This method overrides the parent implementation by checking if the named component is loaded.
-     * @param string $name the property name or the event name
+     * 
+     * @param string $name
+     *            the property name or the event name
      * @return boolean whether the property value is null
      */
-    public function __isset($name) {
+    public function __isset($name)
+    {
         if ($this->has($name, true)) {
             return true;
         } else {
@@ -85,35 +93,41 @@ class ServiceLocator extends Component {
      * This method may return different results depending on the value of `$checkInstance`.
      *
      * - If `$checkInstance` is false (default), the method will return a value indicating whether the locator has the specified
-     *   component definition.
+     * component definition.
      * - If `$checkInstance` is true, the method will return a value indicating whether the locator has
-     *   instantiated the specified component.
+     * instantiated the specified component.
      *
-     * @param string $id component ID (e.g. `db`).
-     * @param boolean $checkInstance whether the method should check if the component is shared and instantiated.
+     * @param string $id
+     *            component ID (e.g. `db`).
+     * @param boolean $checkInstance
+     *            whether the method should check if the component is shared and instantiated.
      * @return boolean whether the locator has the specified component definition or has instantiated the component.
      * @see set()
      */
-    public function has($id, $checkInstance = false) {
+    public function has($id, $checkInstance = false)
+    {
         return $checkInstance ? isset($this->_components[$id]) : isset($this->_definitions[$id]);
     }
 
     /**
      * Returns the component instance with the specified ID.
      *
-     * @param string $id component ID (e.g. `db`).
-     * @param boolean $throwException whether to throw an exception if `$id` is not registered with the locator before.
+     * @param string $id
+     *            component ID (e.g. `db`).
+     * @param boolean $throwException
+     *            whether to throw an exception if `$id` is not registered with the locator before.
      * @return object|null the component of the specified ID. If `$throwException` is false and `$id`
-     * is not registered before, null will be returned.
+     *         is not registered before, null will be returned.
      * @throws InvalidConfigException if `$id` refers to a nonexistent component ID
      * @see has()
      * @see set()
      */
-    public function get($id, $throwException = true) {
+    public function get($id, $throwException = true)
+    {
         if (isset($this->_components[$id])) {
             return $this->_components[$id];
         }
-
+        
         if (isset($this->_definitions[$id])) {
             $definition = $this->_definitions[$id];
             if (is_object($definition)) {
@@ -139,16 +153,16 @@ class ServiceLocator extends Component {
      *
      * // a configuration array
      * $locator->set('db', [
-     *     'class' => 'Kant\Database\Connection',
-     *     'dsn' => 'mysql:host=127.0.0.1;dbname=demo',
-     *     'username' => 'root',
-     *     'password' => '',
-     *     'charset' => 'utf8',
+     * 'class' => 'Kant\Database\Connection',
+     * 'dsn' => 'mysql:host=127.0.0.1;dbname=demo',
+     * 'username' => 'root',
+     * 'password' => '',
+     * 'charset' => 'utf8',
      * ]);
      *
      * // an anonymous function
      * $locator->set('cache', function ($params) {
-     *     return new Kant\Cache\Cache;
+     * return new Kant\Cache\Cache;
      * });
      *
      * // an instance
@@ -157,28 +171,31 @@ class ServiceLocator extends Component {
      *
      * If a component definition with the same ID already exists, it will be overwritten.
      *
-     * @param string $id component ID (e.g. `db`).
-     * @param mixed $definition the component definition to be registered with this locator.
-     * It can be one of the following:
-     *
-     * - a class name
-     * - a configuration array: the array contains name-value pairs that will be used to
-     *   initialize the property values of the newly created object when [[get()]] is called.
-     *   The `class` element is required and stands for the the class of the object to be created.
-     * - a PHP callable: either an anonymous function or an array representing a class method (e.g. `['Foo', 'bar']`).
-     *   The callable will be called by [[get()]] to return an object associated with the specified component ID.
-     * - an object: When [[get()]] is called, this object will be returned.
-     *
+     * @param string $id
+     *            component ID (e.g. `db`).
+     * @param mixed $definition
+     *            the component definition to be registered with this locator.
+     *            It can be one of the following:
+     *            
+     *            - a class name
+     *            - a configuration array: the array contains name-value pairs that will be used to
+     *            initialize the property values of the newly created object when [[get()]] is called.
+     *            The `class` element is required and stands for the the class of the object to be created.
+     *            - a PHP callable: either an anonymous function or an array representing a class method (e.g. `['Foo', 'bar']`).
+     *            The callable will be called by [[get()]] to return an object associated with the specified component ID.
+     *            - an object: When [[get()]] is called, this object will be returned.
+     *            
      * @throws InvalidConfigException if the definition is an invalid configuration array
      */
-    public function set($id, $definition) {
+    public function set($id, $definition)
+    {
         if ($definition === null) {
             unset($this->_components[$id], $this->_definitions[$id]);
             return;
         }
-
+        
         unset($this->_components[$id]);
-
+        
         if (is_object($definition) || is_callable($definition, true)) {
             // an object, a class name, or a PHP callable
             $this->_definitions[$id] = $definition;
@@ -196,18 +213,24 @@ class ServiceLocator extends Component {
 
     /**
      * Removes the component from the locator.
-     * @param string $id the component ID
+     * 
+     * @param string $id
+     *            the component ID
      */
-    public function clear($id) {
+    public function clear($id)
+    {
         unset($this->_definitions[$id], $this->_components[$id]);
     }
 
     /**
      * Returns the list of the component definitions or the loaded component instances.
-     * @param boolean $returnDefinitions whether to return component definitions instead of the loaded component instances.
+     * 
+     * @param boolean $returnDefinitions
+     *            whether to return component definitions instead of the loaded component instances.
      * @return array the list of the component definitions or the loaded component instances (ID => definition or instance).
      */
-    public function getComponents($returnDefinitions = true) {
+    public function getComponents($returnDefinitions = true)
+    {
         return $returnDefinitions ? $this->_definitions : $this->_components;
     }
 
@@ -225,23 +248,24 @@ class ServiceLocator extends Component {
      *
      * ```php
      * [
-     *     'db' => [
-     *         'class' => 'Kant\Database\Connection',
-     *         'dsn' => 'sqlite:path/to/file.db',
-     *     ],
-     *     'cache' => [
-     *         'class' => 'Kant\Cache\Cache',
-     *         'db' => 'db',
-     *     ],
+     * 'db' => [
+     * 'class' => 'Kant\Database\Connection',
+     * 'dsn' => 'sqlite:path/to/file.db',
+     * ],
+     * 'cache' => [
+     * 'class' => 'Kant\Cache\Cache',
+     * 'db' => 'db',
+     * ],
      * ]
      * ```
      *
-     * @param array $components component definitions or instances
+     * @param array $components
+     *            component definitions or instances
      */
-    public function setComponents($components) {
+    public function setComponents($components)
+    {
         foreach ($components as $id => $component) {
             $this->set($id, $component);
         }
     }
-
 }

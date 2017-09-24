@@ -6,35 +6,41 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant;
 
 use Kant\Log\Logger;
 use Kant\Exception\InvalidConfigException;
 use Kant\Exception\InvalidParamException;
 
-class Kant {
+class Kant
+{
 
     /**
+     *
      * @var \Kant\KantApplication the application instancethe application instance
      */
     public static $app;
 
     /**
+     *
      * @var array registered path aliases
      * @see getAlias()
      * @see setAlias()
      */
-    public static $aliases = ['@kant' => __DIR__];
+    public static $aliases = [
+        '@kant' => __DIR__
+    ];
 
     /**
+     *
      * @var \Kant\Di\Container the dependency injection (DI) container used by [[createObject()]].
-     * You may use [[Container::set()]] to set up the needed dependencies of classes and
-     * their initial property values.
+     *      You may use [[Container::set()]] to set up the needed dependencies of classes and
+     *      their initial property values.
      * @see createObject()
      * @see Container
      */
     public static $container;
+
     private static $_logger;
 
     /**
@@ -42,7 +48,8 @@ class Kant {
      *
      * @return string
      */
-    public function getVersion() {
+    public function getVersion()
+    {
         return '2.2.0';
     }
 
@@ -53,8 +60,8 @@ class Kant {
      *
      * 1. If the given alias does not start with '@', it is returned back without change;
      * 2. Otherwise, look for the longest registered alias that matches the beginning part
-     *    of the given alias. If it exists, replace the matching part of the given alias with
-     *    the corresponding registered path.
+     * of the given alias. If it exists, replace the matching part of the given alias with
+     * the corresponding registered path.
      * 3. Throw an exception or return false, depending on the `$throwException` parameter.
      *
      * For example, by default '@kant' is registered as the alias to the Kant framework directory,
@@ -69,19 +76,22 @@ class Kant {
      *
      * Note, this method does not check if the returned path exists or not.
      *
-     * @param string $alias the alias to be translated.
-     * @param boolean $throwException whether to throw an exception if the given alias is invalid.
-     * If this is false and an invalid alias is given, false will be returned by this method.
+     * @param string $alias
+     *            the alias to be translated.
+     * @param boolean $throwException
+     *            whether to throw an exception if the given alias is invalid.
+     *            If this is false and an invalid alias is given, false will be returned by this method.
      * @return string|boolean the path corresponding to the alias, false if the root alias is not previously registered.
      * @throws InvalidParamException if the alias is invalid while $throwException is true.
      * @see setAlias()
      */
-    public static function getAlias($alias, $throwException = true) {
+    public static function getAlias($alias, $throwException = true)
+    {
         if (strncmp($alias, '@', 1)) {
             // not an alias
             return $alias;
         }
-
+        
         $pos = strpos($alias, '/');
         $root = $pos === false ? $alias : substr($alias, 0, $pos);
         if (isset(static::$aliases[$root])) {
@@ -95,7 +105,7 @@ class Kant {
                 }
             }
         }
-
+        
         if ($throwException) {
             throw new InvalidParamException("Invalid path alias: $alias");
         } else {
@@ -117,21 +127,24 @@ class Kant {
      *
      * Any trailing '/' and '\' characters in the given path will be trimmed.
      *
-     * @param string $alias the alias name (e.g. "@kant"). It must start with a '@' character.
-     * It may contain the forward slash '/' which serves as boundary character when performing
-     * alias translation by [[getAlias()]].
-     * @param string $path the path corresponding to the alias. If this is null, the alias will
-     * be removed. Trailing '/' and '\' characters will be trimmed. This can be
-     *
-     * - a directory or a file path (e.g. `/tmp`, `/tmp/main.txt`)
-     * - a URL (e.g. `http://www.kantphp.com`)
-     * - a path alias (e.g. `@kant/base`). In this case, the path alias will be converted into the
-     *   actual path first by calling [[getAlias()]].
-     *
+     * @param string $alias
+     *            the alias name (e.g. "@kant"). It must start with a '@' character.
+     *            It may contain the forward slash '/' which serves as boundary character when performing
+     *            alias translation by [[getAlias()]].
+     * @param string $path
+     *            the path corresponding to the alias. If this is null, the alias will
+     *            be removed. Trailing '/' and '\' characters will be trimmed. This can be
+     *            
+     *            - a directory or a file path (e.g. `/tmp`, `/tmp/main.txt`)
+     *            - a URL (e.g. `http://www.kantphp.com`)
+     *            - a path alias (e.g. `@kant/base`). In this case, the path alias will be converted into the
+     *            actual path first by calling [[getAlias()]].
+     *            
      * @throws InvalidParamException if $path is an invalid alias.
      * @see getAlias()
      */
-    public static function setAlias($alias, $path) {
+    public static function setAlias($alias, $path)
+    {
         if (strncmp($alias, '@', 1)) {
             $alias = '@' . $alias;
         }
@@ -139,11 +152,13 @@ class Kant {
         $root = $pos === false ? $alias : substr($alias, 0, $pos);
         if ($path !== null) {
             $path = strncmp($path, '@', 1) ? rtrim($path, '\\/') : static::getAlias($path);
-            if (!isset(static::$aliases[$root])) {
+            if (! isset(static::$aliases[$root])) {
                 if ($pos === false) {
                     static::$aliases[$root] = $path;
                 } else {
-                    static::$aliases[$root] = [$alias => $path];
+                    static::$aliases[$root] = [
+                        $alias => $path
+                    ];
                 }
             } elseif (is_string(static::$aliases[$root])) {
                 if ($pos === false) {
@@ -151,7 +166,7 @@ class Kant {
                 } else {
                     static::$aliases[$root] = [
                         $alias => $path,
-                        $root => static::$aliases[$root],
+                        $root => static::$aliases[$root]
                     ];
                 }
             } else {
@@ -179,20 +194,23 @@ class Kant {
      * Using [[\Kant\Di\Container|dependency injection container]], this method can also identify
      * dependent objects, instantiate them and inject them into the newly created object.
      *
-     * @param string|array|callable $type the object type. This can be specified in one of the following forms:
-     *
-     * - a string: representing the class name of the object to be created
-     * - a configuration array: the array must contain a `class` element which is treated as the object class,
-     *   and the rest of the name-value pairs will be used to initialize the corresponding object properties
-     * - a PHP callable: either an anonymous function or an array representing a class method (`[$class or $object, $method]`).
-     *   The callable should return a new instance of the object being created.
-     *
-     * @param array $params the constructor parameters
+     * @param string|array|callable $type
+     *            the object type. This can be specified in one of the following forms:
+     *            
+     *            - a string: representing the class name of the object to be created
+     *            - a configuration array: the array must contain a `class` element which is treated as the object class,
+     *            and the rest of the name-value pairs will be used to initialize the corresponding object properties
+     *            - a PHP callable: either an anonymous function or an array representing a class method (`[$class or $object, $method]`).
+     *            The callable should return a new instance of the object being created.
+     *            
+     * @param array $params
+     *            the constructor parameters
      * @return object the created object
      * @throws InvalidConfigException if the configuration is invalid.
      * @see \Kant\Di\Container
      */
-    public static function createObject($type, $params = []) {
+    public static function createObject($type, $params = [])
+    {
         if (is_string($type)) {
             return static::$container->get($type, $params);
         } elseif (is_array($type) && isset($type['class'])) {
@@ -210,15 +228,19 @@ class Kant {
 
     /**
      * Configures an object with the initial property values.
-     * @param object $object the object to be configured
-     * @param array $properties the property initial values given in terms of name-value pairs.
+     * 
+     * @param object $object
+     *            the object to be configured
+     * @param array $properties
+     *            the property initial values given in terms of name-value pairs.
      * @return object the object itself
      */
-    public static function configure($object, $properties) {
+    public static function configure($object, $properties)
+    {
         foreach ($properties as $name => $value) {
             $object->$name = $value;
         }
-
+        
         return $object;
     }
 
@@ -227,10 +249,13 @@ class Kant {
      * This method is provided such that we can get the public member variables of an object.
      * It is different from "get_object_vars()" because the latter will return private
      * and protected variables if it is called within the object itself.
-     * @param object $object the object to be handled
+     * 
+     * @param object $object
+     *            the object to be handled
      * @return array the public member variables of the object
      */
-    public static function getObjectVars($object) {
+    public static function getObjectVars($object)
+    {
         return get_object_vars($object);
     }
 
@@ -252,30 +277,37 @@ class Kant {
      * Further formatting of message parameters is supported using the [PHP intl extensions](http://www.php.net/manual/en/intro.intl.php)
      * message formatter. See [[\Kant\I18n\I18N::translate()]] for more details.
      *
-     * @param string $category the message category.
-     * @param string $message the message to be translated.
-     * @param array $params the parameters that will be used to replace the corresponding placeholders in the message.
-     * @param string $language the language code (e.g. `en-US`, `en`). If this is null, the current
-     * [[\Kant\Application::language|application language]] will be used.
+     * @param string $category
+     *            the message category.
+     * @param string $message
+     *            the message to be translated.
+     * @param array $params
+     *            the parameters that will be used to replace the corresponding placeholders in the message.
+     * @param string $language
+     *            the language code (e.g. `en-US`, `en`). If this is null, the current
+     *            [[\Kant\Application::language|application language]] will be used.
      * @return string the translated message.
      */
-    public static function t($category, $message, $params = [], $language = null) {
+    public static function t($category, $message, $params = [], $language = null)
+    {
         if (static::$app !== null) {
-            return static::$app->getI18n()->translate($category, $message, $params, $language ?: static::$app->getLanguage());
+            return static::$app->getI18n()->translate($category, $message, $params, $language ?  : static::$app->getLanguage());
         } else {
             $p = [];
             foreach ((array) $params as $name => $value) {
                 $p['{' . $name . '}'] = $value;
             }
-
+            
             return ($p === []) ? $message : strtr($message, $p);
         }
     }
 
     /**
+     *
      * @return Logger message logger
      */
-    public static function getLogger() {
+    public static function getLogger()
+    {
         if (self::$_logger !== null) {
             return self::$_logger;
         } else {
@@ -285,9 +317,12 @@ class Kant {
 
     /**
      * Sets the logger object.
-     * @param Logger $logger the logger object.
+     * 
+     * @param Logger $logger
+     *            the logger object.
      */
-    public static function setLogger($logger) {
+    public static function setLogger($logger)
+    {
         self::$_logger = $logger;
     }
 
@@ -295,10 +330,14 @@ class Kant {
      * Logs a trace message.
      * Trace messages are logged mainly for development purpose to see
      * the execution work flow of some code.
-     * @param string $message the message to be logged.
-     * @param string $category the category of the message.
+     * 
+     * @param string $message
+     *            the message to be logged.
+     * @param string $category
+     *            the category of the message.
      */
-    public static function trace($message, $category = 'application') {
+    public static function trace($message, $category = 'application')
+    {
         if (Kant::$app->config->get('debug')) {
             static::getLogger()->log($message, Logger::LEVEL_TRACE, $category);
         }
@@ -308,10 +347,14 @@ class Kant {
      * Logs an error message.
      * An error message is typically logged when an unrecoverable error occurs
      * during the execution of an application.
-     * @param string $message the message to be logged.
-     * @param string $category the category of the message.
+     * 
+     * @param string $message
+     *            the message to be logged.
+     * @param string $category
+     *            the category of the message.
      */
-    public static function error($message, $category = 'application') {
+    public static function error($message, $category = 'application')
+    {
         static::getLogger()->log($message, Logger::LEVEL_ERROR, $category);
     }
 
@@ -319,10 +362,14 @@ class Kant {
      * Logs a warning message.
      * A warning message is typically logged when an error occurs while the execution
      * can still continue.
-     * @param string $message the message to be logged.
-     * @param string $category the category of the message.
+     * 
+     * @param string $message
+     *            the message to be logged.
+     * @param string $category
+     *            the category of the message.
      */
-    public static function warning($message, $category = 'application') {
+    public static function warning($message, $category = 'application')
+    {
         static::getLogger()->log($message, Logger::LEVEL_WARNING, $category);
     }
 
@@ -330,10 +377,14 @@ class Kant {
      * Logs an informative message.
      * An informative message is typically logged by an application to keep record of
      * something important (e.g. an administrator logs in).
-     * @param string $message the message to be logged.
-     * @param string $category the category of the message.
+     * 
+     * @param string $message
+     *            the message to be logged.
+     * @param string $category
+     *            the category of the message.
      */
-    public static function info($message, $category = 'application') {
+    public static function info($message, $category = 'application')
+    {
         static::getLogger()->log($message, Logger::LEVEL_INFO, $category);
     }
 
@@ -345,28 +396,35 @@ class Kant {
      * ```php
      * \Kant::beginProfile('block1');
      * // some code to be profiled
-     *     \Kant::beginProfile('block2');
-     *     // some other code to be profiled
-     *     \Kant::endProfile('block2');
+     * \Kant::beginProfile('block2');
+     * // some other code to be profiled
+     * \Kant::endProfile('block2');
      * \Kant::endProfile('block1');
      * ```
-     * @param string $token token for the code block
-     * @param string $category the category of this log message
+     * 
+     * @param string $token
+     *            token for the code block
+     * @param string $category
+     *            the category of this log message
      * @see endProfile()
      */
-    public static function beginProfile($token, $category = 'application') {
+    public static function beginProfile($token, $category = 'application')
+    {
         static::getLogger()->log($token, Logger::LEVEL_PROFILE_BEGIN, $category);
     }
 
     /**
      * Marks the end of a code block for profiling.
      * This has to be matched with a previous call to [[beginProfile]] with the same category name.
-     * @param string $token token for the code block
-     * @param string $category the category of this log message
+     * 
+     * @param string $token
+     *            token for the code block
+     * @param string $category
+     *            the category of this log message
      * @see beginProfile()
      */
-    public static function endProfile($token, $category = 'application') {
+    public static function endProfile($token, $category = 'application')
+    {
         static::getLogger()->log($token, Logger::LEVEL_PROFILE_END, $category);
     }
-
 }

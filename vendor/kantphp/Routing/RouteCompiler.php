@@ -1,10 +1,10 @@
 <?php
-
 namespace Kant\Routing;
 
 use Kant\Routing\Symfony\Route as SymfonyRoute;
 
-class RouteCompiler {
+class RouteCompiler
+{
 
     /**
      * The route instance.
@@ -16,10 +16,11 @@ class RouteCompiler {
     /**
      * Create a new Route compiler instance.
      *
-     * @param  \Kant\Routing\Route  $route
+     * @param \Kant\Routing\Route $route            
      * @return void
      */
-    public function __construct($route) {
+    public function __construct($route)
+    {
         $this->route = $route;
     }
 
@@ -28,14 +29,13 @@ class RouteCompiler {
      *
      * @return \Symfony\Component\Routing\CompiledRoute
      */
-    public function compile() {
+    public function compile()
+    {
         $optionals = $this->getOptionalParameters();
-
+        
         $uri = preg_replace('/\{(\w+?)\?\}/', '{$1}', $this->route->uri());
-
-        return (
-                new SymfonyRoute($uri, $optionals, $this->route->wheres, [], $this->route->domain() ?: '')
-                )->compile();
+        
+        return (new SymfonyRoute($uri, $optionals, $this->route->wheres, [], $this->route->domain() ?  : ''))->compile();
     }
 
     /**
@@ -43,10 +43,10 @@ class RouteCompiler {
      *
      * @return array
      */
-    protected function getOptionalParameters() {
+    protected function getOptionalParameters()
+    {
         preg_match_all('/\{(\w+?)\?\}/', $this->route->uri(), $matches);
-
+        
         return isset($matches[1]) ? array_fill_keys($matches[1], null) : [];
     }
-
 }

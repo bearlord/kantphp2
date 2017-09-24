@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Validators;
 
 use Kant\Exception\InvalidConfigException;
@@ -19,52 +18,56 @@ use Kant\Model\Model;
  * ```php
  * class MyModel extends Model
  * {
- *     public $categoryIDs = [];
+ * public $categoryIDs = [];
  *
- *     public function rules()
- *     {
- *         return [
- *             // checks if every category ID is an integer
- *             ['categoryIDs', 'each', 'rule' => ['integer']],
- *         ]
- *     }
+ * public function rules()
+ * {
+ * return [
+ * // checks if every category ID is an integer
+ * ['categoryIDs', 'each', 'rule' => ['integer']],
+ * ]
+ * }
  * }
  * ```
  *
  * > Note: This validator will not work with inline validation rules in case of usage outside the model scope,
- *   e.g. via [[validate()]] method.
+ * e.g. via [[validate()]] method.
  *
  * > Note: EachValidator is meant to be used only in basic cases, you should consider usage of tabular input,
- *   using several models for the more complex case.
+ * using several models for the more complex case.
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 2.0.4
  */
-class EachValidator extends Validator {
+class EachValidator extends Validator
+{
 
     /**
+     *
      * @var array|Validator definition of the validation rule, which should be used on array values.
-     * It should be specified in the same format as at [[Kant\Model\Model::rules()]], except it should not
-     * contain attribute list as the first element.
-     * For example:
-     *
-     * ```php
-     * ['integer']
-     * ['match', 'pattern' => '/[a-z]/is']
-     * ```
-     *
-     * Please refer to [[Kant\Model\Model::rules()]] for more details.
+     *      It should be specified in the same format as at [[Kant\Model\Model::rules()]], except it should not
+     *      contain attribute list as the first element.
+     *      For example:
+     *     
+     *      ```php
+     *      ['integer']
+     *      ['match', 'pattern' => '/[a-z]/is']
+     *      ```
+     *     
+     *      Please refer to [[Kant\Model\Model::rules()]] for more details.
      */
     public $rule;
 
     /**
+     *
      * @var boolean whether to use error message composed by validator declared via [[rule]] if its validation fails.
-     * If enabled, error message specified for this validator itself will appear only if attribute value is not an array.
-     * If disabled, own error message value will be used always.
+     *      If enabled, error message specified for this validator itself will appear only if attribute value is not an array.
+     *      If disabled, own error message value will be used always.
      */
     public $allowMessageFromRule = true;
 
     /**
+     *
      * @var Validator validator instance.
      */
     private $_validator;
@@ -72,7 +75,8 @@ class EachValidator extends Validator {
     /**
      * @inheritdoc
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
         if ($this->message === null) {
             $this->message = Kant::t('kant', '{attribute} is invalid.');
@@ -81,10 +85,13 @@ class EachValidator extends Validator {
 
     /**
      * Returns the validator declared in [[rule]].
-     * @param Model|null $model model in which context validator should be created.
+     * 
+     * @param Model|null $model
+     *            model in which context validator should be created.
      * @return Validator the declared validator.
      */
-    private function getValidator($model = null) {
+    private function getValidator($model = null)
+    {
         if ($this->_validator === null) {
             $this->_validator = $this->createEmbeddedValidator($model);
         }
@@ -93,16 +100,19 @@ class EachValidator extends Validator {
 
     /**
      * Creates validator object based on the validation rule specified in [[rule]].
-     * @param Model|null $model model in which context validator should be created.
+     * 
+     * @param Model|null $model
+     *            model in which context validator should be created.
      * @throws \Kant\base\InvalidConfigException
      * @return Validator validator instance
      */
-    private function createEmbeddedValidator($model) {
+    private function createEmbeddedValidator($model)
+    {
         $rule = $this->rule;
         if ($rule instanceof Validator) {
             return $rule;
         } elseif (is_array($rule) && isset($rule[0])) { // validator type
-            if (!is_object($model)) {
+            if (! is_object($model)) {
                 $model = new Model(); // mock up context model
             }
             return Validator::createValidator($rule[0], $model, $this->attributes, array_slice($rule, 1));
@@ -114,33 +124,40 @@ class EachValidator extends Validator {
     /**
      * @inheritdoc
      */
-    public function validateAttribute($model, $attribute) {
+    public function validateAttribute($model, $attribute)
+    {
         $value = $model->$attribute;
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             $this->addError($model, $attribute, $this->message, []);
             return;
         }
-
+        
         $validator = $this->getValidator($model); // ensure model context while validator creation
-
+        
         $originalErrors = $model->getErrors($attribute);
         $filteredValue = [];
         foreach ($value as $k => $v) {
             $model->$attribute = $v;
-            if (!$validator->skipOnEmpty || !$validator->isEmpty($v)) {
+            if (! $validator->skipOnEmpty || ! $validator->isEmpty($v)) {
                 $validator->validateAttribute($model, $attribute);
             }
             $filteredValue[$k] = $model->$attribute;
             if ($model->hasErrors($attribute)) {
                 $validationErrors = $model->getErrors($attribute);
                 $model->clearErrors($attribute);
-                if (!empty($originalErrors)) {
-                    $model->addErrors([$attribute => $originalErrors]);
+                if (! empty($originalErrors)) {
+                    $model->addErrors([
+                        $attribute => $originalErrors
+                    ]);
                 }
                 if ($this->allowMessageFromRule) {
-                    $model->addErrors([$attribute => $validationErrors]);
+                    $model->addErrors([
+                        $attribute => $validationErrors
+                    ]);
                 } else {
-                    $this->addError($model, $attribute, $this->message, ['value' => $v]);
+                    $this->addError($model, $attribute, $this->message, [
+                        'value' => $v
+                    ]);
                 }
                 $model->$attribute = $value;
                 return;
@@ -152,11 +169,15 @@ class EachValidator extends Validator {
     /**
      * @inheritdoc
      */
-    protected function validateValue($value) {
-        if (!is_array($value)) {
-            return [$this->message, []];
+    protected function validateValue($value)
+    {
+        if (! is_array($value)) {
+            return [
+                $this->message,
+                []
+            ];
         }
-
+        
         $validator = $this->getValidator();
         foreach ($value as $v) {
             if ($validator->skipOnEmpty && $validator->isEmpty($v)) {
@@ -168,12 +189,16 @@ class EachValidator extends Validator {
                     $result[1]['value'] = $v;
                     return $result;
                 } else {
-                    return [$this->message, ['value' => $v]];
+                    return [
+                        $this->message,
+                        [
+                            'value' => $v
+                        ]
+                    ];
                 }
             }
         }
-
+        
         return null;
     }
-
 }

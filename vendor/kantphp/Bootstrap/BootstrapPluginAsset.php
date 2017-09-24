@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Bootstrap;
 
 use Kant\View\AssetBundle;
@@ -17,15 +16,17 @@ use Kant\View\AssetBundle;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class BootstrapPluginAsset extends AssetBundle {
+class BootstrapPluginAsset extends AssetBundle
+{
 
     public $sourcePath = '@bower/bootstrap/dist';
+
     public $js = [
-        'js/bootstrap.min.js',
-    ];
-    public $depends = [
-        'Kant\View\JqueryAsset',
-        'Kant\Bootstrap\BootstrapAsset',
+        'js/bootstrap.min.js'
     ];
 
+    public $depends = [
+        'Kant\View\JqueryAsset',
+        'Kant\Bootstrap\BootstrapAsset'
+    ];
 }

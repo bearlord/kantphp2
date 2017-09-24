@@ -1,23 +1,24 @@
 <?php
-
 namespace Kant\Routing;
 
 use Kant\Support\Collection;
 
-class SortedMiddleware extends Collection {
+class SortedMiddleware extends Collection
+{
 
     /**
      * Create a new Sorted Middleware container.
      *
-     * @param  array  $priorityMap
-     * @param  array|Collection  $middlewares
+     * @param array $priorityMap            
+     * @param array|Collection $middlewares            
      * @return void
      */
-    public function __construct(array $priorityMap, $middlewares) {
+    public function __construct(array $priorityMap, $middlewares)
+    {
         if ($middlewares instanceof Collection) {
             $middlewares = $middlewares->all();
         }
-
+        
         $this->items = $this->sortMiddleware($priorityMap, $middlewares);
     }
 
@@ -26,33 +27,30 @@ class SortedMiddleware extends Collection {
      *
      * Each call to this method makes one discrete middleware movement if necessary.
      *
-     * @param  array  $priorityMap
-     * @param  array  $middlewares
+     * @param array $priorityMap            
+     * @param array $middlewares            
      * @return array
      */
-    protected function sortMiddleware($priorityMap, $middlewares) {
+    protected function sortMiddleware($priorityMap, $middlewares)
+    {
         $lastIndex = 0;
-
+        
         foreach ($middlewares as $index => $middleware) {
-            if (!is_string($middleware)) {
+            if (! is_string($middleware)) {
                 continue;
             }
-
+            
             $stripped = reset(explode(':', $middleware));
-
+            
             if (in_array($stripped, $priorityMap)) {
                 $priorityIndex = array_search($stripped, $priorityMap);
-
+                
                 // This middleware is in the priority map. If we have encountered another middleware
                 // that was also in the priority map and was at a lower priority than the current
                 // middleware, we will move this middleware to be above the previous encounter.
                 if (isset($lastPriorityIndex) && $priorityIndex < $lastPriorityIndex) {
-                    return $this->sortMiddleware(
-                                    $priorityMap, array_values(
-                                            $this->moveMiddleware($middlewares, $index, $lastIndex)
-                                    )
-                    );
-
+                    return $this->sortMiddleware($priorityMap, array_values($this->moveMiddleware($middlewares, $index, $lastIndex)));
+                    
                     // This middleware is in the priority map; but, this is the first middleware we have
                     // encountered from the map thus far. We'll save its current index plus its index
                     // from the priority map so we can compare against them on the next iterations.
@@ -62,24 +60,24 @@ class SortedMiddleware extends Collection {
                 }
             }
         }
-
+        
         return array_values(array_unique($middlewares, SORT_REGULAR));
     }
 
     /**
      * Splice a middleware into a new position and remove the old entry.
      *
-     * @param  array  $middlewares
-     * @param  int  $from
-     * @param  int  $to
+     * @param array $middlewares            
+     * @param int $from            
+     * @param int $to            
      * @return array
      */
-    protected function moveMiddleware($middlewares, $from, $to) {
+    protected function moveMiddleware($middlewares, $from, $to)
+    {
         array_splice($middlewares, $to, 0, $middlewares[$from]);
-
+        
         unset($middlewares[$from + 1]);
-
+        
         return $middlewares;
     }
-
 }

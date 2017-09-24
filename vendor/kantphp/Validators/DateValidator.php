@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Validators;
 
 use DateTime;
@@ -29,196 +28,214 @@ use Kant\Helper\FormatConverter;
  * property and the target timeZone will be UTC when [[timestampAttributeFormat]] is `null` (exporting as UNIX timestamp)
  * or [[timestampAttributeTimeZone]] otherwise. If you want to avoid the time zone conversion, make sure that [[timeZone]] and
  * [[timestampAttributeTimeZone]] are the same.
- * 
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
-class DateValidator extends Validator {
+class DateValidator extends Validator
+{
 
     /**
      * Constant for specifying the validation [[type]] as a date value, used for validation with intl short format.
-    .8
+     * .8
+     * 
      * @see type
      */
     const TYPE_DATE = 'date';
 
     /**
      * Constant for specifying the validation [[type]] as a datetime value, used for validation with intl short format.
-    .8
+     * .8
+     * 
      * @see type
      */
     const TYPE_DATETIME = 'datetime';
 
     /**
      * Constant for specifying the validation [[type]] as a time value, used for validation with intl short format.
-    .8
+     * .8
+     * 
      * @see type
      */
     const TYPE_TIME = 'time';
 
     /**
+     *
      * @var string the type of the validator. Indicates, whether a date, time or datetime value should be validated.
-     * This property influences the default value of [[format]] and also sets the correct behavior when [[format]] is one of the intl
-     * short formats, `short`, `medium`, `long`, or `full`.
-     *
-     * This is only effective when the [PHP intl extension](http://php.net/manual/en/book.intl.php) is installed.
-     *
-     * This property can be set to the following values:
-     *
-     * - [[TYPE_DATE]] - (default) for validating date values only, that means only values that do not include a time range are valid.
-     * - [[TYPE_DATETIME]] - for validating datetime values, that contain a date part as well as a time part.
-     * - [[TYPE_TIME]] - for validating time values, that contain no date information.
-     *
-    .8
+     *      This property influences the default value of [[format]] and also sets the correct behavior when [[format]] is one of the intl
+     *      short formats, `short`, `medium`, `long`, or `full`.
+     *     
+     *      This is only effective when the [PHP intl extension](http://php.net/manual/en/book.intl.php) is installed.
+     *     
+     *      This property can be set to the following values:
+     *     
+     *      - [[TYPE_DATE]] - (default) for validating date values only, that means only values that do not include a time range are valid.
+     *      - [[TYPE_DATETIME]] - for validating datetime values, that contain a date part as well as a time part.
+     *      - [[TYPE_TIME]] - for validating time values, that contain no date information.
+     *     
+     *      .8
      */
     public $type = self::TYPE_DATE;
 
     /**
+     *
      * @var string the date format that the value being validated should follow.
-     * This can be a date time pattern as described in the [ICU manual](http://userguide.icu-project.org/formatparse/datetime#TOC-Date-Time-Format-Syntax).
-     *
-     * Alternatively this can be a string prefixed with `php:` representing a format that can be recognized by the PHP Datetime class.
-     * Please refer to <http://php.net/manual/en/datetime.createfromformat.php> on supported formats.
-     *
-     * If this property is not set, the default value will be obtained from `Kant::$app->formatter->dateFormat`, see [[\Kant\i18n\Formatter::dateFormat]] for details.
-     * Since version 2.0.8 the default value will be determined from different formats of the formatter class,
-     * dependent on the value of [[type]]:
-     *
-     * - if type is [[TYPE_DATE]], the default value will be taken from [[\Kant\i18n\Formatter::dateFormat]],
-     * - if type is [[TYPE_DATETIME]], it will be taken from [[\Kant\i18n\Formatter::datetimeFormat]],
-     * - and if type is [[TYPE_TIME]], it will be [[\Kant\i18n\Formatter::timeFormat]].
-     *
-     * Here are some example values:
-     *
-     * ```php
-     * 'MM/dd/yyyy' // date in ICU format
-     * 'php:m/d/Y' // the same date in PHP format
-     * 'MM/dd/yyyy HH:mm' // not only dates but also times can be validated
-     * ```
-     *
-     * **Note:** the underlying date parsers being used vary dependent on the format. If you use the ICU format and
-     * the [PHP intl extension](http://php.net/manual/en/book.intl.php) is installed, the [IntlDateFormatter](http://php.net/manual/en/intldateformatter.parse.php)
-     * is used to parse the input value. In all other cases the PHP [DateTime](http://php.net/manual/en/datetime.createfromformat.php) class
-     * is used. The IntlDateFormatter has the advantage that it can parse international dates like `12. Mai 2015` or `12 мая 2014`, while the
-     * PHP parser is limited to English only. The PHP parser however is more strict about the input format as it will not accept
-     * `12.05.05` for the format `php:d.m.Y`, but the IntlDateFormatter will accept it for the format `dd.MM.yyyy`.
-     * If you need to use the IntlDateFormatter you can avoid this problem by specifying a [[min|minimum date]].
+     *      This can be a date time pattern as described in the [ICU manual](http://userguide.icu-project.org/formatparse/datetime#TOC-Date-Time-Format-Syntax).
+     *     
+     *      Alternatively this can be a string prefixed with `php:` representing a format that can be recognized by the PHP Datetime class.
+     *      Please refer to <http://php.net/manual/en/datetime.createfromformat.php> on supported formats.
+     *     
+     *      If this property is not set, the default value will be obtained from `Kant::$app->formatter->dateFormat`, see [[\Kant\i18n\Formatter::dateFormat]] for details.
+     *      Since version 2.0.8 the default value will be determined from different formats of the formatter class,
+     *      dependent on the value of [[type]]:
+     *     
+     *      - if type is [[TYPE_DATE]], the default value will be taken from [[\Kant\i18n\Formatter::dateFormat]],
+     *      - if type is [[TYPE_DATETIME]], it will be taken from [[\Kant\i18n\Formatter::datetimeFormat]],
+     *      - and if type is [[TYPE_TIME]], it will be [[\Kant\i18n\Formatter::timeFormat]].
+     *     
+     *      Here are some example values:
+     *     
+     *      ```php
+     *      'MM/dd/yyyy' // date in ICU format
+     *      'php:m/d/Y' // the same date in PHP format
+     *      'MM/dd/yyyy HH:mm' // not only dates but also times can be validated
+     *      ```
+     *     
+     *      **Note:** the underlying date parsers being used vary dependent on the format. If you use the ICU format and
+     *      the [PHP intl extension](http://php.net/manual/en/book.intl.php) is installed, the [IntlDateFormatter](http://php.net/manual/en/intldateformatter.parse.php)
+     *      is used to parse the input value. In all other cases the PHP [DateTime](http://php.net/manual/en/datetime.createfromformat.php) class
+     *      is used. The IntlDateFormatter has the advantage that it can parse international dates like `12. Mai 2015` or `12 мая 2014`, while the
+     *      PHP parser is limited to English only. The PHP parser however is more strict about the input format as it will not accept
+     *      `12.05.05` for the format `php:d.m.Y`, but the IntlDateFormatter will accept it for the format `dd.MM.yyyy`.
+     *      If you need to use the IntlDateFormatter you can avoid this problem by specifying a [[min|minimum date]].
      */
     public $format;
 
     /**
+     *
      * @var string the locale ID that is used to localize the date parsing.
-     * This is only effective when the [PHP intl extension](http://php.net/manual/en/book.intl.php) is installed.
-     * If not set, the locale of the [[\Kant\base\Application::formatter|formatter]] will be used.
-     * See also [[\Kant\i18n\Formatter::locale]].
+     *      This is only effective when the [PHP intl extension](http://php.net/manual/en/book.intl.php) is installed.
+     *      If not set, the locale of the [[\Kant\base\Application::formatter|formatter]] will be used.
+     *      See also [[\Kant\i18n\Formatter::locale]].
      */
     public $locale;
 
     /**
+     *
      * @var string the timezone to use for parsing date and time values.
-     * This can be any value that may be passed to [date_default_timezone_set()](http://www.php.net/manual/en/function.date-default-timezone-set.php)
-     * e.g. `UTC`, `Europe/Berlin` or `America/Chicago`.
-     * Refer to the [php manual](http://www.php.net/manual/en/timezones.php) for available timezones.
-     * If this property is not set, [[\Kant\base\Application::timeZone]] will be used.
+     *      This can be any value that may be passed to [date_default_timezone_set()](http://www.php.net/manual/en/function.date-default-timezone-set.php)
+     *      e.g. `UTC`, `Europe/Berlin` or `America/Chicago`.
+     *      Refer to the [php manual](http://www.php.net/manual/en/timezones.php) for available timezones.
+     *      If this property is not set, [[\Kant\base\Application::timeZone]] will be used.
      */
     public $timeZone;
 
     /**
-     * @var string the name of the attribute to receive the parsing result.
-     * When this property is not null and the validation is successful, the named attribute will
-     * receive the parsing result.
      *
-     * This can be the same attribute as the one being validated. If this is the case,
-     * the original value will be overwritten with the timestamp value after successful validation.
+     * @var string the name of the attribute to receive the parsing result.
+     *      When this property is not null and the validation is successful, the named attribute will
+     *      receive the parsing result.
+     *     
+     *      This can be the same attribute as the one being validated. If this is the case,
+     *      the original value will be overwritten with the timestamp value after successful validation.
      * @see timestampAttributeFormat
      * @see timestampAttributeTimeZone
      */
     public $timestampAttribute;
 
     /**
-     * @var string the format to use when populating the [[timestampAttribute]].
-     * The format can be specified in the same way as for [[format]].
      *
-     * If not set, [[timestampAttribute]] will receive a UNIX timestamp.
-     * If [[timestampAttribute]] is not set, this property will be ignored.
+     * @var string the format to use when populating the [[timestampAttribute]].
+     *      The format can be specified in the same way as for [[format]].
+     *     
+     *      If not set, [[timestampAttribute]] will receive a UNIX timestamp.
+     *      If [[timestampAttribute]] is not set, this property will be ignored.
      * @see format
-     * @see timestampAttribute
-    .4
+     * @see timestampAttribute .4
      */
     public $timestampAttributeFormat;
 
     /**
+     *
      * @var string the timezone to use when populating the [[timestampAttribute]]. Defaults to `UTC`.
-     *
-     * This can be any value that may be passed to [date_default_timezone_set()](http://www.php.net/manual/en/function.date-default-timezone-set.php)
-     * e.g. `UTC`, `Europe/Berlin` or `America/Chicago`.
-     * Refer to the [php manual](http://www.php.net/manual/en/timezones.php) for available timezones.
-     *
-     * If [[timestampAttributeFormat]] is not set, this property will be ignored.
-     * @see timestampAttributeFormat
-    .4
+     *     
+     *      This can be any value that may be passed to [date_default_timezone_set()](http://www.php.net/manual/en/function.date-default-timezone-set.php)
+     *      e.g. `UTC`, `Europe/Berlin` or `America/Chicago`.
+     *      Refer to the [php manual](http://www.php.net/manual/en/timezones.php) for available timezones.
+     *     
+     *      If [[timestampAttributeFormat]] is not set, this property will be ignored.
+     * @see timestampAttributeFormat .4
      */
     public $timestampAttributeTimeZone = 'UTC';
 
     /**
+     *
      * @var integer|string upper limit of the date. Defaults to null, meaning no upper limit.
-     * This can be a unix timestamp or a string representing a date time value.
-     * If this property is a string, [[format]] will be used to parse it.
+     *      This can be a unix timestamp or a string representing a date time value.
+     *      If this property is a string, [[format]] will be used to parse it.
      * @see tooBig for the customized message used when the date is too big.
-    .4
+     *      .4
      */
     public $max;
 
     /**
+     *
      * @var integer|string lower limit of the date. Defaults to null, meaning no lower limit.
-     * This can be a unix timestamp or a string representing a date time value.
-     * If this property is a string, [[format]] will be used to parse it.
+     *      This can be a unix timestamp or a string representing a date time value.
+     *      If this property is a string, [[format]] will be used to parse it.
      * @see tooSmall for the customized message used when the date is too small.
-    .4
+     *      .4
      */
     public $min;
 
     /**
+     *
      * @var string user-defined error message used when the value is bigger than [[max]].
-    .4
+     *      .4
      */
     public $tooBig;
 
     /**
+     *
      * @var string user-defined error message used when the value is smaller than [[min]].
-    .4
+     *      .4
      */
     public $tooSmall;
 
     /**
+     *
      * @var string user friendly value of upper limit to display in the error message.
-     * If this property is null, the value of [[max]] will be used (before parsing).
-    .4
+     *      If this property is null, the value of [[max]] will be used (before parsing).
+     *      .4
      */
     public $maxString;
 
     /**
+     *
      * @var string user friendly value of lower limit to display in the error message.
-     * If this property is null, the value of [[min]] will be used (before parsing).
-    .4
+     *      If this property is null, the value of [[min]] will be used (before parsing).
+     *      .4
      */
     public $minString;
 
     /**
+     *
      * @var array map of short format names to IntlDateFormatter constant values.
      */
     private $_dateFormats = [
         'short' => 3, // IntlDateFormatter::SHORT,
         'medium' => 2, // IntlDateFormatter::MEDIUM,
         'long' => 1, // IntlDateFormatter::LONG,
-        'full' => 0, // IntlDateFormatter::FULL,
-    ];
+        'full' => 0
+    ] // IntlDateFormatter::FULL,
+;
 
     /**
      * @inheritdoc
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
         if ($this->message === null) {
             $this->message = Kant::t('kant', 'The format of {attribute} is invalid.');
@@ -271,7 +288,8 @@ class DateValidator extends Validator {
     /**
      * @inheritdoc
      */
-    public function validateAttribute($model, $attribute) {
+    public function validateAttribute($model, $attribute)
+    {
         $value = $model->$attribute;
         $timestamp = $this->parseDateValue($value);
         if ($timestamp === false) {
@@ -288,9 +306,13 @@ class DateValidator extends Validator {
             }
             $this->addError($model, $attribute, $this->message, []);
         } elseif ($this->min !== null && $timestamp < $this->min) {
-            $this->addError($model, $attribute, $this->tooSmall, ['min' => $this->minString]);
+            $this->addError($model, $attribute, $this->tooSmall, [
+                'min' => $this->minString
+            ]);
         } elseif ($this->max !== null && $timestamp > $this->max) {
-            $this->addError($model, $attribute, $this->tooBig, ['max' => $this->maxString]);
+            $this->addError($model, $attribute, $this->tooBig, [
+                'max' => $this->maxString
+            ]);
         } elseif ($this->timestampAttribute !== null) {
             if ($this->timestampAttributeFormat === null) {
                 $model->{$this->timestampAttribute} = $timestamp;
@@ -303,14 +325,28 @@ class DateValidator extends Validator {
     /**
      * @inheritdoc
      */
-    protected function validateValue($value) {
+    protected function validateValue($value)
+    {
         $timestamp = $this->parseDateValue($value);
         if ($timestamp === false) {
-            return [$this->message, []];
+            return [
+                $this->message,
+                []
+            ];
         } elseif ($this->min !== null && $timestamp < $this->min) {
-            return [$this->tooSmall, ['min' => $this->minString]];
+            return [
+                $this->tooSmall,
+                [
+                    'min' => $this->minString
+                ]
+            ];
         } elseif ($this->max !== null && $timestamp > $this->max) {
-            return [$this->tooBig, ['max' => $this->maxString]];
+            return [
+                $this->tooBig,
+                [
+                    'max' => $this->maxString
+                ]
+            ];
         } else {
             return null;
         }
@@ -319,10 +355,12 @@ class DateValidator extends Validator {
     /**
      * Parses date string into UNIX timestamp
      *
-     * @param string $value string representing date
+     * @param string $value
+     *            string representing date
      * @return integer|false a UNIX timestamp or `false` on failure.
      */
-    protected function parseDateValue($value) {
+    protected function parseDateValue($value)
+    {
         // TODO consider merging these methods into single one at 2.1
         return $this->parseDateValueFormat($value, $this->format);
     }
@@ -330,11 +368,14 @@ class DateValidator extends Validator {
     /**
      * Parses date string into UNIX timestamp
      *
-     * @param string $value string representing date
-     * @param string $format expected date format
+     * @param string $value
+     *            string representing date
+     * @param string $format
+     *            expected date format
      * @return integer|false a UNIX timestamp or `false` on failure.
      */
-    private function parseDateValueFormat($value, $format) {
+    private function parseDateValueFormat($value, $format)
+    {
         if (is_array($value)) {
             return false;
         }
@@ -353,11 +394,15 @@ class DateValidator extends Validator {
 
     /**
      * Parses a date value using the IntlDateFormatter::parse()
-     * @param string $value string representing date
-     * @param string $format the expected date format
+     * 
+     * @param string $value
+     *            string representing date
+     * @param string $format
+     *            the expected date format
      * @return integer|boolean a UNIX timestamp or `false` on failure.
      */
-    private function parseDateValueIntl($value, $format) {
+    private function parseDateValueIntl($value, $format)
+    {
         if (isset($this->_dateFormats[$format])) {
             if ($this->type === self::TYPE_DATE) {
                 $formatter = new IntlDateFormatter($this->locale, $this->_dateFormats[$format], IntlDateFormatter::NONE, 'UTC');
@@ -375,34 +420,38 @@ class DateValidator extends Validator {
         }
         // enable strict parsing to avoid getting invalid date values
         $formatter->setLenient(false);
-
+        
         // There should not be a warning thrown by parse() but this seems to be the case on windows so we suppress it here
         $parsePos = 0;
         $parsedDate = @$formatter->parse($value, $parsePos);
         if ($parsedDate === false || $parsePos !== mb_strlen($value, Kant::$app ? Kant::$app->charset : 'UTF-8')) {
             return false;
         }
-
+        
         return $parsedDate;
     }
 
     /**
      * Parses a date value using the DateTime::createFromFormat()
-     * @param string $value string representing date
-     * @param string $format the expected date format
+     * 
+     * @param string $value
+     *            string representing date
+     * @param string $format
+     *            the expected date format
      * @return integer|boolean a UNIX timestamp or `false` on failure.
      */
-    private function parseDateValuePHP($value, $format) {
+    private function parseDateValuePHP($value, $format)
+    {
         // if no time was provided in the format string set time to 0 to get a simple date timestamp
         $hasTimeInfo = (strpbrk($format, 'HhGgis') !== false);
-
+        
         $date = DateTime::createFromFormat($format, $value, new \DateTimeZone($hasTimeInfo ? $this->timeZone : 'UTC'));
         $errors = DateTime::getLastErrors();
         if ($date === false || $errors['error_count'] || $errors['warning_count']) {
             return false;
         }
-
-        if (!$hasTimeInfo) {
+        
+        if (! $hasTimeInfo) {
             $date->setTime(0, 0, 0);
         }
         return $date->getTimestamp();
@@ -410,21 +459,22 @@ class DateValidator extends Validator {
 
     /**
      * Formats a timestamp using the specified format
-     * @param integer $timestamp
-     * @param string $format
+     * 
+     * @param integer $timestamp            
+     * @param string $format            
      * @return string
      */
-    private function formatTimestamp($timestamp, $format) {
+    private function formatTimestamp($timestamp, $format)
+    {
         if (strncmp($format, 'php:', 4) === 0) {
             $format = substr($format, 4);
         } else {
             $format = FormatConverter::convertDateIcuToPhp($format, 'date');
         }
-
+        
         $date = new DateTime();
         $date->setTimestamp($timestamp);
         $date->setTimezone(new \DateTimeZone($this->timestampAttributeTimeZone));
         return $date->format($format);
     }
-
 }

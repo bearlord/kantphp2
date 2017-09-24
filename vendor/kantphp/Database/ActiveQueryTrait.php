@@ -6,37 +6,42 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Database;
 
 /**
  * ActiveQueryTrait implements the common methods and properties for active record query classes.
- *
  */
-trait ActiveQueryTrait {
+trait ActiveQueryTrait
+{
 
     /**
+     *
      * @var string the name of the ActiveRecord class.
      */
     public $modelClass;
 
     /**
+     *
      * @var array a list of relations that this query should be performed with
      */
     public $with;
 
     /**
+     *
      * @var boolean whether to return each record as an array. If false (default), an object
-     * of [[modelClass]] will be created to represent each record.
+     *      of [[modelClass]] will be created to represent each record.
      */
     public $asArray;
 
     /**
      * Sets the [[asArray]] property.
-     * @param boolean $value whether to return the query results in terms of arrays instead of Active Records.
+     * 
+     * @param boolean $value
+     *            whether to return the query results in terms of arrays instead of Active Records.
      * @return $this the query object itself
      */
-    public function asArray($value = true) {
+    public function asArray($value = true)
+    {
         $this->asArray = $value;
         return $this;
     }
@@ -61,10 +66,10 @@ trait ActiveQueryTrait {
      * Customer::find()->with('orders.address')->all();
      * // find customers together with their country and orders of status 1
      * Customer::find()->with([
-     *     'orders' => function (\Kant\Database\ActiveQuery $query) {
-     *         $query->andWhere('status = 1');
-     *     },
-     *     'country',
+     * 'orders' => function (\Kant\Database\ActiveQuery $query) {
+     * $query->andWhere('status = 1');
+     * },
+     * 'country',
      * ])->all();
      * ```
      *
@@ -78,16 +83,17 @@ trait ActiveQueryTrait {
      *
      * @return $this the query object itself
      */
-    public function with() {
+    public function with()
+    {
         $with = func_get_args();
         if (isset($with[0]) && is_array($with[0])) {
             // the parameter is given as an array
             $with = $with[0];
         }
-
+        
         if (empty($this->with)) {
             $this->with = $with;
-        } elseif (!empty($with)) {
+        } elseif (! empty($with)) {
             foreach ($with as $name => $value) {
                 if (is_int($name)) {
                     // repeating relation is fine as normalizeRelations() handle it well
@@ -97,16 +103,18 @@ trait ActiveQueryTrait {
                 }
             }
         }
-
+        
         return $this;
     }
 
     /**
      * Converts found rows into model instances
-     * @param array $rows
+     * 
+     * @param array $rows            
      * @return array|ActiveRecord[]
      */
-    private function createModels($rows) {
+    private function createModels($rows)
+    {
         $models = [];
         if ($this->asArray) {
             if ($this->indexBy === null) {
@@ -144,20 +152,24 @@ trait ActiveQueryTrait {
                 }
             }
         }
-
+        
         return $models;
     }
 
     /**
      * Finds records corresponding to one or multiple relations and populates them into the primary models.
-     * @param array $with a list of relations that this query should be performed with. Please
-     * refer to [[with()]] for details about specifying this parameter.
-     * @param array|ActiveRecord[] $models the primary models (can be either AR instances or arrays)
+     * 
+     * @param array $with
+     *            a list of relations that this query should be performed with. Please
+     *            refer to [[with()]] for details about specifying this parameter.
+     * @param array|ActiveRecord[] $models
+     *            the primary models (can be either AR instances or arrays)
      */
-    public function findWith($with, &$models) {
+    public function findWith($with, &$models)
+    {
         $primaryModel = reset($models);
-        if (!$primaryModel instanceof ActiveRecordInterface) {
-            $primaryModel = new $this->modelClass;
+        if (! $primaryModel instanceof ActiveRecordInterface) {
+            $primaryModel = new $this->modelClass();
         }
         $relations = $this->normalizeRelations($primaryModel, $with);
         /* @var $relation ActiveQuery */
@@ -171,11 +183,13 @@ trait ActiveQueryTrait {
     }
 
     /**
-     * @param ActiveRecord $model
-     * @param array $with
+     *
+     * @param ActiveRecord $model            
+     * @param array $with            
      * @return ActiveQueryInterface[]
      */
-    private function normalizeRelations($model, $with) {
+    private function normalizeRelations($model, $with)
+    {
         $relations = [];
         foreach ($with as $name => $callback) {
             if (is_int($name)) {
@@ -189,23 +203,22 @@ trait ActiveQueryTrait {
             } else {
                 $childName = null;
             }
-
-            if (!isset($relations[$name])) {
+            
+            if (! isset($relations[$name])) {
                 $relation = $model->getRelation($name);
                 $relation->primaryModel = null;
                 $relations[$name] = $relation;
             } else {
                 $relation = $relations[$name];
             }
-
+            
             if (isset($childName)) {
                 $relation->with[$childName] = $callback;
             } elseif ($callback !== null) {
                 call_user_func($callback, $relation);
             }
         }
-
+        
         return $relations;
     }
-
 }

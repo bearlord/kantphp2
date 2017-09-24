@@ -6,15 +6,16 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Exception;
 
 use Kant\Kant;
 use Exception;
 
-class KantException extends Exception {
+class KantException extends Exception
+{
 
     /**
+     *
      * @var null|Exception
      */
     private $_previous = null;
@@ -22,12 +23,13 @@ class KantException extends Exception {
     /**
      * Construct the exception
      *
-     * @param  string $msg
-     * @param  int $code
-     * @param  Exception $previous
+     * @param string $msg            
+     * @param int $code            
+     * @param Exception $previous            
      * @return void
      */
-    public function __construct($msg = '', $code = 0, Exception $previous = null) {
+    public function __construct($msg = '', $code = 0, Exception $previous = null)
+    {
         $debug = Kant::$app->config->get('debug');
         if ($debug == false) {
             header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
@@ -66,11 +68,12 @@ class KantException extends Exception {
      *
      * For PHP < 5.3.0, provides access to the getPrevious() method.
      *
-     * @param  string $method
-     * @param  array $args
+     * @param string $method            
+     * @param array $args            
      * @return mixed
      */
-    public function __call($method, array $args) {
+    public function __call($method, array $args)
+    {
         if ('getprevious' == strtolower($method)) {
             return $this->_getPrevious();
         }
@@ -82,12 +85,11 @@ class KantException extends Exception {
      *
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         if (version_compare(PHP_VERSION, '5.3.0', '<')) {
             if (null !== ($e = $this->getPrevious())) {
-                return $e->__toString()
-                        . "\n\nNext "
-                        . parent::__toString();
+                return $e->__toString() . "\n\nNext " . parent::__toString();
             }
         }
         return parent::__toString();
@@ -98,10 +100,10 @@ class KantException extends Exception {
      *
      * @return Exception|null
      */
-    protected function _getPrevious() {
+    protected function _getPrevious()
+    {
         return $this->_previous;
     }
-
 }
 
 ?>

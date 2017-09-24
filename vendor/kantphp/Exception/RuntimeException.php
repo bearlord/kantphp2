@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Exception;
 
 use Kant\Exception\KantException;
@@ -23,18 +22,19 @@ use Kant\Http\Response;
  *
  * ```php
  * if ($item === null) { // item does not exist
- *     throw new \Kant\Exception\HttpException(404, 'The requested Item could not be found.');
+ * throw new \Kant\Exception\HttpException(404, 'The requested Item could not be found.');
  * }
  * ```
- *
  */
-class RumtimeException extends KantException {
+class RumtimeException extends KantException
+{
 
     /**
+     *
      * @return string the user-friendly name of this exception
      */
-    public function getName() {
+    public function getName()
+    {
         return 'Runtime Exception';
     }
-
 }

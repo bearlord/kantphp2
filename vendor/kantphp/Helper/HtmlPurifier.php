@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Helper;
 
 /**
@@ -22,7 +21,7 @@ namespace Kant\Helper;
  *
  * ```php
  * echo HtmlPurifier::process($html, [
- *     'Attr.EnableID' => true,
+ * 'Attr.EnableID' => true,
  * ]);
  * ```
  *
@@ -31,6 +30,6 @@ namespace Kant\Helper;
  * @author Alexander Makarov <sam@rmcreative.ru>
  * @since 2.0
  */
-class HtmlPurifier extends BaseHtmlPurifier {
-    
+class HtmlPurifier extends BaseHtmlPurifier
+{
 }

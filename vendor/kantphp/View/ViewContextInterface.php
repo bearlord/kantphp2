@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\View;
 
 /**
@@ -17,9 +16,11 @@ namespace Kant\View;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 2.0
  */
-interface ViewContextInterface {
+interface ViewContextInterface
+{
 
     /**
+     *
      * @return string the view path that may be prefixed to a relative view name.
      */
     public function getViewPath();

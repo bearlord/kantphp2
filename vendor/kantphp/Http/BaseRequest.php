@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Http;
 
 use Kant\Foundation\Arrayable;
@@ -18,37 +17,55 @@ use Kant\Session\Session;
 use Kant\Http\File\UploadedFile;
 use RuntimeException;
 
-class BaseRequest implements Arrayable, ArrayAccess {
+class BaseRequest implements Arrayable, ArrayAccess
+{
 
     const HEADER_FORWARDED = 'forwarded';
+
     const HEADER_CLIENT_IP = 'client_ip';
+
     const HEADER_CLIENT_HOST = 'client_host';
+
     const HEADER_CLIENT_PROTO = 'client_proto';
+
     const HEADER_CLIENT_PORT = 'client_port';
+
     const METHOD_HEAD = 'HEAD';
+
     const METHOD_GET = 'GET';
+
     const METHOD_POST = 'POST';
+
     const METHOD_PUT = 'PUT';
+
     const METHOD_PATCH = 'PATCH';
+
     const METHOD_DELETE = 'DELETE';
+
     const METHOD_PURGE = 'PURGE';
+
     const METHOD_OPTIONS = 'OPTIONS';
+
     const METHOD_TRACE = 'TRACE';
+
     const METHOD_CONNECT = 'CONNECT';
 
     protected static $instance;
 
     /**
+     *
      * @var string[]
      */
     protected static $trustedProxies = array();
 
     /**
+     *
      * @var string[]
      */
     protected static $trustedHostPatterns = array();
 
     /**
+     *
      * @var string[]
      */
     protected static $trustedHosts = array();
@@ -95,8 +112,9 @@ class BaseRequest implements Arrayable, ArrayAccess {
         self::HEADER_CLIENT_IP => 'X_FORWARDED_FOR',
         self::HEADER_CLIENT_HOST => 'X_FORWARDED_HOST',
         self::HEADER_CLIENT_PROTO => 'X_FORWARDED_PROTO',
-        self::HEADER_CLIENT_PORT => 'X_FORWARDED_PORT',
+        self::HEADER_CLIENT_PORT => 'X_FORWARDED_PORT'
     );
+
     protected static $httpMethodParameterOverride = false;
 
     /**
@@ -149,93 +167,117 @@ class BaseRequest implements Arrayable, ArrayAccess {
     public $headers;
 
     /**
+     *
      * @var string
      */
     protected $content;
 
     /**
+     *
      * @var array
      */
     protected $languages;
 
     /**
+     *
      * @var array
      */
     protected $charsets;
 
     /**
+     *
      * @var array
      */
     protected $encodings;
 
     /**
+     *
      * @var array
      */
     protected $acceptableContentTypes;
 
     /**
+     *
      * @var string
      */
     protected $pathInfo;
 
     /**
+     *
      * @var string
      */
     protected $requestUri;
 
     /**
+     *
      * @var string
      */
     protected $baseUrl;
 
     /**
+     *
      * @var string
      */
     protected $basePath;
 
     /**
+     *
      * @var string
      */
     protected $method;
 
     /**
+     *
      * @var string
      */
     protected $format;
 
     /**
+     *
      * @var \Kant\Http\Session\SessionInterface
      */
     protected $session;
 
     /**
+     *
      * @var string
      */
     protected $locale;
 
     /**
+     *
      * @var string
      */
     protected $defaultLocale = 'en';
 
     /**
+     *
      * @var array
      */
     protected static $formats;
+
     protected static $requestFactory;
 
     /**
      * Constructor.
      *
-     * @param array           $query      The GET parameters
-     * @param array           $request    The POST parameters
-     * @param array           $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
-     * @param array           $cookies    The COOKIE parameters
-     * @param array           $files      The FILES parameters
-     * @param array           $server     The SERVER parameters
-     * @param string|resource $content    The raw body data
+     * @param array $query
+     *            The GET parameters
+     * @param array $request
+     *            The POST parameters
+     * @param array $attributes
+     *            The request attributes (parameters parsed from the PATH_INFO, ...)
+     * @param array $cookies
+     *            The COOKIE parameters
+     * @param array $files
+     *            The FILES parameters
+     * @param array $server
+     *            The SERVER parameters
+     * @param string|resource $content
+     *            The raw body data
      */
-    public function __construct(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null) {
+    public function __construct(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
+    {
         $this->initialize($query, $request, $attributes, $cookies, $files, $server, $content);
     }
 
@@ -244,15 +286,23 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * This method also re-initializes all properties.
      *
-     * @param array           $query      The GET parameters
-     * @param array           $request    The POST parameters
-     * @param array           $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
-     * @param array           $cookies    The COOKIE parameters
-     * @param array           $files      The FILES parameters
-     * @param array           $server     The SERVER parameters
-     * @param string|resource $content    The raw body data
+     * @param array $query
+     *            The GET parameters
+     * @param array $request
+     *            The POST parameters
+     * @param array $attributes
+     *            The request attributes (parameters parsed from the PATH_INFO, ...)
+     * @param array $cookies
+     *            The COOKIE parameters
+     * @param array $files
+     *            The FILES parameters
+     * @param array $server
+     *            The SERVER parameters
+     * @param string|resource $content
+     *            The raw body data
      */
-    public function initialize(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null) {
+    public function initialize(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
+    {
         $this->request = new ParameterBag($request);
         $this->query = new ParameterBag($query);
         $this->attributes = new ParameterBag($attributes);
@@ -260,7 +310,7 @@ class BaseRequest implements Arrayable, ArrayAccess {
         $this->files = new FileBag($files);
         $this->server = new ServerBag($server);
         $this->headers = new HeaderBag($this->server->getHeaders());
-
+        
         $this->content = $content;
         $this->languages = null;
         $this->charsets = null;
@@ -279,7 +329,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return Request A new request
      */
-    public static function createFromGlobals() {
+    public static function createFromGlobals()
+    {
         // With the php's bug #66606, the php's built-in web server
         // stores the Content-Type and Content-Length header values in
         // HTTP_CONTENT_TYPE and HTTP_CONTENT_LENGTH fields.
@@ -292,15 +343,18 @@ class BaseRequest implements Arrayable, ArrayAccess {
                 $server['CONTENT_TYPE'] = $_SERVER['HTTP_CONTENT_TYPE'];
             }
         }
-
+        
         $request = self::createRequestFromFactory($_GET, $_POST, array(), $_COOKIE, $_FILES, $server);
-
-        if (0 === strpos($request->headers->get('CONTENT_TYPE'), 'application/x-www-form-urlencoded') && in_array(strtoupper($request->server->get('REQUEST_METHOD', 'GET')), array('PUT', 'DELETE', 'PATCH'))
-        ) {
+        
+        if (0 === strpos($request->headers->get('CONTENT_TYPE'), 'application/x-www-form-urlencoded') && in_array(strtoupper($request->server->get('REQUEST_METHOD', 'GET')), array(
+            'PUT',
+            'DELETE',
+            'PATCH'
+        ))) {
             parse_str($request->getContent(), $data);
             $request->request = new ParameterBag($data);
         }
-
+        
         return $request;
     }
 
@@ -310,17 +364,25 @@ class BaseRequest implements Arrayable, ArrayAccess {
      * The information contained in the URI always take precedence
      * over the other information (server and parameters).
      *
-     * @param string $uri        The URI
-     * @param string $method     The HTTP method
-     * @param array  $parameters The query (GET) or request (POST) parameters
-     * @param array  $cookies    The request cookies ($_COOKIE)
-     * @param array  $files      The request files ($_FILES)
-     * @param array  $server     The server parameters ($_SERVER)
-     * @param string $content    The raw body data
-     *
+     * @param string $uri
+     *            The URI
+     * @param string $method
+     *            The HTTP method
+     * @param array $parameters
+     *            The query (GET) or request (POST) parameters
+     * @param array $cookies
+     *            The request cookies ($_COOKIE)
+     * @param array $files
+     *            The request files ($_FILES)
+     * @param array $server
+     *            The server parameters ($_SERVER)
+     * @param string $content
+     *            The raw body data
+     *            
      * @return Request A Request instance
      */
-    public static function create($uri, $method = 'GET', $parameters = array(), $cookies = array(), $files = array(), $server = array(), $content = null) {
+    public static function create($uri, $method = 'GET', $parameters = array(), $cookies = array(), $files = array(), $server = array(), $content = null)
+    {
         $server = array_replace(array(
             'SERVER_NAME' => 'localhost',
             'SERVER_PORT' => 80,
@@ -333,18 +395,18 @@ class BaseRequest implements Arrayable, ArrayAccess {
             'SCRIPT_NAME' => '',
             'SCRIPT_FILENAME' => '',
             'SERVER_PROTOCOL' => 'HTTP/1.1',
-            'REQUEST_TIME' => time(),
-                ), $server);
-
+            'REQUEST_TIME' => time()
+        ), $server);
+        
         $server['PATH_INFO'] = '';
         $server['REQUEST_METHOD'] = strtoupper($method);
-
+        
         $components = parse_url($uri);
         if (isset($components['host'])) {
             $server['SERVER_NAME'] = $components['host'];
             $server['HTTP_HOST'] = $components['host'];
         }
-
+        
         if (isset($components['scheme'])) {
             if ('https' === $components['scheme']) {
                 $server['HTTPS'] = 'on';
@@ -354,29 +416,29 @@ class BaseRequest implements Arrayable, ArrayAccess {
                 $server['SERVER_PORT'] = 80;
             }
         }
-
+        
         if (isset($components['port'])) {
             $server['SERVER_PORT'] = $components['port'];
             $server['HTTP_HOST'] = $server['HTTP_HOST'] . ':' . $components['port'];
         }
-
+        
         if (isset($components['user'])) {
             $server['PHP_AUTH_USER'] = $components['user'];
         }
-
+        
         if (isset($components['pass'])) {
             $server['PHP_AUTH_PW'] = $components['pass'];
         }
-
-        if (!isset($components['path'])) {
+        
+        if (! isset($components['path'])) {
             $components['path'] = '/';
         }
-
+        
         switch (strtoupper($method)) {
             case 'POST':
             case 'PUT':
             case 'DELETE':
-                if (!isset($server['CONTENT_TYPE'])) {
+                if (! isset($server['CONTENT_TYPE'])) {
                     $server['CONTENT_TYPE'] = 'application/x-www-form-urlencoded';
                 }
             // no break
@@ -389,11 +451,11 @@ class BaseRequest implements Arrayable, ArrayAccess {
                 $query = $parameters;
                 break;
         }
-
+        
         $queryString = '';
         if (isset($components['query'])) {
             parse_str(html_entity_decode($components['query']), $qs);
-
+            
             if ($query) {
                 $query = array_replace($qs, $query);
                 $queryString = http_build_query($query, '', '&');
@@ -404,10 +466,10 @@ class BaseRequest implements Arrayable, ArrayAccess {
         } elseif ($query) {
             $queryString = http_build_query($query, '', '&');
         }
-
+        
         $server['REQUEST_URI'] = $components['path'] . ('' !== $queryString ? '?' . $queryString : '');
         $server['QUERY_STRING'] = $queryString;
-
+        
         return self::createRequestFromFactory($query, $request, array(), $cookies, $files, $server, $content);
     }
 
@@ -418,25 +480,34 @@ class BaseRequest implements Arrayable, ArrayAccess {
      * to keep BC with an existing system. It should not be used for any
      * other purpose.
      *
-     * @param callable|null $callable A PHP callable
+     * @param callable|null $callable
+     *            A PHP callable
      */
-    public static function setFactory($callable) {
+    public static function setFactory($callable)
+    {
         self::$requestFactory = $callable;
     }
 
     /**
      * Clones a request and overrides some of its parameters.
      *
-     * @param array $query      The GET parameters
-     * @param array $request    The POST parameters
-     * @param array $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
-     * @param array $cookies    The COOKIE parameters
-     * @param array $files      The FILES parameters
-     * @param array $server     The SERVER parameters
-     *
+     * @param array $query
+     *            The GET parameters
+     * @param array $request
+     *            The POST parameters
+     * @param array $attributes
+     *            The request attributes (parameters parsed from the PATH_INFO, ...)
+     * @param array $cookies
+     *            The COOKIE parameters
+     * @param array $files
+     *            The FILES parameters
+     * @param array $server
+     *            The SERVER parameters
+     *            
      * @return Request The duplicated request
      */
-    public function duplicate(array $query = null, array $request = null, array $attributes = null, array $cookies = null, array $files = null, array $server = null) {
+    public function duplicate(array $query = null, array $request = null, array $attributes = null, array $cookies = null, array $files = null, array $server = null)
+    {
         $dup = clone $this;
         if ($query !== null) {
             $dup->query = new ParameterBag($query);
@@ -467,15 +538,15 @@ class BaseRequest implements Arrayable, ArrayAccess {
         $dup->basePath = null;
         $dup->method = null;
         $dup->format = null;
-
-        if (!$dup->get('_format') && $this->get('_format')) {
+        
+        if (! $dup->get('_format') && $this->get('_format')) {
             $dup->attributes->set('_format', $this->get('_format'));
         }
-
-        if (!$dup->getRequestFormat(null)) {
+        
+        if (! $dup->getRequestFormat(null)) {
             $dup->setRequestFormat($this->getRequestFormat(null));
         }
-
+        
         return $dup;
     }
 
@@ -485,7 +556,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      * Note that the session is not cloned as duplicated requests
      * are most of the time sub-requests of the main one.
      */
-    public function __clone() {
+    public function __clone()
+    {
         $this->query = clone $this->query;
         $this->request = clone $this->request;
         $this->attributes = clone $this->attributes;
@@ -500,17 +572,15 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string The request
      */
-    public function __toString() {
+    public function __toString()
+    {
         try {
             $content = $this->getContent();
         } catch (\LogicException $e) {
             return trigger_error($e, E_USER_ERROR);
         }
-
-        return
-                sprintf('%s %s %s', $this->getMethod(), $this->getRequestUri(), $this->server->get('SERVER_PROTOCOL')) . "\r\n" .
-                $this->headers . "\r\n" .
-                $content;
+        
+        return sprintf('%s %s %s', $this->getMethod(), $this->getRequestUri(), $this->server->get('SERVER_PROTOCOL')) . "\r\n" . $this->headers . "\r\n" . $content;
     }
 
     /**
@@ -519,28 +589,36 @@ class BaseRequest implements Arrayable, ArrayAccess {
      * It overrides $_GET, $_POST, $_REQUEST, $_SERVER, $_COOKIE.
      * $_FILES is never overridden, see rfc1867
      */
-    public function overrideGlobals() {
+    public function overrideGlobals()
+    {
         $this->server->set('QUERY_STRING', static::normalizeQueryString(http_build_query($this->query->all(), null, '&')));
-
+        
         $_GET = $this->query->all();
         $_POST = $this->request->all();
         $_SERVER = $this->server->all();
         $_COOKIE = $this->cookies->all();
-
+        
         foreach ($this->headers->all() as $key => $value) {
             $key = strtoupper(str_replace('-', '_', $key));
-            if (in_array($key, array('CONTENT_TYPE', 'CONTENT_LENGTH'))) {
+            if (in_array($key, array(
+                'CONTENT_TYPE',
+                'CONTENT_LENGTH'
+            ))) {
                 $_SERVER[$key] = implode(', ', $value);
             } else {
                 $_SERVER['HTTP_' . $key] = implode(', ', $value);
             }
         }
-
-        $request = array('g' => $_GET, 'p' => $_POST, 'c' => $_COOKIE);
-
-        $requestOrder = ini_get('request_order') ?: ini_get('variables_order');
-        $requestOrder = preg_replace('#[^cgp]#', '', strtolower($requestOrder)) ?: 'gp';
-
+        
+        $request = array(
+            'g' => $_GET,
+            'p' => $_POST,
+            'c' => $_COOKIE
+        );
+        
+        $requestOrder = ini_get('request_order') ?  : ini_get('variables_order');
+        $requestOrder = preg_replace('#[^cgp]#', '', strtolower($requestOrder)) ?  : 'gp';
+        
         $_REQUEST = array();
         foreach (str_split($requestOrder) as $order) {
             $_REQUEST = array_merge($_REQUEST, $request[$order]);
@@ -552,9 +630,11 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * You should only list the reverse proxies that you manage directly.
      *
-     * @param array $proxies A list of trusted proxies
+     * @param array $proxies
+     *            A list of trusted proxies
      */
-    public static function setTrustedProxies(array $proxies) {
+    public static function setTrustedProxies(array $proxies)
+    {
         self::$trustedProxies = $proxies;
     }
 
@@ -563,7 +643,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return array An array of trusted proxies.
      */
-    public static function getTrustedProxies() {
+    public static function getTrustedProxies()
+    {
         return self::$trustedProxies;
     }
 
@@ -572,9 +653,11 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * You should only list the hosts you manage using regexs.
      *
-     * @param array $hostPatterns A list of trusted host patterns
+     * @param array $hostPatterns
+     *            A list of trusted host patterns
      */
-    public static function setTrustedHosts(array $hostPatterns) {
+    public static function setTrustedHosts(array $hostPatterns)
+    {
         self::$trustedHostPatterns = array_map(function ($hostPattern) {
             return sprintf('#%s#i', $hostPattern);
         }, $hostPatterns);
@@ -587,7 +670,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return array An array of trusted host patterns.
      */
-    public static function getTrustedHosts() {
+    public static function getTrustedHosts()
+    {
         return self::$trustedHostPatterns;
     }
 
@@ -596,40 +680,45 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * The following header keys are supported:
      *
-     *  * Request::HEADER_CLIENT_IP:    defaults to X-Forwarded-For   (see getClientIp())
-     *  * Request::HEADER_CLIENT_HOST:  defaults to X-Forwarded-Host  (see getHost())
-     *  * Request::HEADER_CLIENT_PORT:  defaults to X-Forwarded-Port  (see getPort())
-     *  * Request::HEADER_CLIENT_PROTO: defaults to X-Forwarded-Proto (see getScheme() and isSecure())
+     * * Request::HEADER_CLIENT_IP: defaults to X-Forwarded-For (see getClientIp())
+     * * Request::HEADER_CLIENT_HOST: defaults to X-Forwarded-Host (see getHost())
+     * * Request::HEADER_CLIENT_PORT: defaults to X-Forwarded-Port (see getPort())
+     * * Request::HEADER_CLIENT_PROTO: defaults to X-Forwarded-Proto (see getScheme() and isSecure())
      *
      * Setting an empty value allows to disable the trusted header for the given key.
      *
-     * @param string $key   The header key
-     * @param string $value The header name
-     *
+     * @param string $key
+     *            The header key
+     * @param string $value
+     *            The header name
+     *            
      * @throws \InvalidArgumentException
      */
-    public static function setTrustedHeaderName($key, $value) {
-        if (!array_key_exists($key, self::$trustedHeaders)) {
+    public static function setTrustedHeaderName($key, $value)
+    {
+        if (! array_key_exists($key, self::$trustedHeaders)) {
             throw new \InvalidArgumentException(sprintf('Unable to set the trusted header name for key "%s".', $key));
         }
-
+        
         self::$trustedHeaders[$key] = $value;
     }
 
     /**
      * Gets the trusted proxy header name.
      *
-     * @param string $key The header key
-     *
+     * @param string $key
+     *            The header key
+     *            
      * @return string The header name
-     *
+     *        
      * @throws \InvalidArgumentException
      */
-    public static function getTrustedHeaderName($key) {
-        if (!array_key_exists($key, self::$trustedHeaders)) {
+    public static function getTrustedHeaderName($key)
+    {
+        if (! array_key_exists($key, self::$trustedHeaders)) {
             throw new \InvalidArgumentException(sprintf('Unable to get the trusted header name for key "%s".', $key));
         }
-
+        
         return self::$trustedHeaders[$key];
     }
 
@@ -639,18 +728,20 @@ class BaseRequest implements Arrayable, ArrayAccess {
      * It builds a normalized query string, where keys/value pairs are alphabetized,
      * have consistent escaping and unneeded delimiters are removed.
      *
-     * @param string $qs Query string
-     *
+     * @param string $qs
+     *            Query string
+     *            
      * @return string A normalized query string for the Request
      */
-    public static function normalizeQueryString($qs) {
+    public static function normalizeQueryString($qs)
+    {
         if ('' == $qs) {
             return '';
         }
-
+        
         $parts = array();
         $order = array();
-
+        
         foreach (explode('&', $qs) as $param) {
             if ('' === $param || '=' === $param[0]) {
                 // Ignore useless delimiters, e.g. "x=y&".
@@ -658,20 +749,18 @@ class BaseRequest implements Arrayable, ArrayAccess {
                 // PHP also does not include them when building _GET.
                 continue;
             }
-
+            
             $keyValuePair = explode('=', $param, 2);
-
+            
             // GET parameters, that are submitted from a HTML form, encode spaces as "+" by default (as defined in enctype application/x-www-form-urlencoded).
             // PHP also converts "+" to spaces when filling the global _GET or when using the function parse_str. This is why we use urldecode and then normalize to
             // RFC 3986 with rawurlencode.
-            $parts[] = isset($keyValuePair[1]) ?
-                    rawurlencode(urldecode($keyValuePair[0])) . '=' . rawurlencode(urldecode($keyValuePair[1])) :
-                    rawurlencode(urldecode($keyValuePair[0]));
+            $parts[] = isset($keyValuePair[1]) ? rawurlencode(urldecode($keyValuePair[0])) . '=' . rawurlencode(urldecode($keyValuePair[1])) : rawurlencode(urldecode($keyValuePair[0]));
             $order[] = urldecode($keyValuePair[0]);
         }
-
+        
         array_multisort($order, SORT_ASC, $parts);
-
+        
         return implode('&', $parts);
     }
 
@@ -686,7 +775,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * The HTTP method can only be overridden when the real HTTP method is POST.
      */
-    public static function enableHttpMethodParameterOverride() {
+    public static function enableHttpMethodParameterOverride()
+    {
         self::$httpMethodParameterOverride = true;
     }
 
@@ -695,7 +785,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return bool True when the _method request parameter is enabled, false otherwise
      */
-    public static function getHttpMethodParameterOverride() {
+    public static function getHttpMethodParameterOverride()
+    {
         return self::$httpMethodParameterOverride;
     }
 
@@ -708,24 +799,27 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * Order of precedence: PATH (routing placeholders or custom attributes), GET, BODY
      *
-     * @param string $key     the key
-     * @param mixed  $default the default value
-     *
+     * @param string $key
+     *            the key
+     * @param mixed $default
+     *            the default value
+     *            
      * @return mixed
      */
-    public function get($key, $default = null) {
+    public function get($key, $default = null)
+    {
         if ($this !== $result = $this->attributes->get($key, $this)) {
             return $result;
         }
-
+        
         if ($this !== $result = $this->query->get($key, $this)) {
             return $result;
         }
-
+        
         if ($this !== $result = $this->request->get($key, $this)) {
             return $result;
         }
-
+        
         return $default;
     }
 
@@ -734,7 +828,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return SessionInterface|null The session
      */
-    public function getSession() {
+    public function getSession()
+    {
         return $this->session;
     }
 
@@ -744,7 +839,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return bool
      */
-    public function hasPreviousSession() {
+    public function hasPreviousSession()
+    {
         // the check for $this->session avoids malicious users trying to fake a session cookie with proper name
         return $this->hasSession() && $this->cookies->has($this->session->getName());
     }
@@ -758,16 +854,19 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return bool true when the Request contains a Session object, false otherwise
      */
-    public function hasSession() {
+    public function hasSession()
+    {
         return null !== $this->session;
     }
 
     /**
      * Sets the Session.
      *
-     * @param SessionInterface $session The Session
+     * @param SessionInterface $session
+     *            The Session
      */
-    public function setSession(Session $session) {
+    public function setSession(Session $session)
+    {
         $this->session = $session;
     }
 
@@ -781,17 +880,20 @@ class BaseRequest implements Arrayable, ArrayAccess {
      * Use this method carefully; you should use getClientIp() instead.
      *
      * @return array The client IP addresses
-     *
+     *        
      * @see getClientIp()
      */
-    public function getClientIps() {
+    public function getClientIps()
+    {
         $clientIps = array();
         $ip = $this->server->get('REMOTE_ADDR');
-
-        if (!$this->isFromTrustedProxy()) {
-            return array($ip);
+        
+        if (! $this->isFromTrustedProxy()) {
+            return array(
+                $ip
+            );
         }
-
+        
         if (self::$trustedHeaders[self::HEADER_FORWARDED] && $this->headers->has(self::$trustedHeaders[self::HEADER_FORWARDED])) {
             $forwardedHeader = $this->headers->get(self::$trustedHeaders[self::HEADER_FORWARDED]);
             preg_match_all('{(for)=("?\[?)([a-z0-9\.:_\-/]*)}', $forwardedHeader, $matches);
@@ -799,34 +901,36 @@ class BaseRequest implements Arrayable, ArrayAccess {
         } elseif (self::$trustedHeaders[self::HEADER_CLIENT_IP] && $this->headers->has(self::$trustedHeaders[self::HEADER_CLIENT_IP])) {
             $clientIps = array_map('trim', explode(',', $this->headers->get(self::$trustedHeaders[self::HEADER_CLIENT_IP])));
         }
-
+        
         $clientIps[] = $ip; // Complete the IP chain with the IP the request actually came from
         $firstTrustedIp = null;
-
+        
         foreach ($clientIps as $key => $clientIp) {
             // Remove port (unfortunately, it does happen)
             if (preg_match('{((?:\d+\.){3}\d+)\:\d+}', $clientIp, $match)) {
                 $clientIps[$key] = $clientIp = $match[1];
             }
-
-            if (!filter_var($clientIp, FILTER_VALIDATE_IP)) {
+            
+            if (! filter_var($clientIp, FILTER_VALIDATE_IP)) {
                 unset($clientIps[$key]);
-
+                
                 continue;
             }
-
+            
             if (IpUtils::checkIp($clientIp, self::$trustedProxies)) {
                 unset($clientIps[$key]);
-
+                
                 // Fallback to this when the client IP falls into the range of trusted proxies
                 if (null === $firstTrustedIp) {
                     $firstTrustedIp = $clientIp;
                 }
             }
         }
-
+        
         // Now the IP chain contains only untrusted proxies and the client IP
-        return $clientIps ? array_reverse($clientIps) : array($firstTrustedIp);
+        return $clientIps ? array_reverse($clientIps) : array(
+            $firstTrustedIp
+        );
     }
 
     /**
@@ -843,13 +947,14 @@ class BaseRequest implements Arrayable, ArrayAccess {
      * the "client-ip" key.
      *
      * @return string The client IP address
-     *
+     *        
      * @see getClientIps()
      * @see http://en.wikipedia.org/wiki/X-Forwarded-For
      */
-    public function getClientIp() {
+    public function getClientIp()
+    {
         $ipAddresses = $this->getClientIps();
-
+        
         return $ipAddresses[0];
     }
 
@@ -858,7 +963,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    public function getScriptName() {
+    public function getScriptName()
+    {
         return $this->server->get('SCRIPT_NAME', $this->server->get('ORIG_SCRIPT_NAME', ''));
     }
 
@@ -869,18 +975,19 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * Suppose this request is instantiated from /mysite on localhost:
      *
-     *  * http://localhost/mysite              returns an empty string
-     *  * http://localhost/mysite/about        returns '/about'
-     *  * http://localhost/mysite/enco%20ded   returns '/enco%20ded'
-     *  * http://localhost/mysite/about?var=1  returns '/about'
+     * * http://localhost/mysite returns an empty string
+     * * http://localhost/mysite/about returns '/about'
+     * * http://localhost/mysite/enco%20ded returns '/enco%20ded'
+     * * http://localhost/mysite/about?var=1 returns '/about'
      *
      * @return string The raw path (i.e. not urldecoded)
      */
-    public function getPathInfo() {
+    public function getPathInfo()
+    {
         if (null === $this->pathInfo) {
             $this->pathInfo = $this->preparePathInfo();
         }
-
+        
         return $this->pathInfo;
     }
 
@@ -889,18 +996,19 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * Suppose that an index.php file instantiates this request object:
      *
-     *  * http://localhost/index.php         returns an empty string
-     *  * http://localhost/index.php/page    returns an empty string
-     *  * http://localhost/web/index.php     returns '/web'
-     *  * http://localhost/we%20b/index.php  returns '/we%20b'
+     * * http://localhost/index.php returns an empty string
+     * * http://localhost/index.php/page returns an empty string
+     * * http://localhost/web/index.php returns '/web'
+     * * http://localhost/we%20b/index.php returns '/we%20b'
      *
      * @return string The raw path (i.e. not urldecoded)
      */
-    public function getBasePath() {
+    public function getBasePath()
+    {
         if (null === $this->basePath) {
             $this->basePath = $this->prepareBasePath();
         }
-
+        
         return $this->basePath;
     }
 
@@ -914,11 +1022,12 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string The raw URL (i.e. not urldecoded)
      */
-    public function getBaseUrl() {
+    public function getBaseUrl()
+    {
         if (null === $this->baseUrl) {
             $this->baseUrl = $this->prepareBaseUrl();
         }
-
+        
         return $this->baseUrl;
     }
 
@@ -927,7 +1036,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    public function getScheme() {
+    public function getScheme()
+    {
         return $this->isSecure() ? 'https' : 'http';
     }
 
@@ -944,31 +1054,32 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    public function getPort() {
+    public function getPort()
+    {
         if ($this->isFromTrustedProxy()) {
             if (self::$trustedHeaders[self::HEADER_CLIENT_PORT] && $port = $this->headers->get(self::$trustedHeaders[self::HEADER_CLIENT_PORT])) {
                 return $port;
             }
-
+            
             if (self::$trustedHeaders[self::HEADER_CLIENT_PROTO] && 'https' === $this->headers->get(self::$trustedHeaders[self::HEADER_CLIENT_PROTO], 'http')) {
                 return 443;
             }
         }
-
+        
         if ($host = $this->headers->get('HOST')) {
             if ($host[0] === '[') {
                 $pos = strpos($host, ':', strrpos($host, ']'));
             } else {
                 $pos = strrpos($host, ':');
             }
-
+            
             if (false !== $pos) {
                 return (int) substr($host, $pos + 1);
             }
-
+            
             return 'https' === $this->getScheme() ? 443 : 80;
         }
-
+        
         return $this->server->get('SERVER_PORT');
     }
 
@@ -977,7 +1088,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string|null
      */
-    public function getUser() {
+    public function getUser()
+    {
         return $this->headers->get('PHP_AUTH_USER');
     }
 
@@ -986,7 +1098,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string|null
      */
-    public function getPassword() {
+    public function getPassword()
+    {
         return $this->headers->get('PHP_AUTH_PW');
     }
 
@@ -995,14 +1108,15 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string A user name and, optionally, scheme-specific information about how to gain authorization to access the server
      */
-    public function getUserInfo() {
+    public function getUserInfo()
+    {
         $userinfo = $this->getUser();
-
+        
         $pass = $this->getPassword();
         if ('' != $pass) {
             $userinfo .= ":$pass";
         }
-
+        
         return $userinfo;
     }
 
@@ -1013,14 +1127,15 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    public function getHttpHost() {
+    public function getHttpHost()
+    {
         $scheme = $this->getScheme();
         $port = $this->getPort();
-
+        
         if (('http' == $scheme && $port == 80) || ('https' == $scheme && $port == 443)) {
             return $this->getHost();
         }
-
+        
         return $this->getHost() . ':' . $port;
     }
 
@@ -1029,11 +1144,12 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string The raw URI (i.e. not URI decoded)
      */
-    public function getRequestUri() {
+    public function getRequestUri()
+    {
         if (null === $this->requestUri) {
             $this->requestUri = $this->prepareRequestUri();
         }
-
+        
         return $this->requestUri;
     }
 
@@ -1045,7 +1161,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string The scheme and HTTP host
      */
-    public function getSchemeAndHttpHost() {
+    public function getSchemeAndHttpHost()
+    {
         return $this->getScheme() . '://' . $this->getHttpHost();
     }
 
@@ -1053,25 +1170,28 @@ class BaseRequest implements Arrayable, ArrayAccess {
      * Generates a normalized URI (URL) for the Request.
      *
      * @return string A normalized URI (URL) for the Request
-     *
+     *        
      * @see getQueryString()
      */
-    public function getUri() {
+    public function getUri()
+    {
         if (null !== $qs = $this->getQueryString()) {
             $qs = '?' . $qs;
         }
-
+        
         return $this->getSchemeAndHttpHost() . $this->getBaseUrl() . $this->getPathInfo() . $qs;
     }
 
     /**
      * Generates a normalized URI for the given path.
      *
-     * @param string $path A path to use instead of the current one
-     *
+     * @param string $path
+     *            A path to use instead of the current one
+     *            
      * @return string The normalized URI for the path
      */
-    public function getUriForPath($path) {
+    public function getUriForPath($path)
+    {
         return $this->getSchemeAndHttpHost() . $this->getBaseUrl() . $path;
     }
 
@@ -1084,31 +1204,33 @@ class BaseRequest implements Arrayable, ArrayAccess {
      * Furthermore, they can be used to reduce the link size in documents.
      *
      * Example target paths, given a base path of "/a/b/c/d":
-     * - "/a/b/c/d"     -> ""
-     * - "/a/b/c/"      -> "./"
-     * - "/a/b/"        -> "../"
+     * - "/a/b/c/d" -> ""
+     * - "/a/b/c/" -> "./"
+     * - "/a/b/" -> "../"
      * - "/a/b/c/other" -> "other"
-     * - "/a/x/y"       -> "../../x/y"
+     * - "/a/x/y" -> "../../x/y"
      *
-     * @param string $path The target path
-     *
+     * @param string $path
+     *            The target path
+     *            
      * @return string The relative target path
      */
-    public function getRelativeUriForPath($path) {
+    public function getRelativeUriForPath($path)
+    {
         // be sure that we are dealing with an absolute path
-        if (!isset($path[0]) || '/' !== $path[0]) {
+        if (! isset($path[0]) || '/' !== $path[0]) {
             return $path;
         }
-
+        
         if ($path === $basePath = $this->getPathInfo()) {
             return '';
         }
-
+        
         $sourceDirs = explode('/', isset($basePath[0]) && '/' === $basePath[0] ? substr($basePath, 1) : $basePath);
         $targetDirs = explode('/', isset($path[0]) && '/' === $path[0] ? substr($path, 1) : $path);
         array_pop($sourceDirs);
         $targetFile = array_pop($targetDirs);
-
+        
         foreach ($sourceDirs as $i => $dir) {
             if (isset($targetDirs[$i]) && $dir === $targetDirs[$i]) {
                 unset($sourceDirs[$i], $targetDirs[$i]);
@@ -1116,15 +1238,15 @@ class BaseRequest implements Arrayable, ArrayAccess {
                 break;
             }
         }
-
+        
         $targetDirs[] = $targetFile;
         $path = str_repeat('../', count($sourceDirs)) . implode('/', $targetDirs);
-
+        
         // A reference to the same base directory or an empty subdirectory must be prefixed with "./".
         // This also applies to a segment with a colon character (e.g., "file:colon") that cannot be used
         // as the first segment of a relative-path reference, as it would be mistaken for a scheme name
         // (see http://tools.ietf.org/html/rfc3986#section-4.2).
-        return !isset($path[0]) || '/' === $path[0] || false !== ($colonPos = strpos($path, ':')) && ($colonPos < ($slashPos = strpos($path, '/')) || false === $slashPos) ? "./$path" : $path;
+        return ! isset($path[0]) || '/' === $path[0] || false !== ($colonPos = strpos($path, ':')) && ($colonPos < ($slashPos = strpos($path, '/')) || false === $slashPos) ? "./$path" : $path;
     }
 
     /**
@@ -1135,9 +1257,10 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string|null A normalized query string for the Request
      */
-    public function getQueryString() {
+    public function getQueryString()
+    {
         $qs = static::normalizeQueryString($this->server->get('QUERY_STRING'));
-
+        
         return '' === $qs ? null : $qs;
     }
 
@@ -1155,14 +1278,20 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return bool
      */
-    public function isSecure() {
+    public function isSecure()
+    {
         if ($this->isFromTrustedProxy() && self::$trustedHeaders[self::HEADER_CLIENT_PROTO] && $proto = $this->headers->get(self::$trustedHeaders[self::HEADER_CLIENT_PROTO])) {
-            return in_array(strtolower(current(explode(',', $proto))), array('https', 'on', 'ssl', '1'));
+            return in_array(strtolower(current(explode(',', $proto))), array(
+                'https',
+                'on',
+                'ssl',
+                '1'
+            ));
         }
-
+        
         $https = $this->server->get('HTTPS');
-
-        return !empty($https) && 'off' !== strtolower($https);
+        
+        return ! empty($https) && 'off' !== strtolower($https);
     }
 
     /**
@@ -1180,55 +1309,57 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @throws \UnexpectedValueException when the host name is invalid
      */
-    public function getHost() {
+    public function getHost()
+    {
         if ($this->isFromTrustedProxy() && self::$trustedHeaders[self::HEADER_CLIENT_HOST] && $host = $this->headers->get(self::$trustedHeaders[self::HEADER_CLIENT_HOST])) {
             $elements = explode(',', $host);
-
+            
             $host = $elements[count($elements) - 1];
-        } elseif (!$host = $this->headers->get('HOST')) {
-            if (!$host = $this->server->get('SERVER_NAME')) {
+        } elseif (! $host = $this->headers->get('HOST')) {
+            if (! $host = $this->server->get('SERVER_NAME')) {
                 $host = $this->server->get('SERVER_ADDR', '');
             }
         }
-
+        
         // trim and remove port number from host
         // host is lowercase as per RFC 952/2181
         $host = strtolower(preg_replace('/:\d+$/', '', trim($host)));
-
+        
         // as the host can come from the user (HTTP_HOST and depending on the configuration, SERVER_NAME too can come from the user)
         // check that it does not contain forbidden characters (see RFC 952 and RFC 2181)
         // use preg_replace() instead of preg_match() to prevent DoS attacks with long host names
         if ($host && '' !== preg_replace('/(?:^\[)?[a-zA-Z0-9-:\]_]+\.?/', '', $host)) {
             throw new \UnexpectedValueException(sprintf('Invalid Host "%s"', $host));
         }
-
+        
         if (count(self::$trustedHostPatterns) > 0) {
             // to avoid host header injection attacks, you should provide a list of trusted host patterns
-
+            
             if (in_array($host, self::$trustedHosts)) {
                 return $host;
             }
-
+            
             foreach (self::$trustedHostPatterns as $pattern) {
                 if (preg_match($pattern, $host)) {
                     self::$trustedHosts[] = $host;
-
+                    
                     return $host;
                 }
             }
-
+            
             throw new \UnexpectedValueException(sprintf('Untrusted Host "%s"', $host));
         }
-
+        
         return $host;
     }
 
     /**
      * Sets the request method.
      *
-     * @param string $method
+     * @param string $method            
      */
-    public function setMethod($method) {
+    public function setMethod($method)
+    {
         $this->method = null;
         $this->server->set('REQUEST_METHOD', $method);
     }
@@ -1245,13 +1376,14 @@ class BaseRequest implements Arrayable, ArrayAccess {
      * The method is always an uppercased string.
      *
      * @return string The request method
-     *
+     *        
      * @see getRealMethod()
      */
-    public function getMethod() {
+    public function getMethod()
+    {
         if (null === $this->method) {
             $this->method = strtoupper($this->server->get('REQUEST_METHOD', 'GET'));
-
+            
             if ('POST' === $this->method) {
                 if ($method = $this->headers->get('X-HTTP-METHOD-OVERRIDE')) {
                     $this->method = strtoupper($method);
@@ -1260,7 +1392,7 @@ class BaseRequest implements Arrayable, ArrayAccess {
                 }
             }
         }
-
+        
         return $this->method;
     }
 
@@ -1268,45 +1400,50 @@ class BaseRequest implements Arrayable, ArrayAccess {
      * Gets the "real" request method.
      *
      * @return string The request method
-     *
+     *        
      * @see getMethod()
      */
-    public function getRealMethod() {
+    public function getRealMethod()
+    {
         return strtoupper($this->server->get('REQUEST_METHOD', 'GET'));
     }
 
     /**
      * Gets the mime type associated with the format.
      *
-     * @param string $format The format
-     *
+     * @param string $format
+     *            The format
+     *            
      * @return string The associated mime type (null if not found)
      */
-    public function getMimeType($format) {
+    public function getMimeType($format)
+    {
         if (null === static::$formats) {
             static::initializeFormats();
         }
-
+        
         return isset(static::$formats[$format]) ? static::$formats[$format][0] : null;
     }
 
     /**
      * Gets the format associated with the mime type.
      *
-     * @param string $mimeType The associated mime type
-     *
+     * @param string $mimeType
+     *            The associated mime type
+     *            
      * @return string|null The format (null if not found)
      */
-    public function getFormat($mimeType) {
+    public function getFormat($mimeType)
+    {
         $canonicalMimeType = null;
         if (false !== $pos = strpos($mimeType, ';')) {
             $canonicalMimeType = substr($mimeType, 0, $pos);
         }
-
+        
         if (null === static::$formats) {
             static::initializeFormats();
         }
-
+        
         foreach (static::$formats as $format => $mimeTypes) {
             if (in_array($mimeType, (array) $mimeTypes)) {
                 return $format;
@@ -1320,15 +1457,20 @@ class BaseRequest implements Arrayable, ArrayAccess {
     /**
      * Associates a format with mime types.
      *
-     * @param string       $format    The format
-     * @param string|array $mimeTypes The associated mime types (the preferred one must be the first as it will be used as the content type)
+     * @param string $format
+     *            The format
+     * @param string|array $mimeTypes
+     *            The associated mime types (the preferred one must be the first as it will be used as the content type)
      */
-    public function setFormat($format, $mimeTypes) {
+    public function setFormat($format, $mimeTypes)
+    {
         if (null === static::$formats) {
             static::initializeFormats();
         }
-
-        static::$formats[$format] = is_array($mimeTypes) ? $mimeTypes : array($mimeTypes);
+        
+        static::$formats[$format] = is_array($mimeTypes) ? $mimeTypes : array(
+            $mimeTypes
+        );
     }
 
     /**
@@ -1336,28 +1478,32 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * Here is the process to determine the format:
      *
-     *  * format defined by the user (with setRequestFormat())
-     *  * _format request parameter
-     *  * $default
+     * * format defined by the user (with setRequestFormat())
+     * * _format request parameter
+     * * $default
      *
-     * @param string $default The default format
-     *
+     * @param string $default
+     *            The default format
+     *            
      * @return string The request format
      */
-    public function getRequestFormat($default = 'html') {
+    public function getRequestFormat($default = 'html')
+    {
         if (null === $this->format) {
             $this->format = $this->attributes->get('_format', $default);
         }
-
+        
         return $this->format;
     }
 
     /**
      * Sets the request format.
      *
-     * @param string $format The request format.
+     * @param string $format
+     *            The request format.
      */
-    public function setRequestFormat($format) {
+    public function setRequestFormat($format)
+    {
         $this->format = $format;
     }
 
@@ -1366,18 +1512,20 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string|null The format (null if no content type is present)
      */
-    public function getContentType() {
+    public function getContentType()
+    {
         return $this->getFormat($this->headers->get('CONTENT_TYPE'));
     }
 
     /**
      * Sets the default locale.
      *
-     * @param string $locale
+     * @param string $locale            
      */
-    public function setDefaultLocale($locale) {
+    public function setDefaultLocale($locale)
+    {
         $this->defaultLocale = $locale;
-
+        
         if (null === $this->locale) {
             $this->setPhpDefaultLocale($locale);
         }
@@ -1388,16 +1536,18 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    public function getDefaultLocale() {
+    public function getDefaultLocale()
+    {
         return $this->defaultLocale;
     }
 
     /**
      * Sets the locale.
      *
-     * @param string $locale
+     * @param string $locale            
      */
-    public function setLocale($locale) {
+    public function setLocale($locale)
+    {
         $this->setPhpDefaultLocale($this->locale = $locale);
     }
 
@@ -1406,18 +1556,21 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    public function getLocale() {
+    public function getLocale()
+    {
         return null === $this->locale ? $this->defaultLocale : $this->locale;
     }
 
     /**
      * Checks if the request method is of specified type.
      *
-     * @param string $method Uppercase request method (GET, POST etc).
-     *
+     * @param string $method
+     *            Uppercase request method (GET, POST etc).
+     *            
      * @return bool
      */
-    public function isMethod($method) {
+    public function isMethod($method)
+    {
         return $this->getMethod() === strtoupper($method);
     }
 
@@ -1426,56 +1579,62 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return bool
      */
-    public function isMethodSafe() {
-        return in_array($this->getMethod(), array('GET', 'HEAD'));
+    public function isMethodSafe()
+    {
+        return in_array($this->getMethod(), array(
+            'GET',
+            'HEAD'
+        ));
     }
 
     /**
      * Returns the request body content.
      *
-     * @param bool $asResource If true, a resource will be returned
-     *
+     * @param bool $asResource
+     *            If true, a resource will be returned
+     *            
      * @return string|resource The request body content or a resource to read the body stream.
-     *
+     *        
      * @throws \LogicException
      */
-    public function getContent($asResource = false) {
+    public function getContent($asResource = false)
+    {
         $currentContentIsResource = is_resource($this->content);
         if (PHP_VERSION_ID < 50600 && false === $this->content) {
             throw new \LogicException('getContent() can only be called once when using the resource return type and PHP below 5.6.');
         }
-
+        
         if (true === $asResource) {
             if ($currentContentIsResource) {
                 rewind($this->content);
-
+                
                 return $this->content;
             }
-
+            
             // Content passed in parameter (test)
             if (is_string($this->content)) {
                 $resource = fopen('php://temp', 'r+');
                 fwrite($resource, $this->content);
                 rewind($resource);
-
+                
                 return $resource;
             }
-
+            
             $this->content = false;
-
+            
             return fopen('php://input', 'rb');
         }
-
+        
         if ($currentContentIsResource) {
             rewind($this->content);
-
+            
             return stream_get_contents($this->content);
         }
-
+        
         if (null === $this->content) {
             $this->content = file_get_contents('php://input');
         }
-
+        
         return $this->content;
     }
 
@@ -1484,48 +1643,53 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return array The entity tags
      */
-    public function getETags() {
+    public function getETags()
+    {
         return preg_split('/\s*,\s*/', $this->headers->get('if_none_match'), null, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
+     *
      * @return bool
      */
-    public function isNoCache() {
+    public function isNoCache()
+    {
         return $this->headers->hasCacheControlDirective('no-cache') || 'no-cache' == $this->headers->get('Pragma');
     }
 
     /**
      * Returns the preferred language.
      *
-     * @param array $locales An array of ordered available locales
-     *
+     * @param array $locales
+     *            An array of ordered available locales
+     *            
      * @return string|null The preferred locale
      */
-    public function getPreferredLanguage(array $locales = null) {
+    public function getPreferredLanguage(array $locales = null)
+    {
         $preferredLanguages = $this->getLanguages();
-
+        
         if (empty($locales)) {
             return isset($preferredLanguages[0]) ? $preferredLanguages[0] : null;
         }
-
-        if (!$preferredLanguages) {
+        
+        if (! $preferredLanguages) {
             return $locales[0];
         }
-
+        
         $extendedPreferredLanguages = array();
         foreach ($preferredLanguages as $language) {
             $extendedPreferredLanguages[] = $language;
             if (false !== $position = strpos($language, '_')) {
                 $superLanguage = substr($language, 0, $position);
-                if (!in_array($superLanguage, $preferredLanguages)) {
+                if (! in_array($superLanguage, $preferredLanguages)) {
                     $extendedPreferredLanguages[] = $superLanguage;
                 }
             }
         }
-
+        
         $preferredLanguages = array_values(array_intersect($extendedPreferredLanguages, $locales));
-
+        
         return isset($preferredLanguages[0]) ? $preferredLanguages[0] : $locales[0];
     }
 
@@ -1534,11 +1698,12 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return array Languages ordered in the user browser preferences
      */
-    public function getLanguages() {
+    public function getLanguages()
+    {
         if (null !== $this->languages) {
             return $this->languages;
         }
-
+        
         $languages = AcceptHeader::fromString($this->headers->get('Accept-Language'))->all();
         $this->languages = array();
         foreach ($languages as $lang => $acceptHeaderItem) {
@@ -1552,7 +1717,7 @@ class BaseRequest implements Arrayable, ArrayAccess {
                         $lang = $codes[1];
                     }
                 } else {
-                    for ($i = 0, $max = count($codes); $i < $max; ++$i) {
+                    for ($i = 0, $max = count($codes); $i < $max; ++ $i) {
                         if ($i === 0) {
                             $lang = strtolower($codes[0]);
                         } else {
@@ -1561,10 +1726,10 @@ class BaseRequest implements Arrayable, ArrayAccess {
                     }
                 }
             }
-
+            
             $this->languages[] = $lang;
         }
-
+        
         return $this->languages;
     }
 
@@ -1573,11 +1738,12 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return array List of charsets in preferable order
      */
-    public function getCharsets() {
+    public function getCharsets()
+    {
         if (null !== $this->charsets) {
             return $this->charsets;
         }
-
+        
         return $this->charsets = array_keys(AcceptHeader::fromString($this->headers->get('Accept-Charset'))->all());
     }
 
@@ -1586,11 +1752,12 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return array List of encodings in preferable order
      */
-    public function getEncodings() {
+    public function getEncodings()
+    {
         if (null !== $this->encodings) {
             return $this->encodings;
         }
-
+        
         return $this->encodings = array_keys(AcceptHeader::fromString($this->headers->get('Accept-Encoding'))->all());
     }
 
@@ -1599,11 +1766,12 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return array List of content types in preferable order
      */
-    public function getAcceptableContentTypes() {
+    public function getAcceptableContentTypes()
+    {
         if (null !== $this->acceptableContentTypes) {
             return $this->acceptableContentTypes;
         }
-
+        
         return $this->acceptableContentTypes = array_keys(AcceptHeader::fromString($this->headers->get('Accept'))->all());
     }
 
@@ -1614,10 +1782,11 @@ class BaseRequest implements Arrayable, ArrayAccess {
      * It is known to work with common JavaScript frameworks:
      *
      * @link http://en.wikipedia.org/wiki/List_of_Ajax_frameworks#JavaScript
-     *
+     *      
      * @return bool true if the request is an XMLHttpRequest, false otherwise
      */
-    public function isXmlHttpRequest() {
+    public function isXmlHttpRequest()
+    {
         return 'XMLHttpRequest' == $this->headers->get('X-Requested-With');
     }
 
@@ -1628,10 +1797,10 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
      */
-
-    protected function prepareRequestUri() {
+    protected function prepareRequestUri()
+    {
         $requestUri = '';
-
+        
         if ($this->headers->has('X_ORIGINAL_URL')) {
             // IIS with Microsoft Rewrite Module
             $requestUri = $this->headers->get('X_ORIGINAL_URL');
@@ -1663,10 +1832,10 @@ class BaseRequest implements Arrayable, ArrayAccess {
             }
             $this->server->remove('ORIG_PATH_INFO');
         }
-
+        
         // normalize the request URI to ease creating sub-requests from this request
         $this->server->set('REQUEST_URI', $requestUri);
-
+        
         return $requestUri;
     }
 
@@ -1675,9 +1844,10 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    protected function prepareBaseUrl() {
+    protected function prepareBaseUrl()
+    {
         $filename = basename($this->server->get('SCRIPT_FILENAME'));
-
+        
         if (basename($this->server->get('SCRIPT_NAME')) === $filename) {
             $baseUrl = $this->server->get('SCRIPT_NAME');
         } elseif (basename($this->server->get('PHP_SELF')) === $filename) {
@@ -1697,41 +1867,41 @@ class BaseRequest implements Arrayable, ArrayAccess {
             do {
                 $seg = $segs[$index];
                 $baseUrl = '/' . $seg . $baseUrl;
-                ++$index;
+                ++ $index;
             } while ($last > $index && (false !== $pos = strpos($path, $baseUrl)) && 0 != $pos);
         }
-
+        
         // Does the baseUrl have anything in common with the request_uri?
         $requestUri = $this->getRequestUri();
-
+        
         if ($baseUrl && false !== $prefix = $this->getUrlencodedPrefix($requestUri, $baseUrl)) {
             // full $baseUrl matches
             return $prefix;
         }
-
+        
         if ($baseUrl && false !== $prefix = $this->getUrlencodedPrefix($requestUri, rtrim(dirname($baseUrl), '/' . DIRECTORY_SEPARATOR) . '/')) {
             // directory portion of $baseUrl matches
             return rtrim($prefix, '/' . DIRECTORY_SEPARATOR);
         }
-
+        
         $truncatedRequestUri = $requestUri;
         if (false !== $pos = strpos($requestUri, '?')) {
             $truncatedRequestUri = substr($requestUri, 0, $pos);
         }
-
+        
         $basename = basename($baseUrl);
-        if (empty($basename) || !strpos(rawurldecode($truncatedRequestUri), $basename)) {
+        if (empty($basename) || ! strpos(rawurldecode($truncatedRequestUri), $basename)) {
             // no match whatsoever; set it blank
             return '';
         }
-
+        
         // If using mod_rewrite or ISAPI_Rewrite strip the script filename
         // out of baseUrl. $pos !== 0 makes sure it is not matching a value
         // from PATH_INFO or QUERY_STRING
         if (strlen($requestUri) >= strlen($baseUrl) && (false !== $pos = strpos($requestUri, $baseUrl)) && $pos !== 0) {
             $baseUrl = substr($requestUri, 0, $pos + strlen($baseUrl));
         }
-
+        
         return rtrim($baseUrl, '/' . DIRECTORY_SEPARATOR);
     }
 
@@ -1740,23 +1910,24 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string base path
      */
-    protected function prepareBasePath() {
+    protected function prepareBasePath()
+    {
         $filename = basename($this->server->get('SCRIPT_FILENAME'));
         $baseUrl = $this->getBaseUrl();
         if (empty($baseUrl)) {
             return '';
         }
-
+        
         if (basename($baseUrl) === $filename) {
             $basePath = dirname($baseUrl);
         } else {
             $basePath = $baseUrl;
         }
-
+        
         if ('\\' === DIRECTORY_SEPARATOR) {
             $basePath = str_replace('\\', '/', $basePath);
         }
-
+        
         return rtrim($basePath, '/');
     }
 
@@ -1765,18 +1936,19 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string path info
      */
-    protected function preparePathInfo() {
+    protected function preparePathInfo()
+    {
         $baseUrl = $this->getBaseUrl();
-
+        
         if (null === ($requestUri = $this->getRequestUri())) {
             return '/';
         }
-
+        
         // Remove the query string from REQUEST_URI
         if ($pos = strpos($requestUri, '?')) {
             $requestUri = substr($requestUri, 0, $pos);
         }
-
+        
         $pathInfo = substr($requestUri, strlen($baseUrl));
         if (null !== $baseUrl && (false === $pathInfo || '' === $pathInfo)) {
             // If substr() returns false then PATH_INFO is set to an empty string
@@ -1784,34 +1956,62 @@ class BaseRequest implements Arrayable, ArrayAccess {
         } elseif (null === $baseUrl) {
             return $requestUri;
         }
-
+        
         return (string) $pathInfo;
     }
 
     /**
      * Initializes HTTP request formats.
      */
-    protected static function initializeFormats() {
+    protected static function initializeFormats()
+    {
         static::$formats = array(
-            'html' => array('text/html', 'application/xhtml+xml'),
-            'txt' => array('text/plain'),
-            'js' => array('application/javascript', 'application/x-javascript', 'text/javascript'),
-            'css' => array('text/css'),
-            'json' => array('application/json', 'application/x-json'),
-            'xml' => array('text/xml', 'application/xml', 'application/x-xml'),
-            'rdf' => array('application/rdf+xml'),
-            'atom' => array('application/atom+xml'),
-            'rss' => array('application/rss+xml'),
-            'form' => array('application/x-www-form-urlencoded'),
+            'html' => array(
+                'text/html',
+                'application/xhtml+xml'
+            ),
+            'txt' => array(
+                'text/plain'
+            ),
+            'js' => array(
+                'application/javascript',
+                'application/x-javascript',
+                'text/javascript'
+            ),
+            'css' => array(
+                'text/css'
+            ),
+            'json' => array(
+                'application/json',
+                'application/x-json'
+            ),
+            'xml' => array(
+                'text/xml',
+                'application/xml',
+                'application/x-xml'
+            ),
+            'rdf' => array(
+                'application/rdf+xml'
+            ),
+            'atom' => array(
+                'application/atom+xml'
+            ),
+            'rss' => array(
+                'application/rss+xml'
+            ),
+            'form' => array(
+                'application/x-www-form-urlencoded'
+            )
         );
     }
 
     /**
      * Sets the default PHP locale.
      *
-     * @param string $locale
+     * @param string $locale            
      */
-    private function setPhpDefaultLocale($locale) {
+    private function setPhpDefaultLocale($locale)
+    {
         // if either the class Locale doesn't exist, or an exception is thrown when
         // setting the default locale, the intl module is not installed, and
         // the call can be ignored:
@@ -1819,9 +2019,7 @@ class BaseRequest implements Arrayable, ArrayAccess {
             if (class_exists('Locale', false)) {
                 \Locale::setDefault($locale);
             }
-        } catch (\Exception $e) {
-            
-        }
+        } catch (\Exception $e) {}
     }
 
     /*
@@ -1833,36 +2031,38 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string|false The prefix as it is encoded in $string, or false
      */
-
-    private function getUrlencodedPrefix($string, $prefix) {
+    private function getUrlencodedPrefix($string, $prefix)
+    {
         if (0 !== strpos(rawurldecode($string), $prefix)) {
             return false;
         }
-
+        
         $len = strlen($prefix);
-
+        
         if (preg_match(sprintf('#^(%%[[:xdigit:]]{2}|.){%d}#', $len), $string, $match)) {
             return $match[0];
         }
-
+        
         return false;
     }
 
-    private static function createRequestFromFactory(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null) {
+    private static function createRequestFromFactory(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
+    {
         if (self::$requestFactory) {
             $request = call_user_func(self::$requestFactory, $query, $request, $attributes, $cookies, $files, $server, $content);
-
-            if (!$request instanceof self) {
+            
+            if (! $request instanceof self) {
                 throw new \LogicException('The Request factory must return an instance of Kant\Http\Request.');
             }
-
+            
             return $request;
         }
-
+        
         return new static($query, $request, $attributes, $cookies, $files, $server, $content);
     }
 
-    private function isFromTrustedProxy() {
+    private function isFromTrustedProxy()
+    {
         return self::$trustedProxies && IpUtils::checkIp($this->server->get('REMOTE_ADDR'), self::$trustedProxies);
     }
 
@@ -1871,9 +2071,10 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return static
      */
-    public static function capture() {
+    public static function capture()
+    {
         static::enableHttpMethodParameterOverride();
-
+        
         return static::createFromBase(Request::createFromGlobals());
     }
 
@@ -1882,7 +2083,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return $this
      */
-    public static function instance($options = []) {
+    public static function instance($options = [])
+    {
         if (is_null(self::$instance)) {
             self::$instance = new static($options);
         }
@@ -1894,7 +2096,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    public function method() {
+    public function method()
+    {
         return $this->getMethod();
     }
 
@@ -1903,7 +2106,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    public function root() {
+    public function root()
+    {
         return rtrim($this->getSchemeAndHttpHost() . $this->getBaseUrl(), '/');
     }
 
@@ -1912,7 +2116,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    public function url() {
+    public function url()
+    {
         return rtrim(preg_replace('/\?.*/', '', $this->getUri()), '/');
     }
 
@@ -1921,21 +2126,23 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    public function fullUrl() {
+    public function fullUrl()
+    {
         $query = $this->getQueryString();
-
+        
         $question = $this->getBaseUrl() . $this->getPathInfo() == '/' ? '/?' : '?';
-
+        
         return $query ? $this->url() . $question . $query : $this->url();
     }
 
     /**
      * Get the full URL for the request with the added query string parameters.
      *
-     * @param  array  $query
+     * @param array $query            
      * @return string
      */
-    public function fullUrlWithQuery(array $query) {
+    public function fullUrlWithQuery(array $query)
+    {
         return count($this->query()) > 0 ? $this->url() . '/?' . http_build_query(array_merge($this->query(), $query)) : $this->fullUrl() . '?' . http_build_query($query);
     }
 
@@ -1944,9 +2151,10 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    public function path() {
+    public function path()
+    {
         $pattern = trim($this->getPathInfo(), '/');
-
+        
         return $pattern == '' ? '/' : $pattern;
     }
 
@@ -1955,18 +2163,20 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    public function decodedPath() {
+    public function decodedPath()
+    {
         return rawurldecode($this->path());
     }
 
     /**
      * Get a segment from the URI (1 based index).
      *
-     * @param  int  $index
-     * @param  string|null  $default
+     * @param int $index            
+     * @param string|null $default            
      * @return string|null
      */
-    public function segment($index, $default = null) {
+    public function segment($index, $default = null)
+    {
         return Arr::get($this->segments(), $index - 1, $default);
     }
 
@@ -1975,45 +2185,50 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return array
      */
-    public function segments() {
+    public function segments()
+    {
         $segments = explode('/', $this->path());
-
+        
         return array_values(array_filter($segments, function ($v) {
-                    return $v != '';
-                }));
+            return $v != '';
+        }));
     }
 
     /**
      * Determine if the current request URI matches a pattern.
      *
-     * @param  mixed  string
+     * @param
+     *            mixed string
      * @return bool
      */
-    public function is() {
+    public function is()
+    {
         foreach (func_get_args() as $pattern) {
             if (Str::is($pattern, urldecode($this->path()))) {
                 return true;
             }
         }
-
+        
         return false;
     }
 
     /**
      * Determine if the current request URL and query string matches a pattern.
      *
-     * @param  mixed  string
+     * @param
+     *            mixed string
      * @return bool
      */
-    public function fullUrlIs() {
+    public function fullUrlIs()
+    {
         $url = $this->fullUrl();
-
+        
         foreach (func_get_args() as $pattern) {
             if (Str::is($pattern, $url)) {
                 return true;
             }
         }
-
+        
         return false;
     }
 
@@ -2022,7 +2237,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return bool
      */
-    public function ajax() {
+    public function ajax()
+    {
         return $this->isXmlHttpRequest();
     }
 
@@ -2031,7 +2247,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return bool
      */
-    public function pjax() {
+    public function pjax()
+    {
         return $this->headers->get('X-PJAX') == true;
     }
 
@@ -2040,7 +2257,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return bool
      */
-    public function secure() {
+    public function secure()
+    {
         return $this->isSecure();
     }
 
@@ -2049,7 +2267,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string
      */
-    public function ip() {
+    public function ip()
+    {
         return $this->getClientIp();
     }
 
@@ -2058,60 +2277,64 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return array
      */
-    public function ips() {
+    public function ips()
+    {
         return $this->getClientIps();
     }
 
     /**
      * Determine if the request contains a given input item key.
      *
-     * @param  string|array  $key
+     * @param string|array $key            
      * @return bool
      */
-    public function exists($key) {
+    public function exists($key)
+    {
         $keys = is_array($key) ? $key : func_get_args();
-
+        
         $input = $this->all();
-
+        
         foreach ($keys as $value) {
-            if (!array_key_exists($value, $input)) {
+            if (! array_key_exists($value, $input)) {
                 return false;
             }
         }
-
+        
         return true;
     }
 
     /**
      * Determine if the request contains a non-empty value for an input item.
      *
-     * @param  string|array  $key
+     * @param string|array $key            
      * @return bool
      */
-    public function has($key) {
+    public function has($key)
+    {
         $keys = is_array($key) ? $key : func_get_args();
-
+        
         foreach ($keys as $value) {
             if ($this->isEmptyString($value)) {
                 return false;
             }
         }
-
+        
         return true;
     }
 
     /**
      * Determine if the given input key is an empty string for "has".
      *
-     * @param  string  $key
+     * @param string $key            
      * @return bool
      */
-    protected function isEmptyString($key) {
+    protected function isEmptyString($key)
+    {
         $value = $this->input($key);
-
+        
         $boolOrArray = is_bool($value) || is_array($value);
-
-        return !$boolOrArray && trim((string) $value) === '';
+        
+        return ! $boolOrArray && trim((string) $value) === '';
     }
 
     /**
@@ -2119,90 +2342,97 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return array
      */
-    public function all() {
+    public function all()
+    {
         return array_replace_recursive($this->input(), $this->allFiles());
     }
 
     /**
      * Retrieve an input item from the request.
      *
-     * @param  string  $key
-     * @param  string|array|null  $default
+     * @param string $key            
+     * @param string|array|null $default            
      * @return string|array
      */
-    public function input($key = null, $default = null) {
+    public function input($key = null, $default = null)
+    {
         $input = $this->getInputSource()->all() + $this->query->all();
-
-//        return data_get($input, $key, $default);
+        
+        // return data_get($input, $key, $default);
         return Arr::get($input, $key, $default);
     }
 
     /**
      * Get a subset of the items from the input data.
      *
-     * @param  array|mixed  $keys
+     * @param array|mixed $keys            
      * @return array
      */
-    public function only($keys) {
+    public function only($keys)
+    {
         $keys = is_array($keys) ? $keys : func_get_args();
-
+        
         $results = [];
-
+        
         $input = $this->all();
-
+        
         foreach ($keys as $key) {
-//            Arr::set($results, $key, data_get($input, $key));
+            // Arr::set($results, $key, data_get($input, $key));
             Arr::set($results, $key, Arr::get($input, $key));
         }
-
+        
         return $results;
     }
 
     /**
      * Get all of the input except for a specified array of items.
      *
-     * @param  array|mixed  $keys
+     * @param array|mixed $keys            
      * @return array
      */
-    public function except($keys) {
+    public function except($keys)
+    {
         $keys = is_array($keys) ? $keys : func_get_args();
-
+        
         $results = $this->all();
-
+        
         Arr::forget($results, $keys);
-
+        
         return $results;
     }
 
     /**
      * Retrieve a query string item from the request.
      *
-     * @param  string  $key
-     * @param  string|array|null  $default
+     * @param string $key            
+     * @param string|array|null $default            
      * @return string|array
      */
-    public function query($key = null, $default = null) {
+    public function query($key = null, $default = null)
+    {
         return $this->retrieveItem('query', $key, $default);
     }
 
     /**
      * Determine if a cookie is set on the request.
      *
-     * @param  string  $key
+     * @param string $key            
      * @return bool
      */
-    public function hasCookie($key) {
-        return !is_null($this->cookie($key));
+    public function hasCookie($key)
+    {
+        return ! is_null($this->cookie($key));
     }
 
     /**
      * Retrieve a cookie from the request.
      *
-     * @param  string  $key
-     * @param  string|array|null  $default
+     * @param string $key            
+     * @param string|array|null $default            
      * @return string|array
      */
-    public function cookie($key = null, $default = null) {
+    public function cookie($key = null, $default = null)
+    {
         return $this->retrieveItem('cookies', $key, $default);
     }
 
@@ -2211,24 +2441,26 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return array
      */
-    public function allFiles() {
+    public function allFiles()
+    {
         $files = $this->files->all();
-
+        
         return $this->convertedFiles ? $this->convertedFiles : $this->convertedFiles = $this->convertUploadedFiles($files);
     }
 
     /**
      * Convert the given array of Symfony UploadedFiles to custom Laravel UploadedFiles.
      *
-     * @param  array  $files
+     * @param array $files            
      * @return array
      */
-    protected function convertUploadedFiles(array $files) {
+    protected function convertUploadedFiles(array $files)
+    {
         return array_map(function ($file) {
             if (is_null($file) || (is_array($file) && empty(array_filter($file)))) {
                 return $file;
             }
-
+            
             return is_array($file) ? $this->convertUploadedFiles($file) : UploadedFile::createFromBase($file);
         }, $files);
     }
@@ -2236,112 +2468,123 @@ class BaseRequest implements Arrayable, ArrayAccess {
     /**
      * Retrieve a file from the request.
      *
-     * @param  string  $key
-     * @param  mixed  $default
+     * @param string $key            
+     * @param mixed $default            
      * @return \Kant\Http\File\UploadedFile|array|null
      */
-    public function file($key = null, $default = null) {
-//        return data_get($this->allFiles(), $key, $default);
+    public function file($key = null, $default = null)
+    {
+        // return data_get($this->allFiles(), $key, $default);
         return Arr::get($this->files->all(), $key, $default);
     }
 
     /**
      * Determine if the uploaded data contains a file.
      *
-     * @param  string  $key
+     * @param string $key            
      * @return bool
      */
-    public function hasFile($key) {
-        if (!is_array($files = $this->file($key))) {
-            $files = [$files];
+    public function hasFile($key)
+    {
+        if (! is_array($files = $this->file($key))) {
+            $files = [
+                $files
+            ];
         }
-
+        
         foreach ($files as $file) {
             if ($this->isValidFile($file)) {
                 return true;
             }
         }
-
+        
         return false;
     }
 
     /**
      * Check that the given file is a valid file instance.
      *
-     * @param  mixed  $file
+     * @param mixed $file            
      * @return bool
      */
-    protected function isValidFile($file) {
+    protected function isValidFile($file)
+    {
         return $file instanceof SplFileInfo && $file->getPath() != '';
     }
 
     /**
      * Retrieve a header from the request.
      *
-     * @param  string  $key
-     * @param  string|array|null  $default
+     * @param string $key            
+     * @param string|array|null $default            
      * @return string|array
      */
-    public function header($key = null, $default = null) {
+    public function header($key = null, $default = null)
+    {
         return $this->retrieveItem('headers', $key, $default);
     }
 
     /**
      * Retrieve a server variable from the request.
      *
-     * @param  string  $key
-     * @param  string|array|null  $default
+     * @param string $key            
+     * @param string|array|null $default            
      * @return string|array
      */
-    public function server($key = null, $default = null) {
+    public function server($key = null, $default = null)
+    {
         return $this->retrieveItem('server', $key, $default);
     }
 
     /**
      * Retrieve an old input item.
      *
-     * @param  string  $key
-     * @param  string|array|null  $default
+     * @param string $key            
+     * @param string|array|null $default            
      * @return string|array
      */
-    public function old($key = null, $default = null) {
+    public function old($key = null, $default = null)
+    {
         return $this->session()->getOldInput($key, $default);
     }
 
     /**
      * Flash the input for the current request to the session.
      *
-     * @param  string  $filter
-     * @param  array   $keys
+     * @param string $filter            
+     * @param array $keys            
      * @return void
      */
-    public function flash($filter = null, $keys = []) {
-        $flash = (!is_null($filter)) ? $this->$filter($keys) : $this->input();
-
+    public function flash($filter = null, $keys = [])
+    {
+        $flash = (! is_null($filter)) ? $this->$filter($keys) : $this->input();
+        
         $this->session()->flashInput($flash);
     }
 
     /**
      * Flash only some of the input to the session.
      *
-     * @param  array|mixed  $keys
+     * @param array|mixed $keys            
      * @return void
      */
-    public function flashOnly($keys) {
+    public function flashOnly($keys)
+    {
         $keys = is_array($keys) ? $keys : func_get_args();
-
+        
         return $this->flash('only', $keys);
     }
 
     /**
      * Flash only some of the input to the session.
      *
-     * @param  array|mixed  $keys
+     * @param array|mixed $keys            
      * @return void
      */
-    public function flashExcept($keys) {
+    public function flashExcept($keys)
+    {
         $keys = is_array($keys) ? $keys : func_get_args();
-
+        
         return $this->flash('except', $keys);
     }
 
@@ -2350,63 +2593,68 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return void
      */
-    public function flush() {
+    public function flush()
+    {
         $this->session()->flashInput([]);
     }
 
     /**
      * Retrieve a parameter item from a given source.
      *
-     * @param  string  $source
-     * @param  string  $key
-     * @param  string|array|null  $default
+     * @param string $source            
+     * @param string $key            
+     * @param string|array|null $default            
      * @return string|array
      */
-    protected function retrieveItem($source, $key, $default) {
+    protected function retrieveItem($source, $key, $default)
+    {
         if (is_null($key)) {
             return $this->$source->all();
         }
-
+        
         return $this->$source->get($key, $default);
     }
 
     /**
      * Merge new input into the current request's input array.
      *
-     * @param  array  $input
+     * @param array $input            
      * @return void
      */
-    public function merge(array $input) {
+    public function merge(array $input)
+    {
         $this->getInputSource()->add($input);
     }
 
     /**
      * Replace the input for the current request.
      *
-     * @param  array  $input
+     * @param array $input            
      * @return void
      */
-    public function replace(array $input) {
+    public function replace(array $input)
+    {
         $this->getInputSource()->replace($input);
     }
 
     /**
      * Get the JSON payload for the request.
      *
-     * @param  string  $key
-     * @param  mixed   $default
+     * @param string $key            
+     * @param mixed $default            
      * @return mixed
      */
-    public function json($key = null, $default = null) {
-        if (!isset($this->json)) {
+    public function json($key = null, $default = null)
+    {
+        if (! isset($this->json)) {
             $this->json = new ParameterBag((array) json_decode($this->getContent(), true));
         }
-
+        
         if (is_null($key)) {
             return $this->json;
         }
-
-//        return data_get($this->json->all(), $key, $default);
+        
+        // return data_get($this->json->all(), $key, $default);
         return Arr::get($this->json->all(), $key, $default);
     }
 
@@ -2415,32 +2663,34 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return \Kant\Http\ParameterBag
      */
-    protected function getInputSource() {
+    protected function getInputSource()
+    {
         if ($this->isJson()) {
             return $this->json();
         }
-
+        
         return $this->getMethod() == 'GET' ? $this->query : $this->request;
     }
 
     /**
      * Determine if the given content types match.
      *
-     * @param  string  $actual
-     * @param  string  $type
+     * @param string $actual            
+     * @param string $type            
      * @return bool
      */
-    public static function matchesType($actual, $type) {
+    public static function matchesType($actual, $type)
+    {
         if ($actual === $type) {
             return true;
         }
-
+        
         $split = explode('/', $actual);
-
+        
         if (isset($split[1]) && preg_match('/' . $split[0] . '\/.+\+' . $split[1] . '/', $type)) {
             return true;
         }
-
+        
         return false;
     }
 
@@ -2449,8 +2699,12 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return bool
      */
-    public function isJson() {
-        return Str::contains($this->header('CONTENT_TYPE'), ['/json', '+json']);
+    public function isJson()
+    {
+        return Str::contains($this->header('CONTENT_TYPE'), [
+            '/json',
+            '+json'
+        ]);
     }
 
     /**
@@ -2458,65 +2712,74 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return bool
      */
-    public function wantsJson() {
+    public function wantsJson()
+    {
         $acceptable = $this->getAcceptableContentTypes();
-
-        return isset($acceptable[0]) && Str::contains($acceptable[0], ['/json', '+json']);
+        
+        return isset($acceptable[0]) && Str::contains($acceptable[0], [
+            '/json',
+            '+json'
+        ]);
     }
 
     /**
      * Determines whether the current requests accepts a given content type.
      *
-     * @param  string|array  $contentTypes
+     * @param string|array $contentTypes            
      * @return bool
      */
-    public function accepts($contentTypes) {
+    public function accepts($contentTypes)
+    {
         $accepts = $this->getAcceptableContentTypes();
-
+        
         if (count($accepts) === 0) {
             return true;
         }
-
+        
         $types = (array) $contentTypes;
-
+        
         foreach ($accepts as $accept) {
             if ($accept === '*/*' || $accept === '*') {
                 return true;
             }
-
+            
             foreach ($types as $type) {
                 if ($this->matchesType($accept, $type) || $accept === strtok($type, '/') . '/*') {
                     return true;
                 }
             }
         }
-
+        
         return false;
     }
 
     /**
      * Return the most suitable content type from the given array based on content negotiation.
      *
-     * @param  string|array  $contentTypes
+     * @param string|array $contentTypes            
      * @return string|null
      */
-    public function prefers($contentTypes) {
+    public function prefers($contentTypes)
+    {
         $accepts = $this->getAcceptableContentTypes();
-
+        
         $contentTypes = (array) $contentTypes;
-
+        
         foreach ($accepts as $accept) {
-            if (in_array($accept, ['*/*', '*'])) {
+            if (in_array($accept, [
+                '*/*',
+                '*'
+            ])) {
                 return $contentTypes[0];
             }
-
+            
             foreach ($contentTypes as $contentType) {
                 $type = $contentType;
-
-                if (!is_null($mimeType = $this->getMimeType($contentType))) {
+                
+                if (! is_null($mimeType = $this->getMimeType($contentType))) {
                     $type = $mimeType;
                 }
-
+                
                 if ($this->matchesType($type, $accept) || $accept === strtok($type, '/') . '/*') {
                     return $contentType;
                 }
@@ -2529,7 +2792,8 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return bool
      */
-    public function acceptsJson() {
+    public function acceptsJson()
+    {
         return $this->accepts('application/json');
     }
 
@@ -2538,23 +2802,25 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return bool
      */
-    public function acceptsHtml() {
+    public function acceptsHtml()
+    {
         return $this->accepts('text/html');
     }
 
     /**
      * Get the data format expected in the response.
      *
-     * @param  string  $default
+     * @param string $default            
      * @return string
      */
-    public function format($default = 'html') {
+    public function format($default = 'html')
+    {
         foreach ($this->getAcceptableContentTypes() as $type) {
             if ($format = $this->getFormat($type)) {
                 return $format;
             }
         }
-
+        
         return $default;
     }
 
@@ -2563,9 +2829,10 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return string|null
      */
-    public function bearerToken() {
+    public function bearerToken()
+    {
         $header = $this->header('Authorization', '');
-
+        
         if (Str::startsWith($header, 'Bearer ')) {
             return Str::substr($header, 7);
         }
@@ -2574,24 +2841,23 @@ class BaseRequest implements Arrayable, ArrayAccess {
     /**
      * Create an Kant request from a Symfony instance.
      *
-     * @param  Request  $request
+     * @param Request $request            
      * @return Request
      */
-    public static function createFromBase(Request $request) {
+    public static function createFromBase(Request $request)
+    {
         if ($request instanceof static) {
             return $request;
         }
-
+        
         $content = $request->content;
-
-        $request = (new static)->duplicate(
-                $request->query->all(), $request->request->all(), $request->attributes->all(), $request->cookies->all(), $request->files->all(), $request->server->all()
-        );
-
+        
+        $request = (new static())->duplicate($request->query->all(), $request->request->all(), $request->attributes->all(), $request->cookies->all(), $request->files->all(), $request->server->all());
+        
         $request->content = $content;
-
+        
         $request->request = $request->getInputSource();
-
+        
         return $request;
     }
 
@@ -2602,34 +2868,37 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @throws \RuntimeException
      */
-    public function session() {
-        if (!$this->hasSession()) {
+    public function session()
+    {
+        if (! $this->hasSession()) {
             throw new RuntimeException('Session store not set on request.');
         }
-
+        
         return $this->getSession();
     }
 
     /**
      * Get the user making the request.
      *
-     * @param  string|null  $guard
+     * @param string|null $guard            
      * @return mixed
      */
-    public function user($guard = null) {
+    public function user($guard = null)
+    {
         return call_user_func($this->getUserResolver(), $guard);
     }
 
     /**
      * Get the route handling the request.
      *
-     * @param string|null $param
+     * @param string|null $param            
      *
      * @return \Kant\Routing\Route|object|string
      */
-    public function route($param = null) {
+    public function route($param = null)
+    {
         $route = call_user_func($this->getRouteResolver());
-
+        
         if (is_null($route) || is_null($param)) {
             return $route;
         } else {
@@ -2644,17 +2913,13 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @throws \RuntimeException
      */
-    public function fingerprint() {
-        if (!$this->route()) {
+    public function fingerprint()
+    {
+        if (! $this->route()) {
             throw new RuntimeException('Unable to generate fingerprint. Route unavailable.');
         }
-
-        return sha1(
-                implode('|', $this->route()->methods()) .
-                '|' . $this->route()->domain() .
-                '|' . $this->route()->uri() .
-                '|' . $this->ip()
-        );
+        
+        return sha1(implode('|', $this->route()->methods()) . '|' . $this->route()->domain() . '|' . $this->route()->uri() . '|' . $this->ip());
     }
 
     /**
@@ -2662,8 +2927,9 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return \Closure
      */
-    public function getUserResolver() {
-        return $this->userResolver ?: function () {
+    public function getUserResolver()
+    {
+        return $this->userResolver ?  : function () {
             //
         };
     }
@@ -2671,12 +2937,13 @@ class BaseRequest implements Arrayable, ArrayAccess {
     /**
      * Set the user resolver callback.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback            
      * @return $this
      */
-    public function setUserResolver(Closure $callback) {
+    public function setUserResolver(Closure $callback)
+    {
         $this->userResolver = $callback;
-
+        
         return $this;
     }
 
@@ -2685,8 +2952,9 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * @return \Closure
      */
-    public function getRouteResolver() {
-        return $this->routeResolver ?: function () {
+    public function getRouteResolver()
+    {
+        return $this->routeResolver ?  : function () {
             //
         };
     }
@@ -2694,12 +2962,13 @@ class BaseRequest implements Arrayable, ArrayAccess {
     /**
      * Set the route resolver callback.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback            
      * @return $this
      */
-    public function setRouteResolver(Closure $callback) {
+    public function setRouteResolver(Closure $callback)
+    {
         $this->routeResolver = $callback;
-
+        
         return $this;
     }
 
@@ -2708,92 +2977,96 @@ class BaseRequest implements Arrayable, ArrayAccess {
      *
      * A field is a named element in the returned array by [[toArray()]].
      */
-    public function fields() {
-        
-    }
+    public function fields()
+    {}
 
     /**
      * Returns the list of additional fields that can be returned by [[toArray()]] in addition to those listed in [[fields()]].
      */
-    public function extraFields() {
-        
-    }
+    public function extraFields()
+    {}
 
     /**
      * Get all of the input and files for the request.
      *
      * @return array
      */
-    public function toArray(array $fields = [], array $expand = [], $recursive = true) {
+    public function toArray(array $fields = [], array $expand = [], $recursive = true)
+    {
         return $this->all();
     }
 
     /**
      * Determine if the given offset exists.
      *
-     * @param  string  $offset
+     * @param string $offset            
      * @return bool
      */
-    public function offsetExists($offset) {
+    public function offsetExists($offset)
+    {
         return array_key_exists($offset, $this->all());
     }
 
     /**
      * Get the value at the given offset.
      *
-     * @param  string  $offset
+     * @param string $offset            
      * @return mixed
      */
-    public function offsetGet($offset) {
-//        return data_get($this->all(), $offset);
+    public function offsetGet($offset)
+    {
+        // return data_get($this->all(), $offset);
         return Arr::get($this->all(), $offset);
     }
 
     /**
      * Set the value at the given offset.
      *
-     * @param  string  $offset
-     * @param  mixed  $value
+     * @param string $offset            
+     * @param mixed $value            
      * @return void
      */
-    public function offsetSet($offset, $value) {
+    public function offsetSet($offset, $value)
+    {
         return $this->getInputSource()->set($offset, $value);
     }
 
     /**
      * Remove the value at the given offset.
      *
-     * @param  string  $offset
+     * @param string $offset            
      * @return void
      */
-    public function offsetUnset($offset) {
+    public function offsetUnset($offset)
+    {
         return $this->getInputSource()->remove($offset);
     }
 
     /**
      * Check if an input element is set on the request.
      *
-     * @param  string  $key
+     * @param string $key            
      * @return bool
      */
-    public function __isset($key) {
-        return !is_null($this->__get($key));
+    public function __isset($key)
+    {
+        return ! is_null($this->__get($key));
     }
 
     /**
      * Get an input element from the request.
      *
-     * @param  string  $key
+     * @param string $key            
      * @return mixed
      */
-    public function __get($key) {
+    public function __get($key)
+    {
         $all = $this->all();
-
+        
         if (array_key_exists($key, $all)) {
             return $all[$key];
         } else {
             return $this->route($key);
         }
     }
-
 }

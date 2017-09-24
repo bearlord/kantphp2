@@ -7,14 +7,14 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Session;
 
 use Kant\Kant;
 use Kant\Support\Str;
 use Kant\Exception\InvalidArgumentException;
 
-class Manager {
+class Manager
+{
 
     /**
      * The registered custom driver creators.
@@ -28,24 +28,27 @@ class Manager {
      *
      * @return string
      */
-    public function getDefaultDriver() {
+    public function getDefaultDriver()
+    {
         return Kant::$app->config->get('session.driver');
     }
 
-    public function driver($driver = null) {
-        $driver = $driver ?: $this->getDefaultDriver();
-
+    public function driver($driver = null)
+    {
+        $driver = $driver ?  : $this->getDefaultDriver();
+        
         // If the given driver has not been created before, we will create the instances
         // here and cache it so we can return it next time very quickly. If there is
         // already a driver created by this name, we'll just return that instance.
-        if (!isset($this->drivers[$driver])) {
+        if (! isset($this->drivers[$driver])) {
             $this->drivers[$driver] = $this->createDriver($driver);
         }
-
+        
         return $this->drivers[$driver];
     }
 
-    public function createDriver($driver) {
+    public function createDriver($driver)
+    {
         $method = 'create' . Str::studly($driver) . 'Driver';
         // We'll check to see if a creator method exists for the given driver. If not we
         // will check for a custom driver creator, which allows developers to create
@@ -55,17 +58,18 @@ class Manager {
         } elseif (method_exists($this, $method)) {
             return $this->$method();
         }
-
+        
         throw new InvalidArgumentException("Driver [$driver] not supported.");
     }
 
     /**
      * Call a custom driver creator.
      *
-     * @param  string  $driver
+     * @param string $driver            
      * @return mixed
      */
-    protected function callCustomCreator($driver) {
+    protected function callCustomCreator($driver)
+    {
         return $this->buildSession($this->customCreators[$driver]());
     }
 
@@ -74,8 +78,9 @@ class Manager {
      *
      * @return \Kant\Session\Store
      */
-    protected function createArrayDriver() {
-        return $this->buildSession(new NullSessionHandler);
+    protected function createArrayDriver()
+    {
+        return $this->buildSession(new NullSessionHandler());
     }
 
     /**
@@ -83,8 +88,9 @@ class Manager {
      *
      * @return \Kant\Session\Store
      */
-    protected function createCookieDriver() {
-        $lifetime =  Kant::$app->config->get('session.lifetime');
+    protected function createCookieDriver()
+    {
+        $lifetime = Kant::$app->config->get('session.lifetime');
         
         return $this->buildSession(new CookieSessionHandler(Kant::$app->cookie, $lifetime));
     }
@@ -94,7 +100,8 @@ class Manager {
      *
      * @return \Kant\Session\Store
      */
-    protected function createFileDriver() {
+    protected function createFileDriver()
+    {
         return $this->createNativeDriver();
     }
 
@@ -103,21 +110,22 @@ class Manager {
      *
      * @return \Kant\Session\Store
      */
-    protected function createNativeDriver() {
-        
+    protected function createNativeDriver()
+    {
         $files = $this->getFileSystem();
         
         $path = Kant::$app->config->get('session.files');
-
+        
         $lifetime = Kant::$app->config->get('session.lifetime');
-
+        
         return $this->buildSession(new FileSessionHandler($files, $path, $lifetime));
     }
-    
+
     /**
      * Get the file system for the file driver
      */
-    protected function getFileSystem() {
+    protected function getFileSystem()
+    {
         return Kant::$app->files;
     }
 
@@ -126,13 +134,14 @@ class Manager {
      *
      * @return \Kant\Session\Store
      */
-    protected function createDatabaseDriver() {
+    protected function createDatabaseDriver()
+    {
         $connection = $this->getDatabaseConnection();
-
+        
         $table = Kant::$app->config->get('session.table');
-
+        
         $lifetime = Kant::$app->config->get('session.maxlifetime');
-
+        
         return $this->buildSession(new DatabaseSessionHandler($connection, $table, $lifetime));
     }
 
@@ -141,7 +150,8 @@ class Manager {
      *
      * @return \Kant\Database\Connection
      */
-    protected function getDatabaseConnection() {
+    protected function getDatabaseConnection()
+    {
         return Kant::$app->getDb();
     }
 
@@ -150,7 +160,8 @@ class Manager {
      *
      * @return \Kant\Session\Store
      */
-    protected function createApcDriver() {
+    protected function createApcDriver()
+    {
         return $this->createCacheBased('apc');
     }
 
@@ -159,7 +170,8 @@ class Manager {
      *
      * @return \Kant\Session\Store
      */
-    protected function createMemcachedDriver() {
+    protected function createMemcachedDriver()
+    {
         return $this->createCacheBased('memcached');
     }
 
@@ -168,7 +180,8 @@ class Manager {
      *
      * @return \Kant\Session\Store
      */
-    protected function createWincacheDriver() {
+    protected function createWincacheDriver()
+    {
         return $this->createCacheBased('wincache');
     }
 
@@ -177,47 +190,51 @@ class Manager {
      *
      * @return \Kant\Session\Store
      */
-    protected function createRedisDriver() {
+    protected function createRedisDriver()
+    {
         $handler = $this->createCacheHandler('redis');
-
-        $handler->getCache()->getStore()->setConnection($this->app['config']['session.connection']);
-
+        
+        $handler->getCache()
+            ->getStore()
+            ->setConnection($this->app['config']['session.connection']);
+        
         return $this->buildSession($handler);
     }
 
     /**
      * Create an instance of a cache driven driver.
      *
-     * @param  string  $driver
+     * @param string $driver            
      * @return \Kant\Session\Store
      */
-    protected function createCacheBased($driver) {
+    protected function createCacheBased($driver)
+    {
         return $this->buildSession($this->createCacheHandler($driver));
     }
 
     /**
      * Create the cache based session handler instance.
      *
-     * @param  string  $driver
+     * @param string $driver            
      * @return \Kant\Session\CacheBasedSessionHandler
      */
-    protected function createCacheHandler($driver) {
+    protected function createCacheHandler($driver)
+    {
         $minutes = Kant::$app->config->get('session.lifetime');
-
+        
         return new CacheBasedSessionHandler(clone $this->app['cache']->driver($driver), $minutes);
     }
 
     /**
      * Build the session instance.
      *
-     * @param  \SessionHandlerInterface  $handler
+     * @param \SessionHandlerInterface $handler            
      * @return \Kant\Session\Store
      */
-    protected function buildSession($handler) {
+    protected function buildSession($handler)
+    {
         if (Kant::$app->config->get('session.encrypt')) {
-            return new EncryptedStore(
-                    Kant::$app->config->get('cookie'), $handler, $this->app['encrypter']
-            );
+            return new EncryptedStore(Kant::$app->config->get('cookie'), $handler, $this->app['encrypter']);
         } else {
             return new Store(Kant::$app->config->get('session.cookie'), $handler);
         }
@@ -228,19 +245,23 @@ class Manager {
      *
      * @return array
      */
-    public function getSessionConfig() {
+    public function getSessionConfig()
+    {
         return Kant::$app->config->get('session');
     }
 
     /**
      * Dynamically call the default driver instance.
      *
-     * @param  string  $method
-     * @param  array   $parameters
+     * @param string $method            
+     * @param array $parameters            
      * @return mixed
      */
-    public function __call($method, $parameters) {
-        return call_user_func_array([$this->driver(), $method], $parameters);
+    public function __call($method, $parameters)
+    {
+        return call_user_func_array([
+            $this->driver(),
+            $method
+        ], $parameters);
     }
-
 }

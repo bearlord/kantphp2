@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Validators;
 
 use Kant\Kant;
@@ -49,9 +48,11 @@ use Kant\Exception\NotSupportedException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Validator extends Component {
+class Validator extends Component
+{
 
     /**
+     *
      * @var array list of built-in validators (name => class or configuration)
      */
     public static $builtInValidators = [
@@ -70,7 +71,7 @@ class Validator extends Component {
         'in' => 'Kant\Validators\RangeValidator',
         'integer' => [
             'class' => 'Kant\Validators\NumberValidator',
-            'integerOnly' => true,
+            'integerOnly' => true
         ],
         'match' => 'Kant\Validators\RegularExpressionValidator',
         'number' => 'Kant\Validators\NumberValidator',
@@ -80,127 +81,143 @@ class Validator extends Component {
         'trim' => [
             'class' => 'Kant\Validators\FilterValidator',
             'filter' => 'trim',
-            'skipOnArray' => true,
+            'skipOnArray' => true
         ],
         'unique' => 'Kant\Validators\UniqueValidator',
         'url' => 'Kant\Validators\UrlValidator',
-        'ip' => 'Kant\Validators\IpValidator',
+        'ip' => 'Kant\Validators\IpValidator'
     ];
 
     /**
+     *
      * @var array|string attributes to be validated by this validator. For multiple attributes,
-     * please specify them as an array; for single attribute, you may use either a string or an array.
+     *      please specify them as an array; for single attribute, you may use either a string or an array.
      */
     public $attributes = [];
 
     /**
+     *
      * @var string the user-defined error message. It may contain the following placeholders which
-     * will be replaced accordingly by the validator:
-     *
-     * - `{attribute}`: the label of the attribute being validated
-     * - `{value}`: the value of the attribute being validated
-     *
-     * Note that some validators may introduce other properties for error messages used when specific
-     * validation conditions are not met. Please refer to individual class API documentation for details
-     * about these properties. By convention, this property represents the primary error message
-     * used when the most important validation condition is not met.
+     *      will be replaced accordingly by the validator:
+     *     
+     *      - `{attribute}`: the label of the attribute being validated
+     *      - `{value}`: the value of the attribute being validated
+     *     
+     *      Note that some validators may introduce other properties for error messages used when specific
+     *      validation conditions are not met. Please refer to individual class API documentation for details
+     *      about these properties. By convention, this property represents the primary error message
+     *      used when the most important validation condition is not met.
      */
     public $message;
 
     /**
+     *
      * @var array|string scenarios that the validator can be applied to. For multiple scenarios,
-     * please specify them as an array; for single scenario, you may use either a string or an array.
+     *      please specify them as an array; for single scenario, you may use either a string or an array.
      */
     public $on = [];
 
     /**
+     *
      * @var array|string scenarios that the validator should not be applied to. For multiple scenarios,
-     * please specify them as an array; for single scenario, you may use either a string or an array.
+     *      please specify them as an array; for single scenario, you may use either a string or an array.
      */
     public $except = [];
 
     /**
+     *
      * @var boolean whether this validation rule should be skipped if the attribute being validated
-     * already has some validation error according to some previous rules. Defaults to true.
+     *      already has some validation error according to some previous rules. Defaults to true.
      */
     public $skipOnError = true;
 
     /**
+     *
      * @var boolean whether this validation rule should be skipped if the attribute value
-     * is null or an empty string.
+     *      is null or an empty string.
      */
     public $skipOnEmpty = true;
 
     /**
+     *
      * @var boolean whether to enable client-side validation for this validator.
-     * The actual client-side validation is done via the JavaScript code returned
-     * by [[clientValidateAttribute()]]. If that method returns null, even if this property
-     * is true, no client-side validation will be done by this validator.
+     *      The actual client-side validation is done via the JavaScript code returned
+     *      by [[clientValidateAttribute()]]. If that method returns null, even if this property
+     *      is true, no client-side validation will be done by this validator.
      */
     public $enableClientValidation = true;
 
     /**
+     *
      * @var callable a PHP callable that replaces the default implementation of [[isEmpty()]].
-     * If not set, [[isEmpty()]] will be used to check if a value is empty. The signature
-     * of the callable should be `function ($value)` which returns a boolean indicating
-     * whether the value is empty.
+     *      If not set, [[isEmpty()]] will be used to check if a value is empty. The signature
+     *      of the callable should be `function ($value)` which returns a boolean indicating
+     *      whether the value is empty.
      */
     public $isEmpty;
 
     /**
+     *
      * @var callable a PHP callable whose return value determines whether this validator should be applied.
-     * The signature of the callable should be `function ($model, $attribute)`, where `$model` and `$attribute`
-     * refer to the model and the attribute currently being validated. The callable should return a boolean value.
-     *
-     * This property is mainly provided to support conditional validation on the server side.
-     * If this property is not set, this validator will be always applied on the server side.
-     *
-     * The following example will enable the validator only when the country currently selected is USA:
-     *
-     * ```php
-     * function ($model) {
-     *     return $model->country == Country::USA;
-     * }
-     * ```
-     *
+     *      The signature of the callable should be `function ($model, $attribute)`, where `$model` and `$attribute`
+     *      refer to the model and the attribute currently being validated. The callable should return a boolean value.
+     *     
+     *      This property is mainly provided to support conditional validation on the server side.
+     *      If this property is not set, this validator will be always applied on the server side.
+     *     
+     *      The following example will enable the validator only when the country currently selected is USA:
+     *     
+     *      ```php
+     *      function ($model) {
+     *      return $model->country == Country::USA;
+     *      }
+     *      ```
+     *     
      * @see whenClient
      */
     public $when;
 
     /**
+     *
      * @var string a JavaScript function name whose return value determines whether this validator should be applied
-     * on the client side. The signature of the function should be `function (attribute, value)`, where
-     * `attribute` is an object describing the attribute being validated (see [[clientValidateAttribute()]])
-     * and `value` the current value of the attribute.
-     *
-     * This property is mainly provided to support conditional validation on the client side.
-     * If this property is not set, this validator will be always applied on the client side.
-     *
-     * The following example will enable the validator only when the country currently selected is USA:
-     *
-     * ```php
-     * function (attribute, value) {
-     *     return $('#country').val() === 'USA';
-     * }
-     * ```
-     *
+     *      on the client side. The signature of the function should be `function (attribute, value)`, where
+     *      `attribute` is an object describing the attribute being validated (see [[clientValidateAttribute()]])
+     *      and `value` the current value of the attribute.
+     *     
+     *      This property is mainly provided to support conditional validation on the client side.
+     *      If this property is not set, this validator will be always applied on the client side.
+     *     
+     *      The following example will enable the validator only when the country currently selected is USA:
+     *     
+     *      ```php
+     *      function (attribute, value) {
+     *      return $('#country').val() === 'USA';
+     *      }
+     *      ```
+     *     
      * @see when
      */
     public $whenClient;
 
     /**
      * Creates a validator object.
-     * @param mixed $type the validator type. This can be a built-in validator name,
-     * a method name of the model class, an anonymous function, or a validator class name.
-     * @param \Kant\Model\Model $model the data model to be validated.
-     * @param array|string $attributes list of attributes to be validated. This can be either an array of
-     * the attribute names or a string of comma-separated attribute names.
-     * @param array $params initial values to be applied to the validator properties
+     * 
+     * @param mixed $type
+     *            the validator type. This can be a built-in validator name,
+     *            a method name of the model class, an anonymous function, or a validator class name.
+     * @param \Kant\Model\Model $model
+     *            the data model to be validated.
+     * @param array|string $attributes
+     *            list of attributes to be validated. This can be either an array of
+     *            the attribute names or a string of comma-separated attribute names.
+     * @param array $params
+     *            initial values to be applied to the validator properties
      * @return Validator the validator
      */
-    public static function createValidator($type, $model, $attributes, $params = []) {
+    public static function createValidator($type, $model, $attributes, $params = [])
+    {
         $params['attributes'] = $attributes;
-
+        
         if ($type instanceof \Closure || $model->hasMethod($type)) {
             // method-based validator
             $params['class'] = __NAMESPACE__ . '\InlineValidator';
@@ -215,14 +232,15 @@ class Validator extends Component {
                 $params['class'] = $type;
             }
         }
-
+        
         return Kant::createObject($params);
     }
 
     /**
      * @inheritdoc
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
         $this->attributes = (array) $this->attributes;
         $this->on = (array) $this->on;
@@ -231,12 +249,16 @@ class Validator extends Component {
 
     /**
      * Validates the specified object.
-     * @param \Kant\Model\Model $model the data model being validated
-     * @param array|null $attributes the list of attributes to be validated.
-     * Note that if an attribute is not associated with the validator, or is is prefixed with `!` char - it will be
-     * ignored. If this parameter is null, every attribute listed in [[attributes]] will be validated.
+     * 
+     * @param \Kant\Model\Model $model
+     *            the data model being validated
+     * @param array|null $attributes
+     *            the list of attributes to be validated.
+     *            Note that if an attribute is not associated with the validator, or is is prefixed with `!` char - it will be
+     *            ignored. If this parameter is null, every attribute listed in [[attributes]] will be validated.
      */
-    public function validateAttributes($model, $attributes = null) {
+    public function validateAttributes($model, $attributes = null)
+    {
         if (is_array($attributes)) {
             $newAttributes = [];
             foreach ($attributes as $attribute) {
@@ -253,7 +275,7 @@ class Validator extends Component {
         }
         foreach ($attributes as $attribute) {
             $skip = ($this->skipOnError && $model->hasErrors($attribute)) || ($this->skipOnEmpty && $this->isEmpty($model->$attribute));
-            if (!$skip) {
+            if (! $skip) {
                 if ($this->when === null || call_user_func($this->when, $model, $attribute)) {
                     $this->validateAttribute($model, $attribute);
                 }
@@ -264,12 +286,16 @@ class Validator extends Component {
     /**
      * Validates a single attribute.
      * Child classes must implement this method to provide the actual validation logic.
-     * @param \Kant\Model\Model $model the data model to be validated
-     * @param string $attribute the name of the attribute to be validated.
+     * 
+     * @param \Kant\Model\Model $model
+     *            the data model to be validated
+     * @param string $attribute
+     *            the name of the attribute to be validated.
      */
-    public function validateAttribute($model, $attribute) {
+    public function validateAttribute($model, $attribute)
+    {
         $result = $this->validateValue($model->$attribute);
-        if (!empty($result)) {
+        if (! empty($result)) {
             $this->addError($model, $attribute, $result[0], $result[1]);
         }
     }
@@ -277,17 +303,21 @@ class Validator extends Component {
     /**
      * Validates a given value.
      * You may use this method to validate a value out of the context of a data model.
-     * @param mixed $value the data value to be validated.
-     * @param string $error the error message to be returned, if the validation fails.
+     * 
+     * @param mixed $value
+     *            the data value to be validated.
+     * @param string $error
+     *            the error message to be returned, if the validation fails.
      * @return boolean whether the data is valid.
      */
-    public function validate($value, &$error = null) {
+    public function validate($value, &$error = null)
+    {
         $result = $this->validateValue($value);
         if (empty($result)) {
             return true;
         }
-
-        list($message, $params) = $result;
+        
+        list ($message, $params) = $result;
         $params['attribute'] = Kant::t('kant', 'the input value');
         if (is_array($value)) {
             $params['value'] = 'array()';
@@ -297,19 +327,22 @@ class Validator extends Component {
             $params['value'] = $value;
         }
         $error = Kant::$app->getI18n()->format($message, $params, Kant::$app->language);
-
+        
         return false;
     }
 
     /**
      * Validates a value.
      * A validator class can implement this method to support data validation out of the context of a data model.
-     * @param mixed $value the data value to be validated.
+     * 
+     * @param mixed $value
+     *            the data value to be validated.
      * @return array|null the error message and the parameters to be inserted into the error message.
-     * Null should be returned if the data is valid.
+     *         Null should be returned if the data is valid.
      * @throws NotSupportedException if the validator does not supporting data validation without a model
      */
-    protected function validateValue($value) {
+    protected function validateValue($value)
+    {
         throw new NotSupportedException(get_class($this) . ' does not support validateValue().');
     }
 
@@ -335,15 +368,19 @@ class Validator extends Component {
      * - `error`: the jQuery selector of the error tag under the context of the container
      * - `status`: status of the input field, 0: empty, not entered before, 1: validated, 2: pending validation, 3: validating
      *
-     * @param \Kant\Model\Model $model the data model being validated
-     * @param string $attribute the name of the attribute to be validated.
-     * @param \Kant\View\View $view the view object that is going to be used to render views or view files
-     * containing a model form with this validator applied.
+     * @param \Kant\Model\Model $model
+     *            the data model being validated
+     * @param string $attribute
+     *            the name of the attribute to be validated.
+     * @param \Kant\View\View $view
+     *            the view object that is going to be used to render views or view files
+     *            containing a model form with this validator applied.
      * @return string the client-side validation script. Null if the validator does not support
-     * client-side validation.
+     *         client-side validation.
      * @see \Kant\Widget\ActiveForm::enableClientValidation
      */
-    public function clientValidateAttribute($model, $attribute, $view) {
+    public function clientValidateAttribute($model, $attribute, $view)
+    {
         return null;
     }
 
@@ -355,49 +392,60 @@ class Validator extends Component {
      * - the validator's `on` property is empty, or
      * - the validator's `on` property contains the specified scenario
      *
-     * @param string $scenario scenario name
+     * @param string $scenario
+     *            scenario name
      * @return boolean whether the validator applies to the specified scenario.
      */
-    public function isActive($scenario) {
-        return !in_array($scenario, $this->except, true) && (empty($this->on) || in_array($scenario, $this->on, true));
+    public function isActive($scenario)
+    {
+        return ! in_array($scenario, $this->except, true) && (empty($this->on) || in_array($scenario, $this->on, true));
     }
 
     /**
      * Adds an error about the specified attribute to the model object.
      * This is a helper method that performs message selection and internationalization.
-     * @param \Kant\Model\Model $model the data model being validated
-     * @param string $attribute the attribute being validated
-     * @param string $message the error message
-     * @param array $params values for the placeholders in the error message
+     * 
+     * @param \Kant\Model\Model $model
+     *            the data model being validated
+     * @param string $attribute
+     *            the attribute being validated
+     * @param string $message
+     *            the error message
+     * @param array $params
+     *            values for the placeholders in the error message
      */
-    public function addError($model, $attribute, $message, $params = []) {
+    public function addError($model, $attribute, $message, $params = [])
+    {
         $params['attribute'] = $model->getAttributeLabel($attribute);
-        if (!isset($params['value'])) {
+        if (! isset($params['value'])) {
             $value = $model->$attribute;
             if (is_array($value)) {
                 $params['value'] = 'array()';
-            } elseif (is_object($value) && !method_exists($value, '__toString')) {
+            } elseif (is_object($value) && ! method_exists($value, '__toString')) {
                 $params['value'] = '(object)';
             } else {
                 $params['value'] = $value;
             }
         }
-        $model->addError($attribute, Kant::$app->getI18n()->format($message, $params, Kant::$app->config->get('language')));
+        $model->addError($attribute, Kant::$app->getI18n()
+            ->format($message, $params, Kant::$app->config->get('language')));
     }
 
     /**
      * Checks if the given value is empty.
      * A value is considered empty if it is null, an empty array, or an empty string.
      * Note that this method is different from PHP empty(). It will return false when the value is 0.
-     * @param mixed $value the value to be checked
+     * 
+     * @param mixed $value
+     *            the value to be checked
      * @return boolean whether the value is empty
      */
-    public function isEmpty($value) {
+    public function isEmpty($value)
+    {
         if ($this->isEmpty !== null) {
             return call_user_func($this->isEmpty, $value);
         } else {
             return $value === null || $value === [] || $value === '';
         }
     }
-
 }

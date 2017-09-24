@@ -126,5 +126,5 @@ return [
     '{nFormatted} {n, plural, =1{pebibyte} other{pebibytes}}' => '{nFormatted} PebiByte',
     '{nFormatted} {n, plural, =1{petabyte} other{petabytes}}' => '{nFormatted} Petabyte',
     '{nFormatted} {n, plural, =1{tebibyte} other{tebibytes}}' => '{nFormatted} TebiByte',
-    '{nFormatted} {n, plural, =1{terabyte} other{terabytes}}' => '{nFormatted} Terabyte',
+    '{nFormatted} {n, plural, =1{terabyte} other{terabytes}}' => '{nFormatted} Terabyte'
 ];

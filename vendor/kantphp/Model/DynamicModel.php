@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Model;
 
 use Kant\Validators\Validator;
@@ -19,15 +18,15 @@ use Kant\Validators\Validator;
  * ```php
  * public function actionSearch($name, $email)
  * {
- *     $model = DynamicModel::validateData(compact('name', 'email'), [
- *         [['name', 'email'], 'string', 'max' => 128],
- *         ['email', 'email'],
- *     ]);
- *     if ($model->hasErrors()) {
- *         // validation fails
- *     } else {
- *         // validation succeeds
- *     }
+ * $model = DynamicModel::validateData(compact('name', 'email'), [
+ * [['name', 'email'], 'string', 'max' => 128],
+ * ['email', 'email'],
+ * ]);
+ * if ($model->hasErrors()) {
+ * // validation fails
+ * } else {
+ * // validation succeeds
+ * }
  * }
  * ```
  *
@@ -44,8 +43,8 @@ use Kant\Validators\Validator;
  * ```php
  * $model = new DynamicModel(compact('name', 'email'));
  * $model->addRule(['name', 'email'], 'string', ['max' => 128])
- *     ->addRule('email', 'email')
- *     ->validate();
+ * ->addRule('email', 'email')
+ * ->validate();
  * ```
  *
  * DynamicModel implements the above ad-hoc data validation feature by supporting the so-called
@@ -55,16 +54,21 @@ use Kant\Validators\Validator;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class DynamicModel extends Model {
+class DynamicModel extends Model
+{
 
     private $_attributes = [];
 
     /**
      * Constructors.
-     * @param array $attributes the dynamic attributes (name-value pairs, or names) being defined
-     * @param array $config the configuration array to be applied to this object.
+     * 
+     * @param array $attributes
+     *            the dynamic attributes (name-value pairs, or names) being defined
+     * @param array $config
+     *            the configuration array to be applied to this object.
      */
-    public function __construct(array $attributes = [], $config = []) {
+    public function __construct(array $attributes = [], $config = [])
+    {
         foreach ($attributes as $name => $value) {
             if (is_int($name)) {
                 $this->_attributes[$value] = null;
@@ -78,7 +82,8 @@ class DynamicModel extends Model {
     /**
      * @inheritdoc
      */
-    public function __get($name) {
+    public function __get($name)
+    {
         if (array_key_exists($name, $this->_attributes)) {
             return $this->_attributes[$name];
         } else {
@@ -89,7 +94,8 @@ class DynamicModel extends Model {
     /**
      * @inheritdoc
      */
-    public function __set($name, $value) {
+    public function __set($name, $value)
+    {
         if (array_key_exists($name, $this->_attributes)) {
             $this->_attributes[$name] = $value;
         } else {
@@ -100,7 +106,8 @@ class DynamicModel extends Model {
     /**
      * @inheritdoc
      */
-    public function __isset($name) {
+    public function __isset($name)
+    {
         if (array_key_exists($name, $this->_attributes)) {
             return isset($this->_attributes[$name]);
         } else {
@@ -111,7 +118,8 @@ class DynamicModel extends Model {
     /**
      * @inheritdoc
      */
-    public function __unset($name) {
+    public function __unset($name)
+    {
         if (array_key_exists($name, $this->_attributes)) {
             unset($this->_attributes[$name]);
         } else {
@@ -121,18 +129,25 @@ class DynamicModel extends Model {
 
     /**
      * Defines an attribute.
-     * @param string $name the attribute name
-     * @param mixed $value the attribute value
+     * 
+     * @param string $name
+     *            the attribute name
+     * @param mixed $value
+     *            the attribute value
      */
-    public function defineAttribute($name, $value = null) {
+    public function defineAttribute($name, $value = null)
+    {
         $this->_attributes[$name] = $value;
     }
 
     /**
      * Undefines an attribute.
-     * @param string $name the attribute name
+     * 
+     * @param string $name
+     *            the attribute name
      */
-    public function undefineAttribute($name) {
+    public function undefineAttribute($name)
+    {
         unset($this->_attributes[$name]);
     }
 
@@ -140,16 +155,21 @@ class DynamicModel extends Model {
      * Adds a validation rule to this model.
      * You can also directly manipulate [[validators]] to add or remove validation rules.
      * This method provides a shortcut.
-     * @param string|array $attributes the attribute(s) to be validated by the rule
-     * @param mixed $validator the validator for the rule.This can be a built-in validator name,
-     * a method name of the model class, an anonymous function, or a validator class name.
-     * @param array $options the options (name-value pairs) to be applied to the validator
+     * 
+     * @param string|array $attributes
+     *            the attribute(s) to be validated by the rule
+     * @param mixed $validator
+     *            the validator for the rule.This can be a built-in validator name,
+     *            a method name of the model class, an anonymous function, or a validator class name.
+     * @param array $options
+     *            the options (name-value pairs) to be applied to the validator
      * @return $this the model itself
      */
-    public function addRule($attributes, $validator, $options = []) {
+    public function addRule($attributes, $validator, $options = [])
+    {
         $validators = $this->getValidators();
         $validators->append(Validator::createValidator($validator, $this, (array) $attributes, $options));
-
+        
         return $this;
     }
 
@@ -157,15 +177,19 @@ class DynamicModel extends Model {
      * Validates the given data with the specified validation rules.
      * This method will create a DynamicModel instance, populate it with the data to be validated,
      * create the specified validation rules, and then validate the data using these rules.
-     * @param array $data the data (name-value pairs) to be validated
-     * @param array $rules the validation rules. Please refer to [[Model::rules()]] on the format of this parameter.
+     * 
+     * @param array $data
+     *            the data (name-value pairs) to be validated
+     * @param array $rules
+     *            the validation rules. Please refer to [[Model::rules()]] on the format of this parameter.
      * @return static the model instance that contains the data being validated
      * @throws InvalidConfigException if a validation rule is not specified correctly.
      */
-    public static function validateData(array $data, $rules = []) {
+    public static function validateData(array $data, $rules = [])
+    {
         /* @var $model DynamicModel */
         $model = new static($data);
-        if (!empty($rules)) {
+        if (! empty($rules)) {
             $validators = $model->getValidators();
             foreach ($rules as $rule) {
                 if ($rule instanceof Validator) {
@@ -178,17 +202,17 @@ class DynamicModel extends Model {
                 }
             }
         }
-
+        
         $model->validate();
-
+        
         return $model;
     }
 
     /**
      * @inheritdoc
      */
-    public function attributes() {
+    public function attributes()
+    {
         return array_keys($this->_attributes);
     }
-
 }

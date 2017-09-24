@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Validators;
 
 /**
@@ -18,32 +17,36 @@ namespace Kant\Validators;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class DefaultValueValidator extends Validator {
+class DefaultValueValidator extends Validator
+{
 
     /**
-     * @var mixed the default value or an anonymous function that returns the default value which will
-     * be assigned to the attributes being validated if they are empty. The signature of the anonymous function
-     * should be as follows,
      *
-     * ```php
-     * function($model, $attribute) {
-     *     // compute value
-     *     return $value;
-     * }
-     * ```
+     * @var mixed the default value or an anonymous function that returns the default value which will
+     *      be assigned to the attributes being validated if they are empty. The signature of the anonymous function
+     *      should be as follows,
+     *     
+     *      ```php
+     *      function($model, $attribute) {
+     *      // compute value
+     *      return $value;
+     *      }
+     *      ```
      */
     public $value;
 
     /**
+     *
      * @var boolean this property is overwritten to be false so that this validator will
-     * be applied when the value being validated is empty.
+     *      be applied when the value being validated is empty.
      */
     public $skipOnEmpty = false;
 
     /**
      * @inheritdoc
      */
-    public function validateAttribute($model, $attribute) {
+    public function validateAttribute($model, $attribute)
+    {
         if ($this->isEmpty($model->$attribute)) {
             if ($this->value instanceof \Closure) {
                 $model->$attribute = call_user_func($this->value, $model, $attribute);
@@ -52,5 +55,4 @@ class DefaultValueValidator extends Validator {
             }
         }
     }
-
 }

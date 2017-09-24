@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Caching;
 
 /**
@@ -24,14 +23,16 @@ namespace Kant\Caching;
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
-class ArrayCache extends Cache {
+class ArrayCache extends Cache
+{
 
     private $_cache;
 
     /**
      * @inheritdoc
      */
-    public function exists($key) {
+    public function exists($key)
+    {
         $key = $this->buildKey($key);
         return isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true));
     }
@@ -39,7 +40,8 @@ class ArrayCache extends Cache {
     /**
      * @inheritdoc
      */
-    protected function getValue($key) {
+    protected function getValue($key)
+    {
         if (isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true))) {
             return $this->_cache[$key][0];
         }
@@ -49,26 +51,35 @@ class ArrayCache extends Cache {
     /**
      * @inheritdoc
      */
-    protected function setValue($key, $value, $duration) {
-        $this->_cache[$key] = [$value, $duration === 0 ? 0 : microtime(true) + $duration];
+    protected function setValue($key, $value, $duration)
+    {
+        $this->_cache[$key] = [
+            $value,
+            $duration === 0 ? 0 : microtime(true) + $duration
+        ];
         return true;
     }
 
     /**
      * @inheritdoc
      */
-    protected function addValue($key, $value, $duration) {
+    protected function addValue($key, $value, $duration)
+    {
         if (isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true))) {
             return false;
         }
-        $this->_cache[$key] = [$value, $duration === 0 ? 0 : microtime(true) + $duration];
+        $this->_cache[$key] = [
+            $value,
+            $duration === 0 ? 0 : microtime(true) + $duration
+        ];
         return true;
     }
 
     /**
      * @inheritdoc
      */
-    protected function deleteValue($key) {
+    protected function deleteValue($key)
+    {
         unset($this->_cache[$key]);
         return true;
     }
@@ -76,9 +87,9 @@ class ArrayCache extends Cache {
     /**
      * @inheritdoc
      */
-    protected function flushValues() {
+    protected function flushValues()
+    {
         $this->_cache = [];
         return true;
     }
-
 }

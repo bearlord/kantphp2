@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Validators;
 
 use Kant\Kant;
@@ -29,65 +28,72 @@ use Kant\Helper\Html;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class CompareValidator extends Validator {
+class CompareValidator extends Validator
+{
 
     /**
+     *
      * @var string the name of the attribute to be compared with. When both this property
-     * and [[compareValue]] are set, the latter takes precedence. If neither is set,
-     * it assumes the comparison is against another attribute whose name is formed by
-     * appending '_repeat' to the attribute being validated. For example, if 'password' is
-     * being validated, then the attribute to be compared would be 'password_repeat'.
+     *      and [[compareValue]] are set, the latter takes precedence. If neither is set,
+     *      it assumes the comparison is against another attribute whose name is formed by
+     *      appending '_repeat' to the attribute being validated. For example, if 'password' is
+     *      being validated, then the attribute to be compared would be 'password_repeat'.
      * @see compareValue
      */
     public $compareAttribute;
 
     /**
+     *
      * @var mixed the constant value to be compared with. When both this property
-     * and [[compareAttribute]] are set, this property takes precedence.
+     *      and [[compareAttribute]] are set, this property takes precedence.
      * @see compareAttribute
      */
     public $compareValue;
 
     /**
-     * @var string the type of the values being compared. The follow types are supported:
      *
-     * - string: the values are being compared as strings. No conversion will be done before comparison.
-     * - number: the values are being compared as numbers. String values will be converted into numbers before comparison.
+     * @var string the type of the values being compared. The follow types are supported:
+     *     
+     *      - string: the values are being compared as strings. No conversion will be done before comparison.
+     *      - number: the values are being compared as numbers. String values will be converted into numbers before comparison.
      */
     public $type = 'string';
 
     /**
+     *
      * @var string the operator for comparison. The following operators are supported:
-     *
-     * - `==`: check if two values are equal. The comparison is done is non-strict mode.
-     * - `===`: check if two values are equal. The comparison is done is strict mode.
-     * - `!=`: check if two values are NOT equal. The comparison is done is non-strict mode.
-     * - `!==`: check if two values are NOT equal. The comparison is done is strict mode.
-     * - `>`: check if value being validated is greater than the value being compared with.
-     * - `>=`: check if value being validated is greater than or equal to the value being compared with.
-     * - `<`: check if value being validated is less than the value being compared with.
-     * - `<=`: check if value being validated is less than or equal to the value being compared with.
-     *
-     * When you want to compare numbers, make sure to also set [[type]] to `number`.
+     *     
+     *      - `==`: check if two values are equal. The comparison is done is non-strict mode.
+     *      - `===`: check if two values are equal. The comparison is done is strict mode.
+     *      - `!=`: check if two values are NOT equal. The comparison is done is non-strict mode.
+     *      - `!==`: check if two values are NOT equal. The comparison is done is strict mode.
+     *      - `>`: check if value being validated is greater than the value being compared with.
+     *      - `>=`: check if value being validated is greater than or equal to the value being compared with.
+     *      - `<`: check if value being validated is less than the value being compared with.
+     *      - `<=`: check if value being validated is less than or equal to the value being compared with.
+     *     
+     *      When you want to compare numbers, make sure to also set [[type]] to `number`.
      */
     public $operator = '==';
 
     /**
-     * @var string the user-defined error message. It may contain the following placeholders which
-     * will be replaced accordingly by the validator:
      *
-     * - `{attribute}`: the label of the attribute being validated
-     * - `{value}`: the value of the attribute being validated
-     * - `{compareValue}`: the value or the attribute label to be compared with
-     * - `{compareAttribute}`: the label of the attribute to be compared with
-     * - `{compareValueOrAttribute}`: the value or the attribute label to be compared with
+     * @var string the user-defined error message. It may contain the following placeholders which
+     *      will be replaced accordingly by the validator:
+     *     
+     *      - `{attribute}`: the label of the attribute being validated
+     *      - `{value}`: the value of the attribute being validated
+     *      - `{compareValue}`: the value or the attribute label to be compared with
+     *      - `{compareAttribute}`: the label of the attribute to be compared with
+     *      - `{compareValueOrAttribute}`: the value or the attribute label to be compared with
      */
     public $message;
 
     /**
      * @inheritdoc
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
         if ($this->message === null) {
             switch ($this->operator) {
@@ -124,11 +130,12 @@ class CompareValidator extends Validator {
     /**
      * @inheritdoc
      */
-    public function validateAttribute($model, $attribute) {
+    public function validateAttribute($model, $attribute)
+    {
         $value = $model->$attribute;
         if (is_array($value)) {
             $this->addError($model, $attribute, Kant::t('kant', '{attribute} is invalid.'));
-
+            
             return;
         }
         if ($this->compareValue !== null) {
@@ -138,12 +145,12 @@ class CompareValidator extends Validator {
             $compareValue = $model->$compareAttribute;
             $compareLabel = $compareValueOrAttribute = $model->getAttributeLabel($compareAttribute);
         }
-
-        if (!$this->compareValues($this->operator, $this->type, $value, $compareValue)) {
+        
+        if (! $this->compareValues($this->operator, $this->type, $value, $compareValue)) {
             $this->addError($model, $attribute, $this->message, [
                 'compareAttribute' => $compareLabel,
                 'compareValue' => $compareValue,
-                'compareValueOrAttribute' => $compareValueOrAttribute,
+                'compareValueOrAttribute' => $compareValueOrAttribute
             ]);
         }
     }
@@ -151,16 +158,20 @@ class CompareValidator extends Validator {
     /**
      * @inheritdoc
      */
-    protected function validateValue($value) {
+    protected function validateValue($value)
+    {
         if ($this->compareValue === null) {
             throw new InvalidConfigException('CompareValidator::compareValue must be set.');
         }
-        if (!$this->compareValues($this->operator, $this->type, $value, $this->compareValue)) {
-            return [$this->message, [
+        if (! $this->compareValues($this->operator, $this->type, $value, $this->compareValue)) {
+            return [
+                $this->message,
+                [
                     'compareAttribute' => $this->compareValue,
                     'compareValue' => $this->compareValue,
-                    'compareValueOrAttribute' => $this->compareValue,
-            ]];
+                    'compareValueOrAttribute' => $this->compareValue
+                ]
+            ];
         } else {
             return null;
         }
@@ -168,13 +179,19 @@ class CompareValidator extends Validator {
 
     /**
      * Compares two values with the specified operator.
-     * @param string $operator the comparison operator
-     * @param string $type the type of the values being compared
-     * @param mixed $value the value being compared
-     * @param mixed $compareValue another value being compared
+     * 
+     * @param string $operator
+     *            the comparison operator
+     * @param string $type
+     *            the type of the values being compared
+     * @param mixed $value
+     *            the value being compared
+     * @param mixed $compareValue
+     *            another value being compared
      * @return boolean whether the comparison using the specified operator is true.
      */
-    protected function compareValues($operator, $type, $value, $compareValue) {
+    protected function compareValues($operator, $type, $value, $compareValue)
+    {
         if ($type === 'number') {
             $value = (float) $value;
             $compareValue = (float) $compareValue;
@@ -207,12 +224,13 @@ class CompareValidator extends Validator {
     /**
      * @inheritdoc
      */
-    public function clientValidateAttribute($model, $attribute, $view) {
+    public function clientValidateAttribute($model, $attribute, $view)
+    {
         $options = [
             'operator' => $this->operator,
-            'type' => $this->type,
+            'type' => $this->type
         ];
-
+        
         if ($this->compareValue !== null) {
             $options['compareValue'] = $this->compareValue;
             $compareLabel = $compareValue = $compareValueOrAttribute = $this->compareValue;
@@ -222,21 +240,20 @@ class CompareValidator extends Validator {
             $options['compareAttribute'] = Html::getInputId($model, $compareAttribute);
             $compareLabel = $compareValueOrAttribute = $model->getAttributeLabel($compareAttribute);
         }
-
+        
         if ($this->skipOnEmpty) {
             $options['skipOnEmpty'] = 1;
         }
-
+        
         $options['message'] = Kant::$app->getI18n()->format($this->message, [
             'attribute' => $model->getAttributeLabel($attribute),
             'compareAttribute' => $compareLabel,
             'compareValue' => $compareValue,
-            'compareValueOrAttribute' => $compareValueOrAttribute,
-                ], Kant::$app->language);
-
+            'compareValueOrAttribute' => $compareValueOrAttribute
+        ], Kant::$app->language);
+        
         ValidationAsset::register($view);
-
+        
         return 'kant.validation.compare(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
     }
-
 }

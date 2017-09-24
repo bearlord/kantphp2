@@ -6,9 +6,9 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-//KantPHP Path
+// KantPHP Path
 define('KANT_PATH', __DIR__ . DIRECTORY_SEPARATOR);
-//Vendor Path
+// Vendor Path
 define('VENDOR_PATH', dirname(__DIR__) . DIRECTORY_SEPARATOR);
 
 require_once VENDOR_PATH . 'autoload.php';

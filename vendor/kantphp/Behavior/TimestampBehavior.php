@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Behavior;
 
 use Kant\Exception\InvalidCallException;
@@ -22,9 +21,9 @@ use Kant\Database\BaseActiveRecord;
  *
  * public function behaviors()
  * {
- *     return [
- *         TimestampBehavior::className(),
- *     ];
+ * return [
+ * TimestampBehavior::className(),
+ * ];
  * }
  * ```
  *
@@ -45,14 +44,14 @@ use Kant\Database\BaseActiveRecord;
  *
  * public function behaviors()
  * {
- *     return [
- *         [
- *             'class' => TimestampBehavior::className(),
- *             'createdAtAttribute' => 'create_time',
- *             'updatedAtAttribute' => 'update_time',
- *             'value' => new Expression('NOW()'),
- *         ],
- *     ];
+ * return [
+ * [
+ * 'class' => TimestampBehavior::className(),
+ * 'createdAtAttribute' => 'create_time',
+ * 'updatedAtAttribute' => 'update_time',
+ * 'value' => new Expression('NOW()'),
+ * ],
+ * ];
  * }
  * ```
  *
@@ -71,17 +70,20 @@ use Kant\Database\BaseActiveRecord;
  * @author Alexander Kochetov <creocoder@gmail.com>
  * @since 2.0
  */
-class TimestampBehavior extends AttributeBehavior {
+class TimestampBehavior extends AttributeBehavior
+{
 
     /**
+     *
      * @var string the attribute that will receive timestamp value
-     * Set this property to false if you do not want to record the creation time.
+     *      Set this property to false if you do not want to record the creation time.
      */
     public $createdAtAttribute = 'created_at';
 
     /**
+     *
      * @var string the attribute that will receive timestamp value.
-     * Set this property to false if you do not want to record the update time.
+     *      Set this property to false if you do not want to record the update time.
      */
     public $updatedAtAttribute = 'updated_at';
 
@@ -96,13 +98,17 @@ class TimestampBehavior extends AttributeBehavior {
     /**
      * @inheritdoc
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
-
+        
         if (empty($this->attributes)) {
             $this->attributes = [
-                BaseActiveRecord::EVENT_BEFORE_INSERT => [$this->createdAtAttribute, $this->updatedAtAttribute],
-                BaseActiveRecord::EVENT_BEFORE_UPDATE => $this->updatedAtAttribute,
+                BaseActiveRecord::EVENT_BEFORE_INSERT => [
+                    $this->createdAtAttribute,
+                    $this->updatedAtAttribute
+                ],
+                BaseActiveRecord::EVENT_BEFORE_UPDATE => $this->updatedAtAttribute
             ];
         }
     }
@@ -113,7 +119,8 @@ class TimestampBehavior extends AttributeBehavior {
      * In case, when the [[value]] is `null`, the result of the PHP function [time()](http://php.net/manual/en/function.time.php)
      * will be used as value.
      */
-    protected function getValue($event) {
+    protected function getValue($event)
+    {
         if ($this->value === null) {
             return time();
         }
@@ -126,10 +133,13 @@ class TimestampBehavior extends AttributeBehavior {
      * ```php
      * $model->touch('lastVisit');
      * ```
-     * @param string $attribute the name of the attribute to update.
+     * 
+     * @param string $attribute
+     *            the name of the attribute to update.
      * @throws InvalidCallException if owner is a new record (since version 2.0.6).
      */
-    public function touch($attribute) {
+    public function touch($attribute)
+    {
         /* @var $owner BaseActiveRecord */
         $owner = $this->owner;
         if ($owner->getIsNewRecord()) {
@@ -137,5 +147,4 @@ class TimestampBehavior extends AttributeBehavior {
         }
         $owner->updateAttributes(array_fill_keys((array) $attribute, $this->getValue(null)));
     }
-
 }

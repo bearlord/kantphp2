@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Database;
 
 /**
@@ -18,7 +17,7 @@ namespace Kant\Database;
  *
  * ```php
  * $expression = new Expression('NOW()');
- * $now = (new \Kant\Database\Query)->select($expression)->scalar();  // SELECT NOW();
+ * $now = (new \Kant\Database\Query)->select($expression)->scalar(); // SELECT NOW();
  * echo $now; // prints the current date
  * ```
  *
@@ -30,27 +29,35 @@ namespace Kant\Database;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Expression extends \Kant\Foundation\Object {
+class Expression extends \Kant\Foundation\Object
+{
 
     /**
+     *
      * @var string the DB expression
      */
     public $expression;
 
     /**
+     *
      * @var array list of parameters that should be bound for this expression.
-     * The keys are placeholders appearing in [[expression]] and the values
-     * are the corresponding parameter values.
+     *      The keys are placeholders appearing in [[expression]] and the values
+     *      are the corresponding parameter values.
      */
     public $params = [];
 
     /**
      * Constructor.
-     * @param string $expression the DB expression
-     * @param array $params parameters
-     * @param array $config name-value pairs that will be used to initialize the object properties
+     * 
+     * @param string $expression
+     *            the DB expression
+     * @param array $params
+     *            parameters
+     * @param array $config
+     *            name-value pairs that will be used to initialize the object properties
      */
-    public function __construct($expression, $params = [], $config = []) {
+    public function __construct($expression, $params = [], $config = [])
+    {
         $this->expression = $expression;
         $this->params = $params;
         parent::__construct($config);
@@ -58,10 +65,11 @@ class Expression extends \Kant\Foundation\Object {
 
     /**
      * String magic method
+     * 
      * @return string the DB expression
      */
-    public function __toString() {
+    public function __toString()
+    {
         return $this->expression;
     }
-
 }

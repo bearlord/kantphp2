@@ -6,22 +6,22 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Exception;
 
 use Kant\Exception\KantException;
 
 /**
  * InvalidValueException represents an exception caused by a function returning a value of unexpected type.
- *
  */
-class InvalidValueException extends KantException {
+class InvalidValueException extends KantException
+{
 
     /**
+     *
      * @return string the user-friendly name of this exception
      */
-    public function getName() {
+    public function getName()
+    {
         return 'Invalid Return Value';
     }
-
 }

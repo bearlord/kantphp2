@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Bootstrap;
 
 use Kant\Helper\ArrayHelper;
@@ -19,21 +18,26 @@ use Kant\Helper\ArrayHelper;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 2.0.5
  */
-class BaseHtml extends \Kant\Helper\Html {
+class BaseHtml extends \Kant\Helper\Html
+{
 
     /**
      * Composes icon HTML for bootstrap Glyphicons.
-     * @param string $name icon short name, for example: 'star'
-     * @param array $options the tag options in terms of name-value pairs. These will be rendered as
-     * the attributes of the resulting tag. There are also a special options:
-     *
-     * - tag: string, tag to be rendered, by default 'span' is used.
-     * - prefix: string, prefix which should be used to compose tag class, by default 'glyphicon glyphicon-' is used.
-     *
+     * 
+     * @param string $name
+     *            icon short name, for example: 'star'
+     * @param array $options
+     *            the tag options in terms of name-value pairs. These will be rendered as
+     *            the attributes of the resulting tag. There are also a special options:
+     *            
+     *            - tag: string, tag to be rendered, by default 'span' is used.
+     *            - prefix: string, prefix which should be used to compose tag class, by default 'glyphicon glyphicon-' is used.
+     *            
      * @return string icon HTML.
      * @see http://getbootstrap.com/components/#glyphicons
      */
-    public static function icon($name, $options = []) {
+    public static function icon($name, $options = [])
+    {
         $tag = ArrayHelper::remove($options, 'tag', 'span');
         $classPrefix = ArrayHelper::remove($options, 'prefix', 'glyphicon glyphicon-');
         static::addCssClass($options, $classPrefix . $name);
@@ -45,16 +49,20 @@ class BaseHtml extends \Kant\Helper\Html {
      *
      * By default value will be HTML-encoded using [[encode()]], you may control this behavior
      * via 'encode' option.
-     * @param string $value static control value.
-     * @param array $options the tag options in terms of name-value pairs. These will be rendered as
-     * the attributes of the resulting tag. There are also a special options:
-     *
-     * - encode: boolean, whether value should be HTML-encoded or not.
-     *
+     * 
+     * @param string $value
+     *            static control value.
+     * @param array $options
+     *            the tag options in terms of name-value pairs. These will be rendered as
+     *            the attributes of the resulting tag. There are also a special options:
+     *            
+     *            - encode: boolean, whether value should be HTML-encoded or not.
+     *            
      * @return string generated HTML
      * @see http://getbootstrap.com/css/#forms-controls-static
      */
-    public static function staticControl($value, $options = []) {
+    public static function staticControl($value, $options = [])
+    {
         static::addCssClass($options, 'form-control-static');
         $value = (string) $value;
         if (isset($options['encode'])) {
@@ -68,14 +76,19 @@ class BaseHtml extends \Kant\Helper\Html {
 
     /**
      * Generates a Bootstrap static form control for the given model attribute.
-     * @param \Kant\Model\Model $model the model object.
-     * @param string $attribute the attribute name or expression. See [[getAttributeName()]] for the format
-     * about attribute expression.
-     * @param array $options the tag options in terms of name-value pairs. See [[staticControl()]] for details.
+     * 
+     * @param \Kant\Model\Model $model
+     *            the model object.
+     * @param string $attribute
+     *            the attribute name or expression. See [[getAttributeName()]] for the format
+     *            about attribute expression.
+     * @param array $options
+     *            the tag options in terms of name-value pairs. See [[staticControl()]] for details.
      * @return string generated HTML
      * @see staticControl()
      */
-    public static function activeStaticControl($model, $attribute, $options = []) {
+    public static function activeStaticControl($model, $attribute, $options = [])
+    {
         if (isset($options['value'])) {
             $value = $options['value'];
             unset($options['value']);
@@ -84,5 +97,4 @@ class BaseHtml extends \Kant\Helper\Html {
         }
         return static::staticControl($value, $options);
     }
-
 }

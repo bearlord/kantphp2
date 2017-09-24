@@ -1,5 +1,4 @@
 <?php
-
 namespace Kant\Routing;
 
 use Closure;
@@ -7,9 +6,10 @@ use Kant\Kant;
 use Kant\Support\Str;
 use Kant\Http\Request;
 use InvalidArgumentException;
-use Kant\Contracts\Routing\UrlRoutable;
+use Kant\Routing\UrlRoutable;
 
-class UrlGenerator {
+class UrlGenerator
+{
 
     /**
      * The route collection.
@@ -91,13 +91,14 @@ class UrlGenerator {
     /**
      * Create a new URL Generator instance.
      *
-     * @param  \Kant\Routing\RouteCollection  $routes
-     * @param  \Kant\Http\Request  $request
+     * @param \Kant\Routing\RouteCollection $routes            
+     * @param \Kant\Http\Request $request            
      * @return void
      */
-    public function __construct(RouteCollection $routes, Request $request) {
+    public function __construct(RouteCollection $routes, Request $request)
+    {
         $this->routes = $routes;
-
+        
         $this->setRequest($request);
     }
 
@@ -106,7 +107,8 @@ class UrlGenerator {
      *
      * @return string
      */
-    public function full() {
+    public function full()
+    {
         return $this->request->fullUrl();
     }
 
@@ -115,21 +117,23 @@ class UrlGenerator {
      *
      * @return string
      */
-    public function current($params = []) {
+    public function current($params = [])
+    {
         return $this->to($this->request->getPathInfo(), $params);
     }
 
     /**
      * Get the URL for the previous request.
      *
-     * @param  mixed  $fallback
+     * @param mixed $fallback            
      * @return string
      */
-    public function previous($fallback = false) {
+    public function previous($fallback = false)
+    {
         $referrer = $this->request->headers->get('referer');
-
+        
         $url = $referrer ? $this->to($referrer) : $this->getPreviousUrlFromSession();
-
+        
         if ($url) {
             return $url;
         } elseif ($fallback) {
@@ -144,201 +148,207 @@ class UrlGenerator {
      *
      * @return string|null
      */
-    protected function getPreviousUrlFromSession() {
+    protected function getPreviousUrlFromSession()
+    {
         $session = $this->getSession();
-
+        
         return $session ? $session->previousUrl() : null;
     }
 
     /**
      * Generate an absolute URL to the given path.
      *
-     * @param  string  $path
-     * @param  mixed  $extra
-     * @param  bool|null  $secure
+     * @param string $path            
+     * @param mixed $extra            
+     * @param bool|null $secure            
      * @return string
      */
-    public function to($path = "", $extra = [], $secure = null) {
-        
+    public function to($path = "", $extra = [], $secure = null)
+    {
         if (is_array($path)) {
-            list($name, $parameters) = $this->parsePathQuery($path);
+            list ($name, $parameters) = $this->parsePathQuery($path);
             return $this->route($name, $parameters);
         }
-
+        
         if ($path === '') {
             $path = Kant::$app->getRequest()->getPathInfo();
         }
-
+        
         // First we will check if the URL is already a valid URL. If it is we will not
         // try to generate a new one but will simply return the URL as is, which is
         // convenient since developers do not always have to check if it's valid.
         if ($this->isValidUrl($path)) {
             return $path;
         }
-
-        $tail = array_map(
-                'rawurlencode', (array) $this->formatParameters($extra));
-
+        
+        $tail = @array_map('trim', (array) $this->formatParameters($extra));
+        
         // Once we have the scheme we will compile the "tail" by collapsing the values
         // into a single string delimited by slashes. This just makes it convenient
         // for passing the array of parameters to this URL as a list of segments.
         $root = $this->formatRoot($this->formatScheme($secure));
-
-        list($path, $query) = $this->extractQueryString($path);
-
-        return $this->format(
-                        $root, '/' . trim($path, '/')
-                ) . $this->httpBluidQuery($tail, $query);
+        
+        list ($path, $query) = $this->extractQueryString($path);
+        
+        return $this->format($root, '/' . trim($path, '/')) . $this->httpBluidQuery($tail, $query);
     }
 
     /**
      * Generate a secure, absolute URL to the given path.
      *
-     * @param  string  $path
-     * @param  array   $parameters
+     * @param string $path            
+     * @param array $parameters            
      * @return string
      */
-    public function secure($path, $parameters = []) {
+    public function secure($path, $parameters = [])
+    {
         return $this->to($path, $parameters, true);
     }
 
     /**
      * Generate the URL to an application asset.
      *
-     * @param  string  $path
-     * @param  bool|null  $secure
+     * @param string $path            
+     * @param bool|null $secure            
      * @return string
      */
-    public function asset($path, $secure = null) {
+    public function asset($path, $secure = null)
+    {
         if ($this->isValidUrl($path)) {
             return $path;
         }
-
+        
         // Once we get the root URL, we will check to see if it contains an index.php
         // file in the paths. If it does, we will remove it since it is not needed
         // for asset paths, but only for routes to endpoints in the application.
         $root = $this->formatRoot($this->formatScheme($secure));
-
+        
         return $this->removeIndex($root) . '/' . trim($path, '/');
     }
 
     /**
      * Generate the URL to a secure asset.
      *
-     * @param  string  $path
+     * @param string $path            
      * @return string
      */
-    public function secureAsset($path) {
+    public function secureAsset($path)
+    {
         return $this->asset($path, true);
     }
 
     /**
      * Generate the URL to an asset from a custom root domain such as CDN, etc.
      *
-     * @param  string  $root
-     * @param  string  $path
-     * @param  bool|null  $secure
+     * @param string $root            
+     * @param string $path            
+     * @param bool|null $secure            
      * @return string
      */
-    public function assetFrom($root, $path, $secure = null) {
+    public function assetFrom($root, $path, $secure = null)
+    {
         // Once we get the root URL, we will check to see if it contains an index.php
         // file in the paths. If it does, we will remove it since it is not needed
         // for asset paths, but only for routes to endpoints in the application.
         $root = $this->formatRoot($this->formatScheme($secure), $root);
-
+        
         return $this->removeIndex($root) . '/' . trim($path, '/');
     }
 
     /**
      * Remove the index.php file from a path.
      *
-     * @param  string  $root
+     * @param string $root            
      * @return string
      */
-    protected function removeIndex($root) {
+    protected function removeIndex($root)
+    {
         $i = 'index.php';
-
+        
         return Str::contains($root, $i) ? str_replace('/' . $i, '', $root) : $root;
     }
 
     /**
      * Get the default scheme for a raw URL.
      *
-     * @param  bool|null  $secure
+     * @param bool|null $secure            
      * @return string
      */
-    public function formatScheme($secure) {
-        if (!is_null($secure)) {
+    public function formatScheme($secure)
+    {
+        if (! is_null($secure)) {
             return $secure ? 'https://' : 'http://';
         }
-
+        
         if (is_null($this->cachedSchema)) {
-            $this->cachedSchema = $this->forceScheme ?: $this->request->getScheme() . '://';
+            $this->cachedSchema = $this->forceScheme ?  : $this->request->getScheme() . '://';
         }
-
+        
         return $this->cachedSchema;
     }
 
     /**
      * Get the URL to a named route.
      *
-     * @param  string  $name
-     * @param  mixed   $parameters
-     * @param  bool  $absolute
+     * @param string $name            
+     * @param mixed $parameters            
+     * @param bool $absolute            
      * @return string
      *
      * @throws \InvalidArgumentException
      */
-    public function route($name, $parameters = [], $absolute = true) {
-        if (!is_null($route = $this->routes->getByName($name))) {
+    public function route($name, $parameters = [], $absolute = true)
+    {
+        if (! is_null($route = $this->routes->getByName($name))) {
             return $this->parseToRoute($route, $parameters, $absolute);
         }
-
+        
         throw new InvalidArgumentException("Route [{$name}] not defined.");
     }
 
     /**
      * Get the URL for a given route instance.
      *
-     * @param  \Kant\Routing\Route  $route
-     * @param  mixed  $parameters
-     * @param  bool   $absolute
+     * @param \Kant\Routing\Route $route            
+     * @param mixed $parameters            
+     * @param bool $absolute            
      * @return string
      *
      * @throws \Kant\Exception\UrlGenerationException
      */
-    protected function parseToRoute($route, $parameters, $absolute) {
-        return $this->routeUrl()->to(
-                        $route, $this->formatParameters($parameters), $absolute
-        );
+    protected function parseToRoute($route, $parameters, $absolute)
+    {
+        return $this->routeUrl()->to($route, $this->formatParameters($parameters), $absolute);
     }
 
     /**
      * Get the URL to a controller action.
      *
-     * @param  string  $action
-     * @param  mixed   $parameters
-     * @param  bool    $absolute
+     * @param string $action            
+     * @param mixed $parameters            
+     * @param bool $absolute            
      * @return string
      *
      * @throws \InvalidArgumentException
      */
-    public function action($action, $parameters = [], $absolute = true) {
+    public function action($action, $parameters = [], $absolute = true)
+    {
         if (is_null($route = $this->routes->getByAction($action = $this->formatAction($action)))) {
             throw new InvalidArgumentException("Action {$action} not defined.");
         }
-
+        
         return $this->parseToRoute($route, $parameters, $absolute);
     }
 
     /**
      * Format the given controller action.
      *
-     * @param  string  $action
+     * @param string $action            
      * @return string
      */
-    protected function formatAction($action) {
-        if ($this->rootNamespace && !(strpos($action, '\\') === 0)) {
+    protected function formatAction($action)
+    {
+        if ($this->rootNamespace && ! (strpos($action, '\\') === 0)) {
             return $this->rootNamespace . '\\' . $action;
         } else {
             return trim($action, '\\');
@@ -348,90 +358,105 @@ class UrlGenerator {
     /**
      * Format the array of URL parameters.
      *
-     * @param  mixed|array  $parameters
+     * @param mixed|array $parameters            
      * @return array
      */
-    public function formatParameters($parameters) {
+    public function formatParameters($parameters)
+    {
         $parameters = array_wrap($parameters);
         foreach ($parameters as $key => $parameter) {
             if ($parameter instanceof UrlRoutable) {
                 $parameters[$key] = $parameter->getRouteKey();
             }
         }
-
+        
         return $parameters;
     }
 
     /**
      * Extract the query string from the given path.
      *
-     * @param  string  $path
+     * @param string $path            
      * @return array
      */
-    protected function extractQueryString($path) {
+    protected function extractQueryString($path)
+    {
         if (($queryPosition = strpos($path, '?')) !== false) {
             return [
                 substr($path, 0, $queryPosition),
-                substr($path, $queryPosition),
+                substr($path, $queryPosition)
             ];
         }
-
-        return [$path, ''];
+        
+        return [
+            $path,
+            ''
+        ];
     }
 
     /**
      * Get the base URL for the request.
      *
-     * @param  string  $scheme
-     * @param  string  $root
+     * @param string $scheme            
+     * @param string $root            
      * @return string
      */
-    public function formatRoot($scheme, $root = null) {
+    public function formatRoot($scheme, $root = null)
+    {
         if (is_null($root)) {
             if (is_null($this->cachedRoot)) {
-                $this->cachedRoot = $this->forcedRoot ?: $this->request->root();
+                $this->cachedRoot = $this->forcedRoot ?  : $this->request->root();
             }
-
+            
             $root = $this->cachedRoot;
         }
-
+        
         $start = Str::startsWith($root, 'http://') ? 'http://' : 'https://';
-
+        
         return preg_replace('~' . $start . '~', $scheme, $root, 1);
     }
 
     /**
      * Format the given URL segments into a single URL.
      *
-     * @param  string  $root
-     * @param  string  $path
+     * @param string $root            
+     * @param string $path            
      * @return string
      */
-    public function format($root, $path) {
+    public function format($root, $path)
+    {
         $path = '/' . trim($path, '/');
-
+        
         if ($this->formatHostUsing) {
             $root = call_user_func($this->formatHostUsing, $root);
         }
-
+        
         if ($this->formatPathUsing) {
             $path = call_user_func($this->formatPathUsing, $path);
         }
-
+        
         return trim($root . $path, '/');
     }
 
     /**
      * Determine if the given path is a valid URL.
      *
-     * @param  string  $path
+     * @param string $path            
      * @return bool
      */
-    public function isValidUrl($path) {
-        if (!Str::startsWith($path, ['#', '//', 'mailto:', 'tel:', 'http://', 'https://'])) {
+    public function isValidUrl($path)
+    {
+        if (! Str::startsWith($path, [
+            '#',
+            '//',
+            'mailto:',
+            'tel:',
+            'http://',
+            'https://'
+        ])) {
             return filter_var($path, FILTER_VALIDATE_URL) !== false;
         }
-
+        
         return true;
     }
 
@@ -440,69 +465,75 @@ class UrlGenerator {
      *
      * @return \Kant\Routing\RouteUrlGenerator
      */
-    protected function routeUrl() {
-        if (!$this->routeGenerator) {
+    protected function routeUrl()
+    {
+        if (! $this->routeGenerator) {
             $this->routeGenerator = new RouteUrlGenerator($this, $this->request);
         }
-
+        
         return $this->routeGenerator;
     }
 
     /**
      * Set the default named parameters used by the URL generator.
      *
-     * @param  array  $defaults
+     * @param array $defaults            
      * @return void
      */
-    public function defaults(array $defaults) {
+    public function defaults(array $defaults)
+    {
         $this->routeUrl()->defaults($defaults);
     }
 
     /**
      * Force the scheme for URLs.
      *
-     * @param  string  $schema
+     * @param string $schema            
      * @return void
      */
-    public function forceScheme($schema) {
+    public function forceScheme($schema)
+    {
         $this->cachedSchema = null;
-
+        
         $this->forceScheme = $schema . '://';
     }
 
     /**
      * Set the forced root URL.
      *
-     * @param  string  $root
+     * @param string $root            
      * @return void
      */
-    public function forceRootUrl($root) {
+    public function forceRootUrl($root)
+    {
         $this->forcedRoot = rtrim($root, '/');
-
+        
         $this->cachedRoot = null;
     }
 
     /**
      * Set a callback to be used to format the host of generated URLs.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback            
      * @return $this
      */
-    public function formatHostUsing(Closure $callback) {
+    public function formatHostUsing(Closure $callback)
+    {
         $this->formatHostUsing = $callback;
-
+        
         return $this;
     }
 
     /**
      * Set a callback to be used to format the path of generated URLs.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback            
      * @return $this
      */
-    public function formatPathUsing(Closure $callback) {
+    public function formatPathUsing(Closure $callback)
+    {
         $this->formatPathUsing = $callback;
-
+        
         return $this;
     }
 
@@ -511,8 +542,9 @@ class UrlGenerator {
      *
      * @return \Closure
      */
-    public function pathFormatter() {
-        return $this->formatPathUsing ?: function ($path) {
+    public function pathFormatter()
+    {
+        return $this->formatPathUsing ?  : function ($path) {
             return $path;
         };
     }
@@ -522,19 +554,21 @@ class UrlGenerator {
      *
      * @return \Kant\Http\Request
      */
-    public function getRequest() {
+    public function getRequest()
+    {
         return $this->request;
     }
 
     /**
      * Set the current request instance.
      *
-     * @param  \Kant\Http\Request  $request
+     * @param \Kant\Http\Request $request            
      * @return void
      */
-    public function setRequest(Request $request) {
+    public function setRequest(Request $request)
+    {
         $this->request = $request;
-
+        
         $this->cachedRoot = null;
         $this->cachedSchema = null;
         $this->routeGenerator = null;
@@ -543,12 +577,13 @@ class UrlGenerator {
     /**
      * Set the route collection.
      *
-     * @param  \Kant\Routing\RouteCollection  $routes
+     * @param \Kant\Routing\RouteCollection $routes            
      * @return $this
      */
-    public function setRoutes(RouteCollection $routes) {
+    public function setRoutes(RouteCollection $routes)
+    {
         $this->routes = $routes;
-
+        
         return $this;
     }
 
@@ -557,7 +592,8 @@ class UrlGenerator {
      *
      * @return \Kant\Session\Store|null
      */
-    protected function getSession() {
+    protected function getSession()
+    {
         if ($this->sessionResolver) {
             return call_user_func($this->sessionResolver);
         }
@@ -566,52 +602,58 @@ class UrlGenerator {
     /**
      * Set the session resolver for the generator.
      *
-     * @param  callable  $sessionResolver
+     * @param callable $sessionResolver            
      * @return $this
      */
-    public function setSessionResolver(callable $sessionResolver) {
+    public function setSessionResolver(callable $sessionResolver)
+    {
         $this->sessionResolver = $sessionResolver;
-
+        
         return $this;
     }
 
     /**
      * Set the root controller namespace.
      *
-     * @param  string  $rootNamespace
+     * @param string $rootNamespace            
      * @return $this
      */
-    public function setRootControllerNamespace($rootNamespace) {
+    public function setRootControllerNamespace($rootNamespace)
+    {
         $this->rootNamespace = $rootNamespace;
-
+        
         return $this;
     }
 
     /**
      * Shift the first item from $path array, the left are to build parameters
-     * 
-     * @param type $path
+     *
+     * @param type $path            
      * @return type
      */
-    protected function parsePathQuery($path) {
-        return [array_shift($path), $path];
+    protected function parsePathQuery($path)
+    {
+        return [
+            array_shift($path),
+            $path
+        ];
     }
 
     /**
      * Implode tail and query from the static::to methd
-     * 
-     * @param array $tail
-     * @param string $query
+     *
+     * @param array $tail            
+     * @param string $query            
      * @return string
      */
-    protected function httpBluidQuery(array $tail, $query = NULL) {
-        if (!empty($query)) {
+    protected function httpBluidQuery(array $tail, $query = NULL)
+    {
+        if (! empty($query)) {
             parse_str(ltrim($query, "?"), $params);
             return "?" . http_build_query(array_merge($params, $tail));
         }
-        if (!empty($tail)) {
+        if (! empty($tail)) {
             return "?" . http_build_query($tail);
         }
     }
-
 }

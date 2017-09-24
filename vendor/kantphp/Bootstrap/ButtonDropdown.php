@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Bootstrap;
 
 use Kant\Helper\ArrayHelper;
@@ -19,59 +18,68 @@ use Kant\Helper\ArrayHelper;
  * ```php
  * // a button group using Dropdown widget
  * echo ButtonDropdown::widget([
- *     'label' => 'Action',
- *     'dropdown' => [
- *         'items' => [
- *             ['label' => 'DropdownA', 'url' => '/'],
- *             ['label' => 'DropdownB', 'url' => '#'],
- *         ],
- *     ],
+ * 'label' => 'Action',
+ * 'dropdown' => [
+ * 'items' => [
+ * ['label' => 'DropdownA', 'url' => '/'],
+ * ['label' => 'DropdownB', 'url' => '#'],
+ * ],
+ * ],
  * ]);
  * ```
+ * 
  * @see http://getbootstrap.com/javascript/#buttons
  * @see http://getbootstrap.com/components/#btn-dropdowns
  * @author Antonio Ramirez <amigo.cobos@gmail.com>
  * @since 2.0
  */
-class ButtonDropdown extends Widget {
+class ButtonDropdown extends Widget
+{
 
     /**
+     *
      * @var string the button label
      */
     public $label = 'Button';
 
     /**
+     *
      * @var array the HTML attributes for the container tag. The following special options are recognized:
-     *
-     * - tag: string, defaults to "div", the name of the container tag.
-     *
+     *     
+     *      - tag: string, defaults to "div", the name of the container tag.
+     *     
      * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      * @since 2.0.1
      */
     public $containerOptions = [];
 
     /**
+     *
      * @var array the HTML attributes of the button.
      * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $options = [];
 
     /**
+     *
      * @var array the configuration array for [[Dropdown]].
      */
     public $dropdown = [];
 
     /**
+     *
      * @var boolean whether to display a group of split-styled button group.
      */
     public $split = false;
 
     /**
+     *
      * @var string the tag to use to render the button
      */
     public $tagName = 'button';
 
     /**
+     *
      * @var boolean whether the label should be HTML-encoded.
      */
     public $encodeLabel = true;
@@ -79,12 +87,15 @@ class ButtonDropdown extends Widget {
     /**
      * Renders the widget.
      */
-    public function run() {
+    public function run()
+    {
         // @todo use [[options]] instead of [[containerOptions]] and introduce [[buttonOptions]] before 2.1 release
-        Html::addCssClass($this->containerOptions, ['widget' => 'btn-group']);
+        Html::addCssClass($this->containerOptions, [
+            'widget' => 'btn-group'
+        ]);
         $options = $this->containerOptions;
         $tag = ArrayHelper::remove($options, 'tag', 'div');
-
+        
         $this->registerPlugin('button');
         return implode("\n", [
             Html::beginTag($tag, $options),
@@ -96,10 +107,14 @@ class ButtonDropdown extends Widget {
 
     /**
      * Generates the button dropdown.
+     * 
      * @return string the rendering result.
      */
-    protected function renderButton() {
-        Html::addCssClass($this->options, ['widget' => 'btn']);
+    protected function renderButton()
+    {
+        Html::addCssClass($this->options, [
+            'widget' => 'btn'
+        ]);
         $label = $this->label;
         if ($this->encodeLabel) {
             $label = Html::encode($label);
@@ -107,44 +122,49 @@ class ButtonDropdown extends Widget {
         if ($this->split) {
             $options = $this->options;
             $this->options['data-toggle'] = 'dropdown';
-            Html::addCssClass($this->options, ['toggle' => 'dropdown-toggle']);
+            Html::addCssClass($this->options, [
+                'toggle' => 'dropdown-toggle'
+            ]);
             unset($this->options['id']);
             $splitButton = Button::widget([
-                        'label' => '<span class="caret"></span>',
-                        'encodeLabel' => false,
-                        'options' => $this->options,
-                        'view' => $this->getView(),
+                'label' => '<span class="caret"></span>',
+                'encodeLabel' => false,
+                'options' => $this->options,
+                'view' => $this->getView()
             ]);
         } else {
             $label .= ' <span class="caret"></span>';
             $options = $this->options;
-            if (!isset($options['href']) && $this->tagName === 'a') {
+            if (! isset($options['href']) && $this->tagName === 'a') {
                 $options['href'] = '#';
             }
-            Html::addCssClass($options, ['toggle' => 'dropdown-toggle']);
+            Html::addCssClass($options, [
+                'toggle' => 'dropdown-toggle'
+            ]);
             $options['data-toggle'] = 'dropdown';
             $splitButton = '';
         }
-
+        
         return Button::widget([
-                    'tagName' => $this->tagName,
-                    'label' => $label,
-                    'options' => $options,
-                    'encodeLabel' => false,
-                    'view' => $this->getView(),
-                ]) . "\n" . $splitButton;
+            'tagName' => $this->tagName,
+            'label' => $label,
+            'options' => $options,
+            'encodeLabel' => false,
+            'view' => $this->getView()
+        ]) . "\n" . $splitButton;
     }
 
     /**
      * Generates the dropdown menu.
+     * 
      * @return string the rendering result.
      */
-    protected function renderDropdown() {
+    protected function renderDropdown()
+    {
         $config = $this->dropdown;
         $config['clientOptions'] = false;
         $config['view'] = $this->getView();
-
+        
         return Dropdown::widget($config);
     }
-
 }

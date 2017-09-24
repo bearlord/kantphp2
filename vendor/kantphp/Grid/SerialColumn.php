@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Grid;
 
 /**
@@ -16,11 +15,11 @@ namespace Kant\Grid;
  *
  * ```php
  * 'columns' => [
- *     // ...
- *     [
- *         'class' => 'Kant\Grid\SerialColumn',
- *         // you may configure additional properties here
- *     ],
+ * // ...
+ * [
+ * 'class' => 'Kant\Grid\SerialColumn',
+ * // you may configure additional properties here
+ * ],
  * ]
  * ```
  *
@@ -29,7 +28,8 @@ namespace Kant\Grid;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class SerialColumn extends Column {
+class SerialColumn extends Column
+{
 
     /**
      * @inheritdoc
@@ -39,7 +39,8 @@ class SerialColumn extends Column {
     /**
      * @inheritdoc
      */
-    protected function renderDataCellContent($model, $key, $index) {
+    protected function renderDataCellContent($model, $key, $index)
+    {
         $pagination = $this->grid->dataProvider->getPagination();
         if ($pagination !== false) {
             return $pagination->getOffset() + $index + 1;
@@ -47,5 +48,4 @@ class SerialColumn extends Column {
             return $index + 1;
         }
     }
-
 }

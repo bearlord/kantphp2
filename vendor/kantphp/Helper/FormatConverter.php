@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Helper;
 
 /**
@@ -18,6 +17,6 @@ namespace Kant\Helper;
  * @author Enrica Ruedin <e.ruedin@guggach.com>
  * @since 2.0
  */
-class FormatConverter extends BaseFormatConverter {
-    
+class FormatConverter extends BaseFormatConverter
+{
 }

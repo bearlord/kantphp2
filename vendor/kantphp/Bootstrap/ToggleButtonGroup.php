@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Bootstrap;
 
 use Kant\Exception\InvalidConfigException;
@@ -19,7 +18,7 @@ use Kant\Exception\InvalidConfigException;
  *
  * ```php
  * <?= $form->field($model, 'item_id')->widget(\Kant\Bootstrap\ToggleButtonGroup::classname(), [
- *     // configure additional widget properties here
+ * // configure additional widget properties here
  * ]) ?>
  * ```
  *
@@ -28,22 +27,26 @@ use Kant\Exception\InvalidConfigException;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 2.0.6
  */
-class ToggleButtonGroup extends InputWidget {
+class ToggleButtonGroup extends InputWidget
+{
 
     /**
+     *
      * @var string input type, can be:
-     * - 'checkbox'
-     * - 'radio'
+     *      - 'checkbox'
+     *      - 'radio'
      */
     public $type;
 
     /**
+     *
      * @var array the data item used to generate the checkboxes.
-     * The array values are the labels, while the array keys are the corresponding checkbox or radio values.
+     *      The array values are the labels, while the array keys are the corresponding checkbox or radio values.
      */
     public $items = [];
 
     /**
+     *
      * @var array, the HTML attributes for the label (button) tag.
      * @see Html::checkbox()
      * @see Html::radio()
@@ -51,6 +54,7 @@ class ToggleButtonGroup extends InputWidget {
     public $labelOptions = [];
 
     /**
+     *
      * @var boolean whether the items labels should be HTML-encoded.
      */
     public $encodeLabels = true;
@@ -58,7 +62,8 @@ class ToggleButtonGroup extends InputWidget {
     /**
      * @inheritdoc
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
         $this->registerPlugin('button');
         Html::addCssClass($this->options, 'btn-group');
@@ -68,9 +73,13 @@ class ToggleButtonGroup extends InputWidget {
     /**
      * @inheritdoc
      */
-    public function run() {
-        if (!isset($this->options['item'])) {
-            $this->options['item'] = [$this, 'renderItem'];
+    public function run()
+    {
+        if (! isset($this->options['item'])) {
+            $this->options['item'] = [
+                $this,
+                'renderItem'
+            ];
         }
         switch ($this->type) {
             case 'checkbox':
@@ -84,16 +93,23 @@ class ToggleButtonGroup extends InputWidget {
 
     /**
      * Default callback for checkbox/radio list item rendering.
-     * @param integer $index item index.
-     * @param string $label item label.
-     * @param string $name input name.
-     * @param boolean $checked whether value is checked or not.
-     * @param string $value input value.
+     * 
+     * @param integer $index
+     *            item index.
+     * @param string $label
+     *            item label.
+     * @param string $name
+     *            input name.
+     * @param boolean $checked
+     *            whether value is checked or not.
+     * @param string $value
+     *            input value.
      * @return string generated HTML.
      * @see Html::checkbox()
      * @see Html::radio()
      */
-    public function renderItem($index, $label, $name, $checked, $value) {
+    public function renderItem($index, $label, $name, $checked, $value)
+    {
         $labelOptions = $this->labelOptions;
         Html::addCssClass($labelOptions, 'btn');
         if ($checked) {
@@ -103,7 +119,10 @@ class ToggleButtonGroup extends InputWidget {
         if ($this->encodeLabels) {
             $label = Html::encode($label);
         }
-        return Html::$type($name, $checked, ['label' => $label, 'labelOptions' => $labelOptions, 'value' => $value]);
+        return Html::$type($name, $checked, [
+            'label' => $label,
+            'labelOptions' => $labelOptions,
+            'value' => $value
+        ]);
     }
-
 }

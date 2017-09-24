@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Caching;
 
 /**
@@ -28,9 +27,11 @@ namespace Kant\Caching;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class TagDependency extends Dependency {
+class TagDependency extends Dependency
+{
 
     /**
+     *
      * @var string|array a list of tag names for this dependency. For a single tag, you may specify it as a string.
      */
     public $tags = [];
@@ -38,53 +39,65 @@ class TagDependency extends Dependency {
     /**
      * Generates the data needed to determine if dependency has been changed.
      * This method does nothing in this class.
-     * @param Cache $cache the cache component that is currently evaluating this dependency
+     * 
+     * @param Cache $cache
+     *            the cache component that is currently evaluating this dependency
      * @return mixed the data needed to determine if dependency has been changed.
      */
-    protected function generateDependencyData($cache) {
+    protected function generateDependencyData($cache)
+    {
         $timestamps = $this->getTimestamps($cache, (array) $this->tags);
-
+        
         $newKeys = [];
         foreach ($timestamps as $key => $timestamp) {
             if ($timestamp === false) {
                 $newKeys[] = $key;
             }
         }
-        if (!empty($newKeys)) {
+        if (! empty($newKeys)) {
             $timestamps = array_merge($timestamps, static::touchKeys($cache, $newKeys));
         }
-
+        
         return $timestamps;
     }
 
     /**
      * @inheritdoc
      */
-    public function isChanged($cache) {
+    public function isChanged($cache)
+    {
         $timestamps = $this->getTimestamps($cache, (array) $this->tags);
         return $timestamps !== $this->data;
     }
 
     /**
      * Invalidates all of the cached data items that are associated with any of the specified [[tags]].
-     * @param Cache $cache the cache component that caches the data items
-     * @param string|array $tags
+     * 
+     * @param Cache $cache
+     *            the cache component that caches the data items
+     * @param string|array $tags            
      */
-    public static function invalidate($cache, $tags) {
+    public static function invalidate($cache, $tags)
+    {
         $keys = [];
         foreach ((array) $tags as $tag) {
-            $keys[] = $cache->buildKey([__CLASS__, $tag]);
+            $keys[] = $cache->buildKey([
+                __CLASS__,
+                $tag
+            ]);
         }
         static::touchKeys($cache, $keys);
     }
 
     /**
      * Generates the timestamp for the specified cache keys.
-     * @param Cache $cache
-     * @param string[] $keys
+     * 
+     * @param Cache $cache            
+     * @param string[] $keys            
      * @return array the timestamp indexed by cache keys
      */
-    protected static function touchKeys($cache, $keys) {
+    protected static function touchKeys($cache, $keys)
+    {
         $items = [];
         $time = microtime();
         foreach ($keys as $key) {
@@ -96,21 +109,25 @@ class TagDependency extends Dependency {
 
     /**
      * Returns the timestamps for the specified tags.
-     * @param Cache $cache
-     * @param string[] $tags
+     * 
+     * @param Cache $cache            
+     * @param string[] $tags            
      * @return array the timestamps indexed by the specified tags.
      */
-    protected function getTimestamps($cache, $tags) {
+    protected function getTimestamps($cache, $tags)
+    {
         if (empty($tags)) {
             return [];
         }
-
+        
         $keys = [];
         foreach ($tags as $tag) {
-            $keys[] = $cache->buildKey([__CLASS__, $tag]);
+            $keys[] = $cache->buildKey([
+                __CLASS__,
+                $tag
+            ]);
         }
-
+        
         return $cache->multiGet($keys);
     }
-
 }

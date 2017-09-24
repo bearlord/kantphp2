@@ -1,0 +1,29 @@
+@import "dropzone.min.css";
+.dropzone {
+    border: 1px solid rgba(0, 0, 0, .03);
+    min-height: 360px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, .03);
+    padding: 23px
+}
+
+.dropzone .dz-success * {
+    cursor: pointer !important
+}
+
+.dropzone .dz-default.dz-message {
+    opacity: 1;
+    -ms-filter: none;
+    -webkit-filter: none;
+    filter: none;
+    transition: opacity .3s ease-in-out;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    position: absolute;
+    width: 428px;
+    height: 123px;
+    margin-left: -214px;
+    margin-top: -61.5px;
+    top: 50%;
+    left: 50%
+}

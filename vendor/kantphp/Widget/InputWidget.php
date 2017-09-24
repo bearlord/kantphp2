@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Widget;
 
 use Kant\Widget\Widget;
@@ -26,38 +25,44 @@ use Kant\Helper\Html;
  *
  * ```php
  * <?= $form->field($model, 'from_date')->widget('WidgetClassName', [
- *     // configure additional widget properties here
+ * // configure additional widget properties here
  * ]) ?>
  * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class InputWidget extends Widget {
+class InputWidget extends Widget
+{
 
     /**
+     *
      * @var Model the data model that this widget is associated with.
      */
     public $model;
 
     /**
+     *
      * @var string the model attribute that this widget is associated with.
      */
     public $attribute;
 
     /**
+     *
      * @var string the input name. This must be set if [[model]] and [[attribute]] are not set.
      */
     public $name;
 
     /**
+     *
      * @var string the input value.
      */
     public $value;
 
     /**
+     *
      * @var array the HTML attributes for the input tag.
-     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $options = [];
 
@@ -65,21 +70,23 @@ class InputWidget extends Widget {
      * Initializes the widget.
      * If you override this method, make sure you call the parent implementation first.
      */
-    public function init() {
-        if ($this->name === null && !$this->hasModel()) {
+    public function init()
+    {
+        if ($this->name === null && ! $this->hasModel()) {
             throw new InvalidConfigException("Either 'name', or 'model' and 'attribute' properties must be specified.");
         }
-        if (!isset($this->options['id'])) {
+        if (! isset($this->options['id'])) {
             $this->options['id'] = $this->hasModel() ? Html::getInputId($this->model, $this->attribute) : $this->getId();
         }
         parent::init();
     }
 
     /**
+     *
      * @return boolean whether this widget is associated with a data model.
      */
-    protected function hasModel() {
+    protected function hasModel()
+    {
         return $this->model instanceof Model && $this->attribute !== null;
     }
-
 }

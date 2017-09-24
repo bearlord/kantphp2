@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Validators;
 
 use Kant\Kant;
@@ -23,42 +22,51 @@ use Kant\Helper\Json;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class UrlValidator extends Validator {
+class UrlValidator extends Validator
+{
 
     /**
+     *
      * @var string the regular expression used to validate the attribute value.
-     * The pattern may contain a `{schemes}` token that will be replaced
-     * by a regular expression which represents the [[validSchemes]].
+     *      The pattern may contain a `{schemes}` token that will be replaced
+     *      by a regular expression which represents the [[validSchemes]].
      */
     public $pattern = '/^{schemes}:\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)(?::\d{1,5})?(?:$|[?\/#])/i';
 
     /**
+     *
      * @var array list of URI schemes which should be considered valid. By default, http and https
-     * are considered to be valid schemes.
+     *      are considered to be valid schemes.
      */
-    public $validSchemes = ['http', 'https'];
+    public $validSchemes = [
+        'http',
+        'https'
+    ];
 
     /**
+     *
      * @var string the default URI scheme. If the input doesn't contain the scheme part, the default
-     * scheme will be prepended to it (thus changing the input). Defaults to null, meaning a URL must
-     * contain the scheme part.
+     *      scheme will be prepended to it (thus changing the input). Defaults to null, meaning a URL must
+     *      contain the scheme part.
      */
     public $defaultScheme;
 
     /**
+     *
      * @var boolean whether validation process should take into account IDN (internationalized
-     * domain names). Defaults to false meaning that validation of URLs containing IDN will always
-     * fail. Note that in order to use IDN validation you have to install and enable `intl` PHP
-     * extension, otherwise an exception would be thrown.
+     *      domain names). Defaults to false meaning that validation of URLs containing IDN will always
+     *      fail. Note that in order to use IDN validation you have to install and enable `intl` PHP
+     *      extension, otherwise an exception would be thrown.
      */
     public $enableIDN = false;
 
     /**
      * @inheritdoc
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
-        if ($this->enableIDN && !function_exists('idn_to_ascii')) {
+        if ($this->enableIDN && ! function_exists('idn_to_ascii')) {
             throw new InvalidConfigException('In order to use IDN validation intl extension must be installed and enabled.');
         }
         if ($this->message === null) {
@@ -69,10 +77,11 @@ class UrlValidator extends Validator {
     /**
      * @inheritdoc
      */
-    public function validateAttribute($model, $attribute) {
+    public function validateAttribute($model, $attribute)
+    {
         $value = $model->$attribute;
         $result = $this->validateValue($value);
-        if (!empty($result)) {
+        if (! empty($result)) {
             $this->addError($model, $attribute, $result[0], $result[1]);
         } elseif ($this->defaultScheme !== null && strpos($value, '://') === false) {
             $model->$attribute = $this->defaultScheme . '://' . $value;
@@ -82,49 +91,54 @@ class UrlValidator extends Validator {
     /**
      * @inheritdoc
      */
-    protected function validateValue($value) {
+    protected function validateValue($value)
+    {
         // make sure the length is limited to avoid DOS attacks
         if (is_string($value) && strlen($value) < 2000) {
             if ($this->defaultScheme !== null && strpos($value, '://') === false) {
                 $value = $this->defaultScheme . '://' . $value;
             }
-
+            
             if (strpos($this->pattern, '{schemes}') !== false) {
                 $pattern = str_replace('{schemes}', '(' . implode('|', $this->validSchemes) . ')', $this->pattern);
             } else {
                 $pattern = $this->pattern;
             }
-
+            
             if ($this->enableIDN) {
                 $value = preg_replace_callback('/:\/\/([^\/]+)/', function ($matches) {
                     return '://' . idn_to_ascii($matches[1]);
                 }, $value);
             }
-
+            
             if (preg_match($pattern, $value)) {
                 return null;
             }
         }
-
-        return [$this->message, []];
+        
+        return [
+            $this->message,
+            []
+        ];
     }
 
     /**
      * @inheritdoc
      */
-    public function clientValidateAttribute($model, $attribute, $view) {
+    public function clientValidateAttribute($model, $attribute, $view)
+    {
         if (strpos($this->pattern, '{schemes}') !== false) {
             $pattern = str_replace('{schemes}', '(' . implode('|', $this->validSchemes) . ')', $this->pattern);
         } else {
             $pattern = $this->pattern;
         }
-
+        
         $options = [
             'pattern' => new JsExpression($pattern),
             'message' => Kant::$app->getI18n()->format($this->message, [
-                'attribute' => $model->getAttributeLabel($attribute),
-                    ], Kant::$app->language),
-            'enableIDN' => (bool) $this->enableIDN,
+                'attribute' => $model->getAttributeLabel($attribute)
+            ], Kant::$app->language),
+            'enableIDN' => (bool) $this->enableIDN
         ];
         if ($this->skipOnEmpty) {
             $options['skipOnEmpty'] = 1;
@@ -132,13 +146,12 @@ class UrlValidator extends Validator {
         if ($this->defaultScheme !== null) {
             $options['defaultScheme'] = $this->defaultScheme;
         }
-
+        
         ValidationAsset::register($view);
         if ($this->enableIDN) {
             PunycodeAsset::register($view);
         }
-
+        
         return 'kant.validation.url(value, messages, ' . Json::htmlEncode($options) . ');';
     }
-
 }

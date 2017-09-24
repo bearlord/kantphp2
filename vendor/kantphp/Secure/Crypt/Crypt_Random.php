@@ -1,5 +1,4 @@
 <?php
-
 namespace Kant\Secure\Crypt;
 
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
@@ -12,9 +11,9 @@ namespace Kant\Secure\Crypt;
  * Here's a short example of how to use this library:
  * <code>
  * <?php
- *    include('Crypt/Random.php');
+ * include('Crypt/Random.php');
  *
- *    echo bin2hex(crypt_random_string(8));
+ * echo bin2hex(crypt_random_string(8));
  * ?>
  * </code>
  *
@@ -24,10 +23,10 @@ namespace Kant\Secure\Crypt;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,13 +35,13 @@ namespace Kant\Secure\Crypt;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @category   Crypt
- * @package    Crypt_Random
- * @author     Jim Wigginton <terrafrost@php.net>
- * @copyright  MMVII Jim Wigginton
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * @version    $Id: Random.php,v 1.9 2010/04/24 06:40:48 terrafrost Exp $
- * @link       http://phpseclib.sourceforge.net
+ * @category Crypt
+ * @package Crypt_Random
+ * @author Jim Wigginton <terrafrost@php.net>
+ * @copyright MMVII Jim Wigginton
+ * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * @version $Id: Random.php,v 1.9 2010/04/24 06:40:48 terrafrost Exp $
+ * @link http://phpseclib.sourceforge.net
  */
 /**
  * "Is Windows" test
@@ -58,11 +57,12 @@ define('CRYPT_RANDOM_IS_WINDOWS', strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
  * microoptimizations because this function has the potential of being called a huge number of times.
  * eg. for RSA key generation.
  *
- * @param Integer $length
+ * @param Integer $length            
  * @return String
  * @access public
  */
-function crypt_random_string($length) {
+function crypt_random_string($length)
+{
     if (CRYPT_RANDOM_IS_WINDOWS) {
         // method 1. prior to PHP 5.3 this would call rand() on windows hence the function_exists('class_alias') call.
         // ie. class_alias is a function that was introduced in PHP 5.3
@@ -139,28 +139,20 @@ function crypt_random_string($length) {
         if ($old_session_id != '') {
             session_write_close();
         }
-
+        
         session_id(1);
         ini_set('session.use_cookies', 0);
         session_cache_limiter('');
         session_start();
-
-        $v = $seed = $_SESSION['seed'] = pack('H*', sha1(
-                        serialize($_SERVER) .
-                        serialize($_POST) .
-                        serialize($_GET) .
-                        serialize($_COOKIE) .
-                        serialize($GLOBALS) .
-                        serialize($_SESSION) .
-                        serialize($_OLD_SESSION)
-        ));
-        if (!isset($_SESSION['count'])) {
+        
+        $v = $seed = $_SESSION['seed'] = pack('H*', sha1(serialize($_SERVER) . serialize($_POST) . serialize($_GET) . serialize($_COOKIE) . serialize($GLOBALS) . serialize($_SESSION) . serialize($_OLD_SESSION)));
+        if (! isset($_SESSION['count'])) {
             $_SESSION['count'] = 0;
         }
         $_SESSION['count'] ++;
-
+        
         session_write_close();
-
+        
         // restore old session data
         if ($old_session_id != '') {
             session_id($old_session_id);
@@ -175,7 +167,7 @@ function crypt_random_string($length) {
                 unset($_SESSION);
             }
         }
-
+        
         // in SSH2 a shared secret and an exchange hash are generated through the key exchange process.
         // the IV client to server is the hash of that "nonce" with the letter A and for the encryption key it's the letter C.
         // if the hash doesn't produce enough a key or an IV that's long enough concat successive hashes of the
@@ -186,7 +178,7 @@ function crypt_random_string($length) {
         // see the is_string($crypto) part for an example of how to expand the keys
         $key = pack('H*', sha1($seed . 'A'));
         $iv = pack('H*', sha1($seed . 'C'));
-
+        
         // ciphers are used as per the nist.gov link below. also, see this link:
         //
         // http://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator#Designs_based_on_cryptographic_primitives
@@ -207,12 +199,12 @@ function crypt_random_string($length) {
                 $crypto = $seed;
                 return crypt_random_string($length);
         }
-
+        
         $crypto->setKey($key);
         $crypto->setIV($iv);
         $crypto->enableContinuousBuffer();
     }
-
+    
     if (is_string($crypto)) {
         // the following is based off of ANSI X9.31:
         //
@@ -227,24 +219,24 @@ function crypt_random_string($length) {
         // later on in the code) but if they're not we'll use sha1
         $result = '';
         while (strlen($result) < $length) { // each loop adds 20 bytes
-            // microtime() isn't packed as "densely" as it could be but then neither is that the idea.
-            // the idea is simply to ensure that each "block" has a unique element to it.
+                                            // microtime() isn't packed as "densely" as it could be but then neither is that the idea.
+                                            // the idea is simply to ensure that each "block" has a unique element to it.
             $i = pack('H*', sha1(microtime()));
             $r = pack('H*', sha1($i ^ $v));
             $v = pack('H*', sha1($r ^ $i));
-            $result.= $r;
+            $result .= $r;
         }
         return substr($result, 0, $length);
     }
-
-    //return $crypto->encrypt(str_repeat("\0", $length));
-
+    
+    // return $crypto->encrypt(str_repeat("\0", $length));
+    
     $result = '';
     while (strlen($result) < $length) {
         $i = $crypto->encrypt(microtime());
         $r = $crypto->encrypt($i ^ $v);
         $v = $crypto->encrypt($r ^ $i);
-        $result.= $r;
+        $result .= $r;
     }
     return substr($result, 0, $length);
 }

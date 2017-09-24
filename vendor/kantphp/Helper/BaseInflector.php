@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Helper;
 
 /**
@@ -17,11 +16,13 @@ namespace Kant\Helper;
  * @author Alexander Makarov <sam@rmcreative.ru>
  * @since 2.0
  */
-class BaseInflector {
+class BaseInflector
+{
 
     /**
+     *
      * @var array the rules for converting a word into its plural form.
-     * The keys are the regular expressions and the values are the corresponding replacements.
+     *      The keys are the regular expressions and the values are the corresponding replacements.
      */
     public static $plurals = [
         '/([nrlm]ese|deer|fish|sheep|measles|ois|pox|media)$/i' => '\1',
@@ -52,12 +53,13 @@ class BaseInflector {
         '/(ax|cris|test)is$/i' => '\1es',
         '/s$/' => 's',
         '/^$/' => '',
-        '/$/' => 's',
+        '/$/' => 's'
     ];
 
     /**
+     *
      * @var array the rules for converting a word into its singular form.
-     * The keys are the regular expressions and the values are the corresponding replacements.
+     *      The keys are the regular expressions and the values are the corresponding replacements.
      */
     public static $singulars = [
         '/([nrlm]ese|deer|fish|sheep|measles|ois|pox|media|ss)$/i' => '\1',
@@ -98,12 +100,13 @@ class BaseInflector {
         '/(n)etherlands$/i' => '\1\2etherlands',
         '/eaus$/' => 'eau',
         '/^(.*us)$/' => '\\1',
-        '/s$/i' => '',
+        '/s$/i' => ''
     ];
 
     /**
+     *
      * @var array the special rules for converting a word between its plural form and singular form.
-     * The keys are the special words in singular form, and the values are the corresponding plural form.
+     *      The keys are the special words in singular form, and the values are the corresponding plural form.
      */
     public static $specials = [
         'atlas' => 'atlases',
@@ -216,33 +219,92 @@ class BaseInflector {
         'Wenchowese' => 'Wenchowese',
         'whiting' => 'whiting',
         'wildebeest' => 'wildebeest',
-        'Yengeese' => 'Yengeese',
+        'Yengeese' => 'Yengeese'
     ];
 
     /**
+     *
      * @var array fallback map for transliteration used by [[transliterate()]] when intl isn't available.
      */
     public static $transliteration = [
-        'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'AE', 'Ç' => 'C',
-        'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I',
-        'Ð' => 'D', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ő' => 'O',
-        'Ø' => 'O', 'Ù' => 'U', 'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ű' => 'U', 'Ý' => 'Y', 'Þ' => 'TH',
+        'À' => 'A',
+        'Á' => 'A',
+        'Â' => 'A',
+        'Ã' => 'A',
+        'Ä' => 'A',
+        'Å' => 'A',
+        'Æ' => 'AE',
+        'Ç' => 'C',
+        'È' => 'E',
+        'É' => 'E',
+        'Ê' => 'E',
+        'Ë' => 'E',
+        'Ì' => 'I',
+        'Í' => 'I',
+        'Î' => 'I',
+        'Ï' => 'I',
+        'Ð' => 'D',
+        'Ñ' => 'N',
+        'Ò' => 'O',
+        'Ó' => 'O',
+        'Ô' => 'O',
+        'Õ' => 'O',
+        'Ö' => 'O',
+        'Ő' => 'O',
+        'Ø' => 'O',
+        'Ù' => 'U',
+        'Ú' => 'U',
+        'Û' => 'U',
+        'Ü' => 'U',
+        'Ű' => 'U',
+        'Ý' => 'Y',
+        'Þ' => 'TH',
         'ß' => 'ss',
-        'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'ae', 'ç' => 'c',
-        'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i',
-        'ð' => 'd', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ő' => 'o',
-        'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ü' => 'u', 'ű' => 'u', 'ý' => 'y', 'þ' => 'th',
-        'ÿ' => 'y',
+        'à' => 'a',
+        'á' => 'a',
+        'â' => 'a',
+        'ã' => 'a',
+        'ä' => 'a',
+        'å' => 'a',
+        'æ' => 'ae',
+        'ç' => 'c',
+        'è' => 'e',
+        'é' => 'e',
+        'ê' => 'e',
+        'ë' => 'e',
+        'ì' => 'i',
+        'í' => 'i',
+        'î' => 'i',
+        'ï' => 'i',
+        'ð' => 'd',
+        'ñ' => 'n',
+        'ò' => 'o',
+        'ó' => 'o',
+        'ô' => 'o',
+        'õ' => 'o',
+        'ö' => 'o',
+        'ő' => 'o',
+        'ø' => 'o',
+        'ù' => 'u',
+        'ú' => 'u',
+        'û' => 'u',
+        'ü' => 'u',
+        'ű' => 'u',
+        'ý' => 'y',
+        'þ' => 'th',
+        'ÿ' => 'y'
     ];
 
     /**
-     * Shortcut for `Any-Latin; NFKD` transliteration rule. The rule is strict, letters will be transliterated with
+     * Shortcut for `Any-Latin; NFKD` transliteration rule.
+     * The rule is strict, letters will be transliterated with
      * the closest sound-representation chars. The result may contain any UTF-8 chars. For example:
      * `获取到 どちら Українська: ґ,є, Српска: ђ, њ, џ! ¿Español?` will be transliterated to
      * `huò qǔ dào dochira Ukraí̈nsʹka: g̀,ê, Srpska: đ, n̂, d̂! ¿Español?`
      *
      * Used in [[transliterate()]].
      * For detailed information see [unicode normalization forms](http://unicode.org/reports/tr15/#Normalization_Forms_Table)
+     * 
      * @see http://unicode.org/reports/tr15/#Normalization_Forms_Table
      * @see transliterate()
      * @since 2.0.7
@@ -250,13 +312,15 @@ class BaseInflector {
     const TRANSLITERATE_STRICT = 'Any-Latin; NFKD';
 
     /**
-     * Shortcut for `Any-Latin; Latin-ASCII` transliteration rule. The rule is medium, letters will be
+     * Shortcut for `Any-Latin; Latin-ASCII` transliteration rule.
+     * The rule is medium, letters will be
      * transliterated to characters of Latin-1 (ISO 8859-1) ASCII table. For example:
      * `获取到 どちら Українська: ґ,є, Српска: ђ, њ, џ! ¿Español?` will be transliterated to
      * `huo qu dao dochira Ukrainsʹka: g,e, Srpska: d, n, d! ¿Espanol?`
      *
      * Used in [[transliterate()]].
      * For detailed information see [unicode normalization forms](http://unicode.org/reports/tr15/#Normalization_Forms_Table)
+     * 
      * @see http://unicode.org/reports/tr15/#Normalization_Forms_Table
      * @see transliterate()
      * @since 2.0.7
@@ -264,7 +328,8 @@ class BaseInflector {
     const TRANSLITERATE_MEDIUM = 'Any-Latin; Latin-ASCII';
 
     /**
-     * Shortcut for `Any-Latin; Latin-ASCII; [\u0080-\uffff] remove` transliteration rule. The rule is loose,
+     * Shortcut for `Any-Latin; Latin-ASCII; [\u0080-\uffff] remove` transliteration rule.
+     * The rule is loose,
      * letters will be transliterated with the characters of Basic Latin Unicode Block.
      * For example:
      * `获取到 どちら Українська: ґ,є, Српска: ђ, њ, џ! ¿Español?` will be transliterated to
@@ -272,6 +337,7 @@ class BaseInflector {
      *
      * Used in [[transliterate()]].
      * For detailed information see [unicode normalization forms](http://unicode.org/reports/tr15/#Normalization_Forms_Table)
+     * 
      * @see http://unicode.org/reports/tr15/#Normalization_Forms_Table
      * @see transliterate()
      * @since 2.0.7
@@ -279,8 +345,9 @@ class BaseInflector {
     const TRANSLITERATE_LOOSE = 'Any-Latin; Latin-ASCII; [\u0080-\uffff] remove';
 
     /**
+     *
      * @var mixed Either a [[\Transliterator]], or a string from which a [[\Transliterator]] can be built
-     * for transliteration. Used by [[transliterate()]] when intl is available. Defaults to [[TRANSLITERATE_LOOSE]]
+     *      for transliteration. Used by [[transliterate()]] when intl is available. Defaults to [[TRANSLITERATE_LOOSE]]
      * @see http://php.net/manual/en/transliterator.transliterate.php
      */
     public static $transliterator = self::TRANSLITERATE_LOOSE;
@@ -289,10 +356,13 @@ class BaseInflector {
      * Converts a word to its plural form.
      * Note that this is for English only!
      * For example, 'apple' will become 'apples', and 'child' will become 'children'.
-     * @param string $word the word to be pluralized
+     * 
+     * @param string $word
+     *            the word to be pluralized
      * @return string the pluralized word
      */
-    public static function pluralize($word) {
+    public static function pluralize($word)
+    {
         if (isset(static::$specials[$word])) {
             return static::$specials[$word];
         }
@@ -301,16 +371,19 @@ class BaseInflector {
                 return preg_replace($rule, $replacement, $word);
             }
         }
-
+        
         return $word;
     }
 
     /**
      * Returns the singular of the $word
-     * @param string $word the english word to singularize
+     * 
+     * @param string $word
+     *            the english word to singularize
      * @return string Singular noun.
      */
-    public static function singularize($word) {
+    public static function singularize($word)
+    {
         $result = array_search($word, static::$specials, true);
         if ($result !== false) {
             return $result;
@@ -320,50 +393,61 @@ class BaseInflector {
                 return preg_replace($rule, $replacement, $word);
             }
         }
-
+        
         return $word;
     }
 
     /**
      * Converts an underscored or CamelCase word into a English
      * sentence.
-     * @param string $words
-     * @param boolean $ucAll whether to set all words to uppercase
+     * 
+     * @param string $words            
+     * @param boolean $ucAll
+     *            whether to set all words to uppercase
      * @return string
      */
-    public static function titleize($words, $ucAll = false) {
+    public static function titleize($words, $ucAll = false)
+    {
         $words = static::humanize(static::underscore($words), $ucAll);
-
+        
         return $ucAll ? ucwords($words) : ucfirst($words);
     }
 
     /**
      * Returns given word as CamelCased
-     * Converts a word like "send_email" to "SendEmail". It
+     * Converts a word like "send_email" to "SendEmail".
+     * It
      * will remove non alphanumeric character from the word, so
      * "who's online" will be converted to "WhoSOnline"
+     * 
      * @see variablize()
-     * @param string $word the word to CamelCase
+     * @param string $word
+     *            the word to CamelCase
      * @return string
      */
-    public static function camelize($word) {
+    public static function camelize($word)
+    {
         return str_replace(' ', '', ucwords(preg_replace('/[^A-Za-z0-9]+/', ' ', $word)));
     }
 
     /**
      * Converts a CamelCase name into space-separated words.
      * For example, 'PostTag' will be converted to 'Post Tag'.
-     * @param string $name the string to be converted
-     * @param boolean $ucwords whether to capitalize the first letter in each word
+     * 
+     * @param string $name
+     *            the string to be converted
+     * @param boolean $ucwords
+     *            whether to capitalize the first letter in each word
      * @return string the resulting words
      */
-    public static function camel2words($name, $ucwords = true) {
+    public static function camel2words($name, $ucwords = true)
+    {
         $label = trim(strtolower(str_replace([
             '-',
             '_',
-            '.',
-                                ], ' ', preg_replace('/(?<![A-Z])[A-Z]/', ' \0', $name))));
-
+            '.'
+        ], ' ', preg_replace('/(?<![A-Z])[A-Z]/', ' \0', $name))));
+        
         return $ucwords ? ucwords($label) : $label;
     }
 
@@ -371,12 +455,17 @@ class BaseInflector {
      * Converts a CamelCase name into an ID in lowercase.
      * Words in the ID may be concatenated using the specified character (defaults to '-').
      * For example, 'PostTag' will be converted to 'post-tag'.
-     * @param string $name the string to be converted
-     * @param string $separator the character used to concatenate the words in the ID
-     * @param boolean|string $strict whether to insert a separator between two consecutive uppercase chars, defaults to false
+     * 
+     * @param string $name
+     *            the string to be converted
+     * @param string $separator
+     *            the character used to concatenate the words in the ID
+     * @param boolean|string $strict
+     *            whether to insert a separator between two consecutive uppercase chars, defaults to false
      * @return string the resulting ID
      */
-    public static function camel2id($name, $separator = '-', $strict = false) {
+    public static function camel2id($name, $separator = '-', $strict = false)
+    {
         $regex = $strict ? '/[A-Z]/' : '/(?<![A-Z])[A-Z]/';
         if ($separator === '_') {
             return trim(strtolower(preg_replace($regex, '_\0', $name)), '_');
@@ -389,32 +478,43 @@ class BaseInflector {
      * Converts an ID into a CamelCase name.
      * Words in the ID separated by `$separator` (defaults to '-') will be concatenated into a CamelCase name.
      * For example, 'post-tag' is converted to 'PostTag'.
-     * @param string $id the ID to be converted
-     * @param string $separator the character used to separate the words in the ID
+     * 
+     * @param string $id
+     *            the ID to be converted
+     * @param string $separator
+     *            the character used to separate the words in the ID
      * @return string the resulting CamelCase name
      */
-    public static function id2camel($id, $separator = '-') {
+    public static function id2camel($id, $separator = '-')
+    {
         return str_replace(' ', '', ucwords(implode(' ', explode($separator, $id))));
     }
 
     /**
      * Converts any "CamelCased" into an "underscored_word".
-     * @param string $words the word(s) to underscore
+     * 
+     * @param string $words
+     *            the word(s) to underscore
      * @return string
      */
-    public static function underscore($words) {
+    public static function underscore($words)
+    {
         return strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $words));
     }
 
     /**
      * Returns a human-readable string from $word
-     * @param string $word the string to humanize
-     * @param boolean $ucAll whether to set all words to uppercase or not
+     * 
+     * @param string $word
+     *            the string to humanize
+     * @param boolean $ucAll
+     *            whether to set all words to uppercase or not
      * @return string
      */
-    public static function humanize($word, $ucAll = false) {
+    public static function humanize($word, $ucAll = false)
+    {
         $word = str_replace('_', ' ', preg_replace('/_id$/', '', $word));
-
+        
         return $ucAll ? ucwords($word) : ucfirst($word);
     }
 
@@ -423,22 +523,29 @@ class BaseInflector {
      * Converts a word like "send_email" to "sendEmail". It
      * will remove non alphanumeric character from the word, so
      * "who's online" will be converted to "whoSOnline"
-     * @param string $word to lowerCamelCase
+     * 
+     * @param string $word
+     *            to lowerCamelCase
      * @return string
      */
-    public static function variablize($word) {
+    public static function variablize($word)
+    {
         $word = static::camelize($word);
-
+        
         return strtolower($word[0]) . substr($word, 1);
     }
 
     /**
      * Converts a class name to its table name (pluralized)
-     * naming conventions. For example, converts "Person" to "people"
-     * @param string $className the class name for getting related table_name
+     * naming conventions.
+     * For example, converts "Person" to "people"
+     * 
+     * @param string $className
+     *            the class name for getting related table_name
      * @return string
      */
-    public static function tableize($className) {
+    public static function tableize($className)
+    {
         return static::pluralize(static::underscore($className));
     }
 
@@ -450,17 +557,21 @@ class BaseInflector {
      * and removes the rest. You may customize characters map via $transliteration property
      * of the helper.
      *
-     * @param string $string An arbitrary string to convert
-     * @param string $replacement The replacement to use for spaces
-     * @param boolean $lowercase whether to return the string in lowercase or not. Defaults to `true`.
+     * @param string $string
+     *            An arbitrary string to convert
+     * @param string $replacement
+     *            The replacement to use for spaces
+     * @param boolean $lowercase
+     *            whether to return the string in lowercase or not. Defaults to `true`.
      * @return string The converted string.
      */
-    public static function slug($string, $replacement = '-', $lowercase = true) {
+    public static function slug($string, $replacement = '-', $lowercase = true)
+    {
         $string = static::transliterate($string);
         $string = preg_replace('/[^a-zA-Z0-9=\s—–-]+/u', '', $string);
         $string = preg_replace('/[=\s—–-]+/u', $replacement, $string);
         $string = trim($string, $replacement);
-
+        
         return $lowercase ? strtolower($string) : $string;
     }
 
@@ -471,18 +582,21 @@ class BaseInflector {
      * and removes the rest. You may customize characters map via $transliteration property
      * of the helper.
      *
-     * @param string $string input string
-     * @param string|\Transliterator $transliterator either a [[Transliterator]] or a string
-     * from which a [[Transliterator]] can be built.
+     * @param string $string
+     *            input string
+     * @param string|\Transliterator $transliterator
+     *            either a [[Transliterator]] or a string
+     *            from which a [[Transliterator]] can be built.
      * @return string
      * @since 2.0.7 this method is public.
      */
-    public static function transliterate($string, $transliterator = null) {
+    public static function transliterate($string, $transliterator = null)
+    {
         if (static::hasIntl()) {
             if ($transliterator === null) {
                 $transliterator = static::$transliterator;
             }
-
+            
             return transliterator_transliterate($transliterator, $string);
         } else {
             return strtr($string, static::$transliteration);
@@ -490,27 +604,36 @@ class BaseInflector {
     }
 
     /**
+     *
      * @return boolean if intl extension is loaded
      */
-    protected static function hasIntl() {
+    protected static function hasIntl()
+    {
         return extension_loaded('intl');
     }
 
     /**
-     * Converts a table name to its class name. For example, converts "people" to "Person"
-     * @param string $tableName
+     * Converts a table name to its class name.
+     * For example, converts "people" to "Person"
+     * 
+     * @param string $tableName            
      * @return string
      */
-    public static function classify($tableName) {
+    public static function classify($tableName)
+    {
         return static::camelize(static::singularize($tableName));
     }
 
     /**
-     * Converts number to its ordinal English form. For example, converts 13 to 13th, 2 to 2nd ...
-     * @param integer $number the number to get its ordinal value
+     * Converts number to its ordinal English form.
+     * For example, converts 13 to 13th, 2 to 2nd ...
+     * 
+     * @param integer $number
+     *            the number to get its ordinal value
      * @return string
      */
-    public static function ordinalize($number) {
+    public static function ordinalize($number)
+    {
         if (in_array($number % 100, range(11, 13))) {
             return $number . 'th';
         }
@@ -545,16 +668,21 @@ class BaseInflector {
      * // output: Spain, France & Italy
      * ```
      *
-     * @param array $words the words to be converted into an string
-     * @param string $twoWordsConnector the string connecting words when there are only two
-     * @param string $lastWordConnector the string connecting the last two words. If this is null, it will
-     * take the value of `$twoWordsConnector`.
-     * @param string $connector the string connecting words other than those connected by
-     * $lastWordConnector and $twoWordsConnector
+     * @param array $words
+     *            the words to be converted into an string
+     * @param string $twoWordsConnector
+     *            the string connecting words when there are only two
+     * @param string $lastWordConnector
+     *            the string connecting the last two words. If this is null, it will
+     *            take the value of `$twoWordsConnector`.
+     * @param string $connector
+     *            the string connecting words other than those connected by
+     *            $lastWordConnector and $twoWordsConnector
      * @return string the generated sentence
      * @since 2.0.1
      */
-    public static function sentence(array $words, $twoWordsConnector = ' and ', $lastWordConnector = null, $connector = ', ') {
+    public static function sentence(array $words, $twoWordsConnector = ' and ', $lastWordConnector = null, $connector = ', ')
+    {
         if ($lastWordConnector === null) {
             $lastWordConnector = $twoWordsConnector;
         }
@@ -566,8 +694,7 @@ class BaseInflector {
             case 2:
                 return implode($twoWordsConnector, $words);
             default:
-                return implode($connector, array_slice($words, 0, -1)) . $lastWordConnector . end($words);
+                return implode($connector, array_slice($words, 0, - 1)) . $lastWordConnector . end($words);
         }
     }
-
 }

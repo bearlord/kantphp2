@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Bootstrap;
 
 use Kant\Helper\ArrayHelper;
@@ -19,7 +18,7 @@ use Kant\Helper\ArrayHelper;
  *
  * - [[inputTemplate]] is an optional template to render complex inputs, for example input groups
  * - [[horizontalCssClasses]] defines the CSS grid classes to add to label, wrapper, error and hint
- *   in horizontal forms
+ * in horizontal forms
  * - [[inline]]/[[inline()]] is used to render inline [[checkboxList()]] and [[radioList()]]
  * - [[enableError]] can be set to `false` to disable to the error
  * - [[enableLabel]] can be set to `false` to disable to the label
@@ -56,9 +55,9 @@ use Kant\Helper\ArrayHelper;
  *
  * // Form field without label
  * echo $form->field($model, 'demo', [
- *     'inputOptions' => [
- *         'placeholder' => $model->getAttributeLabel('demo'),
- *     ],
+ * 'inputOptions' => [
+ * 'placeholder' => $model->getAttributeLabel('demo'),
+ * ],
  * ])->label(false);
  *
  * // Inline radio list
@@ -66,19 +65,19 @@ use Kant\Helper\ArrayHelper;
  *
  * // Control sizing in horizontal mode
  * echo $form->field($model, 'demo', [
- *     'horizontalCssClasses' => [
- *         'wrapper' => 'col-sm-2',
- *     ]
+ * 'horizontalCssClasses' => [
+ * 'wrapper' => 'col-sm-2',
+ * ]
  * ]);
  *
  * // With 'default' layout you would use 'template' to size a specific field:
  * echo $form->field($model, 'demo', [
- *     'template' => '{label} <div class="row"><div class="col-sm-4">{input}{error}{hint}</div></div>'
+ * 'template' => '{label} <div class="row"><div class="col-sm-4">{input}{error}{hint}</div></div>'
  * ]);
  *
  * // Input group
  * echo $form->field($model, 'demo', [
- *     'inputTemplate' => '<div class="input-group"><span class="input-group-addon">@</span>{input}</div>',
+ * 'inputTemplate' => '<div class="input-group"><span class="input-group-addon">@</span>{input}</div>',
  * ]);
  *
  * ActiveForm::end();
@@ -90,69 +89,82 @@ use Kant\Helper\ArrayHelper;
  * @author Michael Härtl <haertl.mike@gmail.com>
  * @since 2.0
  */
-class ActiveField extends \Kant\Widget\ActiveField {
+class ActiveField extends \Kant\Widget\ActiveField
+{
 
     /**
+     *
      * @var boolean whether to render [[checkboxList()]] and [[radioList()]] inline.
      */
     public $inline = false;
 
     /**
+     *
      * @var string|null optional template to render the `{input}` placeholder content
      */
     public $inputTemplate;
 
     /**
+     *
      * @var array options for the wrapper tag, used in the `{beginWrapper}` placeholder
      */
     public $wrapperOptions = [];
 
     /**
+     *
      * @var null|array CSS grid classes for horizontal layout. This must be an array with these keys:
-     *  - 'offset' the offset grid class to append to the wrapper if no label is rendered
-     *  - 'label' the label grid class
-     *  - 'wrapper' the wrapper grid class
-     *  - 'error' the error grid class
-     *  - 'hint' the hint grid class
+     *      - 'offset' the offset grid class to append to the wrapper if no label is rendered
+     *      - 'label' the label grid class
+     *      - 'wrapper' the wrapper grid class
+     *      - 'error' the error grid class
+     *      - 'hint' the hint grid class
      */
     public $horizontalCssClasses;
 
     /**
+     *
      * @var string the template for checkboxes in default layout
      */
     public $checkboxTemplate = "<div class=\"checkbox\">\n{beginLabel}\n{input}\n{labelTitle}\n{endLabel}\n{error}\n{hint}\n</div>";
 
     /**
+     *
      * @var string the template for radios in default layout
      */
     public $radioTemplate = "<div class=\"radio\">\n{beginLabel}\n{input}\n{labelTitle}\n{endLabel}\n{error}\n{hint}\n</div>";
 
     /**
+     *
      * @var string the template for checkboxes in horizontal layout
      */
     public $horizontalCheckboxTemplate = "{beginWrapper}\n<div class=\"checkbox\">\n{beginLabel}\n{input}\n{labelTitle}\n{endLabel}\n</div>\n{error}\n{endWrapper}\n{hint}";
 
     /**
+     *
      * @var string the template for radio buttons in horizontal layout
      */
     public $horizontalRadioTemplate = "{beginWrapper}\n<div class=\"radio\">\n{beginLabel}\n{input}\n{labelTitle}\n{endLabel}\n</div>\n{error}\n{endWrapper}\n{hint}";
 
     /**
+     *
      * @var string the template for inline checkboxLists
      */
     public $inlineCheckboxListTemplate = "{label}\n{beginWrapper}\n{input}\n{error}\n{endWrapper}\n{hint}";
 
     /**
+     *
      * @var string the template for inline radioLists
      */
     public $inlineRadioListTemplate = "{label}\n{beginWrapper}\n{input}\n{error}\n{endWrapper}\n{hint}";
 
     /**
+     *
      * @var boolean whether to render the error. Default is `true` except for layout `inline`.
      */
     public $enableError = true;
 
     /**
+     *
      * @var boolean whether to render the label. Default is `true`.
      */
     public $enableLabel = true;
@@ -160,7 +172,8 @@ class ActiveField extends \Kant\Widget\ActiveField {
     /**
      * @inheritdoc
      */
-    public function __construct($config = []) {
+    public function __construct($config = [])
+    {
         $layoutConfig = $this->createLayoutConfig($config);
         $config = ArrayHelper::merge($layoutConfig, $config);
         parent::__construct($config);
@@ -169,9 +182,10 @@ class ActiveField extends \Kant\Widget\ActiveField {
     /**
      * @inheritdoc
      */
-    public function render($content = null) {
+    public function render($content = null)
+    {
         if ($content === null) {
-            if (!isset($this->parts['{beginWrapper}'])) {
+            if (! isset($this->parts['{beginWrapper}'])) {
                 $options = $this->wrapperOptions;
                 $tag = ArrayHelper::remove($options, 'tag', 'div');
                 $this->parts['{beginWrapper}'] = Html::beginTag($tag, $options);
@@ -182,16 +196,17 @@ class ActiveField extends \Kant\Widget\ActiveField {
                 $this->parts['{beginLabel}'] = '';
                 $this->parts['{labelTitle}'] = '';
                 $this->parts['{endLabel}'] = '';
-            } elseif (!isset($this->parts['{beginLabel}'])) {
+            } elseif (! isset($this->parts['{beginLabel}'])) {
                 $this->renderLabelParts();
             }
             if ($this->enableError === false) {
                 $this->parts['{error}'] = '';
             }
             if ($this->inputTemplate) {
-                $input = isset($this->parts['{input}']) ?
-                        $this->parts['{input}'] : Html::activeTextInput($this->model, $this->attribute, $this->inputOptions);
-                $this->parts['{input}'] = strtr($this->inputTemplate, ['{input}' => $input]);
+                $input = isset($this->parts['{input}']) ? $this->parts['{input}'] : Html::activeTextInput($this->model, $this->attribute, $this->inputOptions);
+                $this->parts['{input}'] = strtr($this->inputTemplate, [
+                    '{input}' => $input
+                ]);
             }
         }
         return parent::render($content);
@@ -200,11 +215,11 @@ class ActiveField extends \Kant\Widget\ActiveField {
     /**
      * @inheritdoc
      */
-    public function checkbox($options = [], $enclosedByLabel = true) {
+    public function checkbox($options = [], $enclosedByLabel = true)
+    {
         if ($enclosedByLabel) {
-            if (!isset($options['template'])) {
-                $this->template = $this->form->layout === 'horizontal' ?
-                        $this->horizontalCheckboxTemplate : $this->checkboxTemplate;
+            if (! isset($options['template'])) {
+                $this->template = $this->form->layout === 'horizontal' ? $this->horizontalCheckboxTemplate : $this->checkboxTemplate;
             } else {
                 $this->template = $options['template'];
                 unset($options['template']);
@@ -217,18 +232,18 @@ class ActiveField extends \Kant\Widget\ActiveField {
             }
             $this->labelOptions['class'] = null;
         }
-
+        
         return parent::checkbox($options, false);
     }
 
     /**
      * @inheritdoc
      */
-    public function radio($options = [], $enclosedByLabel = true) {
+    public function radio($options = [], $enclosedByLabel = true)
+    {
         if ($enclosedByLabel) {
-            if (!isset($options['template'])) {
-                $this->template = $this->form->layout === 'horizontal' ?
-                        $this->horizontalRadioTemplate : $this->radioTemplate;
+            if (! isset($options['template'])) {
+                $this->template = $this->form->layout === 'horizontal' ? $this->horizontalRadioTemplate : $this->radioTemplate;
             } else {
                 $this->template = $options['template'];
                 unset($options['template']);
@@ -241,30 +256,36 @@ class ActiveField extends \Kant\Widget\ActiveField {
             }
             $this->labelOptions['class'] = null;
         }
-
+        
         return parent::radio($options, false);
     }
 
     /**
      * @inheritdoc
      */
-    public function checkboxList($items, $options = []) {
+    public function checkboxList($items, $options = [])
+    {
         if ($this->inline) {
-            if (!isset($options['template'])) {
+            if (! isset($options['template'])) {
                 $this->template = $this->inlineCheckboxListTemplate;
             } else {
                 $this->template = $options['template'];
                 unset($options['template']);
             }
-            if (!isset($options['itemOptions'])) {
+            if (! isset($options['itemOptions'])) {
                 $options['itemOptions'] = [
-                    'labelOptions' => ['class' => 'checkbox-inline'],
+                    'labelOptions' => [
+                        'class' => 'checkbox-inline'
+                    ]
                 ];
             }
-        } elseif (!isset($options['item'])) {
+        } elseif (! isset($options['item'])) {
             $itemOptions = isset($options['itemOptions']) ? $options['itemOptions'] : [];
-            $options['item'] = function ($index, $label, $name, $checked, $value) use ($itemOptions) {
-                $options = array_merge(['label' => $label, 'value' => $value], $itemOptions);
+            $options['item'] = function ($index, $label, $name, $checked, $value) use($itemOptions) {
+                $options = array_merge([
+                    'label' => $label,
+                    'value' => $value
+                ], $itemOptions);
                 return '<div class="checkbox">' . Html::checkbox($name, $checked, $options) . '</div>';
             };
         }
@@ -275,23 +296,30 @@ class ActiveField extends \Kant\Widget\ActiveField {
     /**
      * @inheritdoc
      */
-    public function radioList($items, $options = []) {
+    public function radioList($items, $options = [])
+    {
         if ($this->inline) {
-            if (!isset($options['template'])) {
-                $this->template = $this->inlineRadioListTemplate;
+            if (! isset($options['template'])) {
+                // do nothing
+                // $this->template = $this->inlineRadioListTemplate;
             } else {
                 $this->template = $options['template'];
                 unset($options['template']);
             }
-            if (!isset($options['itemOptions'])) {
+            if (! isset($options['itemOptions'])) {
                 $options['itemOptions'] = [
-                    'labelOptions' => ['class' => 'radio-inline'],
+                    'labelOptions' => [
+                        'class' => 'radio-inline'
+                    ]
                 ];
             }
-        } elseif (!isset($options['item'])) {
+        } elseif (! isset($options['item'])) {
             $itemOptions = isset($options['itemOptions']) ? $options['itemOptions'] : [];
-            $options['item'] = function ($index, $label, $name, $checked, $value) use ($itemOptions) {
-                $options = array_merge(['label' => $label, 'value' => $value], $itemOptions);
+            $options['item'] = function ($index, $label, $name, $checked, $value) use($itemOptions) {
+                $options = array_merge([
+                    'label' => $label,
+                    'value' => $value
+                ], $itemOptions);
                 return '<div class="radio">' . Html::radio($name, $checked, $options) . '</div>';
             };
         }
@@ -301,16 +329,19 @@ class ActiveField extends \Kant\Widget\ActiveField {
 
     /**
      * Renders Bootstrap static form control.
-     * @param array $options the tag options in terms of name-value pairs. These will be rendered as
-     * the attributes of the resulting tag. There are also a special options:
-     *
-     * - encode: boolean, whether value should be HTML-encoded or not.
-     *
+     * 
+     * @param array $options
+     *            the tag options in terms of name-value pairs. These will be rendered as
+     *            the attributes of the resulting tag. There are also a special options:
+     *            
+     *            - encode: boolean, whether value should be HTML-encoded or not.
+     *            
      * @return $this the field object itself
      * @since 2.0.5
      * @see http://getbootstrap.com/css/#forms-controls-static
      */
-    public function staticControl($options = []) {
+    public function staticControl($options = [])
+    {
         $this->adjustLabelFor($options);
         $this->parts['{input}'] = Html::activeStaticControl($this->model, $this->attribute, $options);
         return $this;
@@ -319,7 +350,8 @@ class ActiveField extends \Kant\Widget\ActiveField {
     /**
      * @inheritdoc
      */
-    public function label($label = null, $options = []) {
+    public function label($label = null, $options = [])
+    {
         if (is_bool($label)) {
             $this->enableLabel = $label;
             if ($label === false && $this->form->layout === 'horizontal') {
@@ -334,36 +366,42 @@ class ActiveField extends \Kant\Widget\ActiveField {
     }
 
     /**
-     * @param boolean $value whether to render a inline list
+     *
+     * @param boolean $value
+     *            whether to render a inline list
      * @return $this the field object itself
-     * Make sure you call this method before [[checkboxList()]] or [[radioList()]] to have any effect.
+     *         Make sure you call this method before [[checkboxList()]] or [[radioList()]] to have any effect.
      */
-    public function inline($value = true) {
+    public function inline($value = true)
+    {
         $this->inline = (bool) $value;
         return $this;
     }
 
     /**
-     * @param array $instanceConfig the configuration passed to this instance's constructor
+     *
+     * @param array $instanceConfig
+     *            the configuration passed to this instance's constructor
      * @return array the layout specific default configuration for this instance
      */
-    protected function createLayoutConfig($instanceConfig) {
+    protected function createLayoutConfig($instanceConfig)
+    {
         $config = [
             'hintOptions' => [
                 'tag' => 'p',
-                'class' => 'help-block',
+                'class' => 'help-block'
             ],
             'errorOptions' => [
                 'tag' => 'p',
-                'class' => 'help-block help-block-error',
+                'class' => 'help-block help-block-error'
             ],
             'inputOptions' => [
-                'class' => 'form-control',
-            ],
+                'class' => 'form-control'
+            ]
         ];
-
+        
         $layout = $instanceConfig['form']->layout;
-
+        
         if ($layout === 'horizontal') {
             $config['template'] = "{label}\n{beginWrapper}\n{input}\n{error}\n{endWrapper}\n{hint}";
             $cssClasses = [
@@ -371,29 +409,43 @@ class ActiveField extends \Kant\Widget\ActiveField {
                 'label' => 'col-sm-3',
                 'wrapper' => 'col-sm-6',
                 'error' => '',
-                'hint' => 'col-sm-3',
+                'hint' => 'col-sm-3'
             ];
             if (isset($instanceConfig['horizontalCssClasses'])) {
                 $cssClasses = ArrayHelper::merge($cssClasses, $instanceConfig['horizontalCssClasses']);
             }
             $config['horizontalCssClasses'] = $cssClasses;
-            $config['wrapperOptions'] = ['class' => $cssClasses['wrapper']];
-            $config['labelOptions'] = ['class' => 'control-label ' . $cssClasses['label']];
-            $config['errorOptions'] = ['class' => 'help-block help-block-error ' . $cssClasses['error']];
-            $config['hintOptions'] = ['class' => 'help-block ' . $cssClasses['hint']];
+            $config['wrapperOptions'] = [
+                'class' => $cssClasses['wrapper']
+            ];
+            $config['labelOptions'] = [
+                'class' => 'control-label ' . $cssClasses['label']
+            ];
+            $config['errorOptions'] = [
+                'class' => 'help-block help-block-error ' . $cssClasses['error']
+            ];
+            $config['hintOptions'] = [
+                'class' => 'help-block ' . $cssClasses['hint']
+            ];
         } elseif ($layout === 'inline') {
-            $config['labelOptions'] = ['class' => 'sr-only'];
+            $config['labelOptions'] = [
+                'class' => 'sr-only'
+            ];
             $config['enableError'] = false;
         }
-
+        
         return $config;
     }
 
     /**
-     * @param string|null $label the label or null to use model label
-     * @param array $options the tag options
+     *
+     * @param string|null $label
+     *            the label or null to use model label
+     * @param array $options
+     *            the tag options
      */
-    protected function renderLabelParts($label = null, $options = []) {
+    protected function renderLabelParts($label = null, $options = [])
+    {
         $options = array_merge($this->labelOptions, $options);
         if ($label === null) {
             if (isset($options['label'])) {
@@ -404,14 +456,13 @@ class ActiveField extends \Kant\Widget\ActiveField {
                 $label = Html::encode($this->model->getAttributeLabel($attribute));
             }
         }
-        if (!isset($options['for'])) {
+        if (! isset($options['for'])) {
             $options['for'] = Html::getInputId($this->model, $this->attribute);
         }
         $this->parts['{beginLabel}'] = Html::beginTag('label', $options);
         $this->parts['{endLabel}'] = Html::endTag('label');
-        if (!isset($this->parts['{labelTitle}'])) {
+        if (! isset($this->parts['{labelTitle}'])) {
             $this->parts['{labelTitle}'] = $label;
         }
     }
-
 }

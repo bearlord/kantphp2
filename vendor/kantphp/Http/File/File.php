@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Http\File;
 
 use Kant\Http\File\Exception\FileException;
@@ -19,21 +18,25 @@ use Kant\Http\File\MimeType\ExtensionGuesser;
  *
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
-class File extends \SplFileInfo {
+class File extends \SplFileInfo
+{
 
     /**
      * Constructs a new file from the given path.
      *
-     * @param string $path      The path to the file
-     * @param bool   $checkPath Whether to check the path or not
-     *
+     * @param string $path
+     *            The path to the file
+     * @param bool $checkPath
+     *            Whether to check the path or not
+     *            
      * @throws FileNotFoundException If the given path is not a file
      */
-    public function __construct($path, $checkPath = true) {
-        if ($checkPath && !is_file($path)) {
+    public function __construct($path, $checkPath = true)
+    {
+        if ($checkPath && ! is_file($path)) {
             throw new FileNotFoundException($path);
         }
-
+        
         parent::__construct($path);
     }
 
@@ -46,14 +49,15 @@ class File extends \SplFileInfo {
      * to guess the file extension.
      *
      * @return string|null The guessed extension or null if it cannot be guessed
-     *
+     *        
      * @see ExtensionGuesser
      * @see getMimeType()
      */
-    public function guessExtension() {
+    public function guessExtension()
+    {
         $type = $this->getMimeType();
         $guesser = ExtensionGuesser::getInstance();
-
+        
         return $guesser->guess($type);
     }
 
@@ -65,10 +69,11 @@ class File extends \SplFileInfo {
      * which of those are available.
      *
      * @return string|null The guessed mime type (i.e. "application/pdf")
-     *
+     *        
      * @see MimeTypeGuesser
      */
-    public function getMimeType() {
+    public function getMimeType()
+    {
         $guesser = MimeTypeGuesser::getInstance();
         return $guesser->guess($this->getPathname());
     }
@@ -76,53 +81,58 @@ class File extends \SplFileInfo {
     /**
      * Moves the file to a new location.
      *
-     * @param string $directory The destination folder
-     * @param string $name      The new file name
-     *
+     * @param string $directory
+     *            The destination folder
+     * @param string $name
+     *            The new file name
+     *            
      * @return File A File object representing the new file
-     *
+     *        
      * @throws FileException if the target file could not be created
      */
-    public function move($directory, $name = null) {
+    public function move($directory, $name = null)
+    {
         $target = $this->getTargetFile($directory, $name);
-
-        if (!@rename($this->getPathname(), $target)) {
+        
+        if (! @rename($this->getPathname(), $target)) {
             $error = error_get_last();
             throw new FileException(sprintf('Could not move the file "%s" to "%s" (%s)', $this->getPathname(), $target, strip_tags($error['message'])));
         }
-
-        @chmod($target, 0666 & ~umask());
-
+        
+        @chmod($target, 0666 & ~ umask());
+        
         return $target;
     }
 
-    protected function getTargetFile($directory, $name = null) {
-        if (!is_dir($directory)) {
-            if (false === @mkdir($directory, 0777, true) && !is_dir($directory)) {
+    protected function getTargetFile($directory, $name = null)
+    {
+        if (! is_dir($directory)) {
+            if (false === @mkdir($directory, 0777, true) && ! is_dir($directory)) {
                 throw new FileException(sprintf('Unable to create the "%s" directory', $directory));
             }
-        } elseif (!is_writable($directory)) {
+        } elseif (! is_writable($directory)) {
             throw new FileException(sprintf('Unable to write in the "%s" directory', $directory));
         }
-
+        
         $target = rtrim($directory, '/\\') . DIRECTORY_SEPARATOR . (null === $name ? $this->getBasename() : $this->getName($name));
-
+        
         return new self($target, false);
     }
 
     /**
      * Returns locale independent base name of the given path.
      *
-     * @param string $name The new file name
-     *
+     * @param string $name
+     *            The new file name
+     *            
      * @return string containing
      */
-    protected function getName($name) {
+    protected function getName($name)
+    {
         $originalName = str_replace('\\', '/', $name);
         $pos = strrpos($originalName, '/');
         $originalName = false === $pos ? $originalName : substr($originalName, $pos + 1);
-
+        
         return $originalName;
     }
-
 }

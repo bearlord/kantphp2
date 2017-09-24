@@ -990,5 +990,5 @@ return [
     'zir' => 'application/vnd.zul',
     'zirz' => 'application/vnd.zul',
     'zmm' => 'application/vnd.handheld-entertainment+xml',
-    123 => 'application/vnd.lotus-1-2-3',
+    123 => 'application/vnd.lotus-1-2-3'
 ];

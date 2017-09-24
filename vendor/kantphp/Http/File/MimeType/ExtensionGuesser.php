@@ -7,7 +7,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Http\File\MimeType;
 
 /**
@@ -17,12 +16,13 @@ namespace Kant\Http\File\MimeType;
  * You can register custom guessers by calling the register()
  * method on the singleton instance:
  *
- *     $guesser = ExtensionGuesser::getInstance();
- *     $guesser->register(new MyCustomExtensionGuesser());
+ * $guesser = ExtensionGuesser::getInstance();
+ * $guesser->register(new MyCustomExtensionGuesser());
  *
  * The last registered guesser is preferred over previously registered ones.
  */
-class ExtensionGuesser implements ExtensionGuesserInterface {
+class ExtensionGuesser implements ExtensionGuesserInterface
+{
 
     /**
      * The singleton instance.
@@ -43,18 +43,20 @@ class ExtensionGuesser implements ExtensionGuesserInterface {
      *
      * @return ExtensionGuesser
      */
-    public static function getInstance() {
+    public static function getInstance()
+    {
         if (null === self::$instance) {
             self::$instance = new self();
         }
-
+        
         return self::$instance;
     }
 
     /**
      * Registers all natively provided extension guessers.
      */
-    private function __construct() {
+    private function __construct()
+    {
         $this->register(new MimeTypeExtensionGuesser());
     }
 
@@ -63,9 +65,10 @@ class ExtensionGuesser implements ExtensionGuesserInterface {
      *
      * When guessing, this guesser is preferred over previously registered ones.
      *
-     * @param ExtensionGuesserInterface $guesser
+     * @param ExtensionGuesserInterface $guesser            
      */
-    public function register(ExtensionGuesserInterface $guesser) {
+    public function register(ExtensionGuesserInterface $guesser)
+    {
         array_unshift($this->guessers, $guesser);
     }
 
@@ -77,16 +80,17 @@ class ExtensionGuesser implements ExtensionGuesserInterface {
      * returns a value that is not NULL, this method terminates and returns the
      * value.
      *
-     * @param string $mimeType The mime type
-     *
+     * @param string $mimeType
+     *            The mime type
+     *            
      * @return string The guessed extension or NULL, if none could be guessed
      */
-    public function guess($mimeType) {
+    public function guess($mimeType)
+    {
         foreach ($this->guessers as $guesser) {
             if (null !== $extension = $guesser->guess($mimeType)) {
                 return $extension;
             }
         }
     }
-
 }

@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Http\Formatter;
 
 use Kant\Foundation\Component;
@@ -19,18 +18,23 @@ use Kant\Foundation\Component;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class HtmlResponseFormatter extends Component implements ResponseFormatterInterface {
+class HtmlResponseFormatter extends Component implements ResponseFormatterInterface
+{
 
     /**
+     *
      * @var string the Content-Type header for the response
      */
     public $contentType = 'text/html';
 
     /**
      * Formats the specified response.
-     * @param Response $response the response to be formatted.
+     * 
+     * @param Response $response
+     *            the response to be formatted.
      */
-    public function format($response) {
+    public function format($response)
+    {
         if (stripos($this->contentType, 'charset') === false) {
             $response->headers->set('charset', $response->charset);
         }
@@ -39,5 +43,4 @@ class HtmlResponseFormatter extends Component implements ResponseFormatterInterf
             $response->content = $response->data;
         }
     }
-
 }

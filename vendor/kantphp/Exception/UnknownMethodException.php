@@ -5,22 +5,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 namespace Kant\Exception;
 
 use BadMethodCallException;
 
 /**
  * UnknownMethodException represents an exception caused by accessing an unknown object method.
- *
  */
-class UnknownMethodException extends KantException {
+class UnknownMethodException extends KantException
+{
 
     /**
+     *
      * @return string the user-friendly name of this exception
      */
-    public function getName() {
+    public function getName()
+    {
         return 'Unknown Method';
     }
-
 }

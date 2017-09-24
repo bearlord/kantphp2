@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Validators;
 
 use Kant\Kant;
@@ -39,34 +38,39 @@ use Kant\Exception\InvalidConfigException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class ExistValidator extends Validator {
+class ExistValidator extends Validator
+{
 
     /**
+     *
      * @var string the name of the ActiveRecord class that should be used to validate the existence
-     * of the current attribute value. It not set, it will use the ActiveRecord class of the attribute being validated.
+     *      of the current attribute value. It not set, it will use the ActiveRecord class of the attribute being validated.
      * @see targetAttribute
      */
     public $targetClass;
 
     /**
+     *
      * @var string|array the name of the ActiveRecord attribute that should be used to
-     * validate the existence of the current attribute value. If not set, it will use the name
-     * of the attribute currently being validated. You may use an array to validate the existence
-     * of multiple columns at the same time. The array values are the attributes that will be
-     * used to validate the existence, while the array keys are the attributes whose values are to be validated.
-     * If the key and the value are the same, you can just specify the value.
+     *      validate the existence of the current attribute value. If not set, it will use the name
+     *      of the attribute currently being validated. You may use an array to validate the existence
+     *      of multiple columns at the same time. The array values are the attributes that will be
+     *      used to validate the existence, while the array keys are the attributes whose values are to be validated.
+     *      If the key and the value are the same, you can just specify the value.
      */
     public $targetAttribute;
 
     /**
+     *
      * @var string|array|\Closure additional filter to be applied to the DB query used to check the existence of the attribute value.
-     * This can be a string or an array representing the additional query condition (refer to [[\Kant\db\Query::where()]]
-     * on the format of query condition), or an anonymous function with the signature `function ($query)`, where `$query`
-     * is the [[\Kant\db\Query|Query]] object that you can modify in the function.
+     *      This can be a string or an array representing the additional query condition (refer to [[\Kant\db\Query::where()]]
+     *      on the format of query condition), or an anonymous function with the signature `function ($query)`, where `$query`
+     *      is the [[\Kant\db\Query|Query]] object that you can modify in the function.
      */
     public $filter;
 
     /**
+     *
      * @var boolean whether to allow array type attribute.
      */
     public $allowArray = false;
@@ -74,7 +78,8 @@ class ExistValidator extends Validator {
     /**
      * @inheritdoc
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
         if ($this->message === null) {
             $this->message = Kant::t('kant', '{attribute} is invalid.');
@@ -84,9 +89,10 @@ class ExistValidator extends Validator {
     /**
      * @inheritdoc
      */
-    public function validateAttribute($model, $attribute) {
+    public function validateAttribute($model, $attribute)
+    {
         $targetAttribute = $this->targetAttribute === null ? $attribute : $this->targetAttribute;
-
+        
         if (is_array($targetAttribute)) {
             if ($this->allowArray) {
                 throw new InvalidConfigException('The "targetAttribute" property must be configured as a string.');
@@ -96,27 +102,29 @@ class ExistValidator extends Validator {
                 $params[$v] = is_int($k) ? $model->$v : $model->$k;
             }
         } else {
-            $params = [$targetAttribute => $model->$attribute];
+            $params = [
+                $targetAttribute => $model->$attribute
+            ];
         }
-
-        if (!$this->allowArray) {
+        
+        if (! $this->allowArray) {
             foreach ($params as $value) {
                 if (is_array($value)) {
                     $this->addError($model, $attribute, Kant::t('kant', '{attribute} is invalid.'));
-
+                    
                     return;
                 }
             }
         }
-
+        
         $targetClass = $this->targetClass === null ? get_class($model) : $this->targetClass;
         $query = $this->createQuery($targetClass, $params);
-
+        
         if (is_array($model->$attribute)) {
             if ($query->count("DISTINCT [[$targetAttribute]]") != count($model->$attribute)) {
                 $this->addError($model, $attribute, $this->message);
             }
-        } elseif (!$query->exists()) {
+        } elseif (! $query->exists()) {
             $this->addError($model, $attribute, $this->message);
         }
     }
@@ -124,33 +132,49 @@ class ExistValidator extends Validator {
     /**
      * @inheritdoc
      */
-    protected function validateValue($value) {
+    protected function validateValue($value)
+    {
         if ($this->targetClass === null) {
             throw new InvalidConfigException('The "targetClass" property must be set.');
         }
-        if (!is_string($this->targetAttribute)) {
+        if (! is_string($this->targetAttribute)) {
             throw new InvalidConfigException('The "targetAttribute" property must be configured as a string.');
         }
-
-        $query = $this->createQuery($this->targetClass, [$this->targetAttribute => $value]);
-
+        
+        $query = $this->createQuery($this->targetClass, [
+            $this->targetAttribute => $value
+        ]);
+        
         if (is_array($value)) {
-            if (!$this->allowArray) {
-                return [$this->message, []];
+            if (! $this->allowArray) {
+                return [
+                    $this->message,
+                    []
+                ];
             }
-            return $query->count("DISTINCT [[$this->targetAttribute]]") == count($value) ? null : [$this->message, []];
+            return $query->count("DISTINCT [[$this->targetAttribute]]") == count($value) ? null : [
+                $this->message,
+                []
+            ];
         } else {
-            return $query->exists() ? null : [$this->message, []];
+            return $query->exists() ? null : [
+                $this->message,
+                []
+            ];
         }
     }
 
     /**
      * Creates a query instance with the given condition.
-     * @param string $targetClass the target AR class
-     * @param mixed $condition query condition
+     * 
+     * @param string $targetClass
+     *            the target AR class
+     * @param mixed $condition
+     *            query condition
      * @return \Kant\db\ActiveQueryInterface the query instance
      */
-    protected function createQuery($targetClass, $condition) {
+    protected function createQuery($targetClass, $condition)
+    {
         /* @var $targetClass \Kant\db\ActiveRecordInterface */
         $query = $targetClass::find()->andWhere($condition);
         if ($this->filter instanceof \Closure) {
@@ -158,8 +182,7 @@ class ExistValidator extends Validator {
         } elseif ($this->filter !== null) {
             $query->andWhere($this->filter);
         }
-
+        
         return $query;
     }
-
 }

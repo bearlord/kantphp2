@@ -23,6 +23,7 @@ return [
     'Are you sure you want to delete this item?' => '您确定要删除此项吗？',
     'Delete' => '删除',
     'Error' => '错误',
+    'File Manager' => '文件管理器',
     'File upload failed.' => '文件上传失败。',
     'Home' => '首页',
     'Invalid data received for parameter "{param}".' => '"{param}"参数接收到无效的数据。',
@@ -39,6 +40,7 @@ return [
     'Please fix the following errors:' => '请修复以下错误',
     'Please upload a file.' => '请上传一个文件。',
     'Powered by {kant}' => '技术支持 {kant}',
+    'Select' => '选择',
     'Showing <b>{begin, number}-{end, number}</b> of <b>{totalCount, number}</b> {totalCount, plural, one{item} other{items}}.' => '第<b>{begin, number}-{end, number}</b>条，共<b>{totalCount, number}</b>条数据.',
     'The file "{file}" is not an image.' => '文件 "{file}" 不是一个图像文件。',
     'The file "{file}" is too big. Its size cannot exceed {formattedLimit}.' => '文件"{file}"太大了。它的大小不能超过{formattedLimit}。',
@@ -132,5 +134,5 @@ return [
     '{nFormatted} {n, plural, =1{pebibyte} other{pebibytes}}' => '{nFormatted} 拍二进制字节',
     '{nFormatted} {n, plural, =1{petabyte} other{petabytes}}' => '{nFormatted} 拍字节',
     '{nFormatted} {n, plural, =1{tebibyte} other{tebibytes}}' => '{nFormatted} 太二进制字节',
-    '{nFormatted} {n, plural, =1{terabyte} other{terabytes}}' => '{nFormatted} 太字节',
+    '{nFormatted} {n, plural, =1{terabyte} other{terabytes}}' => '{nFormatted} 太字节'
 ];

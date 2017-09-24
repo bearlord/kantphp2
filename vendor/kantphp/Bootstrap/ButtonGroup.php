@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Bootstrap;
 
 use Kant\Helper\ArrayHelper;
@@ -19,19 +18,19 @@ use Kant\Helper\ArrayHelper;
  * ```php
  * // a button group with items configuration
  * echo ButtonGroup::widget([
- *     'buttons' => [
- *         ['label' => 'A'],
- *         ['label' => 'B'],
- *         ['label' => 'C', 'visible' => false],
- *     ]
+ * 'buttons' => [
+ * ['label' => 'A'],
+ * ['label' => 'B'],
+ * ['label' => 'C', 'visible' => false],
+ * ]
  * ]);
  *
  * // button group with an item as a string
  * echo ButtonGroup::widget([
- *     'buttons' => [
- *         Button::widget(['label' => 'A']),
- *         ['label' => 'B'],
- *     ]
+ * 'buttons' => [
+ * Button::widget(['label' => 'A']),
+ * ['label' => 'B'],
+ * ]
  * ]);
  * ```
  *
@@ -43,19 +42,22 @@ use Kant\Helper\ArrayHelper;
  * @author Antonio Ramirez <amigo.cobos@gmail.com>
  * @since 2.0
  */
-class ButtonGroup extends Widget {
+class ButtonGroup extends Widget
+{
 
     /**
-     * @var array list of buttons. Each array element represents a single button
-     * which can be specified as a string or an array of the following structure:
      *
-     * - label: string, required, the button label.
-     * - options: array, optional, the HTML attributes of the button.
-     * - visible: boolean, optional, whether this button is visible. Defaults to true.
+     * @var array list of buttons. Each array element represents a single button
+     *      which can be specified as a string or an array of the following structure:
+     *     
+     *      - label: string, required, the button label.
+     *      - options: array, optional, the HTML attributes of the button.
+     *      - visible: boolean, optional, whether this button is visible. Defaults to true.
      */
     public $buttons = [];
 
     /**
+     *
      * @var boolean whether to HTML-encode the button labels.
      */
     public $encodeLabels = true;
@@ -64,24 +66,30 @@ class ButtonGroup extends Widget {
      * Initializes the widget.
      * If you override this method, make sure you call the parent implementation first.
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
-        Html::addCssClass($this->options, ['widget' => 'btn-group']);
+        Html::addCssClass($this->options, [
+            'widget' => 'btn-group'
+        ]);
     }
 
     /**
      * Renders the widget.
      */
-    public function run() {
+    public function run()
+    {
         BootstrapAsset::register($this->getView());
         return Html::tag('div', $this->renderButtons(), $this->options);
     }
 
     /**
      * Generates the buttons that compound the group as specified on [[buttons]].
+     * 
      * @return string the rendering result.
      */
-    protected function renderButtons() {
+    protected function renderButtons()
+    {
         $buttons = [];
         foreach ($this->buttons as $button) {
             if (is_array($button)) {
@@ -89,9 +97,9 @@ class ButtonGroup extends Widget {
                 if ($visible === false) {
                     continue;
                 }
-
+                
                 $button['view'] = $this->getView();
-                if (!isset($button['encodeLabel'])) {
+                if (! isset($button['encodeLabel'])) {
                     $button['encodeLabel'] = $this->encodeLabels;
                 }
                 $buttons[] = Button::widget($button);
@@ -99,8 +107,7 @@ class ButtonGroup extends Widget {
                 $buttons[] = $button;
             }
         }
-
+        
         return implode("\n", $buttons);
     }
-
 }

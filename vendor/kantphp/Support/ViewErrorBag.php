@@ -1,11 +1,11 @@
 <?php
-
 namespace Kant\Support;
 
 use Countable;
 use Kant\Support\MessageBag;
 
-class ViewErrorBag implements Countable {
+class ViewErrorBag implements Countable
+{
 
     /**
      * The array of the view error bags.
@@ -17,21 +17,23 @@ class ViewErrorBag implements Countable {
     /**
      * Checks if a named MessageBag exists in the bags.
      *
-     * @param  string  $key
+     * @param string $key            
      * @return bool
      */
-    public function hasBag($key = 'default') {
+    public function hasBag($key = 'default')
+    {
         return isset($this->bags[$key]);
     }
 
     /**
      * Get a MessageBag instance from the bags.
      *
-     * @param  string  $key
+     * @param string $key            
      * @return \Kant\Support\MessageBag
      */
-    public function getBag($key) {
-        return Arr::get($this->bags, $key) ?: new MessageBag;
+    public function getBag($key)
+    {
+        return Arr::get($this->bags, $key) ?  : new MessageBag();
     }
 
     /**
@@ -39,20 +41,22 @@ class ViewErrorBag implements Countable {
      *
      * @return array
      */
-    public function getBags() {
+    public function getBags()
+    {
         return $this->bags;
     }
 
     /**
      * Add a new MessageBag instance to the bags.
      *
-     * @param  string  $key
-     * @param  \Kant\Support\MessageBag  $bag
+     * @param string $key            
+     * @param \Kant\Support\MessageBag $bag            
      * @return $this
      */
-    public function put($key, MessageBag $bag) {
+    public function put($key, MessageBag $bag)
+    {
         $this->bags[$key] = $bag;
-
+        
         return $this;
     }
 
@@ -61,40 +65,46 @@ class ViewErrorBag implements Countable {
      *
      * @return int
      */
-    public function count() {
+    public function count()
+    {
         return $this->getBag('default')->count();
     }
 
     /**
      * Dynamically call methods on the default bag.
      *
-     * @param  string  $method
-     * @param  array  $parameters
+     * @param string $method            
+     * @param array $parameters            
      * @return mixed
      */
-    public function __call($method, $parameters) {
-        return call_user_func_array([$this->default, $method], $parameters);
+    public function __call($method, $parameters)
+    {
+        return call_user_func_array([
+            $this->default,
+            $method
+        ], $parameters);
     }
 
     /**
      * Dynamically access a view error bag.
      *
-     * @param  string  $key
+     * @param string $key            
      * @return \Kant\Support\MessageBag
      */
-    public function __get($key) {
+    public function __get($key)
+    {
         return $this->getBag($key);
     }
 
     /**
      * Dynamically set a view error bag.
      *
-     * @param  string  $key
-     * @param  \Kant\Support\MessageBag  $value
+     * @param string $key            
+     * @param \Kant\Support\MessageBag $value            
      * @return void
      */
-    public function __set($key, $value) {
+    public function __set($key, $value)
+    {
         $this->put($key, $value);
     }
-
 }

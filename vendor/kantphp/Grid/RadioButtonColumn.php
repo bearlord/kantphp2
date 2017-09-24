@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Grid;
 
 use Closure;
@@ -20,54 +19,59 @@ use Kant\Helper\Html;
  *
  * ```php
  * 'columns' => [
- *     // ...
- *     [
- *         'class' => 'Kant\Grid\RadioButtonColumn',
- *         'radioOptions' => function ($model) {
- *              return [
- *                  'value' => $model['value'],
- *                  'checked' => $model['value'] == 2
- *              ];
- *          }
- *     ],
+ * // ...
+ * [
+ * 'class' => 'Kant\Grid\RadioButtonColumn',
+ * 'radioOptions' => function ($model) {
+ * return [
+ * 'value' => $model['value'],
+ * 'checked' => $model['value'] == 2
+ * ];
+ * }
+ * ],
  * ]
  * ```
  *
  * @author Kirk Hansen <hanski07@luther.edu>
  * @since 2.0.11
  */
-class RadioButtonColumn extends Column {
+class RadioButtonColumn extends Column
+{
 
     /**
+     *
      * @var string the name of the input radio button input fields.
      */
     public $name = 'radioButtonSelection';
 
     /**
+     *
      * @var array|\Closure the HTML attributes for the radio buttons. This can either be an array of
-     * attributes or an anonymous function ([[Closure]]) returning such an array.
-     *
-     * The signature of the function should be as follows: `function ($model, $key, $index, $column)`
-     * where `$model`, `$key`, and `$index` refer to the model, key and index of the row currently being rendered
-     * and `$column` is a reference to the [[RadioButtonColumn]] object.
-     *
-     * A function may be used to assign different attributes to different rows based on the data in that row.
-     * Specifically if you want to set a different value for the radio button you can use this option
-     * in the following way (in this example using the `name` attribute of the model):
-     * ```php
-     * 'radioOptions' => function ($model, $key, $index, $column) {
-     *     return ['value' => $model->attribute];
-     * }
-     * ```
+     *      attributes or an anonymous function ([[Closure]]) returning such an array.
+     *     
+     *      The signature of the function should be as follows: `function ($model, $key, $index, $column)`
+     *      where `$model`, `$key`, and `$index` refer to the model, key and index of the row currently being rendered
+     *      and `$column` is a reference to the [[RadioButtonColumn]] object.
+     *     
+     *      A function may be used to assign different attributes to different rows based on the data in that row.
+     *      Specifically if you want to set a different value for the radio button you can use this option
+     *      in the following way (in this example using the `name` attribute of the model):
+     *      ```php
+     *      'radioOptions' => function ($model, $key, $index, $column) {
+     *      return ['value' => $model->attribute];
+     *      }
+     *      ```
      * @see Kant\Help\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $radioOptions = [];
 
     /**
      * @inheritdoc
+     * 
      * @throws \yii\base\InvalidConfigException if [[name]] is not set.
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
         if (empty($this->name)) {
             throw new InvalidConfigException('The "name" property must be set.');
@@ -77,17 +81,17 @@ class RadioButtonColumn extends Column {
     /**
      * @inheritdoc
      */
-    protected function renderDataCellContent($model, $key, $index) {
+    protected function renderDataCellContent($model, $key, $index)
+    {
         if ($this->radioOptions instanceof Closure) {
             $options = call_user_func($this->radioOptions, $model, $key, $index, $this);
         } else {
             $options = $this->radioOptions;
-            if (!isset($options['value'])) {
+            if (! isset($options['value'])) {
                 $options['value'] = is_array($key) ? json_encode($key, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : $key;
             }
         }
         $checked = isset($options['checked']) ? $options['checked'] : false;
         return Html::radio($this->name, $checked, $options);
     }
-
 }

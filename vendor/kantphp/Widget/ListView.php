@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Widget;
 
 use Kant\Kant;
@@ -15,83 +14,99 @@ use Kant\Helper\Html;
 
 /**
  * The ListView widget is used to display data from data
- * provider. Each data model is rendered using the view
+ * provider.
+ * Each data model is rendered using the view
  * specified.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class ListView extends BaseListView {
+class ListView extends BaseListView
+{
 
     /**
+     *
      * @var array the HTML attributes for the container of the rendering result of each data model.
-     * The "tag" element specifies the tag name of the container element and defaults to "div".
-     * If "tag" is false, it means no container element will be rendered.
+     *      The "tag" element specifies the tag name of the container element and defaults to "div".
+     *      If "tag" is false, it means no container element will be rendered.
      * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $itemOptions = [];
 
     /**
+     *
      * @var string|callable the name of the view for rendering each data item, or a callback (e.g. an anonymous function)
-     * for rendering each data item. If it specifies a view name, the following variables will
-     * be available in the view:
-     *
-     * - `$model`: mixed, the data model
-     * - `$key`: mixed, the key value associated with the data item
-     * - `$index`: integer, the zero-based index of the data item in the items array returned by [[dataProvider]].
-     * - `$widget`: ListView, this widget instance
-     *
-     * Note that the view name is resolved into the view file by the current context of the [[view]] object.
-     *
-     * If this property is specified as a callback, it should have the following signature:
-     *
-     * ```php
-     * function ($model, $key, $index, $widget)
-     * ```
+     *      for rendering each data item. If it specifies a view name, the following variables will
+     *      be available in the view:
+     *     
+     *      - `$model`: mixed, the data model
+     *      - `$key`: mixed, the key value associated with the data item
+     *      - `$index`: integer, the zero-based index of the data item in the items array returned by [[dataProvider]].
+     *      - `$widget`: ListView, this widget instance
+     *     
+     *      Note that the view name is resolved into the view file by the current context of the [[view]] object.
+     *     
+     *      If this property is specified as a callback, it should have the following signature:
+     *     
+     *      ```php
+     *      function ($model, $key, $index, $widget)
+     *      ```
      */
     public $itemView;
 
     /**
+     *
      * @var array additional parameters to be passed to [[itemView]] when it is being rendered.
-     * This property is used only when [[itemView]] is a string representing a view name.
+     *      This property is used only when [[itemView]] is a string representing a view name.
      */
     public $viewParams = [];
 
     /**
+     *
      * @var string the HTML code to be displayed between any two consecutive items.
      */
     public $separator = "\n";
 
     /**
+     *
      * @var array the HTML attributes for the container tag of the list view.
-     * The "tag" element specifies the tag name of the container element and defaults to "div".
+     *      The "tag" element specifies the tag name of the container element and defaults to "div".
      * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $options = ['class' => 'list-view'];
+    public $options = [
+        'class' => 'list-view'
+    ];
 
     /**
      * Renders all data models.
+     * 
      * @return string the rendering result
      */
-    public function renderItems() {
+    public function renderItems()
+    {
         $models = $this->dataProvider->getModels();
         $keys = $this->dataProvider->getKeys();
         $rows = [];
         foreach (array_values($models) as $index => $model) {
             $rows[] = $this->renderItem($model, $keys[$index], $index);
         }
-
+        
         return implode($this->separator, $rows);
     }
 
     /**
      * Renders a single data model.
-     * @param mixed $model the data model to be rendered
-     * @param mixed $key the key value associated with the data model
-     * @param integer $index the zero-based index of the data model in the model array returned by [[dataProvider]].
+     * 
+     * @param mixed $model
+     *            the data model to be rendered
+     * @param mixed $key
+     *            the key value associated with the data model
+     * @param integer $index
+     *            the zero-based index of the data model in the model array returned by [[dataProvider]].
      * @return string the rendering result
      */
-    public function renderItem($model, $key, $index) {
+    public function renderItem($model, $key, $index)
+    {
         if ($this->itemView === null) {
             $content = $key;
         } elseif (is_string($this->itemView)) {
@@ -99,16 +114,15 @@ class ListView extends BaseListView {
                 'model' => $model,
                 'key' => $key,
                 'index' => $index,
-                'widget' => $this,
-                            ], $this->viewParams));
+                'widget' => $this
+            ], $this->viewParams));
         } else {
             $content = call_user_func($this->itemView, $model, $key, $index, $this);
         }
         $options = $this->itemOptions;
         $tag = ArrayHelper::remove($options, 'tag', 'div');
         $options['data-key'] = is_array($key) ? json_encode($key, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : (string) $key;
-
+        
         return Html::tag($tag, $content, $options);
     }
-
 }

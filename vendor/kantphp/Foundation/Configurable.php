@@ -1,5 +1,4 @@
 <?php
-
 namespace Kant\Foundation;
 
 /**
@@ -21,6 +20,6 @@ namespace Kant\Foundation;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0.3
  */
-interface Configurable {
-    
+interface Configurable
+{
 }

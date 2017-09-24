@@ -4,7 +4,6 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace Kant\Http\Formatter;
 
 /**
@@ -15,9 +14,12 @@ namespace Kant\Http\Formatter;
  */
 interface ResponseFormatterInterface
 {
+
     /**
      * Formats the specified response.
-     * @param Response $response the response to be formatted.
+     * 
+     * @param Response $response
+     *            the response to be formatted.
      */
     public function format($response);
 }

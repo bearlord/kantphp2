@@ -7,7 +7,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Session;
 
 use Kant\Support\Arr;
@@ -18,7 +17,8 @@ use Kant\Http\Request;
 use Kant\Session\Session;
 use Kant\Session\Storage\MetadataBag;
 
-class Store implements Session {
+class Store implements Session
+{
 
     /**
      * The session ID.
@@ -79,28 +79,32 @@ class Store implements Session {
     /**
      * Create a new session instance.
      *
-     * @param  string $name
-     * @param  \SessionHandlerInterface $handler
-     * @param  string|null $id
+     * @param string $name            
+     * @param \SessionHandlerInterface $handler            
+     * @param string|null $id            
      * @return void
      */
-    public function __construct($name, SessionHandlerInterface $handler, $id = null) {
+    public function __construct($name, SessionHandlerInterface $handler, $id = null)
+    {
         $this->setId($id);
         $this->name = $name;
         $this->handler = $handler;
-        $this->metaBag = new MetadataBag;
+        $this->metaBag = new MetadataBag();
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function start() {
+    public function start()
+    {
         $this->loadSession();
-
-        if (!$this->has('_token')) {
+        
+        if (! $this->has('_token')) {
             $this->regenerateToken();
         }
-
+        
         return $this->started = true;
     }
 
@@ -109,12 +113,15 @@ class Store implements Session {
      *
      * @return void
      */
-    protected function loadSession() {
+    protected function loadSession()
+    {
         $this->attributes = array_merge($this->attributes, $this->readFromHandler());
-
-        foreach (array_merge($this->bags, [$this->metaBag]) as $bag) {
+        
+        foreach (array_merge($this->bags, [
+            $this->metaBag
+        ]) as $bag) {
             $this->initializeLocalBag($bag);
-
+            
             $bag->initialize($this->bagData[$bag->getStorageKey()]);
         }
     }
@@ -124,65 +131,75 @@ class Store implements Session {
      *
      * @return array
      */
-    protected function readFromHandler() {
+    protected function readFromHandler()
+    {
         $data = $this->handler->read($this->getId());
-
+        
         if ($data) {
             $data = @unserialize($this->prepareForUnserialize($data));
-
+            
             if ($data !== false && $data !== null && is_array($data)) {
                 return $data;
             }
         }
-
+        
         return [];
     }
 
     /**
      * Prepare the raw string data from the session for unserialization.
      *
-     * @param  string  $data
+     * @param string $data            
      * @return string
      */
-    protected function prepareForUnserialize($data) {
+    protected function prepareForUnserialize($data)
+    {
         return $data;
     }
 
     /**
      * Initialize a bag in storage if it doesn't exist.
      *
-     * @param  \Symfony\Component\HttpFoundation\Session\SessionBagInterface  $bag
+     * @param \Symfony\Component\HttpFoundation\Session\SessionBagInterface $bag            
      * @return void
      */
-    protected function initializeLocalBag($bag) {
+    protected function initializeLocalBag($bag)
+    {
         $this->bagData[$bag->getStorageKey()] = $this->pull($bag->getStorageKey(), []);
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function setId($id) {
-        if (!$this->isValidId($id)) {
+    public function setId($id)
+    {
+        if (! $this->isValidId($id)) {
             $id = $this->generateSessionId();
         }
-
+        
         $this->id = $id;
     }
 
     /**
      * Determine if this is a valid session ID.
      *
-     * @param  string  $id
+     * @param string $id            
      * @return bool
      */
-    public function isValidId($id) {
+    public function isValidId($id)
+    {
         return is_string($id) && preg_match('/^[a-f0-9]{40}$/', $id);
     }
 
@@ -191,78 +208,96 @@ class Store implements Session {
      *
      * @return string
      */
-    protected function generateSessionId() {
+    protected function generateSessionId()
+    {
         return sha1(uniqid('', true) . Str::quickRandom(25) . microtime(true));
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function invalidate($lifetime = null) {
+    public function invalidate($lifetime = null)
+    {
         $this->clear();
-
+        
         return $this->migrate(true, $lifetime);
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function migrate($destroy = false, $lifetime = null) {
+    public function migrate($destroy = false, $lifetime = null)
+    {
         if ($destroy) {
             $this->handler->destroy($this->getId());
         }
-
+        
         $this->setExists(false);
-
+        
         $this->id = $this->generateSessionId();
-
+        
         return true;
     }
 
     /**
      * Generate a new session identifier.
      *
-     * @param  bool  $destroy
+     * @param bool $destroy            
      * @return bool
      */
-    public function regenerate($destroy = false) {
+    public function regenerate($destroy = false)
+    {
         return $this->migrate($destroy);
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function save() {
+    public function save()
+    {
         $this->addBagDataToSession();
-
+        
         $this->ageFlashData();
-
+        
         $this->handler->write($this->getId(), $this->prepareForStorage(serialize($this->attributes)));
-
+        
         $this->started = false;
     }
 
     /**
      * Prepare the serialized session data for storage.
      *
-     * @param  string  $data
+     * @param string $data            
      * @return string
      */
-    protected function prepareForStorage($data) {
+    protected function prepareForStorage($data)
+    {
         return $data;
     }
 
@@ -271,10 +306,13 @@ class Store implements Session {
      *
      * @return void
      */
-    protected function addBagDataToSession() {
-        foreach (array_merge($this->bags, [$this->metaBag]) as $bag) {
+    protected function addBagDataToSession()
+    {
+        foreach (array_merge($this->bags, [
+            $this->metaBag
+        ]) as $bag) {
             $key = $bag->getStorageKey();
-
+            
             if (isset($this->bagData[$key])) {
                 $this->put($key, $this->bagData[$key]);
             }
@@ -286,69 +324,79 @@ class Store implements Session {
      *
      * @return void
      */
-    public function ageFlashData() {
+    public function ageFlashData()
+    {
         $this->forget($this->get('flash.old', []));
-
+        
         $this->put('flash.old', $this->get('flash.new', []));
-
+        
         $this->put('flash.new', []);
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function has($name) {
+    public function has($name)
+    {
         $keys = is_array($name) ? $name : func_get_args();
-
+        
         foreach ($keys as $value) {
             if (is_null($this->get($value))) {
                 return false;
             }
         }
-
+        
         return true;
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function get($name, $default = null) {
+    public function get($name, $default = null)
+    {
         return Arr::get($this->attributes, $name, $default);
     }
 
     /**
      * Get the value of a given key and then forget it.
      *
-     * @param  string  $key
-     * @param  string  $default
+     * @param string $key            
+     * @param string $default            
      * @return mixed
      */
-    public function pull($key, $default = null) {
+    public function pull($key, $default = null)
+    {
         return Arr::pull($this->attributes, $key, $default);
     }
 
     /**
      * Determine if the session contains old input.
      *
-     * @param  string  $key
+     * @param string $key            
      * @return bool
      */
-    public function hasOldInput($key = null) {
+    public function hasOldInput($key = null)
+    {
         $old = $this->getOldInput($key);
-
-        return is_null($key) ? count($old) > 0 : !is_null($old);
+        
+        return is_null($key) ? count($old) > 0 : ! is_null($old);
     }
 
     /**
      * Get the requested item from the flashed input array.
      *
-     * @param  string  $key
-     * @param  mixed   $default
+     * @param string $key            
+     * @param mixed $default            
      * @return mixed
      */
-    public function getOldInput($key = null, $default = null) {
+    public function getOldInput($key = null, $default = null)
+    {
         $input = $this->get('_old_input', []);
-
+        
         // Input that is flashed to the session can be easily retrieved by the
         // developer, making repopulating old forms and the like much more
         // convenient, since the request's previous input is available.
@@ -356,24 +404,30 @@ class Store implements Session {
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function set($name, $value) {
+    public function set($name, $value)
+    {
         Arr::set($this->attributes, $name, $value);
     }
 
     /**
      * Put a key / value pair or array of key / value pairs in the session.
      *
-     * @param  string|array  $key
-     * @param  mixed       $value
+     * @param string|array $key            
+     * @param mixed $value            
      * @return void
      */
-    public function put($key, $value = null) {
-        if (!is_array($key)) {
-            $key = [$key => $value];
+    public function put($key, $value = null)
+    {
+        if (! is_array($key)) {
+            $key = [
+                $key => $value
+            ];
         }
-
+        
         foreach ($key as $arrayKey => $arrayValue) {
             $this->set($arrayKey, $arrayValue);
         }
@@ -382,80 +436,88 @@ class Store implements Session {
     /**
      * Push a value onto a session array.
      *
-     * @param  string  $key
-     * @param  mixed   $value
+     * @param string $key            
+     * @param mixed $value            
      * @return void
      */
-    public function push($key, $value) {
+    public function push($key, $value)
+    {
         $array = $this->get($key, []);
-
+        
         $array[] = $value;
-
+        
         $this->put($key, $array);
     }
 
     /**
      * Increment the value of an item in the session.
      *
-     * @param  string  $key
-     * @param  int  $amount
+     * @param string $key            
+     * @param int $amount            
      * @return mixed
      */
-    public function increment($key, $amount = 1) {
+    public function increment($key, $amount = 1)
+    {
         $value = $this->get($key, 0) + $amount;
-
+        
         $this->put($key, $value);
-
+        
         return $value;
     }
 
     /**
      * Decrement the value of an item in the session.
      *
-     * @param  string  $key
-     * @param  int  $amount
+     * @param string $key            
+     * @param int $amount            
      * @return int
      */
-    public function decrement($key, $amount = 1) {
-        return $this->increment($key, $amount * -1);
+    public function decrement($key, $amount = 1)
+    {
+        return $this->increment($key, $amount * - 1);
     }
 
     /**
      * Flash a key / value pair to the session.
      *
-     * @param  string  $key
-     * @param  mixed   $value
+     * @param string $key            
+     * @param mixed $value            
      * @return void
      */
-    public function flash($key, $value) {
+    public function flash($key, $value)
+    {
         $this->put($key, $value);
-
+        
         $this->push('flash.new', $key);
-
-        $this->removeFromOldFlashData([$key]);
+        
+        $this->removeFromOldFlashData([
+            $key
+        ]);
     }
 
     /**
      * Flash a key / value pair to the session
      * for immediate use.
      *
-     * @param  string $key
-     * @param  mixed $value
+     * @param string $key            
+     * @param mixed $value            
      * @return void
      */
-    public function now($key, $value) {
+    public function now($key, $value)
+    {
         $this->put($key, $value);
-
+        
         $this->push('flash.old', $key);
     }
 
     /**
      * Flash an input array to the session.
      *
-     * @param  array  $value
+     * @param array $value            
      * @return void
      */
-    public function flashInput(array $value) {
+    public function flashInput(array $value)
+    {
         $this->flash('_old_input', $value);
     }
 
@@ -464,85 +526,102 @@ class Store implements Session {
      *
      * @return void
      */
-    public function reflash() {
+    public function reflash()
+    {
         $this->mergeNewFlashes($this->get('flash.old', []));
-
+        
         $this->put('flash.old', []);
     }
 
     /**
      * Reflash a subset of the current flash data.
      *
-     * @param  array|mixed  $keys
+     * @param array|mixed $keys            
      * @return void
      */
-    public function keep($keys = null) {
+    public function keep($keys = null)
+    {
         $keys = is_array($keys) ? $keys : func_get_args();
-
+        
         $this->mergeNewFlashes($keys);
-
+        
         $this->removeFromOldFlashData($keys);
     }
 
     /**
      * Merge new flash keys into the new flash array.
      *
-     * @param  array  $keys
+     * @param array $keys            
      * @return void
      */
-    protected function mergeNewFlashes(array $keys) {
+    protected function mergeNewFlashes(array $keys)
+    {
         $values = array_unique(array_merge($this->get('flash.new', []), $keys));
-
+        
         $this->put('flash.new', $values);
     }
 
     /**
      * Remove the given keys from the old flash data.
      *
-     * @param  array  $keys
+     * @param array $keys            
      * @return void
      */
-    protected function removeFromOldFlashData(array $keys) {
+    protected function removeFromOldFlashData(array $keys)
+    {
         $this->put('flash.old', array_diff($this->get('flash.old', []), $keys));
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function all() {
+    public function all()
+    {
         return $this->attributes;
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function replace(array $attributes) {
+    public function replace(array $attributes)
+    {
         $this->put($attributes);
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function remove($name) {
+    public function remove($name)
+    {
         return Arr::pull($this->attributes, $name);
     }
 
     /**
      * Remove one or many items from the session.
      *
-     * @param  string|array  $keys
+     * @param string|array $keys            
      * @return void
      */
-    public function forget($keys) {
+    public function forget($keys)
+    {
         Arr::forget($this->attributes, $keys);
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function clear() {
+    public function clear()
+    {
         $this->attributes = [];
-
+        
         foreach ($this->bags as $bag) {
             $bag->clear();
         }
@@ -553,47 +632,61 @@ class Store implements Session {
      *
      * @return void
      */
-    public function flush() {
+    public function flush()
+    {
         $this->clear();
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function isStarted() {
+    public function isStarted()
+    {
         return $this->started;
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function registerBag(SessionBagInterface $bag) {
+    public function registerBag(SessionBagInterface $bag)
+    {
         $this->bags[$bag->getStorageKey()] = $bag;
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function getBag($name) {
+    public function getBag($name)
+    {
         return Arr::get($this->bags, $name, function () {
-                    throw new InvalidArgumentException('Bag not registered.');
-                });
+            throw new InvalidArgumentException('Bag not registered.');
+        });
     }
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function getMetadataBag() {
+    public function getMetadataBag()
+    {
         return $this->metaBag;
     }
 
     /**
      * Get the raw bag data array for a given bag.
      *
-     * @param  string  $name
+     * @param string $name            
      * @return array
      */
-    public function getBagData($name) {
+    public function getBagData($name)
+    {
         return Arr::get($this->bagData, $name, []);
     }
 
@@ -602,7 +695,8 @@ class Store implements Session {
      *
      * @return string
      */
-    public function token() {
+    public function token()
+    {
         return $this->get('_token');
     }
 
@@ -611,7 +705,8 @@ class Store implements Session {
      *
      * @return string
      */
-    public function getToken() {
+    public function getToken()
+    {
         return $this->token();
     }
 
@@ -620,7 +715,8 @@ class Store implements Session {
      *
      * @return void
      */
-    public function regenerateToken() {
+    public function regenerateToken()
+    {
         $this->put('_token', Str::quickRandom(40));
     }
 
@@ -629,27 +725,30 @@ class Store implements Session {
      *
      * @return string|null
      */
-    public function previousUrl() {
+    public function previousUrl()
+    {
         return $this->get('_previous.url');
     }
 
     /**
      * Set the "previous" URL in the session.
      *
-     * @param  string  $url
+     * @param string $url            
      * @return void
      */
-    public function setPreviousUrl($url) {
+    public function setPreviousUrl($url)
+    {
         return $this->put('_previous.url', $url);
     }
 
     /**
      * Set the existence of the session on the handler if applicable.
      *
-     * @param  bool  $value
+     * @param bool $value            
      * @return void
      */
-    public function setExists($value) {
+    public function setExists($value)
+    {
         if ($this->handler instanceof ExistenceAwareInterface) {
             $this->handler->setExists($value);
         }
@@ -660,7 +759,8 @@ class Store implements Session {
      *
      * @return \SessionHandlerInterface
      */
-    public function getHandler() {
+    public function getHandler()
+    {
         return $this->handler;
     }
 
@@ -669,20 +769,21 @@ class Store implements Session {
      *
      * @return bool
      */
-    public function handlerNeedsRequest() {
+    public function handlerNeedsRequest()
+    {
         return $this->handler instanceof CookieSessionHandler;
     }
 
     /**
      * Set the request on the handler instance.
      *
-     * @param  \Symfony\Component\HttpFoundation\Request  $request
+     * @param \Symfony\Component\HttpFoundation\Request $request            
      * @return void
      */
-    public function setRequestOnHandler(Request $request) {
+    public function setRequestOnHandler(Request $request)
+    {
         if ($this->handlerNeedsRequest()) {
             $this->handler->setRequest($request);
         }
     }
-
 }

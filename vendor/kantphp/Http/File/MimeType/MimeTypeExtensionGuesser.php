@@ -7,13 +7,13 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Http\File\MimeType;
 
 /**
  * Provides a best-guess mapping of mime type to file extension.
  */
-class MimeTypeExtensionGuesser implements ExtensionGuesserInterface {
+class MimeTypeExtensionGuesser implements ExtensionGuesserInterface
+{
 
     /**
      * A map of mime types and their default extensions.
@@ -793,14 +793,16 @@ class MimeTypeExtensionGuesser implements ExtensionGuesserInterface {
         'video/x-msvideo' => 'avi',
         'video/x-sgi-movie' => 'movie',
         'video/x-smv' => 'smv',
-        'x-conference/x-cooltalk' => 'ice',
+        'x-conference/x-cooltalk' => 'ice'
     );
 
     /**
+     *
      * {@inheritdoc}
+     *
      */
-    public function guess($mimeType) {
+    public function guess($mimeType)
+    {
         return isset($this->defaultExtensions[$mimeType]) ? $this->defaultExtensions[$mimeType] : null;
     }
-
 }

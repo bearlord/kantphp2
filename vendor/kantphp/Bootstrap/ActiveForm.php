@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Bootstrap;
 
 use Kant\Kant;
@@ -31,11 +30,11 @@ use Kant\Exception\InvalidConfigException;
  *
  * ```php
  * [
- *     'offset' => 'col-sm-offset-3',
- *     'label' => 'col-sm-3',
- *     'wrapper' => 'col-sm-6',
- *     'error' => '',
- *     'hint' => 'col-sm-3',
+ * 'offset' => 'col-sm-offset-3',
+ * 'label' => 'col-sm-3',
+ * 'wrapper' => 'col-sm-6',
+ * 'error' => '',
+ * 'hint' => 'col-sm-3',
  * ]
  * ```
  *
@@ -44,17 +43,17 @@ use Kant\Exception\InvalidConfigException;
  *
  * ```php
  * $form = ActiveForm::begin([
- *     'layout' => 'horizontal',
- *     'fieldConfig' => [
- *         'template' => "{label}\n{beginWrapper}\n{input}\n{hint}\n{error}\n{endWrapper}",
- *         'horizontalCssClasses' => [
- *             'label' => 'col-sm-4',
- *             'offset' => 'col-sm-offset-4',
- *             'wrapper' => 'col-sm-8',
- *             'error' => '',
- *             'hint' => '',
- *         ],
- *     ],
+ * 'layout' => 'horizontal',
+ * 'fieldConfig' => [
+ * 'template' => "{label}\n{beginWrapper}\n{input}\n{hint}\n{error}\n{endWrapper}",
+ * 'horizontalCssClasses' => [
+ * 'label' => 'col-sm-4',
+ * 'offset' => 'col-sm-offset-4',
+ * 'wrapper' => 'col-sm-8',
+ * 'error' => '',
+ * 'hint' => '',
+ * ],
+ * ],
  * ]);
  * ```
  *
@@ -64,24 +63,30 @@ use Kant\Exception\InvalidConfigException;
  * @author Michael Härtl <haertl.mike@gmail.com>
  * @since 2.0
  */
-class ActiveForm extends \Kant\Widget\ActiveForm {
+class ActiveForm extends \Kant\Widget\ActiveForm
+{
 
     /**
+     *
      * @var string the default field class name when calling [[field()]] to create a new field.
      * @see fieldConfig
      */
     public $fieldClass = 'Kant\Bootstrap\ActiveField';
 
     /**
+     *
      * @var array HTML attributes for the form tag. Default is `['role' => 'form']`.
      */
-    public $options = ['role' => 'form'];
+    public $options = [
+        'role' => 'form'
+    ];
 
     /**
+     *
      * @var string the form layout. Either 'default', 'horizontal' or 'inline'.
-     * By choosing a layout, an appropriate default field configuration is applied. This will
-     * render the form fields with slightly different markup for each layout. You can
-     * override these defaults through [[fieldConfig]].
+     *      By choosing a layout, an appropriate default field configuration is applied. This will
+     *      render the form fields with slightly different markup for each layout. You can
+     *      override these defaults through [[fieldConfig]].
      * @see \Kant\Bootstrap\ActiveField for details on Bootstrap 3 field configuration
      */
     public $layout = 'default';
@@ -89,11 +94,16 @@ class ActiveForm extends \Kant\Widget\ActiveForm {
     /**
      * @inheritdoc
      */
-    public function init() {
-        if (!in_array($this->layout, ['default', 'horizontal', 'inline'])) {
+    public function init()
+    {
+        if (! in_array($this->layout, [
+            'default',
+            'horizontal',
+            'inline'
+        ])) {
             throw new InvalidConfigException('Invalid layout type: ' . $this->layout);
         }
-
+        
         if ($this->layout !== 'default') {
             Html::addCssClass($this->options, 'form-' . $this->layout);
         }
@@ -102,10 +112,11 @@ class ActiveForm extends \Kant\Widget\ActiveForm {
 
     /**
      * @inheritdoc
+     * 
      * @return ActiveField the created ActiveField object
      */
-    public function field($model, $attribute, $options = []) {
+    public function field($model, $attribute, $options = [])
+    {
         return parent::field($model, $attribute, $options);
     }
-
 }

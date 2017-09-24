@@ -6,15 +6,15 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Helper;
 
 /**
- * Inflector pluralizes and singularizes English nouns. It also contains some other useful methods.
+ * Inflector pluralizes and singularizes English nouns.
+ * It also contains some other useful methods.
  *
  * @author Antonio Ramirez <amigo.cobos@gmail.com>
  * @since 2.0
  */
-class Inflector extends BaseInflector {
-    
+class Inflector extends BaseInflector
+{
 }

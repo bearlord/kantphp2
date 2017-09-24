@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Caching;
 
 /**
@@ -23,7 +22,8 @@ namespace Kant\Caching;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class XCache extends Cache {
+class XCache extends Cache
+{
 
     /**
      * Checks whether a specified key exists in the cache.
@@ -31,23 +31,29 @@ class XCache extends Cache {
      * Note that this method does not check whether the dependency associated
      * with the cached data, if there is any, has changed. So a call to [[get]]
      * may return false while exists returns true.
-     * @param mixed $key a key identifying the cached value. This can be a simple string or
-     * a complex data structure consisting of factors representing the key.
+     * 
+     * @param mixed $key
+     *            a key identifying the cached value. This can be a simple string or
+     *            a complex data structure consisting of factors representing the key.
      * @return bool true if a value exists in cache, false if the value is not in the cache or expired.
      */
-    public function exists($key) {
+    public function exists($key)
+    {
         $key = $this->buildKey($key);
-
+        
         return xcache_isset($key);
     }
 
     /**
      * Retrieves a value from cache with a specified key.
      * This is the implementation of the method declared in the parent class.
-     * @param string $key a unique key identifying the cached value
+     * 
+     * @param string $key
+     *            a unique key identifying the cached value
      * @return mixed|false the value stored in cache, false if the value is not in the cache or expired.
      */
-    protected function getValue($key) {
+    protected function getValue($key)
+    {
         return xcache_isset($key) ? xcache_get($key) : false;
     }
 
@@ -55,13 +61,17 @@ class XCache extends Cache {
      * Stores a value identified by a key in cache.
      * This is the implementation of the method declared in the parent class.
      *
-     * @param string $key the key identifying the value to be cached
-     * @param mixed $value the value to be cached. Most often it's a string. If you have disabled [[serializer]],
-     * it could be something else.
-     * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
+     * @param string $key
+     *            the key identifying the value to be cached
+     * @param mixed $value
+     *            the value to be cached. Most often it's a string. If you have disabled [[serializer]],
+     *            it could be something else.
+     * @param int $duration
+     *            the number of seconds in which the cached value will expire. 0 means never expire.
      * @return bool true if the value is successfully stored into cache, false otherwise
      */
-    protected function setValue($key, $value, $duration) {
+    protected function setValue($key, $value, $duration)
+    {
         return xcache_set($key, $value, $duration);
     }
 
@@ -69,39 +79,47 @@ class XCache extends Cache {
      * Stores a value identified by a key into cache if the cache does not contain this key.
      * This is the implementation of the method declared in the parent class.
      *
-     * @param string $key the key identifying the value to be cached
-     * @param mixed $value the value to be cached. Most often it's a string. If you have disabled [[serializer]],
-     * it could be something else.
-     * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
+     * @param string $key
+     *            the key identifying the value to be cached
+     * @param mixed $value
+     *            the value to be cached. Most often it's a string. If you have disabled [[serializer]],
+     *            it could be something else.
+     * @param int $duration
+     *            the number of seconds in which the cached value will expire. 0 means never expire.
      * @return bool true if the value is successfully stored into cache, false otherwise
      */
-    protected function addValue($key, $value, $duration) {
-        return !xcache_isset($key) ? $this->setValue($key, $value, $duration) : false;
+    protected function addValue($key, $value, $duration)
+    {
+        return ! xcache_isset($key) ? $this->setValue($key, $value, $duration) : false;
     }
 
     /**
      * Deletes a value with the specified key from cache
      * This is the implementation of the method declared in the parent class.
-     * @param string $key the key of the value to be deleted
+     * 
+     * @param string $key
+     *            the key of the value to be deleted
      * @return bool if no error happens during deletion
      */
-    protected function deleteValue($key) {
+    protected function deleteValue($key)
+    {
         return xcache_unset($key);
     }
 
     /**
      * Deletes all values from cache.
      * This is the implementation of the method declared in the parent class.
+     * 
      * @return bool whether the flush operation was successful.
      */
-    protected function flushValues() {
-        for ($i = 0, $max = xcache_count(XC_TYPE_VAR); $i < $max; $i++) {
+    protected function flushValues()
+    {
+        for ($i = 0, $max = xcache_count(XC_TYPE_VAR); $i < $max; $i ++) {
             if (xcache_clear_cache(XC_TYPE_VAR, $i) === false) {
                 return false;
             }
         }
-
+        
         return true;
     }
-
 }

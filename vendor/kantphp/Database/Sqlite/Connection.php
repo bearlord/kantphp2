@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Database\Sqlite;
 
 use Kant\Database\DbQueryAbstract;
@@ -16,19 +15,22 @@ use PDO;
 
 /**
  * SQLite Datbase
- * 
+ *
  * @access public
  * @since version 1.1
  */
-class Sqlite extends DbQueryAbstract implements DbQueryInterface {
+class Sqlite extends DbQueryAbstract implements DbQueryInterface
+{
 
     /**
      *
      * Open database connection
      *
-     * @param config
+     * @param
+     *            config
      */
-    public function open($config) {
+    public function open($config)
+    {
         $this->config = $config;
         if ($config['autoconnect'] == 1) {
             $this->_connect();
@@ -41,24 +43,27 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface {
      *
      * @return void
      */
-    private function _connect() {
+    private function _connect()
+    {
         if ($this->dbh) {
             return;
         }
         // check for PDO extension
-        if (!extension_loaded('pdo')) {
+        if (! extension_loaded('pdo')) {
             throw new KantException('The PDO extension is required for this adapter but the extension is not loaded');
         }
         // check for PDO_PGSQL extension
-        if (!extension_loaded('pdo_sqlite')) {
+        if (! extension_loaded('pdo_sqlite')) {
             throw new KantException('The PDO_PGSQL extension is required for this adapter but the extension is not loaded');
         }
-
+        
         $dsn = sprintf("%s:%s", "sqlite", $this->config['database']);
-
-        //Request a persistent connection, rather than creating a new connection.
+        
+        // Request a persistent connection, rather than creating a new connection.
         if (isset($this->config['persistent']) && $this->config['persistent'] == true) {
-            $options = array(PDO::ATTR_PERSISTENT => true);
+            $options = array(
+                PDO::ATTR_PERSISTENT => true
+            );
         } else {
             $options = null;
         }
@@ -76,11 +81,10 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface {
     }
 
     /**
-     *
      * Close database connection
-     *
      */
-    public function close() {
+    public function close()
+    {
         $this->dbh = null;
     }
 
@@ -88,11 +92,12 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface {
      *
      * Execute a query
      *
-     * @param string $query
+     * @param string $query            
      * @return resource A query result resource on success or false on failure.
      */
-    public function execute($sql) {
-        if (!is_object($this->dbh)) {
+    public function execute($sql)
+    {
+        if (! is_object($this->dbh)) {
             $this->_connect();
         }
         try {
@@ -103,30 +108,31 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface {
         }
         $this->numRows = $this->dbh->rowCount();
         $this->sqls[] = $sql;
-        $this->querycount++;
+        $this->querycount ++;
         $this->clearFields();
         return $this->numRows;
     }
 
     /**
      *
-     *  SQl query
+     * SQl query
      *
-     * @param string $sql
-     * @param string $fetchMode
+     * @param string $sql            
+     * @param string $fetchMode            
      * @return array
      */
-    public function query($sql, $fetchMode = PDO::FETCH_ASSOC) {
+    public function query($sql, $fetchMode = PDO::FETCH_ASSOC)
+    {
         $rows = null;
         $cacheSqlMd5 = 'sql_' . md5($sql);
         if ($this->ttl) {
             $this->clearFields();
             $rows = $this->cache->get($cacheSqlMd5);
-            if (!empty($rows)) {
+            if (! empty($rows)) {
                 return $rows;
             }
         }
-        if (!is_resource($this->dbh)) {
+        if (! is_resource($this->dbh)) {
             $this->_connect();
         }
         $sth = $this->dbh->prepare($sql);
@@ -138,17 +144,18 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface {
             $this->cache->delete($cacheSqlMd5);
         }
         $this->sqls[] = $sql;
-        $this->queryCount++;
+        $this->queryCount ++;
         $this->clearFields();
         return $rows;
     }
 
     /**
-     *  Get the ID generated in the last query
-     * 
+     * Get the ID generated in the last query
+     *
      * @return type
      */
-    public function lastInsertId($primaryKey = null) {
+    public function lastInsertId($primaryKey = null)
+    {
         return $this->dbh->lastInsertId();
     }
 
@@ -156,11 +163,14 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface {
      *
      * Get a result row as associative array from SQL query
      *
-     * @param method string
-     * @param clear_var boolean
+     * @param
+     *            method string
+     * @param
+     *            clear_var boolean
      * @return array
      */
-    public function fetch($fetchMode = PDO::FETCH_ASSOC) {
+    public function fetch($fetchMode = PDO::FETCH_ASSOC)
+    {
         $sql = $this->bluidSql("SELECT");
         $result = $this->query($sql, $fetchMode);
         return $result;
@@ -168,10 +178,11 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface {
 
     /**
      * Fetches the first column of the first row of the SQL result.
-     * 
-     * @param type $fetchMode
+     *
+     * @param type $fetchMode            
      */
-    public function fetchOne() {
+    public function fetchOne()
+    {
         $this->limit = 1;
         $result = $this->fetch();
         if ($result) {
@@ -180,18 +191,19 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface {
     }
 
     /**
-     * 
-     *  Get a result row as associative array from SQL query with easy method
-     * 
-     * @param string $select
-     * @param string $from
-     * @param string $where
-     * @param string $groupby
-     * @param string $orderby
-     * @param string $limit
+     *
+     * Get a result row as associative array from SQL query with easy method
+     *
+     * @param string $select            
+     * @param string $from            
+     * @param string $where            
+     * @param string $groupby            
+     * @param string $orderby            
+     * @param string $limit            
      * @return array
      */
-    public function fetchEasy($select, $from, $where = null, $groupby = null, $orderby = null, $limit = null) {
+    public function fetchEasy($select, $from, $where = null, $groupby = null, $orderby = null, $limit = null)
+    {
         $this->select($select);
         $this->from($from);
         if ($where) {
@@ -212,11 +224,13 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface {
     }
 
     /**
-     *  Insert Data
-     * 
+     * Insert Data
+     *
      * @return
+     *
      */
-    public function insert() {
+    public function insert()
+    {
         $sql = $this->bluidSql("INSERT");
         $this->execute($sql);
         $lastInsertId = $this->lastInsertId($this->primary);
@@ -225,10 +239,12 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface {
 
     /**
      * Update Data
-     * 
-     * @return 
+     *
+     * @return
+     *
      */
-    public function update() {
+    public function update()
+    {
         $sql = $this->bluidSql("UPDATE");
         $result = $this->execute($sql);
         return $result;
@@ -236,10 +252,12 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface {
 
     /**
      * Delete Data
-     * 
+     *
      * @return
+     *
      */
-    public function delete() {
+    public function delete()
+    {
         $sql = $this->bluidSql("DELETE");
         $result = $this->execute($sql);
         return $result;
@@ -249,53 +267,56 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface {
      *
      * Get the number of rows in a result
      *
-     * @param clear_var boolean
+     * @param
+     *            clear_var boolean
      * @return integer The number of rows in a result set on success&return.falseforfailure;.
      */
-    public function count() {
+    public function count()
+    {
         $sql = $this->bluidSql("SELECT", true);
         $row = $this->query($sql);
         return $row->result(0);
     }
 
     /**
-     * 
      * Start transaction
      */
-    public function begin() {
+    public function begin()
+    {
         $this->execute('SET AUTOCOMMIT=0');
         $this->execute('BEGIN');
     }
 
     /**
-     * 
      * Commit
      */
-    public function commit() {
+    public function commit()
+    {
         $this->execute('COMMIT');
     }
 
     /**
-     * 
      * Rollback
      */
-    public function rollback() {
+    public function rollback()
+    {
         $this->execute('ROLLBACK');
     }
 
     /**
      * Clone table structure and indexes
-     * 
-     * @param string $table
-     * @param string $newTable
+     *
+     * @param string $table            
+     * @param string $newTable            
      * @return
+     *
      */
-    public function cloneTable($table, $newTable) {
+    public function cloneTable($table, $newTable)
+    {
         $sql = "CREATE TABLE  $newTable(LIKE $table)";
         $result = $this->execute($sql);
         return $result;
     }
-
 }
 
 ?>

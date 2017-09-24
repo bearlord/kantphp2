@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Routing;
 
 use ReflectionFunction;
@@ -21,8 +20,9 @@ use Kant\Routing\Matching\HostValidator;
 use Kant\Routing\Matching\MethodValidator;
 use Kant\Routing\Matching\SchemeValidator;
 
-class Route {
-
+class Route
+{
+    
     use RouteDependencyResolverTrait;
 
     /**
@@ -70,13 +70,15 @@ class Route {
     /**
      *
      * The Controller suffix
-     * @var type 
+     * 
+     * @var type
      */
     public $controllerSuffix = "Controller";
 
     /**
      * The Action suffix
-     * @var type 
+     * 
+     * @var type
      */
     public $actionSuffix = 'Action';
 
@@ -104,20 +106,21 @@ class Route {
     /**
      * Create a new Route instance.
      *
-     * @param  array|string  $methods
-     * @param  string  $uri
-     * @param  \Closure|array  $action
+     * @param array|string $methods            
+     * @param string $uri            
+     * @param \Closure|array $action            
      * @return void
      */
-    public function __construct($methods, $uri, $action) {
+    public function __construct($methods, $uri, $action)
+    {
         $this->uri = $uri;
         $this->methods = (array) $methods;
         $this->action = $this->parseAction($action);
-
-        if (in_array('GET', $this->methods) && !in_array('HEAD', $this->methods)) {
+        
+        if (in_array('GET', $this->methods) && ! in_array('HEAD', $this->methods)) {
             $this->methods[] = 'HEAD';
         }
-
+        
         if (isset($this->action['prefix'])) {
             $this->prefix($this->action['prefix']);
         }
@@ -126,12 +129,13 @@ class Route {
     /**
      * Parse the route action into a standard array.
      *
-     * @param  callable|array|null  $action
+     * @param callable|array|null $action            
      * @return array
      *
      * @throws \UnexpectedValueException
      */
-    protected function parseAction($action) {
+    protected function parseAction($action)
+    {
         return RouteAction::parse($this->uri, $action);
     }
 
@@ -140,13 +144,13 @@ class Route {
      *
      * @return mixed
      */
-    public function run() {
-
+    public function run()
+    {
         try {
             if ($this->isControllerAction()) {
                 return $this->runController();
             }
-
+            
             return $this->runCallable();
         } catch (HttpResponseException $e) {
             return $e->getResponse();
@@ -158,7 +162,8 @@ class Route {
      *
      * @return bool
      */
-    protected function isControllerAction() {
+    protected function isControllerAction()
+    {
         return is_string($this->action['uses']);
     }
 
@@ -169,25 +174,25 @@ class Route {
      *
      * @throws \Kant\Exception\NotFoundHttpException
      */
-    protected function runController() {
+    protected function runController()
+    {
         $this->setDispatcher();
-
-        return (new ControllerDispatcher())->dispatch(
-                        $this, $this->getController(), $this->getControllerMethod()
-        );
+        
+        return (new ControllerDispatcher())->dispatch($this, $this->getController(), $this->getControllerMethod());
     }
 
     /**
      * Set dispatcher
      */
-    protected function setDispatcher() {
+    protected function setDispatcher()
+    {
         $class = StringHelper::basename($this->parseControllerCallback()[0], $this->controllerSuffix);
         $method = StringHelper::basename($this->parseControllerCallback()[1], $this->actionSuffix);
         $module = explode('\\', $this->parseControllerCallback()[0])[1];
-
-//        Kant::$app->setDispatcher([
-//            $module, $class, $method
-//        ]);
+        
+        // Kant::$app->setDispatcher([
+        // $module, $class, $method
+        // ]);
     }
 
     /**
@@ -195,12 +200,13 @@ class Route {
      *
      * @return mixed
      */
-    public function getController() {
+    public function getController()
+    {
         $class = $this->parseControllerCallback()[0];
-        if (!$this->controller) {
+        if (! $this->controller) {
             $this->controller = Kant::createObject($class);
         }
-
+        
         return $this->controller;
     }
 
@@ -209,8 +215,9 @@ class Route {
      *
      * @return string
      */
-    protected function getControllerMethod() {
-//        return $this->parseControllerCallback()[1] . $this->actionSuffix;
+    protected function getControllerMethod()
+    {
+        // return $this->parseControllerCallback()[1] . $this->actionSuffix;
         return $this->parseControllerCallback()[1];
     }
 
@@ -219,7 +226,8 @@ class Route {
      *
      * @return array
      */
-    protected function parseControllerCallback() {
+    protected function parseControllerCallback()
+    {
         return Str::parseCallback($this->action['uses']);
     }
 
@@ -228,11 +236,10 @@ class Route {
      *
      * @return mixed
      */
-    protected function runCallable() {
-        $parameters = $this->resolveMethodDependencies(
-                $this->parametersWithoutNulls(), new ReflectionFunction($this->action['uses'])
-        );
-
+    protected function runCallable()
+    {
+        $parameters = $this->resolveMethodDependencies($this->parametersWithoutNulls(), new ReflectionFunction($this->action['uses']));
+        
         return call_user_func_array($this->action['uses'], $parameters);
     }
 
@@ -241,7 +248,8 @@ class Route {
      *
      * @return array
      */
-    public function methods() {
+    public function methods()
+    {
         return $this->methods;
     }
 
@@ -250,7 +258,8 @@ class Route {
      *
      * @return bool
      */
-    public function httpOnly() {
+    public function httpOnly()
+    {
         return in_array('http', $this->action, true);
     }
 
@@ -259,7 +268,8 @@ class Route {
      *
      * @return bool
      */
-    public function httpsOnly() {
+    public function httpsOnly()
+    {
         return $this->secure();
     }
 
@@ -268,7 +278,8 @@ class Route {
      *
      * @return bool
      */
-    public function secure() {
+    public function secure()
+    {
         return in_array('https', $this->action, true);
     }
 
@@ -277,8 +288,12 @@ class Route {
      *
      * @return string|null
      */
-    public function domain() {
-        return isset($this->action['domain']) ? str_replace(['http://', 'https://'], '', $this->action['domain']) : null;
+    public function domain()
+    {
+        return isset($this->action['domain']) ? str_replace([
+            'http://',
+            'https://'
+        ], '', $this->action['domain']) : null;
     }
 
     /**
@@ -286,21 +301,23 @@ class Route {
      *
      * @return string
      */
-    public function uri() {
+    public function uri()
+    {
         return $this->uri;
     }
 
     /**
      * Add a prefix to the route URI.
      *
-     * @param  string  $prefix
+     * @param string $prefix            
      * @return $this
      */
-    public function prefix($prefix) {
+    public function prefix($prefix)
+    {
         $uri = rtrim($prefix, '/') . '/' . ltrim($this->uri, '/');
-
+        
         $this->uri = trim($uri, '/');
-
+        
         return $this;
     }
 
@@ -309,17 +326,20 @@ class Route {
      *
      * @return array
      */
-    public static function getValidators() {
+    public static function getValidators()
+    {
         if (isset(static::$validators)) {
             return static::$validators;
         }
-
+        
         // To match the route, we will use a chain of responsibility pattern with the
         // validator implementations. We will spin through each one making sure it
         // passes and then we will know if the route as a whole matches request.
         return static::$validators = [
-            new UriValidator, new MethodValidator,
-            new SchemeValidator, new HostValidator,
+            new UriValidator(),
+            new MethodValidator(),
+            new SchemeValidator(),
+            new HostValidator()
         ];
     }
 
@@ -328,42 +348,45 @@ class Route {
      *
      * @return \Symfony\Component\Routing\CompiledRoute
      */
-    public function getCompiled() {
+    public function getCompiled()
+    {
         return $this->compiled;
     }
 
     /**
      * Set the router instance on the route.
      *
-     * @param  \Kant\Routing\Router  $router
+     * @param \Kant\Routing\Router $router            
      * @return $this
      */
-    public function setRouter(Router $router) {
+    public function setRouter(Router $router)
+    {
         $this->router = $router;
-
+        
         return $this;
     }
 
     /**
      * Determine if the route matches given request.
      *
-     * @param  \Kant\Http\Request  $request
-     * @param  bool  $includingMethod
+     * @param \Kant\Http\Request $request            
+     * @param bool $includingMethod            
      * @return bool
      */
-    public function matches(Request $request, $includingMethod = true) {
+    public function matches(Request $request, $includingMethod = true)
+    {
         $this->compileRoute();
-
+        
         foreach ($this->getValidators() as $validator) {
-            if (!$includingMethod && $validator instanceof MethodValidator) {
+            if (! $includingMethod && $validator instanceof MethodValidator) {
                 continue;
             }
-
-            if (!$validator->matches($this, $request)) {
+            
+            if (! $validator->matches($this, $request)) {
                 return false;
             }
         }
-
+        
         return true;
     }
 
@@ -372,26 +395,26 @@ class Route {
      *
      * @return void
      */
-    protected function compileRoute() {
-        if (!$this->compiled) {
+    protected function compileRoute()
+    {
+        if (! $this->compiled) {
             $this->compiled = (new RouteCompiler($this))->compile();
         }
-
+        
         return $this->compiled;
     }
 
     /**
      * Bind the route to a given request for execution.
      *
-     * @param  \Kant\Http\Request  $request
+     * @param \Kant\Http\Request $request            
      * @return $this
      */
-    public function bind(Request $request) {
-//        $this->compileRoute();
-
-        $this->parameters = (new RouteParameterBinder($this))
-                ->parameters($request);
-
+    public function bind(Request $request)
+    {
+        // $this->compileRoute();
+        $this->parameters = (new RouteParameterBinder($this))->parameters($request);
+        
         return $this;
     }
 
@@ -402,11 +425,12 @@ class Route {
      *
      * @throws \LogicException
      */
-    public function parameters() {
+    public function parameters()
+    {
         if (isset($this->parameters)) {
             return $this->parameters;
         }
-
+        
         throw new LogicException('Route is not bound.');
     }
 
@@ -415,9 +439,10 @@ class Route {
      *
      * @return array
      */
-    public function parametersWithoutNulls() {
+    public function parametersWithoutNulls()
+    {
         return array_filter($this->parameters(), function ($p) {
-            return !is_null($p);
+            return ! is_null($p);
         });
     }
 
@@ -426,11 +451,12 @@ class Route {
      *
      * @return array
      */
-    public function parameterNames() {
+    public function parameterNames()
+    {
         if (isset($this->parameterNames)) {
             return $this->parameterNames;
         }
-
+        
         return $this->parameterNames = $this->compileParameterNames();
     }
 
@@ -439,9 +465,10 @@ class Route {
      *
      * @return array
      */
-    protected function compileParameterNames() {
+    protected function compileParameterNames()
+    {
         preg_match_all('/\{(.*?)\}/', $this->domain() . $this->uri, $matches);
-
+        
         return array_map(function ($m) {
             return trim($m, '?');
         }, $matches[1]);
@@ -450,27 +477,31 @@ class Route {
     /**
      * Set a regular expression requirement on the route.
      *
-     * @param  array|string  $name
-     * @param  string  $expression
+     * @param array|string $name            
+     * @param string $expression            
      * @return $this
      */
-    public function where($name, $expression = null) {
+    public function where($name, $expression = null)
+    {
         foreach ($this->parseWhere($name, $expression) as $name => $expression) {
             $this->wheres[$name] = $expression;
         }
-
+        
         return $this;
     }
 
     /**
      * Parse arguments to the where method into an array.
      *
-     * @param  array|string  $name
-     * @param  string  $expression
+     * @param array|string $name            
+     * @param string $expression            
      * @return array
      */
-    protected function parseWhere($name, $expression) {
-        return is_array($name) ? $name : [$name => $expression];
+    protected function parseWhere($name, $expression)
+    {
+        return is_array($name) ? $name : [
+            $name => $expression
+        ];
     }
 
     /**
@@ -478,19 +509,21 @@ class Route {
      *
      * @return array
      */
-    public function getAction() {
+    public function getAction()
+    {
         return $this->action;
     }
 
     /**
      * Set the action array for the route.
      *
-     * @param  array  $action
+     * @param array $action            
      * @return $this
      */
-    public function setAction(array $action) {
+    public function setAction(array $action)
+    {
         $this->action = $action;
-
+        
         return $this;
     }
 
@@ -499,37 +532,35 @@ class Route {
      *
      * @return array
      */
-    public function gatherMiddleware() {
-        if (!is_null($this->computedMiddleware)) {
+    public function gatherMiddleware()
+    {
+        if (! is_null($this->computedMiddleware)) {
             return $this->computedMiddleware;
         }
-
+        
         $this->computedMiddleware = [];
-
-        return $this->computedMiddleware = array_unique(array_merge(
-                        $this->middleware(), $this->controllerMiddleware()
-                ), SORT_REGULAR);
+        
+        return $this->computedMiddleware = array_unique(array_merge($this->middleware(), $this->controllerMiddleware()), SORT_REGULAR);
     }
 
     /**
      * Get or set the middlewares attached to the route.
      *
-     * @param  array|string|null $middleware
+     * @param array|string|null $middleware            
      * @return $this|array
      */
-    public function middleware($middleware = null) {
+    public function middleware($middleware = null)
+    {
         if (is_null($middleware)) {
             return (array) Arr::get($this->action, 'middleware', []);
         }
-
+        
         if (is_string($middleware)) {
             $middleware = func_get_args();
         }
-
-        $this->action['middleware'] = array_merge(
-                (array) Arr::get($this->action, 'middleware', []), $middleware
-        );
-
+        
+        $this->action['middleware'] = array_merge((array) Arr::get($this->action, 'middleware', []), $middleware);
+        
         return $this;
     }
 
@@ -538,14 +569,13 @@ class Route {
      *
      * @return array
      */
-    public function controllerMiddleware() {
-        if (!$this->isControllerAction()) {
+    public function controllerMiddleware()
+    {
+        if (! $this->isControllerAction()) {
             return [];
         }
-
-        return ControllerDispatcher::getMiddleware(
-                        $this->getController(), $this->getControllerMethod()
-        );
+        
+        return ControllerDispatcher::getMiddleware($this->getController(), $this->getControllerMethod());
     }
 
     /**
@@ -553,8 +583,8 @@ class Route {
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return isset($this->action['as']) ? $this->action['as'] : null;
     }
-
 }

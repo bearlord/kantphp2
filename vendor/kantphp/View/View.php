@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\View;
 
 use Kant\Kant;
@@ -18,11 +17,13 @@ use Kant\Widget\FragmentCache;
 
 /**
  * View class
+ * 
  * @access public
  * @version 1.1
  * @since version 1.0
  */
-class View extends BaseView {
+class View extends BaseView
+{
 
     /**
      * @event Event an event that is triggered by [[beginBody()]].
@@ -80,43 +81,50 @@ class View extends BaseView {
     const PH_BODY_END = '<![CDATA[KANT-BLOCK-BODY-END]]>';
 
     /**
+     *
      * @var AssetBundle[] list of the registered asset bundles. The keys are the bundle names, and the values
-     * are the registered [[AssetBundle]] objects.
+     *      are the registered [[AssetBundle]] objects.
      * @see registerAssetBundle()
      */
     public $assetBundles = [];
 
     /**
+     *
      * @var array the registered meta tags.
      * @see registerMetaTag()
      */
     public $metaTags;
 
     /**
+     *
      * @var array the registered link tags.
      * @see registerLinkTag()
      */
     public $linkTags;
 
     /**
+     *
      * @var array the registered CSS code blocks.
      * @see registerCss()
      */
     public $css;
 
     /**
+     *
      * @var array the registered CSS files.
      * @see registerCssFile()
      */
     public $cssFiles;
 
     /**
+     *
      * @var array the registered JS code blocks
      * @see registerJs()
      */
     public $js;
 
     /**
+     *
      * @var array the registered JS files.
      * @see registerJsFile()
      */
@@ -144,18 +152,20 @@ class View extends BaseView {
     protected $params = array();
 
     /**
+     *
      * @var array a list of available renderers indexed by their corresponding supported file extensions.
-     * Each renderer may be a view renderer object or the configuration for creating the renderer object.
-     * For example, the following configuration enables both Smarty and Twig view renderers:
-     * If no renderer is available for the given view file, the view file will be treated as a normal PHP
-     * and rendered via [[renderPhpFile()]].
+     *      Each renderer may be a view renderer object or the configuration for creating the renderer object.
+     *      For example, the following configuration enables both Smarty and Twig view renderers:
+     *      If no renderer is available for the given view file, the view file will be treated as a normal PHP
+     *      and rendered via [[renderPhpFile()]].
      */
     public $renderers;
 
     /**
+     *
      * @var null|string|false the name of the layout to be applied to this controller's views.
-     * This property mainly affects the behavior of [[render()]].
-     * If false, no layout will be applied.
+     *      This property mainly affects the behavior of [[render()]].
+     *      If false, no layout will be applied.
      */
     public $layout = 'main';
 
@@ -164,6 +174,7 @@ class View extends BaseView {
      * @var string the root directory that contains layout view files for this module.
      */
     private $_layoutPath;
+
     private $_assetManager;
 
     /**
@@ -174,69 +185,76 @@ class View extends BaseView {
     protected $shared = [];
 
     /**
+     *
      * @var array a list of currently active fragment cache widgets. This property
-     * is used internally to implement the content caching feature. Do not modify it directly.
+     *      is used internally to implement the content caching feature. Do not modify it directly.
      * @internal
+     *
      */
     public $cacheStack = [];
 
-    public function init() {
-        
-    }
+    public function init()
+    {}
 
     /**
      * Add a piece of shared data to the environment.
      *
-     * @param  array|string  $key
-     * @param  mixed  $value
+     * @param array|string $key            
+     * @param mixed $value            
      * @return mixed
      */
-    public function share($key, $value = null) {
-        $keys = is_array($key) ? $key : [$key => $value];
-
+    public function share($key, $value = null)
+    {
+        $keys = is_array($key) ? $key : [
+            $key => $value
+        ];
+        
         foreach ($keys as $key => $value) {
             $this->shared[$key] = $value;
         }
-
+        
         return $value;
     }
 
     /**
      * Get an item from the shared data.
      *
-     * @param  string  $key
-     * @param  mixed   $default
+     * @param string $key            
+     * @param mixed $default            
      * @return mixed
      */
-    public function shared($key, $default = null) {
+    public function shared($key, $default = null)
+    {
         return Arr::get($this->shared, $key, $default);
     }
 
     /**
-     *  Putting the errors in the view for every view allows the developer to just
-     *  assume that some errors are always available, which is convenient since
-     *  they don't have to continually run checks for the presence of errors.
+     * Putting the errors in the view for every view allows the developer to just
+     * assume that some errors are always available, which is convenient since
+     * they don't have to continually run checks for the presence of errors.
      */
-    public function ShareErrorsFromSession() {
+    public function ShareErrorsFromSession()
+    {
         // If the current session has an "errors" variable bound to it, we will share
         // its value with all view instances so the views can easily access errors
         // without having to bind. An empty bag is set when there aren't errors.
-        $this->share(
-                'errors', Kant::$app->getSession()->get('errors') ?: new ViewErrorBag
-        );
+        $this->share('errors', Kant::$app->getSession()
+            ->get('errors') ?  : new ViewErrorBag());
     }
 
     /**
      * Marks the position of an HTML head section.
      */
-    public function head() {
+    public function head()
+    {
         echo self::PH_HEAD;
     }
 
     /**
      * Marks the beginning of an HTML body section.
      */
-    public function beginBody() {
+    public function beginBody()
+    {
         echo self::PH_BODY_BEGIN;
         $this->trigger(self::EVENT_BEGIN_BODY);
     }
@@ -244,7 +262,8 @@ class View extends BaseView {
     /**
      * Marks the ending of an HTML body section.
      */
-    public function endBody() {
+    public function endBody()
+    {
         $this->trigger(self::EVENT_END_BODY);
         echo self::PH_BODY_END;
         foreach (array_keys($this->assetBundles) as $bundle) {
@@ -254,28 +273,32 @@ class View extends BaseView {
 
     /**
      * Marks the ending of an HTML page.
-     * @param boolean $ajaxMode whether the view is rendering in AJAX mode.
-     * If true, the JS scripts registered at [[POS_READY]] and [[POS_LOAD]] positions
-     * will be rendered at the end of the view like normal scripts.
+     * 
+     * @param boolean $ajaxMode
+     *            whether the view is rendering in AJAX mode.
+     *            If true, the JS scripts registered at [[POS_READY]] and [[POS_LOAD]] positions
+     *            will be rendered at the end of the view like normal scripts.
      */
-    public function endPage($ajaxMode = false) {
+    public function endPage($ajaxMode = false)
+    {
         $this->trigger(self::EVENT_END_PAGE);
-
+        
         $content = ob_get_clean();
-
+        
         echo strtr($content, [
             self::PH_HEAD => $this->renderHeadHtml(),
             self::PH_BODY_BEGIN => $this->renderBodyBeginHtml(),
-            self::PH_BODY_END => $this->renderBodyEndHtml($ajaxMode),
+            self::PH_BODY_END => $this->renderBodyEndHtml($ajaxMode)
         ]);
-
+        
         $this->clear();
     }
 
     /**
      * Clears up the registered meta tags, link tags, css/js scripts and files.
      */
-    public function clear() {
+    public function clear()
+    {
         $this->metaTags = null;
         $this->linkTags = null;
         $this->css = null;
@@ -288,10 +311,13 @@ class View extends BaseView {
     /**
      * Registers all files provided by an asset bundle including depending bundles files.
      * Removes a bundle from [[assetBundles]] once files are registered.
-     * @param string $name name of the bundle to register
+     * 
+     * @param string $name
+     *            name of the bundle to register
      */
-    protected function registerAssetFiles($name) {
-        if (!isset($this->assetBundles[$name])) {
+    protected function registerAssetFiles($name)
+    {
+        if (! isset($this->assetBundles[$name])) {
             return;
         }
         $bundle = $this->assetBundles[$name];
@@ -307,34 +333,37 @@ class View extends BaseView {
     /**
      * Returns the value of a property.
      *
-     * @param type $key
+     * @param type $key            
      * @return type
      */
-    public function __get($key) {
+    public function __get($key)
+    {
         if (isset($this->params[$key])) {
-            return($this->params[$key]);
+            return ($this->params[$key]);
         } else {
-            return(NULL);
+            return (NULL);
         }
     }
 
     /**
      * Sets the value of a property.
      *
-     * @param string $key
-     * @param mixed $value
+     * @param string $key            
+     * @param mixed $value            
      */
-    public function __set($key, $value) {
+    public function __set($key, $value)
+    {
         $this->params[$key] = $value;
     }
 
     /**
      * Display template
      *
-     * @param string $view
+     * @param string $view            
      * @throws RuntimeException
      */
-    public function display($view = '') {
+    public function display($view = '')
+    {
         $content = $this->fetch($view);
         header("X-Powered-By:KantPHP Framework");
         echo $content;
@@ -343,11 +372,12 @@ class View extends BaseView {
     /**
      * Fetach template
      *
-     * @param type $view
+     * @param type $view            
      * @return type
      * @throws RuntimeException
      */
-    public function fetch($view = '', $params = []) {
+    public function fetch($view = '', $params = [])
+    {
         $viewFile = $this->findViewFile($view);
         return $this->renderFile($viewFile, $params);
     }
@@ -355,13 +385,16 @@ class View extends BaseView {
     /**
      * Renders a view and applies layout if available.
      *
-     * @param type $view
+     * @param type $view            
      */
-    public function render($view = "", $params = []) {
+    public function render($view = "", $params = [])
+    {
         $content = $this->fetch($view, $params);
         $layoutFile = $this->findLayoutFile();
         if ($layoutFile !== false) {
-            return $this->renderFile($layoutFile, array_merge(['content' => $content], $params));
+            return $this->renderFile($layoutFile, array_merge([
+                'content' => $content
+            ], $params));
         } else {
             return $content;
         }
@@ -370,15 +403,16 @@ class View extends BaseView {
     /**
      * Finds the view file based on the given view name.
      *
-     * @param string $view
+     * @param string $view            
      */
-    public function findViewFile($view = '') {
+    public function findViewFile($view = '')
+    {
         if (is_file($view)) {
             return $view;
         }
         $ext = Kant::$app->config->get("view.ext");
         $viewPath = $this->getViewPath();
-
+        
         if (empty($view)) {
             $viewFile = $viewPath . Kant::$app->controller->id . DIRECTORY_SEPARATOR . strtolower(Kant::$app->controller->action->id) . $ext;
         } else {
@@ -389,14 +423,24 @@ class View extends BaseView {
 
     /**
      * Finds the applicable layout file.
-     * 
-     * @param type $view
+     *
+     * @param type $view            
      * @return boolean|string
      */
-    public function findLayoutFile() {
+    public function findLayoutFile()
+    {
+        if ($this->layout === false) {
+            return false;
+        }
+
         if (is_string($this->layout)) {
             $layout = $this->layout;
         }
+
+        if (file_exists($layout)) {
+            return $layout;
+        }
+
         $ext = Kant::$app->config->get("view.ext");
         if (strncmp($layout, '/', 1) === 0) {
             $file = $this->getLayoutPath() . DIRECTORY_SEPARATOR . substr($layout, 1) . $ext;
@@ -409,13 +453,18 @@ class View extends BaseView {
     /**
      * Renders a view file.
      */
-    public function renderFile($viewFile, $params = []) {
+    public function renderFile($viewFile, $params = [])
+    {
         $ext = pathinfo($viewFile, PATHINFO_EXTENSION);
-        $params = array_merge($this->params, $params, ['errors' => $this->shared("errors")]);
+        $params = array_merge($this->params, $params, [
+            'errors' => $this->shared("errors")
+        ]);
         if (isset($this->renderers[$ext])) {
             if (is_array($this->renderers[$ext]) || is_string($this->renderers[$ext])) {
                 $class = ucfirst(Kant::$app->config->get($this->renderers[$ext]));
-                $this->renderers[$ext] = Kant::createObject(["class" => "Kant\\View\\$class"]);
+                $this->renderers[$ext] = Kant::createObject([
+                    "class" => "Kant\\View\\$class"
+                ]);
             }
             /* @var $renderer ViewRenderer */
             $renderer = $this->renderers[$ext];
@@ -429,7 +478,8 @@ class View extends BaseView {
     /**
      * Renders a view file.
      */
-    public function renderPhpFile($file, $params = []) {
+    public function renderPhpFile($file, $params = [])
+    {
         ob_start();
         ob_implicit_flush(0);
         extract($params, EXTR_OVERWRITE);
@@ -443,7 +493,8 @@ class View extends BaseView {
     /**
      * Get view path
      */
-    protected function getViewPath() {
+    protected function getViewPath()
+    {
         $module = strtolower(Kant::$app->controller->moduleid);
         $theme = Kant::$app->config->get('view.theme');
         $viewPath = TPL_PATH . $theme . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR;
@@ -452,18 +503,21 @@ class View extends BaseView {
 
     /**
      * Registers the asset manager being used by this view object.
+     * 
      * @return \Kant\View\AssetManager the asset manager. Defaults to the "assetManager" application component.
      */
-    public function getAssetManager() {
-        return $this->_assetManager ?: Kant::$app->getAssetManager();
+    public function getAssetManager()
+    {
+        return $this->_assetManager ?  : Kant::$app->getAssetManager();
     }
 
     /**
      * Returns the directory that contains layout view files for this module.
-     * 
+     *
      * @return string
      */
-    protected function getLayoutPath() {
+    protected function getLayoutPath()
+    {
         if ($this->_layoutPath === null) {
             $this->_layoutPath = $this->getViewPath() . 'layouts';
         }
@@ -473,16 +527,20 @@ class View extends BaseView {
     /**
      * Registers the named asset bundle.
      * All dependent asset bundles will be registered.
-     * @param string $name the class name of the asset bundle (without the leading backslash)
-     * @param integer|null $position if set, this forces a minimum position for javascript files.
-     * This will adjust depending assets javascript file position or fail if requirement can not be met.
-     * If this is null, asset bundles position settings will not be changed.
-     * See [[registerJsFile]] for more details on javascript position.
+     * 
+     * @param string $name
+     *            the class name of the asset bundle (without the leading backslash)
+     * @param integer|null $position
+     *            if set, this forces a minimum position for javascript files.
+     *            This will adjust depending assets javascript file position or fail if requirement can not be met.
+     *            If this is null, asset bundles position settings will not be changed.
+     *            See [[registerJsFile]] for more details on javascript position.
      * @return AssetBundle the registered asset bundle instance
      * @throws InvalidConfigException if the asset bundle does not exist or a circular dependency is detected
      */
-    public function registerAssetBundle($name, $position = null) {
-        if (!isset($this->assetBundles[$name])) {
+    public function registerAssetBundle($name, $position = null)
+    {
+        if (! isset($this->assetBundles[$name])) {
             $am = $this->getAssetManager();
             $bundle = $am->getBundle($name);
             $this->assetBundles[$name] = false;
@@ -497,7 +555,7 @@ class View extends BaseView {
         } else {
             $bundle = $this->assetBundles[$name];
         }
-
+        
         if ($position !== null) {
             $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
             if ($pos === null) {
@@ -510,7 +568,7 @@ class View extends BaseView {
                 $this->registerAssetBundle($dep, $pos);
             }
         }
-
+        
         return $bundle;
     }
 
@@ -521,19 +579,22 @@ class View extends BaseView {
      *
      * ```php
      * $view->registerMetaTag([
-     *     'name' => 'description',
-     *     'content' => 'This website is about funny raccoons.'
+     * 'name' => 'description',
+     * 'content' => 'This website is about funny raccoons.'
      * ]);
      * ```
      *
      * will result in the meta tag `<meta name="description" content="This website is about funny raccoons.">`.
      *
-     * @param array $options the HTML attributes for the meta tag.
-     * @param string $key the key that identifies the meta tag. If two meta tags are registered
-     * with the same key, the latter will overwrite the former. If this is null, the new meta tag
-     * will be appended to the existing ones.
+     * @param array $options
+     *            the HTML attributes for the meta tag.
+     * @param string $key
+     *            the key that identifies the meta tag. If two meta tags are registered
+     *            with the same key, the latter will overwrite the former. If this is null, the new meta tag
+     *            will be appended to the existing ones.
      */
-    public function registerMetaTag($options, $key = null) {
+    public function registerMetaTag($options, $key = null)
+    {
         if ($key === null) {
             $this->metaTags[] = Html::tag('meta', '', $options);
         } else {
@@ -556,12 +617,15 @@ class View extends BaseView {
      * **Note:** To register link tags for CSS stylesheets, use [[registerCssFile()]] instead, which
      * has more options for this kind of link tag.
      *
-     * @param array $options the HTML attributes for the link tag.
-     * @param string $key the key that identifies the link tag. If two link tags are registered
-     * with the same key, the latter will overwrite the former. If this is null, the new link tag
-     * will be appended to the existing ones.
+     * @param array $options
+     *            the HTML attributes for the link tag.
+     * @param string $key
+     *            the key that identifies the link tag. If two link tags are registered
+     *            with the same key, the latter will overwrite the former. If this is null, the new link tag
+     *            will be appended to the existing ones.
      */
-    public function registerLinkTag($options, $key = null) {
+    public function registerLinkTag($options, $key = null)
+    {
         if ($key === null) {
             $this->linkTags[] = Html::tag('link', '', $options);
         } else {
@@ -571,42 +635,54 @@ class View extends BaseView {
 
     /**
      * Registers a CSS code block.
-     * @param string $css the content of the CSS code block to be registered
-     * @param array $options the HTML attributes for the `<style>`-tag.
-     * @param string $key the key that identifies the CSS code block. If null, it will use
-     * $css as the key. If two CSS code blocks are registered with the same key, the latter
-     * will overwrite the former.
+     * 
+     * @param string $css
+     *            the content of the CSS code block to be registered
+     * @param array $options
+     *            the HTML attributes for the `<style>`-tag.
+     * @param string $key
+     *            the key that identifies the CSS code block. If null, it will use
+     *            $css as the key. If two CSS code blocks are registered with the same key, the latter
+     *            will overwrite the former.
      */
-    public function registerCss($css, $options = [], $key = null) {
-        $key = $key ?: md5($css);
+    public function registerCss($css, $options = [], $key = null)
+    {
+        $key = $key ?  : md5($css);
         $this->css[$key] = Html::style($css, $options);
     }
 
     /**
      * Registers a CSS file.
-     * @param string $url the CSS file to be registered.
-     * @param array $options the HTML attributes for the link tag. Please refer to [[Html::cssFile()]] for
-     * the supported options. The following options are specially handled and are not treated as HTML attributes:
-     *
-     * - `depends`: array, specifies the names of the asset bundles that this CSS file depends on.
-     *
-     * @param string $key the key that identifies the CSS script file. If null, it will use
-     * $url as the key. If two CSS files are registered with the same key, the latter
-     * will overwrite the former.
+     * 
+     * @param string $url
+     *            the CSS file to be registered.
+     * @param array $options
+     *            the HTML attributes for the link tag. Please refer to [[Html::cssFile()]] for
+     *            the supported options. The following options are specially handled and are not treated as HTML attributes:
+     *            
+     *            - `depends`: array, specifies the names of the asset bundles that this CSS file depends on.
+     *            
+     * @param string $key
+     *            the key that identifies the CSS script file. If null, it will use
+     *            $url as the key. If two CSS files are registered with the same key, the latter
+     *            will overwrite the former.
      */
-    public function registerCssFile($url, $options = [], $key = null) {
+    public function registerCssFile($url, $options = [], $key = null)
+    {
         $url = Kant::getAlias($url);
-        $key = $key ?: $url;
+        $key = $key ?  : $url;
         $depends = ArrayHelper::remove($options, 'depends', []);
-
+        
         if (empty($depends)) {
             $this->cssFiles[$key] = Html::cssFile($url, $options);
         } else {
             $this->getAssetManager()->bundles[$key] = new AssetBundle([
                 'baseUrl' => '',
-                'css' => [strncmp($url, '//', 2) === 0 ? $url : ltrim($url, '/')],
+                'css' => [
+                    strncmp($url, '//', 2) === 0 ? $url : ltrim($url, '/')
+                ],
                 'cssOptions' => $options,
-                'depends' => (array) $depends,
+                'depends' => (array) $depends
             ]);
             $this->registerAssetBundle($key);
         }
@@ -614,24 +690,29 @@ class View extends BaseView {
 
     /**
      * Registers a JS code block.
-     * @param string $js the JS code block to be registered
-     * @param integer $position the position at which the JS script tag should be inserted
-     * in a page. The possible values are:
-     *
-     * - [[POS_HEAD]]: in the head section
-     * - [[POS_BEGIN]]: at the beginning of the body section
-     * - [[POS_END]]: at the end of the body section
-     * - [[POS_LOAD]]: enclosed within jQuery(window).load().
-     *   Note that by using this position, the method will automatically register the jQuery js file.
-     * - [[POS_READY]]: enclosed within jQuery(document).ready(). This is the default value.
-     *   Note that by using this position, the method will automatically register the jQuery js file.
-     *
-     * @param string $key the key that identifies the JS code block. If null, it will use
-     * $js as the key. If two JS code blocks are registered with the same key, the latter
-     * will overwrite the former.
+     * 
+     * @param string $js
+     *            the JS code block to be registered
+     * @param integer $position
+     *            the position at which the JS script tag should be inserted
+     *            in a page. The possible values are:
+     *            
+     *            - [[POS_HEAD]]: in the head section
+     *            - [[POS_BEGIN]]: at the beginning of the body section
+     *            - [[POS_END]]: at the end of the body section
+     *            - [[POS_LOAD]]: enclosed within jQuery(window).load().
+     *            Note that by using this position, the method will automatically register the jQuery js file.
+     *            - [[POS_READY]]: enclosed within jQuery(document).ready(). This is the default value.
+     *            Note that by using this position, the method will automatically register the jQuery js file.
+     *            
+     * @param string $key
+     *            the key that identifies the JS code block. If null, it will use
+     *            $js as the key. If two JS code blocks are registered with the same key, the latter
+     *            will overwrite the former.
      */
-    public function registerJs($js, $position = self::POS_READY, $key = null) {
-        $key = $key ?: md5($js);
+    public function registerJs($js, $position = self::POS_READY, $key = null)
+    {
+        $key = $key ?  : md5($js);
         $this->js[$position][$key] = $js;
         if ($position === self::POS_READY || $position === self::POS_LOAD) {
             JqueryAsset::register($this);
@@ -640,36 +721,43 @@ class View extends BaseView {
 
     /**
      * Registers a JS file.
-     * @param string $url the JS file to be registered.
-     * @param array $options the HTML attributes for the script tag. The following options are specially handled
-     * and are not treated as HTML attributes:
-     *
-     * - `depends`: array, specifies the names of the asset bundles that this JS file depends on.
-     * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
-     *     * [[POS_HEAD]]: in the head section
-     *     * [[POS_BEGIN]]: at the beginning of the body section
-     *     * [[POS_END]]: at the end of the body section. This is the default value.
-     *
-     * Please refer to [[Html::jsFile()]] for other supported options.
-     *
-     * @param string $key the key that identifies the JS script file. If null, it will use
-     * $url as the key. If two JS files are registered with the same key, the latter
-     * will overwrite the former.
+     * 
+     * @param string $url
+     *            the JS file to be registered.
+     * @param array $options
+     *            the HTML attributes for the script tag. The following options are specially handled
+     *            and are not treated as HTML attributes:
+     *            
+     *            - `depends`: array, specifies the names of the asset bundles that this JS file depends on.
+     *            - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
+     *            * [[POS_HEAD]]: in the head section
+     *            * [[POS_BEGIN]]: at the beginning of the body section
+     *            * [[POS_END]]: at the end of the body section. This is the default value.
+     *            
+     *            Please refer to [[Html::jsFile()]] for other supported options.
+     *            
+     * @param string $key
+     *            the key that identifies the JS script file. If null, it will use
+     *            $url as the key. If two JS files are registered with the same key, the latter
+     *            will overwrite the former.
      */
-    public function registerJsFile($url, $options = [], $key = null) {
+    public function registerJsFile($url, $options = [], $key = null)
+    {
         $url = Kant::getAlias($url);
-        $key = $key ?: $url;
+        $key = $key ?  : $url;
         $depends = ArrayHelper::remove($options, 'depends', []);
-
+        
         if (empty($depends)) {
             $position = ArrayHelper::remove($options, 'position', self::POS_END);
             $this->jsFiles[$position][$key] = Html::jsFile($url, $options);
         } else {
             $this->getAssetManager()->bundles[$key] = new AssetBundle([
                 'baseUrl' => '',
-                'js' => [strncmp($url, '//', 2) === 0 ? $url : ltrim($url, '/')],
+                'js' => [
+                    strncmp($url, '//', 2) === 0 ? $url : ltrim($url, '/')
+                ],
                 'jsOptions' => $options,
-                'depends' => (array) $depends,
+                'depends' => (array) $depends
             ]);
             $this->registerAssetBundle($key);
         }
@@ -678,90 +766,110 @@ class View extends BaseView {
     /**
      * Renders the content to be inserted in the head section.
      * The content is rendered using the registered meta tags, link tags, CSS/JS code blocks and files.
+     * 
      * @return string the rendered content
      */
-    protected function renderHeadHtml() {
+    protected function renderHeadHtml()
+    {
         $lines = [];
-        if (!empty($this->metaTags)) {
+        if (! empty($this->metaTags)) {
             $lines[] = implode("\n", $this->metaTags);
         }
-
-        if (!empty($this->linkTags)) {
+        
+        if (! empty($this->linkTags)) {
             $lines[] = implode("\n", $this->linkTags);
         }
-        if (!empty($this->cssFiles)) {
+        if (! empty($this->cssFiles)) {
             $lines[] = implode("\n", $this->cssFiles);
         }
-        if (!empty($this->css)) {
+        if (! empty($this->css)) {
             $lines[] = implode("\n", $this->css);
         }
-        if (!empty($this->jsFiles[self::POS_HEAD])) {
+        if (! empty($this->jsFiles[self::POS_HEAD])) {
             $lines[] = implode("\n", $this->jsFiles[self::POS_HEAD]);
         }
-        if (!empty($this->js[self::POS_HEAD])) {
-            $lines[] = Html::script(implode("\n", $this->js[self::POS_HEAD]), ['type' => 'text/javascript']);
+        if (! empty($this->js[self::POS_HEAD])) {
+            $lines[] = Html::script(implode("\n", $this->js[self::POS_HEAD]), [
+                'type' => 'text/javascript'
+            ]);
         }
-
+        
         return (empty($lines) ? "" : implode("\n", $lines)) . "\n";
     }
 
     /**
      * Renders the content to be inserted at the end of the body section.
      * The content is rendered using the registered JS code blocks and files.
-     * @param boolean $ajaxMode whether the view is rendering in AJAX mode.
-     * If true, the JS scripts registered at [[POS_READY]] and [[POS_LOAD]] positions
-     * will be rendered at the end of the view like normal scripts.
+     * 
+     * @param boolean $ajaxMode
+     *            whether the view is rendering in AJAX mode.
+     *            If true, the JS scripts registered at [[POS_READY]] and [[POS_LOAD]] positions
+     *            will be rendered at the end of the view like normal scripts.
      * @return string the rendered content
      */
-    protected function renderBodyEndHtml($ajaxMode) {
-        if (!empty($this->jsFiles[self::POS_END])) {
+    protected function renderBodyEndHtml($ajaxMode)
+    {
+        if (! empty($this->jsFiles[self::POS_END])) {
             $lines[] = implode("\n", $this->jsFiles[self::POS_END]);
         }
-
+        
         if ($ajaxMode) {
             $scripts = [];
-            if (!empty($this->js[self::POS_END])) {
+            if (! empty($this->js[self::POS_END])) {
                 $scripts[] = implode("\n", $this->js[self::POS_END]);
             }
-            if (!empty($this->js[self::POS_READY])) {
+            if (! empty($this->js[self::POS_READY])) {
                 $scripts[] = implode("\n", $this->js[self::POS_READY]);
             }
-            if (!empty($this->js[self::POS_LOAD])) {
+            if (! empty($this->js[self::POS_LOAD])) {
                 $scripts[] = implode("\n", $this->js[self::POS_LOAD]);
-            } {
-                $lines[] = Html::script(implode("\n", $scripts), ['type' => 'text/javascript']);
+            }
+            {
+                $lines[] = Html::script(implode("\n", $scripts), [
+                    'type' => 'text/javascript'
+                ]);
             }
         } else {
-            if (!empty($this->js[self::POS_END])) {
-                $lines[] = Html::script(implode("\n", $this->js[self::POS_END]), ['type' => 'text/javascript']);
+            if (! empty($this->js[self::POS_END])) {
+                $lines[] = Html::script(implode("\n", $this->js[self::POS_END]), [
+                    'type' => 'text/javascript'
+                ]);
             }
-            if (!empty($this->js[self::POS_READY])) {
+            if (! empty($this->js[self::POS_READY])) {
                 $js = "jQuery(document).ready(function () {\n" . implode("\n", $this->js[self::POS_READY]) . "\n});";
-                $lines[] = Html::script($js, ['type' => 'text/javascript']);
+                $lines[] = Html::script($js, [
+                    'type' => 'text/javascript'
+                ]);
             }
-            if (!empty($this->js[self::POS_LOAD])) {
+            if (! empty($this->js[self::POS_LOAD])) {
                 $js = "jQuery(window).load(function () {\n" . implode("\n", $this->js[self::POS_LOAD]) . "\n});";
-                $lines[] = Html::script($js, ['type' => 'text/javascript']);
+                $lines[] = Html::script($js, [
+                    'type' => 'text/javascript'
+                ]);
             }
         }
-
+        
         return (empty($lines) ? "" : implode("\n", $lines)) . "\n";
     }
 
     /**
      * Renders the content to be inserted at the beginning of the body section.
      * The content is rendered using the registered JS code blocks and files.
+     * 
      * @return string the rendered content
      */
-    protected function renderBodyBeginHtml() {
+    protected function renderBodyBeginHtml()
+    {
         $lines = [];
-        if (!empty($this->jsFiles[self::POS_BEGIN])) {
+        if (! empty($this->jsFiles[self::POS_BEGIN])) {
             $lines[] = implode("\n", $this->jsFiles[self::POS_BEGIN]);
         }
-        if (!empty($this->js[self::POS_BEGIN])) {
-            $lines[] = Html::script(implode("\n", $this->js[self::POS_BEGIN]), ['type' => 'text/javascript']);
+        if (! empty($this->js[self::POS_BEGIN])) {
+            $lines[] = Html::script(implode("\n", $this->js[self::POS_BEGIN]), [
+                'type' => 'text/javascript'
+            ]);
         }
-
+        
         return (empty($lines) ? "" : implode("\n", $lines)) . "\n";
     }
 
@@ -774,24 +882,27 @@ class View extends BaseView {
      *
      * ```php
      * if ($this->beginCache($id)) {
-     *     // ...generate content here
-     *     $this->endCache();
+     * // ...generate content here
+     * $this->endCache();
      * }
      * ```
      *
-     * @param string $id a unique ID identifying the fragment to be cached.
-     * @param array $properties initial property values for [[FragmentCache]]
+     * @param string $id
+     *            a unique ID identifying the fragment to be cached.
+     * @param array $properties
+     *            initial property values for [[FragmentCache]]
      * @return bool whether you should generate the content for caching.
-     * False if the cached version is available.
+     *         False if the cached version is available.
      */
-    public function beginCache($id, $properties = []) {
+    public function beginCache($id, $properties = [])
+    {
         $properties['id'] = $id;
         $properties['view'] = $this;
         /* @var $cache FragmentCache */
         $cache = FragmentCache::begin($properties);
         if ($cache->getCachedContent() !== false) {
             $this->endCache();
-
+            
             return false;
         }
         return true;
@@ -800,8 +911,8 @@ class View extends BaseView {
     /**
      * Ends fragment caching.
      */
-    public function endCache() {
+    public function endCache()
+    {
         FragmentCache::end();
     }
-
 }

@@ -6,21 +6,23 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Helper;
 
-class DirHelper {
+class DirHelper
+{
 
     /**
      *
      * Enter dir path
-     * 
-     * @param path string
+     *
+     * @param
+     *            path string
      * @return path string
      */
-    public static function path($path) {
+    public static function path($path)
+    {
         $path = str_replace('\\', '/', $path);
-        if (substr($path, -1) != '/') {
+        if (substr($path, - 1) != '/') {
             $path = $path . '/';
         }
         return $path;
@@ -30,11 +32,14 @@ class DirHelper {
      *
      * Create dir
      *
-     * @param path string
-     * @param mode string
+     * @param
+     *            path string
+     * @param
+     *            mode string
      * @return boolean True on success or false
      */
-    public static function create($path, $mode = 0777) {
+    public static function create($path, $mode = 0777)
+    {
         if (is_dir($path)) {
             return true;
         }
@@ -42,7 +47,7 @@ class DirHelper {
         $temp = explode('/', $path);
         $cur_dir = '';
         $max = count($temp) - 1;
-        for ($i = 0; $i < $max; $i++) {
+        for ($i = 0; $i < $max; $i ++) {
             $cur_dir .= $temp[$i] . '/';
             if (@is_dir($cur_dir)) {
                 continue;
@@ -57,21 +62,24 @@ class DirHelper {
      *
      * Copy dir recursively
      *
-     * @param fromdir string
-     * @param todir string
+     * @param
+     *            fromdir string
+     * @param
+     *            todir string
      * @return boolean true on success or false
      */
-    public static function copy($fromdir, $todir) {
+    public static function copy($fromdir, $todir)
+    {
         $fromdir = self::path($fromdir);
         $todir = self::path($todir);
-        if (!is_dir($fromdir)) {
+        if (! is_dir($fromdir)) {
             return false;
         }
-        if (!is_dir($todir)) {
+        if (! is_dir($todir)) {
             self::create($todir);
         }
         $list = glob($fromdir . '*');
-        if (!empty($list)) {
+        if (! empty($list)) {
             foreach ($list as $v) {
                 $path = $todir . basename($v);
                 if (is_dir($v)) {
@@ -89,17 +97,21 @@ class DirHelper {
      *
      * List files
      *
-     * @param path string
-     * @param exts string
-     * @param list array
+     * @param
+     *            path string
+     * @param
+     *            exts string
+     * @param
+     *            list array
      * @return array
      */
-    public static function lists($path, $exts = '', $list = array()) {
+    public static function lists($path, $exts = '', $list = array())
+    {
         $path = self::path($path);
         $files = glob($path . '*');
         foreach ($files as $v) {
             $fileext = substr(strrchr($v, '.'), 1);
-            if (!$exts || preg_match("/\.($exts)/i", $v)) {
+            if (! $exts || preg_match("/\.($exts)/i", $v)) {
                 $list[] = $v;
                 if (is_dir($v)) {
                     $list = self::lists($v, $exts, $list);
@@ -113,13 +125,18 @@ class DirHelper {
      *
      * Character conversion
      *
-     * @param in_charset string
-     * @param out_charset string
-     * @param DirHelper string
-     * @param fileexts string
+     * @param
+     *            in_charset string
+     * @param
+     *            out_charset string
+     * @param
+     *            DirHelper string
+     * @param
+     *            fileexts string
      * @return boolean True on success or false
      */
-    public static function iconv($in_charset, $out_charset, $dir, $fileexts = 'php|html|htm|shtml|shtm|js|txt|xml') {
+    public static function iconv($in_charset, $out_charset, $dir, $fileexts = 'php|html|htm|shtml|shtm|js|txt|xml')
+    {
         if ($in_charset == $out_charset) {
             return false;
         }
@@ -134,18 +151,19 @@ class DirHelper {
 
     /**
      * Touch time
-     * 
-     * @param type $path
-     * @param type $mtime
-     * @param type $atime
+     *
+     * @param type $path            
+     * @param type $mtime            
+     * @param type $atime            
      * @return boolean
      */
-    public static function touch($path, $mtime = TIME, $atime = TIME) {
-        if (!is_dir($path)) {
+    public static function touch($path, $mtime = TIME, $atime = TIME)
+    {
+        if (! is_dir($path)) {
             return false;
         }
         $path = self::path($path);
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             touch($path, $mtime, $atime);
         }
         $files = glob($path . '*');
@@ -157,14 +175,15 @@ class DirHelper {
 
     /**
      * Dir tree
-     * 
+     *
      * @global int $id
-     * @param string $dir
-     * @param integer $parentid
-     * @param array $dirs
+     * @param string $dir            
+     * @param integer $parentid            
+     * @param array $dirs            
      * @return array
      */
-    public static function tree($dir, $parentid = 0, $dirs = array()) {
+    public static function tree($dir, $parentid = 0, $dirs = array())
+    {
         global $id;
         if ($parentid == 0) {
             $id = 0;
@@ -172,8 +191,13 @@ class DirHelper {
         $list = glob($dir . '*');
         foreach ($list as $v) {
             if (is_dir($v)) {
-                $id++;
-                $dirs[$id] = array('id' => $id, 'parentid' => $parentid, 'name' => basename($v), 'dir' => $v . '/');
+                $id ++;
+                $dirs[$id] = array(
+                    'id' => $id,
+                    'parentid' => $parentid,
+                    'name' => basename($v),
+                    'dir' => $v . '/'
+                );
                 $dirs = self::tree($v . '/', $id, $dirs);
             }
         }
@@ -181,14 +205,15 @@ class DirHelper {
     }
 
     /**
-     *  Delete dir
-     * 
-     * @param type $dir
+     * Delete dir
+     *
+     * @param type $dir            
      * @return boolean
      */
-    public static function delete($dir) {
+    public static function delete($dir)
+    {
         $dir = self::path($dir);
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             return false;
         }
         $list = glob($dir . '*');
@@ -197,7 +222,6 @@ class DirHelper {
         }
         return @rmdir($dir);
     }
-
 }
 
 ?>

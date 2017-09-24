@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Foundation;
 
 /**
@@ -18,7 +17,8 @@ namespace Kant\Foundation;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-interface Linkable {
+interface Linkable
+{
 
     /**
      * Returns a list of links.
@@ -32,12 +32,12 @@ interface Linkable {
      *
      * ```php
      * [
-     *     'self' => 'http://example.com/users/1',
-     *     'friends' => [
-     *         'http://example.com/users/2',
-     *         'http://example.com/users/3',
-     *     ],
-     *     'manager' => $managerLink, // $managerLink is a Link object
+     * 'self' => 'http://example.com/users/1',
+     * 'friends' => [
+     * 'http://example.com/users/2',
+     * 'http://example.com/users/3',
+     * ],
+     * 'manager' => $managerLink, // $managerLink is a Link object
      * ]
      * ```
      *

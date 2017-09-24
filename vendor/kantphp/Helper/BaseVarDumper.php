@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Helper;
 
 use Kant\Foundation\Arrayable;
@@ -20,21 +19,29 @@ use Kant\Exception\InvalidValueException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class BaseVarDumper {
+class BaseVarDumper
+{
 
     private static $_objects;
+
     private static $_output;
+
     private static $_depth;
 
     /**
      * Displays a variable.
      * This method achieves the similar functionality as var_dump and print_r
      * but is more robust when handling complex objects such as Kant controllers.
-     * @param mixed $var variable to be dumped
-     * @param integer $depth maximum depth that the dumper should go into the variable. Defaults to 10.
-     * @param boolean $highlight whether the result should be syntax-highlighted
+     * 
+     * @param mixed $var
+     *            variable to be dumped
+     * @param integer $depth
+     *            maximum depth that the dumper should go into the variable. Defaults to 10.
+     * @param boolean $highlight
+     *            whether the result should be syntax-highlighted
      */
-    public static function dump($var, $depth = 10, $highlight = false) {
+    public static function dump($var, $depth = 10, $highlight = false)
+    {
         echo static::dumpAsString($var, $depth, $highlight);
     }
 
@@ -42,12 +49,17 @@ class BaseVarDumper {
      * Dumps a variable in terms of a string.
      * This method achieves the similar functionality as var_dump and print_r
      * but is more robust when handling complex objects such as Kant controllers.
-     * @param mixed $var variable to be dumped
-     * @param integer $depth maximum depth that the dumper should go into the variable. Defaults to 10.
-     * @param boolean $highlight whether the result should be syntax-highlighted
+     * 
+     * @param mixed $var
+     *            variable to be dumped
+     * @param integer $depth
+     *            maximum depth that the dumper should go into the variable. Defaults to 10.
+     * @param boolean $highlight
+     *            whether the result should be syntax-highlighted
      * @return string the string representation of the variable
      */
-    public static function dumpAsString($var, $depth = 10, $highlight = false) {
+    public static function dumpAsString($var, $depth = 10, $highlight = false)
+    {
         self::$_output = '';
         self::$_objects = [];
         self::$_depth = $depth;
@@ -56,15 +68,19 @@ class BaseVarDumper {
             $result = highlight_string("<?php\n" . self::$_output, true);
             self::$_output = preg_replace('/&lt;\\?php<br \\/>/', '', $result, 1);
         }
-
+        
         return self::$_output;
     }
 
     /**
-     * @param mixed $var variable to be dumped
-     * @param integer $level depth level
+     *
+     * @param mixed $var
+     *            variable to be dumped
+     * @param integer $level
+     *            depth level
      */
-    private static function dumpInternal($var, $level) {
+    private static function dumpInternal($var, $level)
+    {
         switch (gettype($var)) {
             case 'boolean':
                 self::$_output .= $var ? 'true' : 'false';
@@ -117,7 +133,7 @@ class BaseVarDumper {
                     self::$_output .= "$className#$id\n" . $spaces . '(';
                     if ('__PHP_Incomplete_Class' !== get_class($var) && method_exists($var, '__debugInfo')) {
                         $dumpValues = $var->__debugInfo();
-                        if (!is_array($dumpValues)) {
+                        if (! is_array($dumpValues)) {
                             throw new InvalidValueException('__debuginfo() must return an array');
                         }
                     } else {
@@ -147,20 +163,26 @@ class BaseVarDumper {
      *
      * PHP 5.4 or above is required to parse the exported value.
      *
-     * @param mixed $var the variable to be exported.
+     * @param mixed $var
+     *            the variable to be exported.
      * @return string a string representation of the variable
      */
-    public static function export($var) {
+    public static function export($var)
+    {
         self::$_output = '';
         self::exportInternal($var, 0);
         return self::$_output;
     }
 
     /**
-     * @param mixed $var variable to be exported
-     * @param integer $level depth level
+     *
+     * @param mixed $var
+     *            variable to be exported
+     * @param integer $level
+     *            depth level
      */
-    private static function exportInternal($var, $level) {
+    private static function exportInternal($var, $level)
+    {
         switch (gettype($var)) {
             case 'NULL':
                 self::$_output .= 'null';
@@ -222,26 +244,29 @@ class BaseVarDumper {
 
     /**
      * Exports a [[Closure]] instance.
-     * @param \Closure $closure closure instance.
+     * 
+     * @param \Closure $closure
+     *            closure instance.
      * @return string
      */
-    private static function exportClosure(\Closure $closure) {
+    private static function exportClosure(\Closure $closure)
+    {
         $reflection = new \ReflectionFunction($closure);
-
+        
         $fileName = $reflection->getFileName();
         $start = $reflection->getStartLine();
         $end = $reflection->getEndLine();
-
+        
         if ($fileName === false || $start === false || $end === false) {
             return 'function() {/* Error: unable to determine Closure source */}';
         }
-
-        --$start;
-
+        
+        -- $start;
+        
         $source = implode("\n", array_slice(file($fileName), $start, $end - $start));
         $tokens = token_get_all('<?php ' . $source);
         array_shift($tokens);
-
+        
         $closureTokens = [];
         $pendingParenthesisCount = 0;
         foreach ($tokens as $token) {
@@ -252,17 +277,16 @@ class BaseVarDumper {
             if ($closureTokens !== []) {
                 $closureTokens[] = isset($token[1]) ? $token[1] : $token;
                 if ($token === '}') {
-                    $pendingParenthesisCount--;
+                    $pendingParenthesisCount --;
                     if ($pendingParenthesisCount === 0) {
                         break;
                     }
                 } elseif ($token === '{') {
-                    $pendingParenthesisCount++;
+                    $pendingParenthesisCount ++;
                 }
             }
         }
-
+        
         return implode('', $closureTokens);
     }
-
 }

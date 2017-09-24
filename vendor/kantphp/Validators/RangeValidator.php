@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Validators;
 
 use Kant\Kant;
@@ -23,33 +22,38 @@ use Kant\Helper\ArrayHelper;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class RangeValidator extends Validator {
+class RangeValidator extends Validator
+{
 
     /**
-     * @var array|\Traversable|\Closure a list of valid values that the attribute value should be among or an anonymous function that returns
-     * such a list. The signature of the anonymous function should be as follows,
      *
-     * ```php
-     * function($model, $attribute) {
-     *     // compute range
-     *     return $range;
-     * }
-     * ```
+     * @var array|\Traversable|\Closure a list of valid values that the attribute value should be among or an anonymous function that returns
+     *      such a list. The signature of the anonymous function should be as follows,
+     *     
+     *      ```php
+     *      function($model, $attribute) {
+     *      // compute range
+     *      return $range;
+     *      }
+     *      ```
      */
     public $range;
 
     /**
+     *
      * @var boolean whether the comparison is strict (both type and value must be the same)
      */
     public $strict = false;
 
     /**
+     *
      * @var boolean whether to invert the validation logic. Defaults to false. If set to true,
-     * the attribute value should NOT be among the list of values defined via [[range]].
+     *      the attribute value should NOT be among the list of values defined via [[range]].
      */
     public $not = false;
 
     /**
+     *
      * @var boolean whether to allow array type attribute.
      */
     public $allowArray = false;
@@ -57,10 +61,10 @@ class RangeValidator extends Validator {
     /**
      * @inheritdoc
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
-        if (!is_array($this->range) && !($this->range instanceof \Closure) && !($this->range instanceof \Traversable)
-        ) {
+        if (! is_array($this->range) && ! ($this->range instanceof \Closure) && ! ($this->range instanceof \Traversable)) {
             throw new InvalidConfigException('The "range" property must be set.');
         }
         if ($this->message === null) {
@@ -71,25 +75,29 @@ class RangeValidator extends Validator {
     /**
      * @inheritdoc
      */
-    protected function validateValue($value) {
+    protected function validateValue($value)
+    {
         $in = false;
-
-        if ($this->allowArray && ($value instanceof \Traversable || is_array($value)) && ArrayHelper::isSubset($value, $this->range, $this->strict)
-        ) {
+        
+        if ($this->allowArray && ($value instanceof \Traversable || is_array($value)) && ArrayHelper::isSubset($value, $this->range, $this->strict)) {
             $in = true;
         }
-
-        if (!$in && ArrayHelper::isIn($value, $this->range, $this->strict)) {
+        
+        if (! $in && ArrayHelper::isIn($value, $this->range, $this->strict)) {
             $in = true;
         }
-
-        return $this->not !== $in ? null : [$this->message, []];
+        
+        return $this->not !== $in ? null : [
+            $this->message,
+            []
+        ];
     }
 
     /**
      * @inheritdoc
      */
-    public function validateAttribute($model, $attribute) {
+    public function validateAttribute($model, $attribute)
+    {
         if ($this->range instanceof \Closure) {
             $this->range = call_user_func($this->range, $model, $attribute);
         }
@@ -99,11 +107,12 @@ class RangeValidator extends Validator {
     /**
      * @inheritdoc
      */
-    public function clientValidateAttribute($model, $attribute, $view) {
+    public function clientValidateAttribute($model, $attribute, $view)
+    {
         if ($this->range instanceof \Closure) {
             $this->range = call_user_func($this->range, $model, $attribute);
         }
-
+        
         $range = [];
         foreach ($this->range as $value) {
             $range[] = (string) $value;
@@ -112,8 +121,8 @@ class RangeValidator extends Validator {
             'range' => $range,
             'not' => $this->not,
             'message' => Kant::$app->getI18n()->format($this->message, [
-                'attribute' => $model->getAttributeLabel($attribute),
-                    ], Kant::$app->language),
+                'attribute' => $model->getAttributeLabel($attribute)
+            ], Kant::$app->language)
         ];
         if ($this->skipOnEmpty) {
             $options['skipOnEmpty'] = 1;
@@ -121,10 +130,9 @@ class RangeValidator extends Validator {
         if ($this->allowArray) {
             $options['allowArray'] = 1;
         }
-
+        
         ValidationAsset::register($view);
-
+        
         return 'kant.validation.range(value, messages, ' . json_encode($options, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ');';
     }
-
 }

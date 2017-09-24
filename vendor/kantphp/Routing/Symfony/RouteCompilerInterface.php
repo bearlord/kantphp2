@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Kant\Routing\Symfony;
 
 /**
@@ -18,15 +17,17 @@ namespace Kant\Routing\Symfony;
  */
 interface RouteCompilerInterface
 {
+
     /**
      * Compiles the current route instance.
      *
-     * @param Route $route A Route instance
-     *
+     * @param Route $route
+     *            A Route instance
+     *            
      * @return CompiledRoute A CompiledRoute instance
-     *
+     *        
      * @throws \LogicException If the Route cannot be compiled because the
-     *                         path or host pattern is invalid
+     *         path or host pattern is invalid
      */
     public static function compile(Route $route);
 }

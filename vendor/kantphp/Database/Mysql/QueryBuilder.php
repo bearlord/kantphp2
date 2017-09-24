@@ -5,7 +5,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Database\Mysql;
 
 use Kant\Database\QueryBuilder;
@@ -21,7 +20,9 @@ use Kant\Database\Expression;
  */
 class QueryBuilder extends QueryBuilder
 {
+
     /**
+     *
      * @var array mapping from abstract column types (keys) to physical column types (values).
      */
     public $typeMap = [
@@ -44,15 +45,18 @@ class QueryBuilder extends QueryBuilder
         Schema::TYPE_DATE => 'date',
         Schema::TYPE_BINARY => 'blob',
         Schema::TYPE_BOOLEAN => 'tinyint(1)',
-        Schema::TYPE_MONEY => 'decimal(19,4)',
+        Schema::TYPE_MONEY => 'decimal(19,4)'
     ];
-
 
     /**
      * Builds a SQL statement for renaming a column.
-     * @param string $table the table whose column is to be renamed. The name will be properly quoted by the method.
-     * @param string $oldName the old name of the column. The name will be properly quoted by the method.
-     * @param string $newName the new name of the column. The name will be properly quoted by the method.
+     * 
+     * @param string $table
+     *            the table whose column is to be renamed. The name will be properly quoted by the method.
+     * @param string $oldName
+     *            the old name of the column. The name will be properly quoted by the method.
+     * @param string $newName
+     *            the new name of the column. The name will be properly quoted by the method.
      * @return string the SQL statement for renaming a DB column.
      * @throws Exception
      */
@@ -72,48 +76,45 @@ class QueryBuilder extends QueryBuilder
         if (preg_match_all('/^\s*`(.*?)`\s+(.*?),?$/m', $sql, $matches)) {
             foreach ($matches[1] as $i => $c) {
                 if ($c === $oldName) {
-                    return "ALTER TABLE $quotedTable CHANGE "
-                        . $this->db->quoteColumnName($oldName) . ' '
-                        . $this->db->quoteColumnName($newName) . ' '
-                        . $matches[2][$i];
+                    return "ALTER TABLE $quotedTable CHANGE " . $this->db->quoteColumnName($oldName) . ' ' . $this->db->quoteColumnName($newName) . ' ' . $matches[2][$i];
                 }
             }
         }
         // try to give back a SQL anyway
-        return "ALTER TABLE $quotedTable CHANGE "
-            . $this->db->quoteColumnName($oldName) . ' '
-            . $this->db->quoteColumnName($newName);
+        return "ALTER TABLE $quotedTable CHANGE " . $this->db->quoteColumnName($oldName) . ' ' . $this->db->quoteColumnName($newName);
     }
 
     /**
      * @inheritdoc
+     * 
      * @see https://bugs.mysql.com/bug.php?id=48875
      */
     public function createIndex($name, $table, $columns, $unique = false)
     {
-        return 'ALTER TABLE '
-        . $this->db->quoteTableName($table)
-        . ($unique ? ' ADD UNIQUE INDEX ' : ' ADD INDEX ')
-        . $this->db->quoteTableName($name)
-        . ' (' . $this->buildColumns($columns) . ')';
+        return 'ALTER TABLE ' . $this->db->quoteTableName($table) . ($unique ? ' ADD UNIQUE INDEX ' : ' ADD INDEX ') . $this->db->quoteTableName($name) . ' (' . $this->buildColumns($columns) . ')';
     }
 
     /**
      * Builds a SQL statement for dropping a foreign key constraint.
-     * @param string $name the name of the foreign key constraint to be dropped. The name will be properly quoted by the method.
-     * @param string $table the table whose foreign is to be dropped. The name will be properly quoted by the method.
+     * 
+     * @param string $name
+     *            the name of the foreign key constraint to be dropped. The name will be properly quoted by the method.
+     * @param string $table
+     *            the table whose foreign is to be dropped. The name will be properly quoted by the method.
      * @return string the SQL statement for dropping a foreign key constraint.
      */
     public function dropForeignKey($name, $table)
     {
-        return 'ALTER TABLE ' . $this->db->quoteTableName($table)
-            . ' DROP FOREIGN KEY ' . $this->db->quoteColumnName($name);
+        return 'ALTER TABLE ' . $this->db->quoteTableName($table) . ' DROP FOREIGN KEY ' . $this->db->quoteColumnName($name);
     }
 
     /**
      * Builds a SQL statement for removing a primary key constraint to an existing table.
-     * @param string $name the name of the primary key constraint to be removed.
-     * @param string $table the table that the primary key constraint will be removed from.
+     * 
+     * @param string $name
+     *            the name of the primary key constraint to be removed.
+     * @param string $table
+     *            the table that the primary key constraint will be removed from.
      * @return string the SQL statement for removing a primary key constraint from an existing table.
      */
     public function dropPrimaryKey($name, $table)
@@ -125,9 +126,12 @@ class QueryBuilder extends QueryBuilder
      * Creates a SQL statement for resetting the sequence value of a table's primary key.
      * The sequence will be reset such that the primary key of the next new row inserted
      * will have the specified value or 1.
-     * @param string $tableName the name of the table whose primary key sequence will be reset
-     * @param mixed $value the value for the primary key of the next new row inserted. If this is not set,
-     * the next new row's primary key will have a value 1.
+     * 
+     * @param string $tableName
+     *            the name of the table whose primary key sequence will be reset
+     * @param mixed $value
+     *            the value for the primary key of the next new row inserted. If this is not set,
+     *            the next new row's primary key will have a value 1.
      * @return string the SQL statement for resetting sequence
      * @throws InvalidParamException if the table does not exist or there is no sequence associated with the table.
      */
@@ -142,7 +146,7 @@ class QueryBuilder extends QueryBuilder
             } else {
                 $value = (int) $value;
             }
-
+            
             return "ALTER TABLE $tableName AUTO_INCREMENT=$value";
         } elseif ($table === null) {
             throw new InvalidParamException("Table not found: $tableName");
@@ -153,9 +157,13 @@ class QueryBuilder extends QueryBuilder
 
     /**
      * Builds a SQL statement for enabling or disabling integrity check.
-     * @param boolean $check whether to turn on or off the integrity check.
-     * @param string $schema the schema of the tables. Meaningless for MySQL.
-     * @param string $table the table name. Meaningless for MySQL.
+     * 
+     * @param boolean $check
+     *            whether to turn on or off the integrity check.
+     * @param string $schema
+     *            the schema of the tables. Meaningless for MySQL.
+     * @param string $table
+     *            the table name. Meaningless for MySQL.
      * @return string the SQL statement for checking integrity
      */
     public function checkIntegrity($check = true, $schema = '', $table = '')
@@ -180,7 +188,7 @@ class QueryBuilder extends QueryBuilder
             // http://dev.mysql.com/doc/refman/5.0/en/select.html#idm47619502796240
             $sql = "LIMIT $offset, 18446744073709551615"; // 2^64-1
         }
-
+        
         return $sql;
     }
 
@@ -207,40 +215,36 @@ class QueryBuilder extends QueryBuilder
             } else {
                 $phName = self::PARAM_PREFIX . count($params);
                 $placeholders[] = $phName;
-                $params[$phName] = !is_array($value) && isset($columnSchemas[$name]) ? $columnSchemas[$name]->dbTypecast($value) : $value;
+                $params[$phName] = ! is_array($value) && isset($columnSchemas[$name]) ? $columnSchemas[$name]->dbTypecast($value) : $value;
             }
         }
         if (empty($names) && $tableSchema !== null) {
-            $columns = !empty($tableSchema->primaryKey) ? $tableSchema->primaryKey : reset($tableSchema->columns)->name;
+            $columns = ! empty($tableSchema->primaryKey) ? $tableSchema->primaryKey : reset($tableSchema->columns)->name;
             foreach ($columns as $name) {
                 $names[] = $schema->quoteColumnName($name);
                 $placeholders[] = 'DEFAULT';
             }
         }
-
-        return 'INSERT INTO ' . $schema->quoteTableName($table)
-            . (!empty($names) ? ' (' . implode(', ', $names) . ')' : '')
-            . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : ' DEFAULT VALUES');
+        
+        return 'INSERT INTO ' . $schema->quoteTableName($table) . (! empty($names) ? ' (' . implode(', ', $names) . ')' : '') . (! empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : ' DEFAULT VALUES');
     }
 
     /**
      * @inheritdoc
+     * 
      * @since 2.0.8
      */
     public function addCommentOnColumn($table, $column, $comment)
     {
         $definition = $this->getColumnDefinition($table, $column);
         $definition = trim(preg_replace("/COMMENT '(.*?)'/i", '', $definition));
-
-        return 'ALTER TABLE ' . $this->db->quoteTableName($table)
-            . ' CHANGE ' . $this->db->quoteColumnName($column)
-            . ' ' . $this->db->quoteColumnName($column)
-            . (empty($definition) ? '' : ' ' . $definition)
-            . ' COMMENT ' . $this->db->quoteValue($comment);
+        
+        return 'ALTER TABLE ' . $this->db->quoteTableName($table) . ' CHANGE ' . $this->db->quoteColumnName($column) . ' ' . $this->db->quoteColumnName($column) . (empty($definition) ? '' : ' ' . $definition) . ' COMMENT ' . $this->db->quoteValue($comment);
     }
 
     /**
      * @inheritdoc
+     * 
      * @since 2.0.8
      */
     public function addCommentOnTable($table, $comment)
@@ -250,6 +254,7 @@ class QueryBuilder extends QueryBuilder
 
     /**
      * @inheritdoc
+     * 
      * @since 2.0.8
      */
     public function dropCommentFromColumn($table, $column)
@@ -259,6 +264,7 @@ class QueryBuilder extends QueryBuilder
 
     /**
      * @inheritdoc
+     * 
      * @since 2.0.8
      */
     public function dropCommentFromTable($table)
@@ -266,12 +272,13 @@ class QueryBuilder extends QueryBuilder
         return $this->addCommentOnTable($table, '');
     }
 
-
     /**
      * Gets column definition.
      *
-     * @param string $table table name
-     * @param string $column column name
+     * @param string $table
+     *            table name
+     * @param string $column
+     *            column name
      * @return null|string the column definition
      * @throws Exception in case when table does not contain column
      */

@@ -6,14 +6,12 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Caching;
 
 use Kant\Kant;
 use Kant\Exception\InvalidConfigException;
 use Kant\Database\Connection;
 use Kant\Di\Instance;
-
 
 /**
  * DbDependency represents a dependency based on the query result of a SQL statement.
@@ -26,20 +24,24 @@ use Kant\Di\Instance;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class DbDependency extends Dependency {
+class DbDependency extends Dependency
+{
 
     /**
+     *
      * @var string the application component ID of the DB connection.
      */
     public $db = 'db';
 
     /**
+     *
      * @var string the SQL query whose result is used to determine if the dependency has been changed.
-     * Only the first row of the query result will be used.
+     *      Only the first row of the query result will be used.
      */
     public $sql;
 
     /**
+     *
      * @var array the parameters (name => value) to be bound to the SQL statement specified by [[sql]].
      */
     public $params = [];
@@ -47,17 +49,20 @@ class DbDependency extends Dependency {
     /**
      * Generates the data needed to determine if dependency has been changed.
      * This method returns the value of the global state.
-     * @param Cache $cache the cache component that is currently evaluating this dependency
+     * 
+     * @param Cache $cache
+     *            the cache component that is currently evaluating this dependency
      * @return mixed the data needed to determine if dependency has been changed.
      * @throws InvalidConfigException if [[db]] is not a valid application component ID
      */
-    protected function generateDependencyData($cache) {
+    protected function generateDependencyData($cache)
+    {
         /* @var $db Connection */
         $db = Instance::ensure($this->db, Connection::className());
         if ($this->sql === null) {
             throw new InvalidConfigException('DbDependency::sql must be set.');
         }
-
+        
         if ($db->enableQueryCache) {
             // temporarily disable and re-enable query caching
             $db->enableQueryCache = false;
@@ -66,8 +71,7 @@ class DbDependency extends Dependency {
         } else {
             $result = $db->createCommand($this->sql, $this->params)->queryOne();
         }
-
+        
         return $result;
     }
-
 }

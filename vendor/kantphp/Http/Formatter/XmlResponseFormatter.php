@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Http\Formatter;
 
 use DOMDocument;
@@ -24,45 +23,55 @@ use Kant\Helper\StringHelper;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class XmlResponseFormatter extends Component implements ResponseFormatterInterface {
+class XmlResponseFormatter extends Component implements ResponseFormatterInterface
+{
 
     /**
+     *
      * @var string the Content-Type header for the response
      */
     public $contentType = 'application/xml';
 
     /**
+     *
      * @var string the XML version
      */
     public $version = '1.0';
 
     /**
+     *
      * @var string the XML encoding. If not set, it will use the value of [[Response::charset]].
      */
     public $encoding;
 
     /**
+     *
      * @var string the name of the root element.
      */
     public $rootTag = 'response';
 
     /**
+     *
      * @var string the name of the elements that represent the array elements with numeric keys.
      */
     public $itemTag = 'item';
 
     /**
+     *
      * @var boolean whether to interpret objects implementing the [[\Traversable]] interface as arrays.
-     * Defaults to `true`.
+     *      Defaults to `true`.
      * @since 2.0.7
      */
     public $useTraversableAsArray = true;
 
     /**
      * Formats the specified response.
-     * @param Response $response the response to be formatted.
+     * 
+     * @param Response $response
+     *            the response to be formatted.
      */
-    public function format($response) {
+    public function format($response)
+    {
         $charset = $this->encoding === null ? $response->charset : $this->encoding;
         if (stripos($this->contentType, 'charset') === false) {
             $response->headers->set('charset', $response->charset);
@@ -78,13 +87,13 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
     }
 
     /**
-     * @param DOMElement $element
-     * @param mixed $data
+     *
+     * @param DOMElement $element            
+     * @param mixed $data            
      */
-    protected function buildXml($element, $data) {
-        if (is_array($data) ||
-                ($data instanceof \Traversable && $this->useTraversableAsArray && !$data instanceof Arrayable)
-        ) {
+    protected function buildXml($element, $data)
+    {
+        if (is_array($data) || ($data instanceof \Traversable && $this->useTraversableAsArray && ! $data instanceof Arrayable)) {
             foreach ($data as $name => $value) {
                 if (is_int($name) && is_object($value)) {
                     $this->buildXml($element, $value);
@@ -114,5 +123,4 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
             $element->appendChild(new DOMText((string) $data));
         }
     }
-
 }

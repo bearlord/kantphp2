@@ -1,11 +1,11 @@
 <?php
-
 namespace Kant\Support;
 
 use Countable;
 use JsonSerializable;
 
-class MessageBag implements Countable, JsonSerializable {
+class MessageBag implements Countable, JsonSerializable
+{
 
     /**
      * All of the registered messages.
@@ -24,10 +24,11 @@ class MessageBag implements Countable, JsonSerializable {
     /**
      * Create a new message bag instance.
      *
-     * @param  array  $messages
+     * @param array $messages            
      * @return void
      */
-    public function __construct(array $messages = []) {
+    public function __construct(array $messages = [])
+    {
         foreach ($messages as $key => $value) {
             $this->messages[$key] = (array) $value;
         }
@@ -38,209 +39,224 @@ class MessageBag implements Countable, JsonSerializable {
      *
      * @return array
      */
-    public function keys() {
+    public function keys()
+    {
         return array_keys($this->messages);
     }
 
     /**
      * Add a message to the bag.
      *
-     * @param  string  $key
-     * @param  string  $message
+     * @param string $key            
+     * @param string $message            
      * @return $this
      */
-    public function add($key, $message) {
+    public function add($key, $message)
+    {
         if ($this->isUnique($key, $message)) {
             $this->messages[$key][] = $message;
         }
-
+        
         return $this;
     }
 
     /**
      * Determine if a key and message combination already exists.
      *
-     * @param  string  $key
-     * @param  string  $message
+     * @param string $key            
+     * @param string $message            
      * @return bool
      */
-    protected function isUnique($key, $message) {
+    protected function isUnique($key, $message)
+    {
         $messages = (array) $this->messages;
-
-        return !isset($messages[$key]) || !in_array($message, $messages[$key]);
+        
+        return ! isset($messages[$key]) || ! in_array($message, $messages[$key]);
     }
 
     /**
      * Merge a new array of messages into the bag.
      *
-     * @param  \Illuminate\Contracts\Support\MessageProvider|array  $messages
+     * @param \Illuminate\Contracts\Support\MessageProvider|array $messages            
      * @return $this
      */
-    public function merge($messages) {
+    public function merge($messages)
+    {
         if ($messages instanceof MessageProvider) {
             $messages = $messages->getMessageBag()->getMessages();
         }
-
+        
         $this->messages = array_merge_recursive($this->messages, $messages);
-
+        
         return $this;
     }
 
     /**
      * Determine if messages exist for all of the given keys.
      *
-     * @param  array|string  $key
+     * @param array|string $key            
      * @return bool
      */
-    public function has($key) {
+    public function has($key)
+    {
         if (is_null($key)) {
             return $this->any();
         }
-
+        
         $keys = is_array($key) ? $key : func_get_args();
-
+        
         foreach ($keys as $key) {
             if ($this->first($key) === '') {
                 return false;
             }
         }
-
+        
         return true;
     }
 
     /**
      * Determine if messages exist for any of the given keys.
      *
-     * @param  array  $keys
+     * @param array $keys            
      * @return bool
      */
-    public function hasAny($keys = []) {
+    public function hasAny($keys = [])
+    {
         foreach ($keys as $key) {
             if ($this->has($key)) {
                 return true;
             }
         }
-
+        
         return false;
     }
 
     /**
      * Get the first message from the bag for a given key.
      *
-     * @param  string  $key
-     * @param  string  $format
+     * @param string $key            
+     * @param string $format            
      * @return string
      */
-    public function first($key = null, $format = null) {
+    public function first($key = null, $format = null)
+    {
         $messages = is_null($key) ? $this->all($format) : $this->get($key, $format);
-
+        
         $firstMessage = Arr::first($messages, null, '');
-
+        
         return is_array($firstMessage) ? Arr::first($firstMessage) : $firstMessage;
     }
 
     /**
      * Get all of the messages from the bag for a given key.
      *
-     * @param  string  $key
-     * @param  string  $format
+     * @param string $key            
+     * @param string $format            
      * @return array
      */
-    public function get($key, $format = null) {
+    public function get($key, $format = null)
+    {
         // If the message exists in the container, we will transform it and return
         // the message. Otherwise, we'll check if the key is implicit & collect
         // all the messages that match a given key and output it as an array.
         if (array_key_exists($key, $this->messages)) {
-            return $this->transform(
-                            $this->messages[$key], $this->checkFormat($format), $key
-            );
+            return $this->transform($this->messages[$key], $this->checkFormat($format), $key);
         }
-
+        
         if (Str::contains($key, '*')) {
             return $this->getMessagesForWildcardKey($key, $format);
         }
-
+        
         return [];
     }
 
     /**
      * Get the messages for a wildcard key.
      *
-     * @param  string  $key
-     * @param  string|null  $format
+     * @param string $key            
+     * @param string|null $format            
      * @return array
      */
-    protected function getMessagesForWildcardKey($key, $format) {
-        return collect($this->messages)
-                        ->filter(function ($messages, $messageKey) use ($key) {
-                            return Str::is($key, $messageKey);
-                        })
-                        ->map(function ($messages, $messageKey) use ($format) {
-                            return $this->transform(
-                                            $messages, $this->checkFormat($format), $messageKey
-                            );
-                        })->all();
+    protected function getMessagesForWildcardKey($key, $format)
+    {
+        return collect($this->messages)->filter(function ($messages, $messageKey) use($key) {
+            return Str::is($key, $messageKey);
+        })
+            ->map(function ($messages, $messageKey) use($format) {
+            return $this->transform($messages, $this->checkFormat($format), $messageKey);
+        })
+            ->all();
     }
 
     /**
      * Get all of the messages for every key in the bag.
      *
-     * @param  string  $format
+     * @param string $format            
      * @return array
      */
-    public function all($format = null) {
+    public function all($format = null)
+    {
         $format = $this->checkFormat($format);
-
+        
         $all = [];
-
+        
         foreach ($this->messages as $key => $messages) {
             $all = array_merge($all, $this->transform($messages, $format, $key));
         }
-
+        
         return $all;
     }
 
     /**
      * Get all of the unique messages for every key in the bag.
      *
-     * @param  string  $format
+     * @param string $format            
      * @return array
      */
-    public function unique($format = null) {
+    public function unique($format = null)
+    {
         return array_unique($this->all($format));
     }
 
     /**
      * Format an array of messages.
      *
-     * @param  array   $messages
-     * @param  string  $format
-     * @param  string  $messageKey
+     * @param array $messages            
+     * @param string $format            
+     * @param string $messageKey            
      * @return array
      */
-    protected function transform($messages, $format, $messageKey) {
+    protected function transform($messages, $format, $messageKey)
+    {
         $messages = (array) $messages;
-
+        
         // We will simply spin through the given messages and transform each one
         // replacing the :message place holder with the real message allowing
         // the messages to be easily formatted to each developer's desires.
-        $replace = [':message', ':key'];
-
+        $replace = [
+            ':message',
+            ':key'
+        ];
+        
         foreach ($messages as &$message) {
-            $message = str_replace($replace, [$message, $messageKey], $format);
+            $message = str_replace($replace, [
+                $message,
+                $messageKey
+            ], $format);
         }
-
+        
         return $messages;
     }
 
     /**
      * Get the appropriate format based on the given format.
      *
-     * @param  string  $format
+     * @param string $format            
      * @return string
      */
-    protected function checkFormat($format) {
-        return $format ?: $this->format;
+    protected function checkFormat($format)
+    {
+        return $format ?  : $this->format;
     }
 
     /**
@@ -248,7 +264,8 @@ class MessageBag implements Countable, JsonSerializable {
      *
      * @return array
      */
-    public function messages() {
+    public function messages()
+    {
         return $this->messages;
     }
 
@@ -257,7 +274,8 @@ class MessageBag implements Countable, JsonSerializable {
      *
      * @return array
      */
-    public function getMessages() {
+    public function getMessages()
+    {
         return $this->messages();
     }
 
@@ -266,7 +284,8 @@ class MessageBag implements Countable, JsonSerializable {
      *
      * @return \Illuminate\Support\MessageBag
      */
-    public function getMessageBag() {
+    public function getMessageBag()
+    {
         return $this;
     }
 
@@ -275,19 +294,21 @@ class MessageBag implements Countable, JsonSerializable {
      *
      * @return string
      */
-    public function getFormat() {
+    public function getFormat()
+    {
         return $this->format;
     }
 
     /**
      * Set the default message format.
      *
-     * @param  string  $format
+     * @param string $format            
      * @return \Illuminate\Support\MessageBag
      */
-    public function setFormat($format = ':message') {
+    public function setFormat($format = ':message')
+    {
         $this->format = $format;
-
+        
         return $this;
     }
 
@@ -296,8 +317,9 @@ class MessageBag implements Countable, JsonSerializable {
      *
      * @return bool
      */
-    public function isEmpty() {
-        return !$this->any();
+    public function isEmpty()
+    {
+        return ! $this->any();
     }
 
     /**
@@ -305,7 +327,8 @@ class MessageBag implements Countable, JsonSerializable {
      *
      * @return bool
      */
-    public function any() {
+    public function any()
+    {
         return $this->count() > 0;
     }
 
@@ -314,7 +337,8 @@ class MessageBag implements Countable, JsonSerializable {
      *
      * @return int
      */
-    public function count() {
+    public function count()
+    {
         return count($this->messages, COUNT_RECURSIVE) - count($this->messages);
     }
 
@@ -323,7 +347,8 @@ class MessageBag implements Countable, JsonSerializable {
      *
      * @return array
      */
-    public function toArray() {
+    public function toArray()
+    {
         return $this->getMessages();
     }
 
@@ -332,17 +357,19 @@ class MessageBag implements Countable, JsonSerializable {
      *
      * @return array
      */
-    public function jsonSerialize() {
+    public function jsonSerialize()
+    {
         return $this->toArray();
     }
 
     /**
      * Convert the object to its JSON representation.
      *
-     * @param  int  $options
+     * @param int $options            
      * @return string
      */
-    public function toJson($options = 0) {
+    public function toJson($options = 0)
+    {
         return json_encode($this->jsonSerialize(), $options);
     }
 
@@ -351,8 +378,8 @@ class MessageBag implements Countable, JsonSerializable {
      *
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return $this->toJson();
     }
-
 }

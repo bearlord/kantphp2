@@ -4,7 +4,6 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace Kant\Widget;
 
 use Kant\Kant;
@@ -26,80 +25,104 @@ use Kant\Helper\Html;
  */
 abstract class BaseListView extends Widget
 {
+
     /**
+     *
      * @var array the HTML attributes for the container tag of the list view.
-     * The "tag" element specifies the tag name of the container element and defaults to "div".
+     *      The "tag" element specifies the tag name of the container element and defaults to "div".
      * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $options = [];
+
     /**
+     *
      * @var \Kant\Data\DataProviderInterface the data provider for the view. This property is required.
      */
     public $dataProvider;
+
     /**
+     *
      * @var array the configuration for the pager widget. By default, [[LinkPager]] will be
-     * used to render the pager. You can use a different widget class by configuring the "class" element.
-     * Note that the widget must support the `pagination` property which will be populated with the
-     * [[\Kant\Data\BaseDataProvider::pagination|pagination]] value of the [[dataProvider]].
+     *      used to render the pager. You can use a different widget class by configuring the "class" element.
+     *      Note that the widget must support the `pagination` property which will be populated with the
+     *      [[\Kant\Data\BaseDataProvider::pagination|pagination]] value of the [[dataProvider]].
      */
     public $pager = [];
+
     /**
+     *
      * @var array the configuration for the sorter widget. By default, [[LinkSorter]] will be
-     * used to render the sorter. You can use a different widget class by configuring the "class" element.
-     * Note that the widget must support the `sort` property which will be populated with the
-     * [[\Kant\Data\BaseDataProvider::sort|sort]] value of the [[dataProvider]].
+     *      used to render the sorter. You can use a different widget class by configuring the "class" element.
+     *      Note that the widget must support the `sort` property which will be populated with the
+     *      [[\Kant\Data\BaseDataProvider::sort|sort]] value of the [[dataProvider]].
      */
     public $sorter = [];
+
     /**
+     *
      * @var string the HTML content to be displayed as the summary of the list view.
-     * If you do not want to show the summary, you may set it with an empty string.
-     *
-     * The following tokens will be replaced with the corresponding values:
-     *
-     * - `{begin}`: the starting row number (1-based) currently being displayed
-     * - `{end}`: the ending row number (1-based) currently being displayed
-     * - `{count}`: the number of rows currently being displayed
-     * - `{totalCount}`: the total number of rows available
-     * - `{page}`: the page number (1-based) current being displayed
-     * - `{pageCount}`: the number of pages available
+     *      If you do not want to show the summary, you may set it with an empty string.
+     *     
+     *      The following tokens will be replaced with the corresponding values:
+     *     
+     *      - `{begin}`: the starting row number (1-based) currently being displayed
+     *      - `{end}`: the ending row number (1-based) currently being displayed
+     *      - `{count}`: the number of rows currently being displayed
+     *      - `{totalCount}`: the total number of rows available
+     *      - `{page}`: the page number (1-based) current being displayed
+     *      - `{pageCount}`: the number of pages available
      */
     public $summary;
+
     /**
+     *
      * @var array the HTML attributes for the summary of the list view.
-     * The "tag" element specifies the tag name of the summary element and defaults to "div".
+     *      The "tag" element specifies the tag name of the summary element and defaults to "div".
      * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $summaryOptions = ['class' => 'summary'];
+    public $summaryOptions = [
+        'class' => 'summary'
+    ];
+
     /**
+     *
      * @var bool whether to show an empty list view if [[dataProvider]] returns no data.
-     * The default value is false which displays an element according to the `emptyText`
-     * and `emptyTextOptions` properties.
+     *      The default value is false which displays an element according to the `emptyText`
+     *      and `emptyTextOptions` properties.
      */
     public $showOnEmpty = false;
+
     /**
+     *
      * @var string the HTML content to be displayed when [[dataProvider]] does not have any data.
      */
     public $emptyText;
+
     /**
+     *
      * @var array the HTML attributes for the emptyText of the list view.
-     * The "tag" element specifies the tag name of the emptyText element and defaults to "div".
+     *      The "tag" element specifies the tag name of the emptyText element and defaults to "div".
      * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $emptyTextOptions = ['class' => 'empty'];
+    public $emptyTextOptions = [
+        'class' => 'empty'
+    ];
+
     /**
-     * @var string the layout that determines how different sections of the list view should be organized.
-     * The following tokens will be replaced with the corresponding section contents:
      *
-     * - `{summary}`: the summary section. See [[renderSummary()]].
-     * - `{items}`: the list items. See [[renderItems()]].
-     * - `{sorter}`: the sorter. See [[renderSorter()]].
-     * - `{pager}`: the pager. See [[renderPager()]].
+     * @var string the layout that determines how different sections of the list view should be organized.
+     *      The following tokens will be replaced with the corresponding section contents:
+     *     
+     *      - `{summary}`: the summary section. See [[renderSummary()]].
+     *      - `{items}`: the list items. See [[renderItems()]].
+     *      - `{sorter}`: the sorter. See [[renderSorter()]].
+     *      - `{pager}`: the pager. See [[renderPager()]].
      */
     public $layout = "{summary}\n{items}\n{pager}";
 
-
     /**
      * Renders the data models.
+     * 
      * @return string the rendering result.
      */
     abstract public function renderItems();
@@ -115,7 +138,7 @@ abstract class BaseListView extends Widget
         if ($this->emptyText === null) {
             $this->emptyText = Kant::t('kant', 'No results found.');
         }
-        if (!isset($this->options['id'])) {
+        if (! isset($this->options['id'])) {
             $this->options['id'] = $this->getId();
         }
     }
@@ -128,13 +151,13 @@ abstract class BaseListView extends Widget
         if ($this->showOnEmpty || $this->dataProvider->getCount() > 0) {
             $content = preg_replace_callback("/{\\w+}/", function ($matches) {
                 $content = $this->renderSection($matches[0]);
-
+                
                 return $content === false ? $matches[0] : $content;
             }, $this->layout);
         } else {
             $content = $this->renderEmpty();
         }
-
+        
         $options = $this->options;
         $tag = ArrayHelper::remove($options, 'tag', 'div');
         echo Html::tag($tag, $content, $options);
@@ -143,7 +166,9 @@ abstract class BaseListView extends Widget
     /**
      * Renders a section of the specified name.
      * If the named section is not supported, false will be returned.
-     * @param string $name the section name, e.g., `{summary}`, `{items}`.
+     * 
+     * @param string $name
+     *            the section name, e.g., `{summary}`, `{items}`.
      * @return string|bool the rendering result of the section, or false if the named section is not supported.
      */
     public function renderSection($name)
@@ -164,6 +189,7 @@ abstract class BaseListView extends Widget
 
     /**
      * Renders the HTML content indicating that the list view has no data.
+     * 
      * @return string the rendering result
      * @see emptyText
      */
@@ -196,13 +222,13 @@ abstract class BaseListView extends Widget
             $pageCount = $pagination->pageCount;
             if (($summaryContent = $this->summary) === null) {
                 return Html::tag($tag, Kant::t('kant', 'Showing <b>{begin, number}-{end, number}</b> of <b>{totalCount, number}</b> {totalCount, plural, one{item} other{items}}.', [
-                        'begin' => $begin,
-                        'end' => $end,
-                        'count' => $count,
-                        'totalCount' => $totalCount,
-                        'page' => $page,
-                        'pageCount' => $pageCount,
-                    ]), $summaryOptions);
+                    'begin' => $begin,
+                    'end' => $end,
+                    'count' => $count,
+                    'totalCount' => $totalCount,
+                    'page' => $page,
+                    'pageCount' => $pageCount
+                ]), $summaryOptions);
             }
         } else {
             $begin = $page = $pageCount = 1;
@@ -214,23 +240,24 @@ abstract class BaseListView extends Widget
                     'count' => $count,
                     'totalCount' => $totalCount,
                     'page' => $page,
-                    'pageCount' => $pageCount,
+                    'pageCount' => $pageCount
                 ]), $summaryOptions);
             }
         }
-
+        
         return Yii::$app->getI18n()->format($summaryContent, [
             'begin' => $begin,
             'end' => $end,
             'count' => $count,
             'totalCount' => $totalCount,
             'page' => $page,
-            'pageCount' => $pageCount,
+            'pageCount' => $pageCount
         ], Yii::$app->language);
     }
 
     /**
      * Renders the pager.
+     * 
      * @return string the rendering result
      */
     public function renderPager()
@@ -244,12 +271,13 @@ abstract class BaseListView extends Widget
         $class = ArrayHelper::remove($pager, 'class', LinkPager::className());
         $pager['pagination'] = $pagination;
         $pager['view'] = $this->getView();
-
+        
         return $class::widget($pager);
     }
 
     /**
      * Renders the sorter.
+     * 
      * @return string the rendering result
      */
     public function renderSorter()
@@ -263,7 +291,7 @@ abstract class BaseListView extends Widget
         $class = ArrayHelper::remove($sorter, 'class', LinkSorter::className());
         $sorter['sort'] = $sort;
         $sorter['view'] = $this->getView();
-
+        
         return $class::widget($sorter);
     }
 }

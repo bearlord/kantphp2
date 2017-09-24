@@ -6,7 +6,6 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-
 namespace Kant\Exception;
 
 use Kant\Exception\InvalidConfigException;
@@ -18,12 +17,14 @@ use Kant\Exception\InvalidConfigException;
  * @author Sam Mousa <sam@mousa.nl>
  * @since 2.0.9
  */
-class NotInstantiableException extends InvalidConfigException {
+class NotInstantiableException extends InvalidConfigException
+{
 
     /**
      * @inheritdoc
      */
-    public function __construct($class, $message = null, $code = 0, \Exception $previous = null) {
+    public function __construct($class, $message = null, $code = 0, \Exception $previous = null)
+    {
         if ($message === null) {
             $message = "Can not instantiate $class.";
         }
@@ -31,10 +32,11 @@ class NotInstantiableException extends InvalidConfigException {
     }
 
     /**
+     *
      * @return string the user-friendly name of this exception
      */
-    public function getName() {
+    public function getName()
+    {
         return 'Not instantiable';
     }
-
 }

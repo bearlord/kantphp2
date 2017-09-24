@@ -1,36 +1,37 @@
 <?php
 
-//App path
-if (!defined('APP_PATH')) {
+// App path
+if (! defined('APP_PATH')) {
     define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . DIRECTORY_SEPARATOR . 'Application' . DIRECTORY_SEPARATOR);
 }
 
-//Storage directory
+// Storage directory
 define('RUNTIME_PATH', APP_PATH . 'Runtime' . DIRECTORY_SEPARATOR);
-//Template directory
+// Template directory
 define('TPL_PATH', APP_PATH . 'View' . DIRECTORY_SEPARATOR);
-//Config directroy
+// Config directroy
 define('CFG_PATH', APP_PATH . 'Config' . DIRECTORY_SEPARATOR);
 define('MODULE_PATH', APP_PATH . 'Module' . DIRECTORY_SEPARATOR);
-//Libary directory
+// Libary directory
 define('LIB_PATH', APP_PATH . 'Library' . DIRECTORY_SEPARATOR);
-//Public Path
+// Public Path
 define('PUBLIC_PATH', dirname(APP_PATH) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR);
 
 /**
- * This constant defines whether error handling should be enabled. Defaults to true.
+ * This constant defines whether error handling should be enabled.
+ * Defaults to true.
  */
 defined('ENABLE_ERROR_HANDLER') or define('ENABLE_ERROR_HANDLER', true);
 defined('KANT_BEGIN_TIME') or define('KANT_BEGIN_TIME', microtime(true));
 
-//Log path
-if (!defined('LOG_PATH')) {
+// Log path
+if (! defined('LOG_PATH')) {
     define('LOG_PATH', RUNTIME_PATH . 'logs/');
 }
 
-//Web root
-if (!defined('APP_URL')) {
-    define('APP_URL', substr(dirname($_SERVER['SCRIPT_NAME']), -1, 1) == '/' ? dirname($_SERVER['SCRIPT_NAME']) : trim(dirname($_SERVER['SCRIPT_NAME']), "\\") . '/' );
+// Web root
+if (! defined('APP_URL')) {
+    define('APP_URL', substr(dirname($_SERVER['SCRIPT_NAME']), - 1, 1) == '/' ? dirname($_SERVER['SCRIPT_NAME']) : trim(dirname($_SERVER['SCRIPT_NAME']), "\\") . '/');
 }
 
 define('CHARSET', 'utf-8');
