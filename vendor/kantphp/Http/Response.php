@@ -6,6 +6,7 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
+
 namespace Kant\Http;
 
 use Kant\Kant;
@@ -16,17 +17,13 @@ use Kant\Exception\InvalidParamException;
 
 class Response extends BaseResponse
 {
-    
+
     use ResponseTrait;
 
     const FORMAT_RAW = 'raw';
-
     const FORMAT_HTML = 'html';
-
     const FORMAT_JSON = 'json';
-
     const FORMAT_JSONP = 'jsonp';
-
     const FORMAT_XML = 'xml';
 
     /**
@@ -158,13 +155,13 @@ class Response extends BaseResponse
         if ($this->stream !== null) {
             return;
         }
-        
+
         if (isset($this->formatters[$this->format])) {
             $formatter = $this->formatters[$this->format];
-            if (! is_object($formatter)) {
+            if (!is_object($formatter)) {
                 $this->formatters[$this->format] = $formatter = Kant::createObject($formatter);
             }
-            
+
             if ($formatter instanceof ResponseFormatterInterface) {
                 $formatter->format($this);
             } else {
@@ -177,19 +174,19 @@ class Response extends BaseResponse
         } else {
             throw new InvalidConfigException("Unsupported response format: {$this->format}");
         }
-        
+
         if (is_array($this->content)) {
             throw new InvalidParamException('Response content must not be an array.');
-        } else 
-            if ($this->content instanceof BaseResponse) {
-                return $this->content->send();
-            } elseif (is_object($this->content)) {
-                if (method_exists($this->content, '__toString')) {
-                    $this->content = $this->content->__toString();
-                } else {
-                    throw new InvalidParamException('Response content must be a string or an object implementing __toString().');
-                }
+        } else if ($this->content instanceof BaseResponse) {
+            return $this->content->send();
+        } elseif (is_object($this->content)) {
+            var_dump(get_class($this->content));
+            if (method_exists($this->content, '__toString')) {
+                $this->content = $this->content->__toString();
+            } else {
+                throw new InvalidParamException('Response content must be a string or an object implementing __toString().');
             }
+        }
     }
 
     /**
@@ -214,14 +211,14 @@ class Response extends BaseResponse
             echo $this->content;
             return $this;
         }
-        
+
         set_time_limit(0); // Reset time limit for big files
         $chunkSize = 8 * 1024 * 1024; // 8MB per chunk
-        
+
         if (is_array($this->stream)) {
             list ($handle, $begin, $end) = $this->stream;
             fseek($handle, $begin);
-            while (! feof($handle) && ($pos = ftell($handle)) <= $end) {
+            while (!feof($handle) && ($pos = ftell($handle)) <= $end) {
                 if ($pos + $chunkSize > $end) {
                     $chunkSize = $end - $pos + 1;
                 }
@@ -230,7 +227,7 @@ class Response extends BaseResponse
             }
             fclose($handle);
         } else {
-            while (! feof($this->stream)) {
+            while (!feof($this->stream)) {
                 echo fread($this->stream, $chunkSize);
                 flush();
             }

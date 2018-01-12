@@ -116,7 +116,7 @@ $request = Kant::$app->request;
     <div class="nav-tools">
         <ul class="breadcrumb">
             <li class="pull-left">
-                <a href="<?= $homeUrl ?>"><i class="glyphicon glyphicon-home"></i></a>
+                <a href="<?= Url::current(array_merge($request->query(), ['path' => "/"])) ?>"><i class="glyphicon glyphicon-home"></i></a>
             </li>
             <?= $nav; ?>
 
@@ -287,6 +287,7 @@ $request = Kant::$app->request;
 </div>
 <div class="hidden-values">
     <?= Html::hiddenInput('popup', $request->get('popup'), ['id' => 'popup']); ?>
+    <?= Html::hiddenInput('callback', $request->get('callback'), ['id' => 'callback']); ?>
     <?= Html::hiddenInput('fieldid', $request->get('fieldid'), ['id' => 'fieldid']); ?>
     <?= Html::hiddenInput('view', $request->get('view'), ['id' => 'view']); ?>
     <?= Html::hiddenInput('clipboard', $request->get('clipboard'), ['id' => 'clipboard']); ?>

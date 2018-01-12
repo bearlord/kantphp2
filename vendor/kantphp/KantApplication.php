@@ -587,10 +587,10 @@ class KantApplication extends Module
     /**
      * End
      */
-    protected function end($response = null)
+    public function end($response = null)
     {
         $this->getSession()->save();
-        $response = $response ?  : $this->getResponse();
+        $response = !empty($response) ? $response : $this->getResponse();
         $response->send();
         exit(0);
     }

@@ -238,7 +238,7 @@ class GridView extends BaseListView
 
     /**
      *
-     * @var \yii\base\Model the model that keeps the user-entered filter data. When this property is set,
+     * @var \Kant\Model\Model the model that keeps the user-entered filter data. When this property is set,
      *      the grid view will enable column-based filtering. Each data column by default will display a text field
      *      at the top that users can fill in to filter the data.
      *     
