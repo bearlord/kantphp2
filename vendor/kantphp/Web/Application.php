@@ -6,8 +6,9 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
-namespace Kant;
+namespace Kant\Web;
 
+use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Foundation\Module;
 use Kant\Helper\ArrayHelper;
@@ -42,7 +43,7 @@ use ReflectionMethod;
  * @property \Kant\View\View $view The view application component that is used to render various view files. This property is read-only.
  *          
  */
-class KantApplication extends Module
+class Application extends Module
 {
 
     /**

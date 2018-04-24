@@ -1,18 +1,20 @@
 <?php
+
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace yii\widgets;
+namespace Kant\Widget;
 
 use Closure;
-use Yii;
-use yii\base\Widget;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
-use yii\helpers\Html;
+use Kant\Kant;
+use Kant\Widget;
+use ArrayHelper;
+use Kant\Helper\Url;
+use Kant\Helper\Html;
 
 /**
  * Menu displays a multi-level menu using nested HTML lists.
@@ -84,9 +86,9 @@ class Menu extends Widget
      *
      * - tag: string, defaults to "li", the tag name of the item container tags.
      *   Set to false to disable container tag.
-     *   See also [[\yii\helpers\Html::tag()]].
+     *   See also [[\Kant\Helper\Html::tag()]].
      *
-     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $itemOptions = [];
     /**
@@ -135,9 +137,9 @@ class Menu extends Widget
      * @var array the HTML attributes for the menu's container tag. The following special options are recognized:
      *
      * - tag: string, defaults to "ul", the tag name of the item container tags. Set to false to disable container tag.
-     *   See also [[\yii\helpers\Html::tag()]].
+     *   See also [[\Kant\Helper\Html::tag()]].
      *
-     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     * @see \Kant\Helper\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $options = [];
     /**
