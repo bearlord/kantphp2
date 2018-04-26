@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace Kant\Widget\;
+namespace Kant\Widget;
 
 use Kant\Widget;
 

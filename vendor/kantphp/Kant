@@ -1,0 +1,37 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * @package KantPHP
+ * @author  Zhenqiang Zhang <zhenqiang.zhang@hotmail.com>
+ * @copyright (c) KantPHP Studio, All rights reserved.
+ * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
+ */
+
+$composerAutoload = [
+    __DIR__ . '/../vendor/autoload.php', // in yii2-dev repo
+    __DIR__ . '/../../autoload.php', // installed as a composer binary
+];
+
+$vendorPath = null;
+foreach ($composerAutoload as $autoload) {
+    if (file_exists($autoload)) {
+        require($autoload);
+        $vendorPath = dirname($autoload);
+        break;
+    }
+}
+
+
+require(__DIR__ . '/Framework.php');
+
+$application = new \Kant\Console\Application([
+    'id' => 'kant-console',
+    'basePath' => __DIR__ . '/console',
+    'controllerNamespace' => 'Kant\Console\Controller',
+]);
+if ($vendorPath !== null) {
+    $application->setVendorPath($vendorPath);
+}
+$exitCode = $application->run();
+exit($exitCode);
