@@ -83,7 +83,7 @@ class FileTarget extends Target
     public function init()
     {
         if ($this->logFile === null) {
-            $this->logFile = Kant::getAlias('@runtime/logs/') . date("Y-m-d") . '/app.log';
+            $this->logFile = Kant::getAlias('@log_path/') . date("Y-m-d") . '/app.log';
         }
         
         $logPath = dirname($this->logFile);

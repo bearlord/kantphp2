@@ -488,6 +488,9 @@ class Application extends Module
     {
         $this->_runtimePath = $path;
         Kant::setAlias('@runtime', $this->_runtimePath);
+        Kant::setAlias('@session_path', $this->_runtimePath . DIRECTORY_SEPARATOR . 'sessions');
+        Kant::setAlias('@log_path', $this->_runtimePath . DIRECTORY_SEPARATOR . 'logs');
+        Kant::setAlias('@cache_path', $this->_runtimePath . DIRECTORY_SEPARATOR . 'caches');
     }
 
     /**

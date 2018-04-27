@@ -43,7 +43,7 @@ class FileCache extends Cache
      * @var string the directory to store cache files. You may use path alias here.
      *      If not set, it will use the "cache" subdirectory under the application runtime path.
      */
-    public $cachePath = '@runtime/cache';
+    public $cachePath = '@cache_path';
 
     /**
      *

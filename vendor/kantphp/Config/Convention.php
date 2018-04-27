@@ -119,7 +119,7 @@ return [
          * | location may be specified. This is only needed for file sessions.
          * |
          */
-        'files' => '@runtime/sessions/',
+        'files' => '@session_path/',
         /**
          * |--------------------------------------------------------------------------
          * | Session Database Connection
@@ -240,35 +240,6 @@ return [
             'charset' => 'utf8',
             'tablePrefix' => 'kant_'
         ]
-    ],
-    'cache' => [
-        /**
-         * |--------------------------------------------------------------------------
-         * | Default Cache Store
-         * |--------------------------------------------------------------------------
-         * |
-         * | This option controls the default cache "driver".
-         * | By default, we will use the lightweight native driver but
-         * | you may specify any of the other wonderful drivers provided here.
-         * |
-         * | Supported: "file", "memcached", "redis"
-         * |
-         */
-        'type' => 'file',
-        /**
-         * |--------------------------------------------------------------------------
-         * | Cache Driver Hostname
-         * |--------------------------------------------------------------------------
-         * |
-         */
-        'hostname' => 'localhost',
-        /**
-         * |--------------------------------------------------------------------------
-         * | Cache Driver Port
-         * |--------------------------------------------------------------------------
-         * |
-         */
-        'port' => 11211
     ],
     'filesystems' => [
         /*
