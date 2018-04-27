@@ -8,3 +8,8 @@
 $router->get("/welcome", function() {
     return "Welcome To Kant Framework V2.2";
 });
+$router->get("/age", function() {
+	$get = Kant\Kant::$app->request->all();
+	var_dump($get);
+    return "Welcome To Kant Framework V2.2";
+})->middleware([App\Middleware\CheckAge::class]);

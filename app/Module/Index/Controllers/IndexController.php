@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Index\Controllers;
+namespace App\Module\Index\Controllers;
 
 use Kant\Controller\Controller;
 
 class IndexController extends Controller {
 
     public function indexAction() {
-        echo 'Hello KantPHP!';
+        return 'Hello KantPHP!';
     }
 }
