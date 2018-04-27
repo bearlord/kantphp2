@@ -245,6 +245,7 @@ class Query extends Component implements QueryInterface
      */
     public function all($db = null)
     {
+		var_dump($this->createCommand($db)->getRawSql());
         $rows = $this->createCommand($db)->queryAll();
         return $this->populate($rows);
     }

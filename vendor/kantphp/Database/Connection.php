@@ -17,44 +17,122 @@ use PDO;
 use Kant\Caching\Cache;
 
 /**
- * Command represents a SQL statement to be executed against a database.
+ * Connection represents a connection to a database via [PDO](http://php.net/manual/en/book.pdo.php).
  *
- * A command object is usually created by calling [[Connection::createCommand()]].
- * The SQL statement it represents can be set via the [[sql]] property.
+ * Connection works together with [[Command]], [[DataReader]] and [[Transaction]]
+ * to provide data access to various DBMS in a common set of APIs. They are a thin wrapper
+ * of the [PDO PHP extension](http://php.net/manual/en/book.pdo.php).
  *
- * To execute a non-query SQL (such as INSERT, DELETE, UPDATE), call [[execute()]].
- * To execute a SQL statement that returns a result data set (such as SELECT),
- * use [[queryAll()]], [[queryOne()]], [[queryColumn()]], [[queryScalar()]], or [[query()]].
+ * Connection supports database replication and read-write splitting. In particular, a Connection component
+ * can be configured with multiple [[masters]] and [[slaves]]. It will do load balancing and failover by choosing
+ * appropriate servers. It will also automatically direct read operations to the slaves and write operations to
+ * the masters.
  *
- * For example,
+ * To establish a DB connection, set [[dsn]], [[username]] and [[password]], and then
+ * call [[open()]] to connect to the database server. The current state of the connection can be checked using [[$isActive]].
  *
- * ```php
- * $users = $connection->createCommand('SELECT * FROM user')->queryAll();
- * ```
- *
- * Command supports SQL statement preparation and parameter binding.
- * Call [[bindValue()]] to bind a value to a SQL parameter;
- * Call [[bindParam()]] to bind a PHP variable to a SQL parameter.
- * When binding a parameter, the SQL statement is automatically prepared.
- * You may also call [[prepare()]] explicitly to prepare a SQL statement.
- *
- * Command also supports building SQL statements by providing methods such as [[insert()]],
- * [[update()]], etc. For example, the following code will create and execute an INSERT SQL statement:
+ * The following example shows how to create a Connection instance and establish
+ * the DB connection:
  *
  * ```php
- * $connection->createCommand()->insert('user', [
- * 'name' => 'Sam',
- * 'age' => 30,
- * ])->execute();
+ * $connection = new \Kant\Database\Connection([
+ *     'dsn' => $dsn,
+ *     'username' => $username,
+ *     'password' => $password,
+ * ]);
+ * $connection->open();
  * ```
  *
- * To build SELECT SQL statements, please use [[Query]] instead.
+ * After the DB connection is established, one can execute SQL statements like the following:
  *
- * For more details and usage information on Command, see the [guide article on Database Access Objects](guide:db-dao).
+ * ```php
+ * $command = $connection->createCommand('SELECT * FROM post');
+ * $posts = $command->queryAll();
+ * $command = $connection->createCommand('UPDATE post SET status=1');
+ * $command->execute();
+ * ```
  *
- * @property string $rawSql The raw SQL with parameter values inserted into the corresponding placeholders in
- *           [[sql]]. This property is read-only.
- * @property string $sql The SQL statement to be executed.
+ * One can also do prepared SQL execution and bind parameters to the prepared SQL.
+ * When the parameters are coming from user input, you should use this approach
+ * to prevent SQL injection attacks. The following is an example:
+ *
+ * ```php
+ * $command = $connection->createCommand('SELECT * FROM post WHERE id=:id');
+ * $command->bindValue(':id', $_GET['id']);
+ * $post = $command->query();
+ * ```
+ *
+ * For more information about how to perform various DB queries, please refer to [[Command]].
+ *
+ * If the underlying DBMS supports transactions, you can perform transactional SQL queries
+ * like the following:
+ *
+ * ```php
+ * $transaction = $connection->beginTransaction();
+ * try {
+ *     $connection->createCommand($sql1)->execute();
+ *     $connection->createCommand($sql2)->execute();
+ *     // ... executing other SQL statements ...
+ *     $transaction->commit();
+ * } catch (Exception $e) {
+ *     $transaction->rollBack();
+ * }
+ * ```
+ *
+ * You also can use shortcut for the above like the following:
+ *
+ * ```php
+ * $connection->transaction(function () {
+ *     $order = new Order($customer);
+ *     $order->save();
+ *     $order->addItems($items);
+ * });
+ * ```
+ *
+ * If needed you can pass transaction isolation level as a second parameter:
+ *
+ * ```php
+ * $connection->transaction(function (Connection $db) {
+ *     //return $db->...
+ * }, Transaction::READ_UNCOMMITTED);
+ * ```
+ *
+ * Connection is often used as an application component and configured in the application
+ * configuration like the following:
+ *
+ * ```php
+ * 'components' => [
+ *     'db' => [
+ *         'class' => '\Kant\Database\Connection',
+ *         'dsn' => 'mysql:host=127.0.0.1;dbname=demo',
+ *         'username' => 'root',
+ *         'password' => '',
+ *         'charset' => 'utf8',
+ *     ],
+ * ],
+ * ```
+ *
+ * @property string $driverName Name of the DB driver.
+ * @property bool $isActive Whether the DB connection is established. This property is read-only.
+ * @property string $lastInsertID The row ID of the last row inserted, or the last value retrieved from the
+ * sequence object. This property is read-only.
+ * @property Connection $master The currently active master connection. `null` is returned if there is no
+ * master available. This property is read-only.
+ * @property PDO $masterPdo The PDO instance for the currently active master connection. This property is
+ * read-only.
+ * @property QueryBuilder $queryBuilder The query builder for the current DB connection. This property is
+ * read-only.
+ * @property Schema $schema The schema information for the database opened by this connection. This property
+ * is read-only.
+ * @property Connection $slave The currently active slave connection. `null` is returned if there is no slave
+ * available and `$fallbackToMaster` is false. This property is read-only.
+ * @property PDO $slavePdo The PDO instance for the currently active slave connection. `null` is returned if
+ * no slave connection is available and `$fallbackToMaster` is false. This property is read-only.
+ * @property Transaction $transaction The currently active transaction. Null if no active transaction. This
+ * property is read-only.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
  */
 class Connection extends Component
 {
@@ -395,79 +473,6 @@ class Connection extends Component
     // }
     // return self::$_database[$name];
     // }
-    
-    /**
-     *
-     * Load database driver
-     *
-     * @param
-     *            db_name string
-     * @return object on success
-     */
-    public function openInternal($config = "")
-    {
-        $options = $this->parseConfig($config);
-        if (empty($options['type'])) {
-            throw new InvalidArgumentException('Underfined db type');
-        }
-        $class = "Kant\\Database\\" . ucfirst($options['type']) . "\\Connection";
-        if (! class_exists($class)) {
-            throw new KantException(sprintf('Unable to load Database Driver: %s', $options['type']));
-        }
-        $this->pdo = (new $class($options));
-        $this->pdo->connect();
-        return $this->pdo;
-    }
-
-    /**
-     * Parse Config
-     *
-     * @param array/string $config            
-     * @return array/string
-     */
-    protected function parseConfig($config = "")
-    {
-        if ($config == '') {
-            $config = Kant::$app->config->get('database.default');
-        } elseif (is_string($config) && false === strpos($config, '/')) {
-            $config = Kant::$app->config->get('database.' . $config);
-        }
-        
-        if (is_string($config)) {
-            return $this->parseDsn($config);
-        } else {
-            return $config;
-        }
-    }
-
-    /**
-     * Parse DSN config
-     *
-     * @param array $str            
-     */
-    protected function parseDsn($str)
-    {
-        $info = parse_url($str);
-        if (! $info) {
-            return [];
-        }
-        $dsn = [
-            'type' => $info['scheme'],
-            'username' => isset($info['user']) ? $info['user'] : '',
-            'password' => isset($info['pass']) ? $info['pass'] : '',
-            'hostname' => isset($info['host']) ? $info['host'] : '',
-            'hostport' => isset($info['port']) ? $info['port'] : '',
-            'database' => ! empty($info['path']) ? ltrim($info['path'], '/') : '',
-            'charset' => isset($info['fragment']) ? $info['fragment'] : 'utf8'
-        ];
-        
-        if (isset($info['query'])) {
-            parse_str($info['query'], $dsn['params']);
-        } else {
-            $dsn['params'] = [];
-        }
-        return $dsn;
-    }
 
     /**
      * Returns a value indicating whether the DB connection is established.
@@ -560,6 +565,9 @@ class Connection extends Component
             array_pop($this->_queryCacheInfo);
             return $result;
         } catch (\Exception $e) {
+            array_pop($this->_queryCacheInfo);
+            throw $e;
+        } catch (\Throwable $e) {
             array_pop($this->_queryCacheInfo);
             throw $e;
         }
@@ -805,13 +813,33 @@ class Connection extends Component
                 $transaction->commit();
             }
         } catch (\Exception $e) {
-            if ($transaction->isActive && $transaction->level === $level) {
-                $transaction->rollBack();
-            }
+            $this->rollbackTransactionOnLevel($transaction, $level);
+            throw $e;
+        } catch (\Throwable $e) {
+            $this->rollbackTransactionOnLevel($transaction, $level);
             throw $e;
         }
         
         return $result;
+    }
+	
+	/**
+     * Rolls back given [[Transaction]] object if it's still active and level match.
+     * In some cases rollback can fail, so this method is fail safe. Exception thrown
+     * from rollback will be caught and just logged with [[\Yii::error()]].
+     * @param Transaction $transaction Transaction object given from [[beginTransaction()]].
+     * @param int $level Transaction level just after [[beginTransaction()]] call.
+     */
+    private function rollbackTransactionOnLevel($transaction, $level)
+    {
+        if ($transaction->isActive && $transaction->level === $level) {
+            try {
+                $transaction->rollBack();
+            } catch (\Exception $e) {
+                Kant::error($e, __METHOD__);
+                // hide this exception to be able to continue throwing original exception outside
+            }
+        }
     }
 
     /**

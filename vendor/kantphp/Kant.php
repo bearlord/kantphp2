@@ -17,7 +17,7 @@ class Kant
 
     /**
      *
-     * @var \Kant\KantApplication the application instancethe application instance
+     * @var \Kant\Web\Application the application instancethe application instance
      */
     public static $app;
 
