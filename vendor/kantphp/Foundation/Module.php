@@ -11,6 +11,7 @@ namespace Kant\Foundation;
 
 use Kant\Kant;
 use Kant\Di\ServiceLocator;
+use Kant\Exception\InvalidParamException;
 
 /**
  * Module is the base class for module and application classes.
@@ -103,6 +104,23 @@ class Module extends ServiceLocator
             $this->_basePath = dirname($class->getFileName());
         }
         return $this->_basePath;
+    }
+	
+	    /**
+     * Sets the root directory of the module.
+     * This method can only be invoked at the beginning of the constructor.
+     * @param string $path the root directory of the module. This can be either a directory name or a [path alias](guide:concept-aliases).
+     * @throws InvalidParamException if the directory does not exist.
+     */
+    public function setBasePath($path)
+    {
+        $path = Kant::getAlias($path);
+        $p = strncmp($path, 'phar://', 7) === 0 ? $path : realpath($path);
+        if ($p !== false && is_dir($p)) {
+            $this->_basePath = $p;
+        } else {
+            throw new InvalidParamException("The directory does not exist: $path");
+        }
     }
 
     /**
@@ -205,7 +223,6 @@ class Module extends ServiceLocator
             }
 
             $moduleName = explode("/", $route)[0];
-            Kant::$app->setModuleConfig($moduleName);
 
             $controller = $this->createControllerByID($route, $pattern);
 

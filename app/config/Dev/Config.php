@@ -1,6 +1,7 @@
 <?php
 
 return [
+	'basePath' => dirname(dirname(__DIR__)),
 	'debug' => true,
 	'token' => [
 		'switch' => true,

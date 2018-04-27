@@ -17,7 +17,7 @@ use Kant\Http\Request;
 use Kant\Http\Response;
 use Kant\Routing\Router;
 use Kant\Runtime\Runtime;
-use Kant\Exception\KantException;
+use Kant\Exception\InvalidConfigException;
 use ReflectionMethod;
 
 /**
@@ -107,11 +107,12 @@ class Application extends Module
      *
      * @param string $env
      */
-    public function __construct($env)
+    public function __construct($config)
     {
         Kant::$app = $this;
-        $this->config = $config = $this->initConfig($env);
-        $this->preInit($config);
+        $this->config = $appConfig = $this->initConfig($config);
+		
+        $this->preInit($appConfig);
     }
 
     /**
@@ -184,12 +185,12 @@ class Application extends Module
     /**
      * Init Config
      */
-    protected function initConfig($env)
+    protected function initConfig($config)
     {
-        $appConfig = ArrayHelper::merge(require KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php', require CFG_PATH . $env . DIRECTORY_SEPARATOR . 'Config.php', [
-            'environment' => $env,
-            'config_path' => CFG_PATH . $env . DIRECTORY_SEPARATOR
-        ]);
+        $appConfig = ArrayHelper::merge(
+				require KANT_PATH . DIRECTORY_SEPARATOR . 'Config/Convention.php',
+				$config
+				);
         return $this->getConfig()->merge($appConfig);
     }
 
@@ -432,13 +433,13 @@ class Application extends Module
     /**
      * Singleton instance
      *
-     * @param type $environment
+     * @param type $config
      * @return type
      */
-    public static function getInstance($environment = 'Dev')
+    public static function getInstance($config)
     {
         if (null === self::$_instance) {
-            self::$_instance = new self($environment);
+            self::$_instance = new self($config);
         }
         return self::$_instance;
     }
@@ -498,6 +499,12 @@ class Application extends Module
      */
     protected function preInit(Config $config)
     {
+		if ($config->get('basePath') != '') {
+            $this->setBasePath($config->get('basePath'));
+        } else {
+            throw new InvalidConfigException('The "basePath" configuration for the Application is required.');
+        }
+
         if ($config->get('vendorPath') != "") {
             $this->setVendorPath($config->get('vendorPath'));
         } else {
@@ -535,8 +542,23 @@ class Application extends Module
         }
         Component::__construct($components);
     }
+	
+	/**
+	 * Sets the root directory of the application and the @app alias.
+	 * This method can only be invoked at the beginning of the constructor.
+	 * @param string $path the root directory of the application.
+	 * @property string the root directory of the application.
+	 * @throws InvalidParamException if the directory does not exist.
+	 */
+	public function setBasePath($path)
+	{
+		parent::setBasePath($path);
+		Kant::setAlias('@app', $this->getBasePath());
+		Kant::setAlias('@tpl_path', $this->getBasePath() . DIRECTORY_SEPARATOR . 'view');
+		Kant::setAlias('@lib_path', $this->getBasePath() . DIRECTORY_SEPARATOR . 'libary');
+	}
 
-    /**
+	/**
      * Returns the time zone used by this application.
      * This is a simple wrapper of PHP function date_default_timezone_get().
      * If time zone is not configured in php.ini or application config,
@@ -607,20 +629,6 @@ class Application extends Module
     {
         $this->set($class, $instance);
         return $this->get($class);
-    }
-
-    /**
-     * Init Module Config;
-     *
-     * @param type $module
-     */
-    public function setModuleConfig($module)
-    {
-        $configFilePath = MODULE_PATH . $module . DIRECTORY_SEPARATOR . 'Config.php';
-        if (file_exists($configFilePath)) {
-            $this->config->merge(require $configFilePath);
-        }
-        $this->getResponse()->format = $this->config->get('responseFormat');
     }
 
     /**

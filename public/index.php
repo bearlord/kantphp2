@@ -6,6 +6,10 @@ define('APP_PATH', __DIR__ . '/../app');
 
 include __DIR__ . '/../vendor/kantphp/Framework.php';
 
-\Kant\Web\Application::getInstance('Dev')->run();
+$env = 'dev';
+
+$config = require(APP_PATH . "/config/{$env}/config.php");
+
+\Kant\Web\Application::getInstance($config)->run();
 
 ?>

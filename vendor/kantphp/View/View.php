@@ -497,7 +497,7 @@ class View extends BaseView
     {
         $module = strtolower(Kant::$app->controller->moduleid);
         $theme = Kant::$app->config->get('view.theme');
-        $viewPath = TPL_PATH . $theme . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR;
+        $viewPath = Kant::getAlias('@tpl_path') . DIRECTORY_SEPARATOR . $theme . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR;
         return $viewPath;
     }
 

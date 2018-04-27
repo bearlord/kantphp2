@@ -8,7 +8,7 @@
  */
 namespace Kant\Config;
 
-class Config
+class Config extends \ArrayObject
 {
 
     /**
@@ -35,7 +35,7 @@ class Config
      * @param array $array            
      * @return void
      */
-    public function __construct(array $data = array())
+    public function __construct(array $data = [])
     {
         $this->_data = $data;
     }
