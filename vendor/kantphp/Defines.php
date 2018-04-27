@@ -12,9 +12,9 @@ if (! defined('APP_PATH')) {
 }
 
 // Template directory
-define('TPL_PATH', APP_PATH . '/View/');
+define('TPL_PATH', APP_PATH . '/view/');
 // Config directroy
-define('CFG_PATH', APP_PATH . '/Config/');
+define('CFG_PATH', APP_PATH . '/config/');
 define('MODULE_PATH', APP_PATH . '/Module/');
 // Libary directory
 define('LIB_PATH', APP_PATH . '/Library/');

@@ -68,7 +68,7 @@ class I18N extends Component
             $this->translations['app'] = [
                 'class' => 'Kant\I18n\PhpMessageSource',
                 'sourceLanguage' => Kant::$app->sourceLanguage,
-                'basePath' => APP_PATH . 'Messages/'
+                'basePath' => APP_PATH . 'messages/'
             ]
             // 'basePath' => '@app/messages',
             ;
