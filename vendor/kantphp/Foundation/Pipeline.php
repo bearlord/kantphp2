@@ -130,6 +130,7 @@ class Pipeline
 	{
 		return function ($stack, $pipe) {
 			return function ($passable) use ($stack, $pipe) {
+				var_dump($pipe);
 				if ($pipe instanceof Closure) {
 					// If the pipe is an instance of a Closure, we will just call it directly but
 					// otherwise we'll resolve the pipes out of the container and call it with
@@ -150,7 +151,7 @@ class Pipeline
 					// since the object we're given was already a fully instantiated object.
 					$parameters = [$passable, $stack];
 				}
-
+				
 				return $pipe->{$this->method}(...$parameters);
 			};
 		};

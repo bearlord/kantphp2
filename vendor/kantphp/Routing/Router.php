@@ -507,12 +507,9 @@ class Router extends Component
 	 */
 	public function dispatch(Request $request, Response $response)
 	{
-		return (new Pipeline(Kant::$container))
-                    ->send($request)
-                    ->through($this->middleware)
-					->then(function() use ($request, $response){
-						return $this->dispatchToRoute($request, $response);
-					});
+		$this->currentRequest = $request;
+
+		return $this->dispatchToRoute($request, $response);
 	}
 
 	/**
@@ -535,8 +532,8 @@ class Router extends Component
 		$request->setRouteResolver(function () use($route) {
 			return $route;
 		});
-		
-		return $this->runRouteWithinStack($route, $response);
+
+		return $this->runRouteWithinStack($route, $request, $response);
 	}
 
 	/**
@@ -559,10 +556,18 @@ class Router extends Component
 	 * @param \Kant\Http\Response $response            
 	 * @return mixed
 	 */
-	protected function runRouteWithinStack(Route $route, Response $response)
+	protected function runRouteWithinStack(Route $route, Request $request, Response $response)
 	{
-		$response->setContent($route->run());
-		return $response;
+		$middleware = $this->gatherRouteMiddleware($route);
+//		var_dump($middleware);
+		
+		return (new Pipeline(Kant::$container))
+						->send($request)
+//						->through($middleware)
+						->then(function($request) use ($route, $response) {
+							$response->setContent($route->run());
+							return $response;
+						});
 	}
 
 	/**
@@ -609,7 +614,8 @@ class Router extends Component
 	 */
 	public function dispatchToModule(Request $request, Response $response)
 	{
-		return $response->setContent((new ModuleDispatcher())->dispatch($request));
+		$response->setContent((new ModuleDispatcher())->dispatch($request));
+		return $response;
 	}
 
 	/**
@@ -638,24 +644,10 @@ class Router extends Component
 	public static function __callStatic($method, $args)
 	{
 		$instance = self;
-
-		switch (count($args)) {
-			case 0:
-				return $instance->$method();
-			case 1:
-				return $instance->$method($args[0]);
-			case 2:
-				return $instance->$method($args[0], $args[1]);
-			case 3:
-				return $instance->$method($args[0], $args[1], $args[2]);
-			case 4:
-				return $instance->$method($args[0], $args[1], $args[2], $args[3]);
-			default:
-				return call_user_func_array([
-					$instance,
-					$method
-						], $args);
-		}
+		return call_user_func_array([
+			$instance,
+			$method
+				], $args);
 	}
 
 }

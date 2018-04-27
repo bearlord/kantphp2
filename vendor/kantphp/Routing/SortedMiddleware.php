@@ -40,7 +40,7 @@ class SortedMiddleware extends Collection
                 continue;
             }
             
-            $stripped = reset(explode(':', $middleware));
+            $stripped = @ reset(explode(':', $middleware));
             
             if (in_array($stripped, $priorityMap)) {
                 $priorityIndex = array_search($stripped, $priorityMap);
