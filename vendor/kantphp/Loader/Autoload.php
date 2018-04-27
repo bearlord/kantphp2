@@ -40,16 +40,16 @@ class KantAutoloaderInit
                 if (strpos($className, "\\") !== false) {
                     if (strpos($className, "Kant") === 0) {
                         $className = str_replace('Kant\\', '', $className);
-                        $className = str_replace('\\', '/', $className) . ".php";
-                        $filename = KANT_PATH . $className;
+                        $className = str_replace('\\', '/', $className);
+                        $filename = KANT_PATH . $className . ".php";
                     } else 
                         if (strpos($className, "App") === 0) {
                             $className = str_replace('App\\', '', $className);
-                            $className = str_replace('\\', '/', $className) . ".php";
-                            $filename = MODULE_PATH . $className;
+                            $className = str_replace('\\', '/', $className);
+                            $filename = APP_PATH . $className . ".php";
                         } else {
-                            $className = str_replace('\\', '/', $className) . ".php";
-                            $filename = VENDOR_PATH . $className;
+                            $className = str_replace('\\', '/', $className);
+                            $filename = VENDOR_PATH . $className . ".php";
                         }
                 } else {
                     $filename = $className;
