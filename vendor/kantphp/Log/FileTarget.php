@@ -8,6 +8,7 @@
  */
 namespace Kant\Log;
 
+use Kant\Kant;
 use Kant\Log\Target;
 use Kant\Helper\DirHelper;
 use Kant\Exception\InvalidConfigException;
@@ -82,7 +83,7 @@ class FileTarget extends Target
     public function init()
     {
         if ($this->logFile === null) {
-            $this->logFile = LOG_PATH . date("Y-m-d") . '/app.log';
+            $this->logFile = Kant::getAlias('@runtime/logs/') . date("Y-m-d") . '/app.log';
         }
         
         $logPath = dirname($this->logFile);

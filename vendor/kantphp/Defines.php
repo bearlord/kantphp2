@@ -11,8 +11,6 @@ if (! defined('APP_PATH')) {
     define('APP_PATH', realpath(__DIR__ . '/../../app'));
 }
 
-// Storage directory
-define('RUNTIME_PATH', APP_PATH . '/Runtime/');
 // Template directory
 define('TPL_PATH', APP_PATH . '/View/');
 // Config directroy
@@ -23,11 +21,6 @@ define('LIB_PATH', APP_PATH . '/Library/');
 // Public Path
 define('PUBLIC_PATH', dirname(APP_PATH)  . '/public/');
 
-
-// Log path
-if (! defined('LOG_PATH')) {
-    define('LOG_PATH', RUNTIME_PATH . 'logs/');
-}
 
 // Web root
 if (! defined('APP_URL')) {

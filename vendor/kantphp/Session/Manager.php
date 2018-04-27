@@ -113,8 +113,8 @@ class Manager
     protected function createNativeDriver()
     {
         $files = $this->getFileSystem();
-        
-        $path = Kant::$app->config->get('session.files');
+
+        $path = Kant::getAlias(Kant::$app->config->get('session.files'));
         
         $lifetime = Kant::$app->config->get('session.lifetime');
         

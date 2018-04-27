@@ -8,8 +8,31 @@
  */
 namespace Kant\Web;
 
+/**
+ * Application is the base class for all web application classes.
+ *
+ * For more details and usage information on Application, see the [guide article on applications](guide:structure-applications).
+ *
+ * @property Request $request The request component. This property is read-only.
+ * @property Response $response The response component. This property is read-only.
+ * @property Session $session The session component. This property is read-only.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
+ */
 class Application extends \Kant\Foundation\Application
 {
 
-    
+	/**
+	 * @inheritdoc
+	 */
+	protected function bootstrap()
+	{
+		$request = $this->getRequest();
+
+		Kant::setAlias('@webroot', dirname($request->getScriptName()));
+		Kant::setAlias('@web', $request->getBaseUrl());
+		parent::bootstrap();
+	}
+
 }

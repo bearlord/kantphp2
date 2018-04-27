@@ -119,7 +119,7 @@ return [
          * | location may be specified. This is only needed for file sessions.
          * |
          */
-        'files' => RUNTIME_PATH . 'sessions/',
+        'files' => '@runtime/sessions/',
         /**
          * |--------------------------------------------------------------------------
          * | Session Database Connection

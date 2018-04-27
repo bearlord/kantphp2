@@ -41,7 +41,7 @@ use ReflectionMethod;
  * @property \Kant\Filesystem\FilesystemManager $store The store component. This property is read-only.
  * @property string $timeZone The time zone used by this application.
  * @property \Kant\View\View $view The view application component that is used to render various view files. This property is read-only.
- *          
+ *
  */
 class Application extends Module
 {
@@ -56,7 +56,7 @@ class Application extends Module
 
     /**
      * Config object instance
-     * 
+     *
      * @var object
      */
     public $config;
@@ -105,7 +105,7 @@ class Application extends Module
      * Constructs
      * Initialize Config,register Cache,Database,Session,Cookie
      *
-     * @param string $env            
+     * @param string $env
      */
     public function __construct($env)
     {
@@ -128,18 +128,15 @@ class Application extends Module
      * This method is called by [[init()]] after the application has been fully configured.
      * If you override this method, make sure you also call the parent implementation.
      */
-    public function bootstrap()
+    protected function bootstrap()
     {
-        $format = strtolower($this->config->get('responseFormat'));
         $request = $this->getRequest();
         $this->setResponse($request);
-        Kant::setAlias('@webroot', dirname($request->getScriptName()));
-        Kant::setAlias('@web', $request->getBaseUrl());
     }
 
     /**
      * Returns the configuration of core application components.
-     * 
+     *
      * @see set()
      */
     public function coreComponents()
@@ -207,8 +204,8 @@ class Application extends Module
     /**
      * Register Response
      *
-     * @param Request $request            
-     * @param type $format            
+     * @param Request $request
+     * @param type $format
      */
     public function setResponse(Request $request)
     {
@@ -248,7 +245,7 @@ class Application extends Module
 
     /**
      * Returns the request component.
-     * 
+     *
      * @return Request the request component.
      */
     public function getRequest()
@@ -258,7 +255,7 @@ class Application extends Module
 
     /**
      * Returns the response component.
-     * 
+     *
      * @return Response the response component.
      */
     public function getResponse()
@@ -278,7 +275,7 @@ class Application extends Module
 
     /**
      * Returns the view object.
-     * 
+     *
      * @return View|\Kant\View\View the view application component that is used to render various view files.
      */
     public function getView()
@@ -288,7 +285,7 @@ class Application extends Module
 
     /**
      * Returns the formatter component.
-     * 
+     *
      * @return \Kant\I18n\Formatter the formatter application component.
      */
     public function getFormatter()
@@ -298,7 +295,7 @@ class Application extends Module
 
     /**
      * Get Cookie instance
-     * 
+     *
      * @return object
      */
     public function getCookie()
@@ -318,7 +315,7 @@ class Application extends Module
 
     /**
      * Returns the database connection component.
-     * 
+     *
      * @return \Kant\Database\Connection the database connection.
      */
     public function getDb()
@@ -328,7 +325,7 @@ class Application extends Module
 
     /**
      * Returns the log dispatcher component.
-     * 
+     *
      * @return \Kant\Log\Dispatcher the log dispatcher application component.
      */
     public function getLog()
@@ -338,7 +335,7 @@ class Application extends Module
 
     /**
      * Returns the error handler component.
-     * 
+     *
      * @return \Kant\ErrorHandler\ErrorHandler
      */
     public function getErrorHandler()
@@ -348,7 +345,7 @@ class Application extends Module
 
     /**
      * Returns the internationalization (i18n) component
-     * 
+     *
      * @return \Kant\I18n\I18N the internationalization application component.
      */
     public function getI18n()
@@ -358,7 +355,7 @@ class Application extends Module
 
     /**
      * Returns the files component
-     * 
+     *
      * @return Kant\Filesystem\Filesystem
      */
     public function getFiles()
@@ -368,7 +365,7 @@ class Application extends Module
 
     /**
      * Returns the asset manager.
-     * 
+     *
      * @return \Kant\View\AssetManager the asset manager application component.
      */
     public function getAssetManager()
@@ -378,7 +375,7 @@ class Application extends Module
 
     /**
      * Returns the security component.
-     * 
+     *
      * @return \Kant\Foundation\Security the security application component.
      */
     public function getSecurity()
@@ -393,7 +390,7 @@ class Application extends Module
 
     /**
      * Returns the user component.
-     * 
+     *
      * @return User the user component.
      */
     public function getUser()
@@ -411,7 +408,7 @@ class Application extends Module
 
     /**
      * Returns the router component
-     * 
+     *
      * @return type
      */
     public function getRouter()
@@ -435,7 +432,7 @@ class Application extends Module
     /**
      * Singleton instance
      *
-     * @param type $environment            
+     * @param type $environment
      * @return type
      */
     public static function getInstance($environment = 'Dev')
@@ -453,22 +450,22 @@ class Application extends Module
     public function run()
     {
         $request = $this->getRequest();
-        
+
         $response = $this->getResponse();
-        
+
         $router = $this->getRouter();
-        
+
         $this->setCookie($this->config->get('cookie'), $request, $response);
         $this->setSession($this->config->get('session'), $request, $response);
-        
+
         $router->dispatch($request, $response);
-        
+
         $this->end($response);
     }
 
     /**
      * Returns the directory that stores runtime files.
-     * 
+     *
      * @return string the directory that stores runtime files.
      *         Defaults to the "runtime" subdirectory under [[basePath]].
      */
@@ -477,13 +474,13 @@ class Application extends Module
         if ($this->_runtimePath === null) {
             $this->setRuntimePath(APP_PATH . 'Runtime');
         }
-        
+
         return $this->_runtimePath;
     }
 
     /**
      * Sets the directory that stores runtime files.
-     * 
+     *
      * @param string $path
      *            the directory that stores runtime files.
      */
@@ -504,23 +501,23 @@ class Application extends Module
             // set "@vendor"
             $this->getVendorPath();
         }
-        
+
         if ($config->get('runtimePath') != "") {
             $this->setRuntimePath($config->get('runtimePath'));
         } else {
             // set "@runtime"
             $this->getRuntimePath();
         }
-        
+
         // set default timezone
         if ($config->get('timezone') != "") {
             $this->setTimeZone($config->get('timezone'));
         } elseif (! ini_get('date.timezone')) {
             $this->setTimeZone('UTC');
         }
-        
+
         $this->setLanguage($config->get('language'));
-        
+
         // merge core components with custom components
         $componentsKeys = array_merge(array_keys($this->coreComponents()), array_keys($config->get('components')));
         foreach ($componentsKeys as $id) {
@@ -541,7 +538,7 @@ class Application extends Module
      * This is a simple wrapper of PHP function date_default_timezone_get().
      * If time zone is not configured in php.ini or application config,
      * it will be set to UTC by default.
-     * 
+     *
      * @return string the time zone used by this application.
      * @see http://php.net/manual/en/function.date-default-timezone-get.php
      */
@@ -554,7 +551,7 @@ class Application extends Module
      * Sets the time zone used by this application.
      * This is a simple wrapper of PHP function date_default_timezone_set().
      * Refer to the [php manual](http://www.php.net/manual/en/timezones.php) for available timezones.
-     * 
+     *
      * @param string $value
      *            the time zone used by this application.
      * @see http://php.net/manual/en/function.date-default-timezone-set.php
@@ -577,7 +574,7 @@ class Application extends Module
 
     /**
      * get the language that is meant to be used for end users.
-     * 
+     *
      * @return string
      */
     public function getLanguage()
@@ -599,8 +596,8 @@ class Application extends Module
     /**
      * Register an existing instance as shared in the container.
      *
-     * @param string $class            
-     * @param mixed $instance            
+     * @param string $class
+     * @param mixed $instance
      * @return void
      */
     public function singleton($class, $instance)
@@ -611,8 +608,8 @@ class Application extends Module
 
     /**
      * Init Module Config;
-     * 
-     * @param type $module            
+     *
+     * @param type $module
      */
     public function setModuleConfig($module)
     {
@@ -626,7 +623,7 @@ class Application extends Module
     /**
      * Set view dispatcher
      *
-     * @param array $dispatcher            
+     * @param array $dispatcher
      */
     public function setDispatcher($dispatcher)
     {
@@ -637,8 +634,8 @@ class Application extends Module
     /**
      * Register the route middleware
      *
-     * @param object $config            
-     * @param Router $router            
+     * @param object $config
+     * @param Router $router
      */
     public function setRouteMiddleware($config, Router $router)
     {
