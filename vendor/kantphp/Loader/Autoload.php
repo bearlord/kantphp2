@@ -43,8 +43,8 @@ class KantAutoloaderInit
                         $className = str_replace('\\', '/', $className);
                         $filename = KANT_PATH . $className . ".php";
                     } else 
-                        if (strpos($className, "App") === 0) {
-                            $className = str_replace('App\\', '', $className);
+                        if (strpos($className, "app") === 0) {
+                            $className = str_replace('app\\', '', $className);
                             $className = str_replace('\\', '/', $className);
                             $filename = APP_PATH . $className . ".php";
                         } else {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Module\Common\Controller;
+namespace app\module\Common\Controller;
 
 use Kant\Controller\Controller;
 

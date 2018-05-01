@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Module\Api\RouteControllers;
+namespace app\module\Api\RouteControllers;
 
 use Kant\Controller\Controller;
 use Kant\Http\Response;
