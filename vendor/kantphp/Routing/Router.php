@@ -12,6 +12,7 @@ use Kant\Support\Collection;
 use Kant\Helper\StringHelper;
 use Kant\Http\Request;
 use Kant\Http\Response;
+use Kant\Support\Str;
 
 class Router extends Component
 {
@@ -101,7 +102,22 @@ class Router extends Component
 	public function __construct()
 	{
 		$this->routes = Kant::createObject(RouteCollection::class);
-		$this->mapRoutes();
+		$this->init();
+	}
+	
+	public function init()
+	{
+		$mc = new \app\middleware\Convention();
+		
+		foreach ($mc->middlewareGroups as $key => $middleware) {
+            $this->middlewareGroup($key, $middleware);
+        }
+		
+		foreach ($mc->routeMiddleware as $key => $middleware) {
+            $this->aliasMiddleware($key, $middleware);
+        }
+		
+		$this->mapRoutes();		
 	}
 
 	/**
@@ -113,7 +129,7 @@ class Router extends Component
 	 */
 	public function mapRoutes()
 	{
-		foreach (glob(CFG_PATH . "Route/*.php") as $map) {
+		foreach (glob(APP_PATH . "/route/*.php") as $map) {
 			$mapName = StringHelper::basename($map, $this->mapFileExt);
 			if (strtolower($mapName) === 'route') {
 				$this->group([
@@ -128,15 +144,7 @@ class Router extends Component
 					], $map);
 		}
 	}
-
-	/**
-	 * Get the Route Collection object.
-	 */
-	public function getRoutes()
-	{
-		return $this->routes;
-	}
-
+	
 	/**
 	 * Register a new GET route with the router.
 	 *
@@ -274,6 +282,22 @@ class Router extends Component
 		$registrar->register($name, $controller, $options);
 	}
 
+	
+    /**
+     * Route an api resource to a controller.
+     *
+     * @param  string  $name
+     * @param  string  $controller
+     * @param  array  $options
+     * @return void
+     */
+    public function apiResource($name, $controller, array $options = [])
+    {
+        $this->resource($name, $controller, array_merge([
+            'only' => ['index', 'show', 'store', 'update', 'destroy'],
+        ], $options));
+    }
+	
 	/**
 	 * Create a route group with shared attributes.
 	 *
@@ -619,6 +643,16 @@ class Router extends Component
 	}
 
 	/**
+     * Get all of the defined middleware short-hand names.
+     *
+     * @return array
+     */
+    public function getMiddleware()
+    {
+        return $this->middleware;
+    }
+	
+	/**
 	 * Register a short-hand name for a middleware.
 	 *
 	 * @param string $name            
@@ -631,6 +665,278 @@ class Router extends Component
 
 		return $this;
 	}
+	
+	
+    /**
+     * Check if a middlewareGroup with the given name exists.
+     *
+     * @param  string  $name
+     * @return bool
+     */
+    public function hasMiddlewareGroup($name)
+    {
+        return array_key_exists($name, $this->middlewareGroups);
+    }
+	
+	/**
+     * Get all of the defined middleware groups.
+     *
+     * @return array
+     */
+    public function getMiddlewareGroups()
+    {
+        return $this->middlewareGroups;
+    }
+	
+	/**
+     * Register a group of middleware.
+     *
+     * @param  string  $name
+     * @param  array  $middleware
+     * @return $this
+     */
+    public function middlewareGroup($name, array $middleware)
+    {
+        $this->middlewareGroups[$name] = $middleware;
+
+        return $this;
+    }
+	
+	/**
+     * Add a middleware to the beginning of a middleware group.
+     *
+     * If the middleware is already in the group, it will not be added again.
+     *
+     * @param  string  $group
+     * @param  string  $middleware
+     * @return $this
+     */
+    public function prependMiddlewareToGroup($group, $middleware)
+    {
+        if (isset($this->middlewareGroups[$group]) && ! in_array($middleware, $this->middlewareGroups[$group])) {
+            array_unshift($this->middlewareGroups[$group], $middleware);
+        }
+
+        return $this;
+    }
+	
+	/**
+     * Add a middleware to the end of a middleware group.
+     *
+     * If the middleware is already in the group, it will not be added again.
+     *
+     * @param  string  $group
+     * @param  string  $middleware
+     * @return $this
+     */
+    public function pushMiddlewareToGroup($group, $middleware)
+    {
+        if (! array_key_exists($group, $this->middlewareGroups)) {
+            $this->middlewareGroups[$group] = [];
+        }
+
+        if (! in_array($middleware, $this->middlewareGroups[$group])) {
+            $this->middlewareGroups[$group][] = $middleware;
+        }
+
+        return $this;
+    }
+	
+	/**
+     * Get the global "where" patterns.
+     *
+     * @return array
+     */
+    public function getPatterns()
+    {
+        return $this->patterns;
+    }
+
+    /**
+     * Set a global where pattern on all routes.
+     *
+     * @param  string  $key
+     * @param  string  $pattern
+     * @return void
+     */
+    public function pattern($key, $pattern)
+    {
+        $this->patterns[$key] = $pattern;
+    }
+
+    /**
+     * Set a group of global where patterns on all routes.
+     *
+     * @param  array  $patterns
+     * @return void
+     */
+    public function patterns($patterns)
+    {
+        foreach ($patterns as $key => $pattern) {
+            $this->pattern($key, $pattern);
+        }
+    }
+	
+	    /**
+     * Get a route parameter for the current route.
+     *
+     * @param  string  $key
+     * @param  string  $default
+     * @return mixed
+     */
+    public function input($key, $default = null)
+    {
+        return $this->current()->parameter($key, $default);
+    }
+
+    /**
+     * Get the request currently being dispatched.
+     *
+     * @return \Illuminate\Http\Request
+     */
+    public function getCurrentRequest()
+    {
+        return $this->currentRequest;
+    }
+	
+	/**
+     * Get the currently dispatched route instance.
+     *
+     * @return \Illuminate\Routing\Route
+     */
+    public function getCurrentRoute()
+    {
+        return $this->current();
+    }
+	
+	/**
+     * Get the currently dispatched route instance.
+     *
+     * @return \Illuminate\Routing\Route
+     */
+    public function current()
+    {
+        return $this->current;
+    }
+	
+	/**
+     * Check if a route with the given name exists.
+     *
+     * @param  string  $name
+     * @return bool
+     */
+    public function has($name)
+    {
+        return $this->routes->hasNamedRoute($name);
+    }
+	
+	/**
+     * Get the current route name.
+     *
+     * @return string|null
+     */
+    public function currentRouteName()
+    {
+        return $this->current() ? $this->current()->getName() : null;
+    }
+	
+	/**
+     * Alias for the "currentRouteNamed" method.
+     *
+     * @return bool
+     */
+    public function is()
+    {
+        foreach (func_get_args() as $pattern) {
+            if (Str::is($pattern, $this->currentRouteName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+	
+	
+    /**
+     * Determine if the current route matches a given name.
+     *
+     * @param  string  $name
+     * @return bool
+     */
+    public function currentRouteNamed($name)
+    {
+        return $this->current() ? $this->current()->named($name) : false;
+    }
+	
+	/**
+     * Get the current route action.
+     *
+     * @return string|null
+     */
+    public function currentRouteAction()
+    {
+        if (! $this->current()) {
+            return;
+        }
+
+        $action = $this->current()->getAction();
+
+        return isset($action['controller']) ? $action['controller'] : null;
+    }
+	
+	/**
+     * Alias for the "currentRouteUses" method.
+     *
+     * @return bool
+     */
+    public function uses()
+    {
+        foreach (func_get_args() as $pattern) {
+            if (Str::is($pattern, $this->currentRouteAction())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+	
+	/**
+     * Determine if the current route action matches a given action.
+     *
+     * @param  string  $action
+     * @return bool
+     */
+    public function currentRouteUses($action)
+    {
+        return $this->currentRouteAction() == $action;
+    }
+	
+	/**
+     * Get the underlying route collection.
+     *
+     * @return \Illuminate\Routing\RouteCollection
+     */
+    public function getRoutes()
+    {
+        return $this->routes;
+    }
+
+    /**
+     * Set the route collection instance.
+     *
+     * @param  \Illuminate\Routing\RouteCollection  $routes
+     * @return void
+     */
+    public function setRoutes(RouteCollection $routes)
+    {
+        foreach ($routes as $route) {
+            $route->setRouter($this)->setContainer($this->container);
+        }
+
+        $this->routes = $routes;
+
+        $this->container->instance('routes', $this->routes);
+    }
 
 	/**
 	 * Handle dynamic, static calls to the object.

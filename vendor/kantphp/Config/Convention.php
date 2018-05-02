@@ -280,7 +280,7 @@ return [
         'disks' => [
             'local' => [
                 'driver' => 'local',
-                'root' => APP_PATH . 'storage'
+                'root' => APP_PATH . '/storage'
             ],
             'public' => [
                 'driver' => 'local',

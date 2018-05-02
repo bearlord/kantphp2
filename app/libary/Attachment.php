@@ -132,7 +132,7 @@ class Attachment {
      * @return boolean
      */
     public function createSavePath() {
-        require_once KANT_PATH . 'Help/Dir.php';
+        require_once KANT_PATH . '/Help/Dir.php';
         if ($this->savePath == '') {
             $dirSetting = 'uploads/' . date('Ym') . '/';
             $this->savePath = PUBLIC_PATH . $dirSetting;

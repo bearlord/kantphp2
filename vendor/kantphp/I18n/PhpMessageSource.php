@@ -39,7 +39,7 @@ class PhpMessageSource extends MessageSource
      *
      * @var string the base path for all translated messages. Defaults to '@app/messages'.
      */
-    public $basePath = KANT_PATH . 'Messages/';
+    public $basePath = KANT_PATH . '/Messages/';
 
     /**
      *

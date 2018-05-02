@@ -56,7 +56,7 @@ class KantException extends Exception
             }
             $error['trace'] = $this->getTraceAsString();
 
-            $exceptionFile = KANT_PATH . 'View/system/exception.php';
+            $exceptionFile = KANT_PATH . '/View/system/exception.php';
             Kant::$app->view->error = $error;
             echo Kant::$app->view->fetch($exceptionFile);
             

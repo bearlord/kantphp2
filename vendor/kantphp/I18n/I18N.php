@@ -59,7 +59,7 @@ class I18N extends Component
             $this->translations['kant'] = [
                 'class' => 'Kant\I18n\PhpMessageSource',
                 'sourceLanguage' => 'en-US',
-                'basePath' => KANT_PATH . 'Messages/'
+                'basePath' => KANT_PATH . '/Messages/'
             ]
             // 'basePath' => '@kant/messages',
             ;
@@ -68,7 +68,7 @@ class I18N extends Component
             $this->translations['app'] = [
                 'class' => 'Kant\I18n\PhpMessageSource',
                 'sourceLanguage' => Kant::$app->sourceLanguage,
-                'basePath' => APP_PATH . 'messages/'
+                'basePath' => APP_PATH . '/messages/'
             ]
             // 'basePath' => '@app/messages',
             ;

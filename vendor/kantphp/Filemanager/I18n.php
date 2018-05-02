@@ -33,9 +33,9 @@ class I18n extends Component
      */
     public static function setMessageSource()
     {
-        $sourceFile = KANT_PATH . 'Filemanager/I18n/' . Kant::$app->language . "/message.php";
+        $sourceFile = KANT_PATH . '/Filemanager/I18n/' . Kant::$app->language . "/message.php";
         if (file_exists($sourceFile)) {
-            self::$messageSource = include KANT_PATH . 'Filemanager/I18n/' . Kant::$app->language . "/message.php";
+            self::$messageSource = include KANT_PATH . '/Filemanager/I18n/' . Kant::$app->language . "/message.php";
         }
     }
 

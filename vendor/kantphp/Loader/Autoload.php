@@ -35,18 +35,16 @@ class KantAutoloaderInit
         }
         try {
             if (in_array($className, array_keys(self::$_autoCoreClass)) == true) {
-                $filename = KANT_PATH . self::$_autoCoreClass[$className] . ".php";
+                $filename = KANT_PATH . DIRECTORY_SEPARATOR . self::$_autoCoreClass[$className] . ".php";
             } else {
                 if (strpos($className, "\\") !== false) {
                     if (strpos($className, "Kant") === 0) {
-                        $className = str_replace('Kant\\', '', $className);
-                        $className = str_replace('\\', '/', $className);
-                        $filename = KANT_PATH . $className . ".php";
+                        $className = str_replace('\\', '/', str_replace('Kant\\', '', $className));
+                        $filename = KANT_PATH . DIRECTORY_SEPARATOR . $className . ".php";
                     } else 
                         if (strpos($className, "app") === 0) {
-                            $className = str_replace('app\\', '', $className);
-                            $className = str_replace('\\', '/', $className);
-                            $filename = APP_PATH . $className . ".php";
+                            $className = str_replace('\\', '/', str_replace('app\\', '', $className));
+                            $filename = APP_PATH . DIRECTORY_SEPARATOR . $className . ".php";
                         } else {
                             $className = str_replace('\\', '/', $className);
                             $filename = VENDOR_PATH . $className . ".php";
