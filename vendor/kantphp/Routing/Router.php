@@ -583,11 +583,9 @@ class Router extends Component
 	protected function runRouteWithinStack(Route $route, Request $request, Response $response)
 	{
 		$middleware = $this->gatherRouteMiddleware($route);
-//		var_dump($middleware);
-		
 		return (new Pipeline(Kant::$container))
 						->send($request)
-//						->through($middleware)
+						->through($middleware)
 						->then(function($request) use ($route, $response) {
 							$response->setContent($route->run());
 							return $response;
