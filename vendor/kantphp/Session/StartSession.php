@@ -12,7 +12,7 @@ namespace Kant\Session;
 use Kant\Http\Request;
 use Kant\Http\Response;
 use Kant\Http\Cookie;
-use Kant\Session\Manager;
+use Kant\Session\SessionManager;
 use Kant\Support\Arr;
 
 final class StartSession
@@ -47,7 +47,7 @@ final class StartSession
      */
     public function handle()
     {
-        $this->manager = new Manager($this->config);
+        $this->manager = new SessionManager($this->config);
         $this->sessionHandled = true;
         // If a session driver has been configured, we will need to start the session here
         // so that the data is ready for an application. Note that the Laravel sessions

@@ -35,4 +35,4 @@ Router::get('/order/{id}', function($id, Query $query, Response $response) {
 		'message' => '获取信息成功',
 		'data' => $item
 	];
-})->where('id', '[0-9]+');
+})->middleware('checkage:18')->where('id', '[0-9]+');

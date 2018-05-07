@@ -557,7 +557,10 @@ class Router extends Component
 			return $route;
 		});
 
-		return $this->runRouteWithinStack($route, $request, $response);
+//		return $this->runRouteWithinStack($route, $request, $response);
+		$response = $this->runRouteWithinStack($route, $request);
+
+        return $this->prepareResponse($request, $response);
 	}
 
 	/**
@@ -580,16 +583,17 @@ class Router extends Component
 	 * @param \Kant\Http\Response $response            
 	 * @return mixed
 	 */
-	protected function runRouteWithinStack(Route $route, Request $request, Response $response)
+	protected function runRouteWithinStack(Route $route, Request $request)
 	{
 		$middleware = $this->gatherRouteMiddleware($route);
 		return (new Pipeline(Kant::$container))
 						->send($request)
 						->through($middleware)
-						->then(function($request) use ($route, $response) {
-							$response->setContent($route->run());
-							return $response;
-						});
+						->then(function ($request) use ($route) {
+                            return $this->prepareResponse(
+                                $request, $route->run()
+                            );
+                        });
 	}
 
 	/**
@@ -617,6 +621,23 @@ class Router extends Component
 	{
 		return (new SortedMiddleware($this->middlewarePriority, $middlewares))->all();
 	}
+	
+	/**
+     * Create a response instance from the given value.
+     *
+     * @param  \Kant\Http\Request  $request
+     * @param  mixed  $response
+     * @return \Kant\Http\Response
+     */
+    public function prepareResponse($request, $response)
+    {
+		if(!$response instanceof Response) {
+			Kant::$app->response->setContent($response);
+            $response = Kant::$app->response;
+        }
+
+        return $response->prepare($request);
+    }
 
 	/**
 	 * Determine if the router currently has a group stack.

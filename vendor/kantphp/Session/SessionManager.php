@@ -13,7 +13,7 @@ use Kant\Kant;
 use Kant\Support\Str;
 use Kant\Exception\InvalidArgumentException;
 
-class Manager
+class SessionManager
 {
 
     /**
