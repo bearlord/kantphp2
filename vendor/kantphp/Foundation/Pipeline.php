@@ -150,8 +150,8 @@ class Pipeline
 					// since the object we're given was already a fully instantiated object.
 					$parameters = [$passable, $stack];
 				}
-
-				return $pipe->{$this->method}(...$parameters);
+				return $this->container->invoke([$pipe, $this->method], $parameters);
+//				return $pipe->{$this->method}(...$parameters);
 			};
 		};
 	}

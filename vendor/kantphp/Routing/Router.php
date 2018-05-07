@@ -107,13 +107,13 @@ class Router extends Component
 	
 	public function init()
 	{
-		$mc = new \app\middleware\Convention();
+		$stack = new \app\middleware\Stack();
 		
-		foreach ($mc->middlewareGroups as $key => $middleware) {
+		foreach ($stack->middlewareGroups as $key => $middleware) {
             $this->middlewareGroup($key, $middleware);
         }
 		
-		foreach ($mc->routeMiddleware as $key => $middleware) {
+		foreach ($stack->routeMiddleware as $key => $middleware) {
             $this->aliasMiddleware($key, $middleware);
         }
 		
@@ -140,7 +140,7 @@ class Router extends Component
 			$this->group([
 				'prefix' => strtolower($mapName),
 				'middleware' => ($mapName),
-				'namespace' => "App\\{$mapName}\\RouteControllers"
+				'namespace' => "app\\{$mapName}\\RouteControllers"
 					], $map);
 		}
 	}
@@ -548,7 +548,7 @@ class Router extends Component
 		// route resolver on the request so middlewares assigned to the route will
 		// receive access to this route instance for checking of the parameters.
 		$route = $this->findRoute($request);
-
+		
 		if (!$route) {
 			return $this->dispatchToModule($request, $response);
 		}
@@ -557,7 +557,6 @@ class Router extends Component
 			return $route;
 		});
 
-//		return $this->runRouteWithinStack($route, $request, $response);
 		$response = $this->runRouteWithinStack($route, $request);
 
         return $this->prepareResponse($request, $response);

@@ -2,7 +2,7 @@
 
 namespace app\middleware;
 
-class Convention
+class Stack
 {
     /**
      * The application's global HTTP middleware stack.
@@ -12,10 +12,7 @@ class Convention
      * @var array
      */
     public $middleware = [
-        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
-        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
-        \App\Http\Middleware\TrimStrings::class,
-        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+		
     ];
 
     /**
@@ -24,8 +21,8 @@ class Convention
      * @var array
      */
     public $middlewareGroups = [
-        'Index' => [
-//            CheckAge::class
+        'index' => [
+			
         ],
 		
         'api' => [

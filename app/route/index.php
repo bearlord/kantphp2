@@ -13,15 +13,6 @@ use Kant\Http\Response;
 $router->get("/welcome", function() {
 	return "Welcome To Kant Framework V2.2";
 });
-$router->get("/age", function() {
-	\Kant\Kant::$app->cache->set('hoo', 'hello world!!');
-
-	$get = Kant\Kant::$app->request->all();
-	var_dump($get);
-	return "Welcome To Kant Framework V2.2";
-})->middleware([App\Middleware\CheckAge::class]);
-
-
 
 Router::get('/order/{id}', function($id, Query $query, Response $response) {
 	$response->format = Response::FORMAT_JSON;

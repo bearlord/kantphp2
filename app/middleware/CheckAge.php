@@ -27,10 +27,9 @@ class CheckAge
 	 * @param \Closure $next
 	 * @return mixed
 	 */
-	public function handle($request, Closure $next, $minAge)
+	public function handle($request, Closure $next, $minAge, Response $response)
 	{
 		if ($request->input('age') <= $minAge) {
-			$response = Kant::$app->response;
 			$response->format = Response::FORMAT_JSON;
 			$response->setContent([
 				'status' => 400,
