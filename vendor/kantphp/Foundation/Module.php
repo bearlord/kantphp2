@@ -259,9 +259,9 @@ class Module extends ServiceLocator
         }
 
         if ($pattern == 'implicit') {
-            $className = sprintf("App\%s\Controllers\%sController", ucfirst($moduleName), ucfirst($controllerName));
+            $className = sprintf("app\module\%s\Controllers\%sController", $moduleName, ucfirst($controllerName));
         } else {
-            $className = sprintf("App\%s\RouteControllers\%sController", ucfirst($moduleName), ucfirst($controllerName));
+            $className = sprintf("app\module\%s\RouteControllers\%sController", $moduleName, ucfirst($controllerName));
         }
 
         if (strpos($className, '-') !== false || !class_exists($className)) {
