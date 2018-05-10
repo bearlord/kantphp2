@@ -6,7 +6,10 @@
  * @copyright (c) KantPHP Studio, All rights reserved.
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
+
 namespace Kant\Web;
+
+use Kant\Kant;
 
 /**
  * Application is the base class for all web application classes.
@@ -33,6 +36,30 @@ class Application extends \Kant\Foundation\Application
 		Kant::setAlias('@webroot', dirname($request->getScriptName()));
 		Kant::setAlias('@web', $request->getBaseUrl());
 		parent::bootstrap();
+	}
+
+	private $_homeUrl;
+
+	/**
+	 *
+	 * @return string the homepage URL
+	 */
+	public function getHomeUrl()
+	{
+		if ($this->_homeUrl === null) {
+			return $this->getRequest()->getBaseUrl() . '/';
+		} else {
+			return $this->_homeUrl;
+		}
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function coreComponents()
+	{
+		return array_merge(parent::coreComponents(), [
+		]);
 	}
 
 }

@@ -529,11 +529,11 @@ class Router extends Component
 	 * @param \Kant\Http\Request $request            
 	 * @return \Kant\Http\Response
 	 */
-	public function dispatch(Request $request, Response $response)
+	public function dispatch(Request $request)
 	{
 		$this->currentRequest = $request;
 
-		return $this->dispatchToRoute($request, $response);
+		return $this->dispatchToRoute($request);
 	}
 
 	/**
@@ -542,7 +542,7 @@ class Router extends Component
 	 * @param \Kant\Http\Request $request            
 	 * @return mixed
 	 */
-	public function dispatchToRoute(Request $request, Response $response)
+	public function dispatchToRoute(Request $request)
 	{
 		// First we will find a route that matches this request. We will also set the
 		// route resolver on the request so middlewares assigned to the route will
@@ -550,7 +550,7 @@ class Router extends Component
 		$route = $this->findRoute($request);
 		
 		if (!$route) {
-			return $this->dispatchToModule($request, $response);
+			return $this->dispatchToModule($request);
 		}
 
 		$request->setRouteResolver(function () use($route) {
@@ -654,8 +654,9 @@ class Router extends Component
 	 * @param \Kant\Http\Request $request            
 	 * @return mixed
 	 */
-	public function dispatchToModule(Request $request, Response $response)
+	public function dispatchToModule(Request $request)
 	{
+		$response = Kant::$app->getResponse();
 		$response->setContent((new ModuleDispatcher())->dispatch($request));
 		return $response;
 	}

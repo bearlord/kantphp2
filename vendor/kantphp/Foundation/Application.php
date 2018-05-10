@@ -124,7 +124,7 @@ class Application extends Module
 	 */
 	public $sourceLanguage = 'en-US';
 	private $_runtimePath;
-	private $_homeUrl;
+	
 
 	/**
 	 * Dispatcher type
@@ -160,6 +160,9 @@ class Application extends Module
 	public function __construct($config)
 	{
 		Kant::$app = $this;
+		
+		$this->state = self::STATE_BEGIN;
+		
 		$this->config = $appConfig = $this->initConfig($config);
 
 		$this->preInit($appConfig);
@@ -467,19 +470,6 @@ class Application extends Module
 	}
 
 	/**
-	 *
-	 * @return string the homepage URL
-	 */
-	public function getHomeUrl()
-	{
-		if ($this->_homeUrl === null) {
-			return $this->getRequest()->getBaseUrl() . '/';
-		} else {
-			return $this->_homeUrl;
-		}
-	}
-
-	/**
 	 * Singleton instance
 	 *
 	 * @param type $config
@@ -511,7 +501,7 @@ class Application extends Module
 
 			$this->setCookie($this->config->get('cookie'), $request, $response);
 			$this->setSession($this->config->get('session'), $request, $response);
-			$this->getRouter()->dispatch($request, $response);
+			$this->getRouter()->dispatch($request);
 
 			$this->state = self::STATE_AFTER_REQUEST;
 			$this->trigger(self::EVENT_AFTER_REQUEST);
@@ -525,19 +515,6 @@ class Application extends Module
 		} catch (ExitException $e) {
 			return $e->statusCode;
 		}
-
-//		$request = $this->getRequest();
-//
-//		$response = $this->getResponse();
-//
-//		$router = $this->getRouter();
-//
-//		$this->setCookie($this->config->get('cookie'), $request, $response);
-//		$this->setSession($this->config->get('session'), $request, $response);
-//
-//		$router->dispatch($request, $response);
-//
-//		$this->end($response);
 	}
 
 	/**
