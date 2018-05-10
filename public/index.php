@@ -10,6 +10,6 @@ $env = 'dev';
 
 $config = require(APP_PATH . "/config/{$env}/config.php");
 
-\Kant\Web\Application::getInstance($config)->run();
+(new \Kant\Web\Application($config))->run();
 
 ?>

@@ -271,28 +271,26 @@ class Application extends Module
 	 * @staticvar type $session
 	 * @return type
 	 */
-	protected function setSession($config, $request, $response)
+	protected function setSession($config, $request)
 	{
 		Kant::$container->set('Kant\Session\Session', Kant::createObject([
 					'class' => \Kant\Session\StartSession::class
 						], [
 					$config,
 					$request,
-					$response
 				])->handle());
 	}
 
 	/**
 	 * Register Cookie
 	 */
-	protected function setCookie($config, Request $request, Response $response)
+	protected function setCookie($config, Request $request)
 	{
 		$this->set('cookie', Kant::createObject([
 					'class' => \Kant\Cookie\Cookie::class
 						], [
 					$config,
-					$request,
-					$response
+					$request
 		]));
 	}
 
@@ -499,8 +497,8 @@ class Application extends Module
 			$request = $this->getRequest();
 			$response = $this->getResponse();
 
-			$this->setCookie($this->config->get('cookie'), $request, $response);
-			$this->setSession($this->config->get('session'), $request, $response);
+			$this->setCookie($this->config->get('cookie'), $request);
+			$this->setSession($this->config->get('session'), $request);
 			$this->getRouter()->dispatch($request);
 
 			$this->state = self::STATE_AFTER_REQUEST;

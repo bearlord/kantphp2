@@ -9,6 +9,7 @@
  */
 namespace Kant\Session;
 
+use Kant\Kant;
 use Kant\Http\Request;
 use Kant\Http\Response;
 use Kant\Http\Cookie;
@@ -33,11 +34,11 @@ final class StartSession
      */
     protected $sessionHandled = false;
 
-    public function __construct($config, Request $request, Response $response)
+    public function __construct($config, Request $request)
     {
         $this->config = $config;
         $this->request = $request;
-        $this->response = $response;
+        $this->response = Kant::$app->response;
     }
 
     /**
