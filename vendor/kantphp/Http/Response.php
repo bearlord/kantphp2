@@ -14,6 +14,7 @@ use Kant\Http\BaseResponse;
 use Kant\Http\Formatter\ResponseFormatterInterface;
 use Kant\Exception\InvalidConfigException;
 use Kant\Exception\InvalidParamException;
+use Kant\Exception\HttpException;
 
 class Response extends BaseResponse
 {
@@ -244,6 +245,23 @@ class Response extends BaseResponse
         foreach (Kant::$app->cookie->getQueuedCookies() as $cookie) {
             $this->headers->setCookie($cookie);
         }
+    }
+
+    /**
+     * Sets the response status code based on the exception.
+     * @param \Exception|\Error $e the exception object.
+     * @throws InvalidParamException if the status code is invalid.
+     * @return $this the response object itself
+     * @since 2.0.12
+     */
+    public function setStatusCodeByException($e)
+    {
+        if ($e instanceof HttpException) {
+            $this->setStatusCode($e->statusCode);
+        } else {
+            $this->setStatusCode(500);
+        }
+        return $this;
     }
 
     /**

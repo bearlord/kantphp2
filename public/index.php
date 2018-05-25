@@ -1,5 +1,5 @@
 <?php
-
+defined('KANT_DEBUG') or define('KANT_DEBUG', true);
 
 //Application path
 define('APP_PATH', __DIR__ . '/../app');

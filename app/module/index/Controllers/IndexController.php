@@ -12,6 +12,7 @@ class IndexController extends Controller
 
 	public function indexAction(Response $response, Session $session)
 	{
+	    $a /0 ;
 		$response->cookie('username', 'zhangsan', 60);
 		$session->set('adminid', 1000);
 		return 'Hello KantPHP!';

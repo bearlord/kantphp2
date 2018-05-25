@@ -11,6 +11,7 @@ namespace Kant\Web;
 
 use Kant\Kant;
 use Kant\Exception\InvalidRouteException;
+use Kant\Exception\NotFoundHttpException;
 
 /**
  * Application is the base class for all web application classes.
@@ -58,6 +59,17 @@ class Application extends \Kant\Foundation\Application
 
     }
 
+
+    /**
+     * Returns the router component
+     *
+     * @return type
+     */
+    public function getRouter()
+    {
+        return $this->get('router');
+    }
+
 	private $_homeUrl;
 
 	/**
@@ -72,6 +84,16 @@ class Application extends \Kant\Foundation\Application
 			return $this->_homeUrl;
 		}
 	}
+
+    /**
+     * Returns the user component.
+     *
+     * @return User the user component.
+     */
+    public function getUser()
+    {
+        return $this->get('user');
+    }
 
 	/**
 	 * @inheritdoc

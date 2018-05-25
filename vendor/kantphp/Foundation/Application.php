@@ -164,6 +164,8 @@ abstract class Application extends Module
 		$this->config = $appConfig = $this->initConfig($config);
 
 		$this->preInit($appConfig);
+
+        $this->registerErrorHandler($appConfig);
 	}
 
 	/**
@@ -185,6 +187,27 @@ abstract class Application extends Module
 		$request = $this->getRequest();
 		$this->setResponse($request);
 	}
+
+    /**
+     * Registers the errorHandler component as a PHP error handler.
+     * @param array $config application config
+     */
+    protected function registerErrorHandler($config)
+    {
+        if (KANT_ENABLE_ERROR_HANDLER) {
+            /*
+            if (!isset($config->components['errorHandler']['class'])) {
+                echo "Error: no errorHandler component is configured.\n";
+                exit(1);
+            }
+            $this->set('errorHandler', $config->components['errorHandler']);
+            */
+            $this->set('errorHandler', Kant::createObject([
+                'class' => \Kant\Web\ErrorHandler::class
+            ]));
+            $this->getErrorHandler()->register();
+        }
+    }
 
 	/**
 	 * Returns the configuration of core application components.
@@ -439,16 +462,6 @@ abstract class Application extends Module
 	}
 
 	/**
-	 * Returns the user component.
-	 *
-	 * @return User the user component.
-	 */
-	public function getUser()
-	{
-		return $this->get('user');
-	}
-
-	/**
 	 * Get Configure instance
 	 */
 	public function getConfig()
@@ -456,15 +469,6 @@ abstract class Application extends Module
 		return Kant::createObject('Kant\Config\Config');
 	}
 
-	/**
-	 * Returns the router component
-	 *
-	 * @return type
-	 */
-	public function getRouter()
-	{
-		return $this->get('router');
-	}
 
 	/**
 	 * Singleton instance
