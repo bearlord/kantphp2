@@ -132,7 +132,7 @@ class Module extends ServiceLocator
     public function getVendorPath()
     {
         if ($this->_vendorPath === null) {
-            $this->setVendorPath(dirname(dirname($this->getBasePath())) . '/vendor');
+            $this->setVendorPath(dirname($this->getBasePath()) . '/vendor');
         }
 
         return $this->_vendorPath;

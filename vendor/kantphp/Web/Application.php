@@ -54,7 +54,7 @@ class Application extends \Kant\Foundation\Application
             $response = $this->getRouter()->dispatch($request);
             return $response;
         } catch (InvalidRouteException $e) {
-            throw new NotFoundHttpException(Kant::t('yii', 'Page not found.'), $e->getCode(), $e);
+            throw new NotFoundHttpException(Kant::t('kant', 'Page not found.'), $e->getCode(), $e);
         }
 
     }

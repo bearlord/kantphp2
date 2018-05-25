@@ -247,7 +247,7 @@ abstract class ErrorHandler extends Component
         // load ErrorException manually here because autoloading them will not work
         // when error occurs while autoloading a class
         if (!class_exists('Kant\\Exception\\ErrorException', false)) {
-            require_once(__DIR__ . '/ErrorException.php');
+            require_once(KANT_PATH . '/Exception/ErrorException.php');
         }
 
         $error = error_get_last();
@@ -291,7 +291,7 @@ abstract class ErrorHandler extends Component
     {
         $category = get_class($exception);
         if ($exception instanceof HttpException) {
-            $category = 'yii\\web\\HttpException:' . $exception->statusCode;
+            $category = 'Kant\\Exception\\HttpException:' . $exception->statusCode;
         } elseif ($exception instanceof \ErrorException) {
             $category .= ':' . $exception->getSeverity();
         }
