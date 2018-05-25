@@ -90,9 +90,6 @@ class ErrorHandler extends \Kant\Foundation\ErrorHandler
             $response = new Response();
         }
 
-//        var_dump($exception);
-//        $response->setStatusCode($exception->getCode());
-
         $response->setStatusCodeByException($exception);
 
         $useErrorView = $response->format === Response::FORMAT_HTML && (!KANT_DEBUG || $exception instanceof UserException);

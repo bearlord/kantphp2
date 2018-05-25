@@ -11,6 +11,7 @@ use Kant\Database\Query;
 use Kant\Http\Response;
 
 $router->get("/welcome", function() {
+    $a = 10 /0;
 	return "Welcome To Kant Framework V2.2";
 });
 

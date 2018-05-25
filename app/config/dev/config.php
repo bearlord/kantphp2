@@ -26,7 +26,10 @@ return [
 		],
 		'cache' => [
 			'class' => 'Kant\Caching\FileCache',
-		]
+		],
+        'errorHandler' => [
+            'errorAction' => 'site/error',
+        ],
 	]
 ];
 ?>
