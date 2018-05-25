@@ -407,7 +407,7 @@ class ErrorHandler extends \Kant\Foundation\ErrorHandler
      */
     public function createFrameworkVersionLink()
     {
-        return '<a href="http://github.com/yiisoft/yii2/" target="_blank">' . $this->htmlEncode(Kant::getVersion()) . '</a>';
+        return '<a href="http://github.com/bearlord/kantphp2/" target="_blank">' . $this->htmlEncode(Kant::getVersion()) . '</a>';
     }
 
     /**
