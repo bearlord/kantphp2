@@ -10,6 +10,7 @@
 namespace Kant\Web;
 
 use Kant\Kant;
+use Kant\Exception\InvalidRouteException;
 
 /**
  * Application is the base class for all web application classes.
@@ -38,6 +39,25 @@ class Application extends \Kant\Foundation\Application
 		parent::bootstrap();
 	}
 
+    /**
+     * Handles the specified request.
+     * @param Request $request the request to be handled
+     * @return Response the resulting response
+     * @throws NotFoundHttpException if the requested route is invalid
+     */
+    public function handleRequest($request)
+    {
+        try {
+            $this->setCookie($this->config->get('cookie'), $request);
+            $this->setSession($this->config->get('session'), $request);
+            $response = $this->getRouter()->dispatch($request);
+            return $response;
+        } catch (InvalidRouteException $e) {
+            throw new NotFoundHttpException(Kant::t('yii', 'Page not found.'), $e->getCode(), $e);
+        }
+
+    }
+
 	private $_homeUrl;
 
 	/**
@@ -59,6 +79,7 @@ class Application extends \Kant\Foundation\Application
 	public function coreComponents()
 	{
 		return array_merge(parent::coreComponents(), [
+            'errorHandler' => ['class' => 'Kant\Web\ErrorHandler'],
 		]);
 	}
 

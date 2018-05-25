@@ -2,17 +2,17 @@
 
 namespace Kant\Routing;
 
+use Closure;
 use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Foundation\Pipeline;
-use Kant\Routing\RouteCollection;
-use Kant\Routing\RouteGroup;
-use Closure;
-use Kant\Support\Collection;
-use Kant\Helper\StringHelper;
 use Kant\Http\Request;
 use Kant\Http\Response;
+use Kant\Routing\RouteCollection;
+use Kant\Routing\RouteGroup;
+use Kant\Support\Collection;
 use Kant\Support\Str;
+use Kant\Helper\StringHelper;
 
 class Router extends Component
 {

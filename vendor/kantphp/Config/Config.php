@@ -8,7 +8,7 @@
  */
 namespace Kant\Config;
 
-class Config extends \ArrayObject
+class Config
 {
 
     /**

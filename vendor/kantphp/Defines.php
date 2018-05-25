@@ -6,6 +6,11 @@
  */
 defined('KANT_BEGIN_TIME') or define('KANT_BEGIN_TIME', microtime(true));
 
+/**
+ * This constant defines whether error handling should be enabled. Defaults to true.
+ */
+defined('KANT_ENABLE_ERROR_HANDLER') or define('KANT_ENABLE_ERROR_HANDLER', true);
+
 // App path
 if (! defined('APP_PATH')) {
     define('APP_PATH', realpath(__DIR__ . '/../../app'));

@@ -45,7 +45,7 @@ use ReflectionMethod;
  * @property \Kant\View\View $view The view application component that is used to render various view files. This property is read-only.
  *
  */
-class Application extends Module
+abstract class Application extends Module
 {
 
 	/**
@@ -123,8 +123,6 @@ class Application extends Module
 	 * @see language
 	 */
 	public $sourceLanguage = 'en-US';
-	private $_runtimePath;
-	
 
 	/**
 	 * Dispatcher type
@@ -231,7 +229,8 @@ class Application extends Module
 			],
 			'user' => [
 				'class' => 'Kant\Identity\User'
-			]
+			],
+            'errorHandler' => ['class' => 'Kant\Web\ErrorHandler'],
 		];
 	}
 
@@ -495,12 +494,13 @@ class Application extends Module
 			$this->state = self::STATE_HANDLING_REQUEST;
 
 			$request = $this->getRequest();
-			$response = $this->getResponse();
 
+			/*
 			$this->setCookie($this->config->get('cookie'), $request);
 			$this->setSession($this->config->get('session'), $request);
-			$this->getRouter()->dispatch($request);
-
+            $response = $this->getRouter()->dispatch($request);
+            */
+			$response = $this->handleRequest($request);
 			$this->state = self::STATE_AFTER_REQUEST;
 			$this->trigger(self::EVENT_AFTER_REQUEST);
 
@@ -514,6 +514,19 @@ class Application extends Module
 			return $e->statusCode;
 		}
 	}
+
+    /**
+     * Handles the specified request.
+     *
+     * This method should return an instance of [[Response]] or its child class
+     * which represents the handling result of the request.
+     *
+     * @param Request $request the request to be handled
+     * @return Response the resulting response
+     */
+    abstract public function handleRequest($request);
+
+    private $_runtimePath;
 
 	/**
 	 * Returns the directory that stores runtime files.
