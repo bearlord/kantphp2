@@ -253,7 +253,11 @@ abstract class Application extends Module
 			'user' => [
 				'class' => 'Kant\Identity\User'
 			],
-            'errorHandler' => ['class' => 'Kant\Web\ErrorHandler'],
+//            'errorHandler' => ['class' => 'Kant\Web\ErrorHandler'],
+            'errorHandler' => [
+                'class' => 'Kant\Web\ErrorHandler',
+                'errorAction' => '/site/error',
+            ],
 		];
 	}
 
