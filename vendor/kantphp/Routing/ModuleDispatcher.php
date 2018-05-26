@@ -8,7 +8,7 @@ use Kant\Registry\KantRegistry;
 use ReflectionMethod;
 use ReflectionParameter;
 use ReflectionException;
-use Kant\Exception\KantException;
+use Kant\Exception\Exception;
 use Kant\Exception\InvalidRouteException;
 
 class ModuleDispatcher

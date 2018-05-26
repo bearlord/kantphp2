@@ -9,7 +9,7 @@
 namespace Kant\Helper;
 
 use Kant\Kant;
-use Kant\Exception\KantException;
+use Kant\Exception\Exception;
 use Kant\Exception\ErrorException;
 use Kant\Exception\InvalidParamException;
 
@@ -507,7 +507,7 @@ class BaseFileHelper
      * @param boolean $recursive
      *            whether to create parent directories if they do not exist.
      * @return boolean whether the directory is created successfully
-     * @throws \Kant\Exception\KantException if the directory could not be created (i.e. php error due to parallel changes)
+     * @throws \Kant\Exception\Exception if the directory could not be created (i.e. php error due to parallel changes)
      */
     public static function createDirectory($path, $mode = 0775, $recursive = true)
     {

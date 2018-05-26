@@ -161,11 +161,17 @@ abstract class Application extends Module
 		
 		$this->state = self::STATE_BEGIN;
 		
-		$this->config = $appConfig = $this->initConfig($config);
+		$this->config = $this->initConfig($config);
 
-		$this->preInit($appConfig);
+		$this->preInit($this->config);
 
-        $this->registerErrorHandler($appConfig);
+        $this->registerErrorHandler($this->config);
+
+        $componets['components'] = $this->config->get('components');
+
+        Component::__construct($componets);
+
+
 	}
 
 	/**
@@ -256,7 +262,7 @@ abstract class Application extends Module
 //            'errorHandler' => ['class' => 'Kant\Web\ErrorHandler'],
             'errorHandler' => [
                 'class' => 'Kant\Web\ErrorHandler',
-                'errorAction' => '/site/error',
+                'errorAction' => '/index/index',
             ],
 		];
 	}
@@ -473,21 +479,6 @@ abstract class Application extends Module
 		return Kant::createObject('Kant\Config\Config');
 	}
 
-
-	/**
-	 * Singleton instance
-	 *
-	 * @param type $config
-	 * @return type
-	 */
-	public static function getInstance($config)
-	{
-		if (null === self::$_instance) {
-			self::$_instance = new self($config);
-		}
-		return self::$_instance;
-	}
-
 	/**
 	 * Runs the application.
 	 * This is the main entrance of an application.
@@ -503,11 +494,6 @@ abstract class Application extends Module
 
 			$request = $this->getRequest();
 
-			/*
-			$this->setCookie($this->config->get('cookie'), $request);
-			$this->setSession($this->config->get('session'), $request);
-            $response = $this->getRouter()->dispatch($request);
-            */
 			$response = $this->handleRequest($request);
 			$this->state = self::STATE_AFTER_REQUEST;
 			$this->trigger(self::EVENT_AFTER_REQUEST);
@@ -612,7 +598,8 @@ abstract class Application extends Module
 				}
 			}
 		}
-		Component::__construct($components);
+		$this->config->set('components', $components['components']);
+//        Component::__construct($components);
 	}
 
 	/**

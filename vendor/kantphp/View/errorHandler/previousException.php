@@ -1,5 +1,5 @@
 <?php
-/* @var $exception \Kant\Foundation\Exception */
+/* @var $exception \Kant\Exception\Exception */
 /* @var $handler \Kant\Web\ErrorHandler */
 ?>
 <div class="previous">

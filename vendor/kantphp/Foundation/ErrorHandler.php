@@ -9,6 +9,8 @@ namespace Kant\Foundation;
 
 use Kant\Kant;
 use Kant\Helper\VarDumper;
+use Kant\Exception\Exception;
+use Kant\Exception\UserException;
 use Kant\Exception\ErrorException;
 use Kant\Exception\HttpException;
 

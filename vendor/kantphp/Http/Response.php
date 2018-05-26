@@ -181,7 +181,6 @@ class Response extends BaseResponse
         } else if ($this->content instanceof BaseResponse) {
             return $this->content->send();
         } elseif (is_object($this->content)) {
-            var_dump(get_class($this->content));
             if (method_exists($this->content, '__toString')) {
                 $this->content = $this->content->__toString();
             } else {

@@ -8,7 +8,7 @@
  */
 namespace Kant\Exception;
 
-use Kant\Exception\KantException;
+use Kant\Exception\Exception;
 use Kant\Http\Response;
 
 /**

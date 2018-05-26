@@ -8,12 +8,12 @@
  */
 namespace Kant\Exception;
 
-use Kant\Exception\KantException;
+use Kant\Exception\Exception;
 
 /**
  * InvalidConfigException represents an exception caused by incorrect object configuration.
  */
-class InvalidConfigException extends KantException
+class InvalidConfigException extends Exception
 {
 
     /**

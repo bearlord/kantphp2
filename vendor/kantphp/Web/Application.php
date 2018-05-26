@@ -54,7 +54,7 @@ class Application extends \Kant\Foundation\Application
             $response = $this->getRouter()->dispatch($request);
             return $response;
         } catch (InvalidRouteException $e) {
-            throw new NotFoundHttpException(Kant::t('kant', 'Page not found.'), $e->getCode(), $e);
+            throw new NotFoundHttpException(Kant::t('kant', 'Page not found.'), $e, $e->getCode());
         }
 
     }
@@ -101,7 +101,10 @@ class Application extends \Kant\Foundation\Application
 	public function coreComponents()
 	{
 		return array_merge(parent::coreComponents(), [
-            'errorHandler' => ['class' => 'Kant\Web\ErrorHandler'],
+            'errorHandler' => [
+                'class' => 'Kant\Web\ErrorHandler',
+                'errorAction' => '/site/error',
+            ],
 		]);
 	}
 

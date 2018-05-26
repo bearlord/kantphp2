@@ -8,7 +8,7 @@
  */
 namespace Kant\Exception;
 
-use Kant\Exception\KantException;
+use Kant\Exception\Exception;
 use Kant\Http\Response;
 
 /**
@@ -26,7 +26,7 @@ use Kant\Http\Response;
  * }
  * ```
  */
-class RumtimeException extends KantException
+class RumtimeException extends Exception
 {
 
     /**

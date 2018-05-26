@@ -7,9 +7,9 @@
  */
 namespace Kant\Exception;
 
-use Kant\Exception\KantException;
+use Kant\Exception\Exception;
 
-class UnknownPropertyException extends KantException
+class UnknownPropertyException extends Exception
 {
 
     /**

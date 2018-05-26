@@ -8,12 +8,12 @@
  */
 namespace Kant\Exception;
 
-use Kant\Exception\KantException;
+use Kant\Exception\Exception;
 
 /**
  * InvalidCallException represents an exception caused by calling a method in a wrong way.
  */
-class InvalidCallException extends KantException
+class InvalidCallException extends Exception
 {
 
     /**

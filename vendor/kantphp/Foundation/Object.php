@@ -2,7 +2,9 @@
 namespace Kant\Foundation;
 
 use Kant\Kant;
-use Kant\Exception\KantException;
+use Kant\Exception\InvalidCallException;
+use Kant\Exception\UnknownPropertyException;
+use Kant\Exception\UnknownMethodException;
 
 /**
  * Object is the base class that implements the *property* feature.
@@ -74,14 +76,16 @@ class Object implements Configurable
 
     public function __construct($config = [])
     {
-        if (! empty($config)) {
+        if (!empty($config)) {
             Kant::configure($this, $config);
         }
         $this->init();
     }
 
     public function init()
-    {}
+    {
+
+    }
 
     /**
      * Returns the fully qualified name of this class.
@@ -102,7 +106,7 @@ class Object implements Configurable
      * @param string $name
      *            the property name
      * @return mixed the property value
-     * @throws KantException if the property is not defined
+     * @throws UnknownPropertyException if the property is not defined
      * @throws InvalidCallException if the property is write-only
      * @see __set()
      */
@@ -112,9 +116,9 @@ class Object implements Configurable
         if (method_exists($this, $getter)) {
             return $this->$getter();
         } elseif (method_exists($this, 'set' . $name)) {
-            throw new KantException('Getting write-only property: ' . get_class($this) . '::' . $name);
+            throw new InvalidCallException('Getting write-only property: ' . get_class($this) . '::' . $name);
         } else {
-            throw new KantException('Getting unknown property: ' . get_class($this) . '::' . $name);
+            throw new UnknownPropertyException('Getting unknown property: ' . get_class($this) . '::' . $name);
         }
     }
 
@@ -128,19 +132,21 @@ class Object implements Configurable
      *            the property name or the event name
      * @param mixed $value
      *            the property value
-     * @throws KantException if the property is not defined
+     * @throws UnknownPropertyException if the property is not defined
      * @throws InvalidCallException if the property is read-only
      * @see __get()
      */
     public function __set($name, $value)
     {
+        echo 111;
+        die();
         $setter = 'set' . $name;
         if (method_exists($this, $setter)) {
             $this->$setter($value);
         } elseif (method_exists($this, 'get' . $name)) {
-            throw new KantException('Setting read-only property: ' . get_class($this) . '::' . $name);
+            throw new InvalidCallException('Setting read-only property: ' . get_class($this) . '::' . $name);
         } else {
-            throw new KantException('Setting unknown property: ' . get_class($this) . '::' . $name);
+            throw new UnknownPropertyException('Setting unknown property: ' . get_class($this) . '::' . $name);
         }
     }
 
@@ -179,7 +185,7 @@ class Object implements Configurable
      * 
      * @param string $name
      *            the property name
-     * @throws KantException if the property is read only.
+     * @throws InvalidCallException if the property is read only.
      * @see http://php.net/manual/en/function.unset.php
      */
     public function __unset($name)
@@ -188,7 +194,7 @@ class Object implements Configurable
         if (method_exists($this, $setter)) {
             $this->$setter(null);
         } elseif (method_exists($this, 'get' . $name)) {
-            throw new KantException('Unsetting read-only property: ' . get_class($this) . '::' . $name);
+            throw new InvalidCallException('Unsetting read-only property: ' . get_class($this) . '::' . $name);
         }
     }
 
@@ -202,12 +208,12 @@ class Object implements Configurable
      *            the method name
      * @param array $params
      *            method parameters
-     * @throws KantException when calling unknown method
+     * @throws UnknownMethodException when calling unknown method
      * @return mixed the method return value
      */
     public function __call($name, $params)
     {
-        throw new KantException('Calling unknown method: ' . get_class($this) . "::$name()");
+        throw new UnknownMethodException('Calling unknown method: ' . get_class($this) . "::$name()");
     }
 
     /**

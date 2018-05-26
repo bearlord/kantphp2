@@ -11,7 +11,7 @@ namespace Kant\Exception;
 /**
  * InvalidParamException represents an exception caused by invalid parameters passed to a method.
  */
-class InvalidParamException extends KantException
+class InvalidParamException extends Exception
 {
 
     /**

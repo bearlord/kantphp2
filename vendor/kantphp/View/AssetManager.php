@@ -482,8 +482,6 @@ class AssetManager extends Component
      */
     public function publish($path, $options = [])
     {
-        var_dump($path);
-
         $path = Kant::getAlias($path);
         
         if (isset($this->_published[$path])) {

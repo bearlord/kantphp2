@@ -1,9 +1,9 @@
 <?php
 namespace Kant\Exception;
 
-use Kant\Exception\KantException;
+use Kant\Exception\Exception;
 
-class UrlGenerationException extends KantException
+class UrlGenerationException extends Exception
 {
 
     /**

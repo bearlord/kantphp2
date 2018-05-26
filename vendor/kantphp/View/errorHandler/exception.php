@@ -12,7 +12,7 @@
 
     <title><?php
         $name = $handler->getExceptionName($exception);
-        if ($exception instanceof \yii\web\HttpException) {
+        if ($exception instanceof \Kant\Exception\HttpException) {
             echo (int) $exception->statusCode . ' ' . $handler->htmlEncode($name);
         } else {
             $name = $handler->getExceptionName($exception);

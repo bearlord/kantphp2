@@ -10,7 +10,7 @@ namespace Kant\Database\Sqlite;
 
 use Kant\Database\DbQueryAbstract;
 use Kant\Database\DbQueryInterface;
-use Kant\Exception\KantException;
+use Kant\Exception\Exception;
 use PDO;
 
 /**

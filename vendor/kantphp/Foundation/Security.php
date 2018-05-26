@@ -10,7 +10,7 @@ namespace Kant\Foundation;
 
 use Kant\Helper\StringHelper;
 use Kant\Kant;
-use Kant\Exception\KantException;
+use Kant\Exception\Exception;
 
 /**
  * Security provides a set of methods to handle common security-related tasks.

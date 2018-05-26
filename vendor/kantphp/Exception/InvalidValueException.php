@@ -8,12 +8,12 @@
  */
 namespace Kant\Exception;
 
-use Kant\Exception\KantException;
+use Kant\Exception\Exception;
 
 /**
  * InvalidValueException represents an exception caused by a function returning a value of unexpected type.
  */
-class InvalidValueException extends KantException
+class InvalidValueException extends Exception
 {
 
     /**

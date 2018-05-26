@@ -8,7 +8,7 @@
  */
 namespace Kant\Database;
 
-class Exception extends \Kant\Exception\KantException
+class Exception extends \Kant\Exception\Exception
 {
 
     /**

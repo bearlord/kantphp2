@@ -10,7 +10,7 @@ namespace Kant\Widget;
 
 use Kant\Kant;
 use Kant\Foundation\Component;
-use Kant\Exception\KantException;
+use Kant\Exception\Exception;
 use Kant\Helper\ArrayHelper;
 use Kant\Helper\Html;
 use Kant\Model\Model;

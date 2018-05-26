@@ -12,7 +12,7 @@ use BadMethodCallException;
 /**
  * UnknownMethodException represents an exception caused by accessing an unknown object method.
  */
-class UnknownMethodException extends KantException
+class UnknownMethodException extends Exception
 {
 
     /**

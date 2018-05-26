@@ -6,7 +6,7 @@
  * @license http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  */
 
-namespace Kant\Foundation;
+namespace Kant\Exception;
 
 /**
  * Exception represents a generic exception for all purposes.

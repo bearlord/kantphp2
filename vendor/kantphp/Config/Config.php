@@ -47,7 +47,7 @@ class Config
      * @param mixed $default            
      * @return mixed
      */
-    public function get($name = null, $default = null, $delimiter = '.')
+    public function get($name = null, $default = null, $delimiter = ".")
     {
         if (null === $name) {
             return $this->_data;
@@ -58,7 +58,7 @@ class Config
         $name = explode($delimiter, $name);
         $ret = $this->_data;
         foreach ($name as $key) {
-            if (! isset($ret[$key])) {
+            if (!isset($ret[$key])) {
                 return $default;
             }
             $ret = $ret[$key];
@@ -77,7 +77,14 @@ class Config
     public function set($name, $value = "")
     {
         if (is_string($name)) {
-            $this->_data[$name] = $value;
+            if (!strpos($name, '.')) {
+                $this->_data[$name] = $value;
+            } else {
+                // 二维数组
+                $name = explode(".", $name, 2);
+                $this->_data[$name[0]][$name[1]] = $value;
+            }
+
         } elseif (is_array($name)) {
             if (! empty($name)) {
                 foreach ($name as $key => $val) {
@@ -123,6 +130,13 @@ class Config
         return $this;
     }
 
+    /**
+     * Merge two array
+     *
+     * @param $arr1
+     * @param $arr2
+     * @return mixed
+     */
     protected function _merge($arr1, $arr2)
     {
         if (is_array($arr2) && ! empty($arr2)) {
