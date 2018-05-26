@@ -121,8 +121,7 @@ class ErrorHandler extends \Kant\Foundation\ErrorHandler
         } else {
             $response->data = $this->convertExceptionToArray($exception);
         }
-
-        $response->send();
+        return $response->send();
     }
 
     /**
@@ -238,12 +237,13 @@ class ErrorHandler extends \Kant\Foundation\ErrorHandler
      */
     public function renderFile($_file_, $_params_)
     {
+        $_file_ = Kant::getAlias($_file_);
         $_params_['handler'] = $this;
         if ($this->exception instanceof ErrorException || !Kant::$app->has('view')) {
             ob_start();
             ob_implicit_flush(false);
             extract($_params_, EXTR_OVERWRITE);
-            require(Kant::getAlias($_file_));
+            require($_file_);
 
             return ob_get_clean();
         } else {

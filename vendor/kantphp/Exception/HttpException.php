@@ -26,7 +26,7 @@ use Kant\Http\Response;
  * }
  * ```
  */
-class HttpException extends KantException
+class HttpException extends \Exception
 {
 
     /**
