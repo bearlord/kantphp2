@@ -34,10 +34,10 @@ final class StartSession
      */
     protected $sessionHandled = false;
 
-    public function __construct($config, Request $request)
+    public function __construct($config)
     {
         $this->config = $config;
-        $this->request = $request;
+        $this->request = Kant::$app->request;
         $this->response = Kant::$app->response;
     }
 

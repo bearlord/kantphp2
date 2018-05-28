@@ -101,6 +101,12 @@ class Application extends \Kant\Foundation\Application
 	public function coreComponents()
 	{
 		return array_merge(parent::coreComponents(), [
+		    'cookie' => [
+		        'class' => 'Kant\Cookie\Cookie'
+            ],
+            'session' => [
+                'class' => 'Kant\Session\StartSession'
+            ],
             'errorHandler' => [
                 'class' => 'Kant\Web\ErrorHandler',
                 'errorAction' => '/site/error',

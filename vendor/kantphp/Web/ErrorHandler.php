@@ -355,7 +355,7 @@ class ErrorHandler extends \Kant\Foundation\ErrorHandler
      */
     public function isCoreFile($file)
     {
-        return $file === null || strpos(realpath($file), YII2_PATH . DIRECTORY_SEPARATOR) === 0;
+        return $file === null || strpos(realpath($file), KANT_PATH . DIRECTORY_SEPARATOR) === 0;
     }
 
     /**

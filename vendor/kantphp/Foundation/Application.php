@@ -169,7 +169,7 @@ abstract class Application extends Module
 
         $componets['components'] = $this->config->get('components');
 
-        Component::__construct($componets);
+        Component::__construct($this->config->reference());
 
 
 	}
@@ -259,11 +259,6 @@ abstract class Application extends Module
 			'user' => [
 				'class' => 'Kant\Identity\User'
 			],
-//            'errorHandler' => ['class' => 'Kant\Web\ErrorHandler'],
-            'errorHandler' => [
-                'class' => 'Kant\Web\ErrorHandler',
-                'errorAction' => '/index/index',
-            ],
 		];
 	}
 
@@ -303,26 +298,24 @@ abstract class Application extends Module
 	 * @staticvar type $session
 	 * @return type
 	 */
-	protected function setSession($config, $request)
+	protected function setSession($config)
 	{
 		Kant::$container->set('Kant\Session\Session', Kant::createObject([
 					'class' => \Kant\Session\StartSession::class
 						], [
 					$config,
-					$request,
 				])->handle());
 	}
 
 	/**
 	 * Register Cookie
 	 */
-	protected function setCookie($config, Request $request)
+	protected function setCookie($config)
 	{
 		$this->set('cookie', Kant::createObject([
 					'class' => \Kant\Cookie\Cookie::class
 						], [
-					$config,
-					$request
+					$config
 		]));
 	}
 
@@ -401,10 +394,12 @@ abstract class Application extends Module
 	 *
 	 * @return \Kant\Database\Connection the database connection.
 	 */
+	/*
 	public function getDb()
 	{
 		return $this->get('db');
 	}
+	*/
 
 	/**
 	 * Returns the log dispatcher component.

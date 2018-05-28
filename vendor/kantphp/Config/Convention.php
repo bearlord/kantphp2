@@ -38,39 +38,78 @@ return [
                     ]
                 ]
             ]
+        ],
+        'view' => [
+            'theme' => 'default',
+            'ext' => '.php'
+        ],
+        'cookie' => [
+            'domain' => '',
+            'path' => '/',
+            'prefix' => 'kant_',
+            'expire' => 0,
+            'key' => 'NMa1FcQBE1HHHd4AQyTV',
+            'secure' => false
+        ],
+        'files' => [
+            /*
+             * |--------------------------------------------------------------------------
+             * | Default Filesystem Disk
+             * |--------------------------------------------------------------------------
+             * |
+             * | Here you may specify the default filesystem disk that should be used
+             * | by the framework. The "local" disk, as well as a variety of cloud
+             * | based disks are available to your application. Just store away!
+             * |
+             */
+
+            'default' => 'local',
+            /*
+              |--------------------------------------------------------------------------
+              | Default Cloud Filesystem Disk
+              |--------------------------------------------------------------------------
+              |
+              | Many applications store files both locally and in the cloud. For this
+              | reason, you may specify a default "cloud" driver here. This driver
+              | will be bound as the Cloud disk implementation in the container.
+              |
+             */
+            'cloud' => 's3',
+            /*
+              |--------------------------------------------------------------------------
+              | Filesystem Disks
+              |--------------------------------------------------------------------------
+              |
+              | Here you may configure as many filesystem "disks" as you wish, and you
+              | may even configure multiple disks of the same driver. Defaults have
+              | been setup for each driver as an example of the required options.
+              |
+              | Supported Drivers: "local", "ftp", "s3", "rackspace"
+              |
+             */
+            'disks' => [
+                'local' => [
+                    'driver' => 'local',
+                    'root' => APP_PATH . '/storage'
+                ],
+                'public' => [
+                    'driver' => 'local',
+                    'root' => PUBLIC_PATH . 'storage',
+                    'url' => APP_URL . 'storage',
+                    'visibility' => 'public'
+                ],
+                's3' => [
+                    'driver' => 's3',
+                    'key' => '',
+                    'secret' => '',
+                    'region' => '',
+                    'bucket' => ''
+                ]
+            ]
         ]
     ],
-    /**
-     * |--------------------------------------------------------------------------
-     * | Is enable Debug Logs
-     * |--------------------------------------------------------------------------
-     */
-    'enableDebugLogs' => true,
-    'responseFormat' => 'html',
-    'pathinfo_repair' => false,
-    'debug' => true,
-    'urlSuffix' => '.html',
-    'actionSuffix' => 'Action',
-    'redirectTpl' => 'dispatch/redirect',
     'charset' => 'utf-8',
-    'db_fields_cache' => false,
-    'route' => [
-        'module' => 'index',
-        'ctrl' => 'index',
-        'act' => 'index'
-    ],
-    'view' => [
-        'theme' => 'default',
-        'ext' => ".php"
-    ],
-    'cookie' => [
-        'domain' => '',
-        'path' => '/',
-        'prefix' => 'kant_',
-        'expire' => 0,
-        'key' => 'NMa1FcQBE1HHHd4AQyTV',
-        'secure' => false
-    ],
+
     'session' => [
         /**
          * |--------------------------------------------------------------------------
@@ -212,90 +251,7 @@ return [
          */
         'http_only' => true
     ],
-    'database' => [
-        /*
-         * |--------------------------------------------------------------------------
-         * | MySQL example
-         * |--------------------------------------------------------------------------
-         * |
-         * | Default database link is MySQL,
-         */
-        'db' => [
-            'dsn' => 'mysql:host=localhost;dbname=kantphp',
-            'username' => 'root',
-            'password' => '123456',
-            'charset' => 'utf8',
-            'tablePrefix' => 'kant_'
-        ],
-        /*
-          |--------------------------------------------------------------------------
-          | PostgreSQL example
-          |--------------------------------------------------------------------------
-          |
-         */
-        'pgsql' => [
-            'dsn' => 'pgsql:host=localhost;port=5432;dbname=mydatabase',
-            'username' => 'root',
-            'password' => '123456',
-            'charset' => 'utf8',
-            'tablePrefix' => 'kant_'
-        ]
-    ],
-    'filesystems' => [
-        /*
-         * |--------------------------------------------------------------------------
-         * | Default Filesystem Disk
-         * |--------------------------------------------------------------------------
-         * |
-         * | Here you may specify the default filesystem disk that should be used
-         * | by the framework. The "local" disk, as well as a variety of cloud
-         * | based disks are available to your application. Just store away!
-         * |
-         */
-        
-        'default' => 'local',
-        /*
-          |--------------------------------------------------------------------------
-          | Default Cloud Filesystem Disk
-          |--------------------------------------------------------------------------
-          |
-          | Many applications store files both locally and in the cloud. For this
-          | reason, you may specify a default "cloud" driver here. This driver
-          | will be bound as the Cloud disk implementation in the container.
-          |
-         */
-        'cloud' => 's3',
-        /*
-          |--------------------------------------------------------------------------
-          | Filesystem Disks
-          |--------------------------------------------------------------------------
-          |
-          | Here you may configure as many filesystem "disks" as you wish, and you
-          | may even configure multiple disks of the same driver. Defaults have
-          | been setup for each driver as an example of the required options.
-          |
-          | Supported Drivers: "local", "ftp", "s3", "rackspace"
-          |
-         */
-        'disks' => [
-            'local' => [
-                'driver' => 'local',
-                'root' => APP_PATH . '/storage'
-            ],
-            'public' => [
-                'driver' => 'local',
-                'root' => PUBLIC_PATH . 'storage',
-                'url' => APP_URL . 'storage',
-                'visibility' => 'public'
-            ],
-            's3' => [
-                'driver' => 's3',
-                'key' => '',
-                'secret' => '',
-                'region' => '',
-                'bucket' => ''
-            ]
-        ]
-    ]
+
+
 ];
 

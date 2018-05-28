@@ -22,40 +22,38 @@ final class Cookie
 	 */
 	protected $config;
 	protected $request;
-	protected $response;
 
 	/**
 	 * The default path (if specified).
 	 *
 	 * @var string
 	 */
-	protected $path = '/';
+	public $path = '/';
 
 	/**
 	 * The default domain (if specified).
 	 *
 	 * @var string
 	 */
-	protected $domain = null;
+    public $domain = null;
 
 	/**
 	 * The default secure setting (defaults to false).
 	 *
 	 * @var bool
 	 */
-	protected $secure = false;
+    public $secure = false;
 
 	/**
 	 * All of the cookies queued for sending.
 	 *
 	 * @var array
 	 */
-	protected $queued = [];
+    public $queued = [];
 
-	public function __construct($config, Request $request)
+	public function __construct($config)
 	{
 		$this->setDefaultPathAndDomain($config['path'], $config['domain'], $config['secure']);
-		$this->request = $request;
 	}
 
 	public function handle()

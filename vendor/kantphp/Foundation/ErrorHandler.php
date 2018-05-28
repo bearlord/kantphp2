@@ -105,7 +105,6 @@ abstract class ErrorHandler extends Component
         if (PHP_SAPI !== 'cli') {
             http_response_code(500);
         }
-
         try {
             $this->logException($exception);
             if ($this->discardExistingOutput) {
@@ -334,7 +333,7 @@ abstract class ErrorHandler extends Component
     {
         if ($exception instanceof Exception && ($exception instanceof UserException || !YII_DEBUG)) {
             $message = "{$exception->getName()}: {$exception->getMessage()}";
-        } elseif (YII_DEBUG) {
+        } elseif (KANT_DEBUG) {
             if ($exception instanceof Exception) {
                 $message = "Exception ({$exception->getName()})";
             } elseif ($exception instanceof ErrorException) {

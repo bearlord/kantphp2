@@ -135,7 +135,7 @@ class View extends BaseView
      *
      * @var string
      */
-    protected $theme = 'default';
+    public $theme = 'default';
 
     /**
      * dispatcher
@@ -143,23 +143,6 @@ class View extends BaseView
      * @var string
      */
     public $dispatcher;
-
-    /**
-     * template variables
-     *
-     * @var type
-     */
-    protected $params = array();
-
-    /**
-     *
-     * @var array a list of available renderers indexed by their corresponding supported file extensions.
-     *      Each renderer may be a view renderer object or the configuration for creating the renderer object.
-     *      For example, the following configuration enables both Smarty and Twig view renderers:
-     *      If no renderer is available for the given view file, the view file will be treated as a normal PHP
-     *      and rendered via [[renderPhpFile()]].
-     */
-    public $renderers;
 
     /**
      *
@@ -194,7 +177,9 @@ class View extends BaseView
     public $cacheStack = [];
 
     public function init()
-    {}
+    {
+
+    }
 
     /**
      * Add a piece of shared data to the environment.
