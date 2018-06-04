@@ -24,6 +24,17 @@ class ModuleDispatcher
 	 */
 	public $controllerSuffix = "Controller";
 
+    /**
+     * The default route
+     * 
+     * @var array
+     */
+	public $defaultRoute = [
+        'module' =>  'index',
+        'controller' => 'index',
+        'action' => 'index'
+    ];
+
 	/**
 	 * Create a new controller dispatcher instance.
 	 *
@@ -65,7 +76,7 @@ class ModuleDispatcher
 	 *
 	 * @param type $pathinfo            
 	 */
-	protected static function parseRoute($pathinfo)
+	protected function parseRoute($pathinfo)
 	{
 		$route = [
 			null,
@@ -91,9 +102,9 @@ class ModuleDispatcher
 
 		$routeConfig = Kant::$app->config->get("route");
 		$module = array_shift($path);
-		$module = !empty($module) ? $module : $routeConfig['module'];
-		$controller = !empty($path) ? array_shift($path) : $routeConfig['ctrl'];
-		$action = !empty($path) ? array_shift($path) : $routeConfig['act'];
+		$module = !empty($module) ? $module : $this->defaultRoute['module'];
+		$controller = !empty($path) ? array_shift($path) : $this->defaultRoute['controller'];
+		$action = !empty($path) ? array_shift($path) : $this->defaultRoute['action'];
 		
 		$route = "/$module/$controller/$action";
 		return [

@@ -274,7 +274,7 @@ class Module extends ServiceLocator
                         $moduleName
             ]);
             return get_class($controller) === $className ? $controller : null;
-        } elseif (Kant::$app->config->get('debug')) {
+        } elseif (KANT_DEBUG) {
             throw new InvalidConfigException("Controller class must extend from \\Kant\\Controller\\Controller.");
         } else {
             return null;

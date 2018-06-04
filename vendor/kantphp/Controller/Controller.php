@@ -55,6 +55,8 @@ class Controller extends Component
      */
     public $defaultAction = 'index';
 
+    public $actionSuffix = 'Action';
+
     /**
      *
      * @var type
@@ -62,7 +64,10 @@ class Controller extends Component
     public $view;
 
     /**
-     * Layout
+     * @var null|string|false the name of the layout to be applied to this controller's views.
+     * This property mainly affects the behavior of [[render()]].
+     * Defaults to null, meaning the actual layout value should inherit that from [[module]]'s layout value.
+     * If false, no layout will be applied.
      */
     public $layout = 'main';
 
@@ -120,7 +125,9 @@ class Controller extends Component
      * Runs a request specified in terms of a route.
      */
     public function run()
-    {}
+    {
+
+    }
 
     /**
      * Runs an action within this controller with the specified action ID and parameters.
@@ -204,10 +211,10 @@ class Controller extends Component
      */
     protected function formatMethodName($id)
     {
-        if (strpos($id, Kant::$app->config->get('actionSuffix')) > 1) {
+        if (strpos($id, $this->actionSuffix) > 1) {
             return $id;
         }
-        return lcfirst(str_replace(' ', '', ucwords(str_replace('-', ' ', $id)))) . Kant::$app->config->get('actionSuffix');
+        return lcfirst(str_replace(' ', '', ucwords(str_replace('-', ' ', $id)))) . $this->actionSuffix;
     }
 
     /**
