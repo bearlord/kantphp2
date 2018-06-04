@@ -26,7 +26,7 @@ class ModuleDispatcher
 
     /**
      * The default route
-     * 
+     *
      * @var array
      */
 	public $defaultRoute = [

@@ -131,13 +131,6 @@ class View extends BaseView
     public $jsFiles;
 
     /**
-     * template theme
-     *
-     * @var string
-     */
-    public $theme = 'default';
-
-    /**
      * dispatcher
      *
      * @var string
@@ -176,10 +169,6 @@ class View extends BaseView
      */
     public $cacheStack = [];
 
-    public function init()
-    {
-
-    }
 
     /**
      * Add a piece of shared data to the environment.
@@ -343,6 +332,7 @@ class View extends BaseView
 
     /**
      * Display template
+     * @deprecated
      *
      * @param string $view            
      * @throws RuntimeException
@@ -372,6 +362,7 @@ class View extends BaseView
      *
      * @param type $view            
      */
+    /*
     public function render($view = "", $params = [])
     {
         $content = $this->fetch($view, $params);
@@ -384,12 +375,14 @@ class View extends BaseView
             return $content;
         }
     }
+    */
 
     /**
      * Finds the view file based on the given view name.
      *
      * @param string $view            
      */
+    /*
     public function findViewFile($view = '')
     {
         if (is_file($view)) {
@@ -403,8 +396,10 @@ class View extends BaseView
         } else {
             $viewFile = $viewPath . $view . $ext;
         }
+        echo $viewFile;
         return $viewFile;
     }
+    */
 
     /**
      * Finds the applicable layout file.
@@ -438,7 +433,8 @@ class View extends BaseView
     /**
      * Renders a view file.
      */
-    public function renderFile($viewFile, $params = [])
+    /*
+    public function renderFile($viewFile, $params = [], $context = null)
     {
         $ext = pathinfo($viewFile, PATHINFO_EXTENSION);
         $params = array_merge($this->params, $params, [
@@ -451,14 +447,16 @@ class View extends BaseView
                     "class" => "Kant\\View\\$class"
                 ]);
             }
-            /* @var $renderer ViewRenderer */
+            /* @var $renderer ViewRenderer
             $renderer = $this->renderers[$ext];
             $output = $renderer->render($this, $viewFile, $params);
         } else {
             $output = $this->renderPhpFile($viewFile, $params);
         }
+
         return $output;
     }
+    */
 
     /**
      * Renders a view file.

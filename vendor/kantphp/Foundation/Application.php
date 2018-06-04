@@ -547,6 +547,36 @@ abstract class Application extends Module
 		Kant::setAlias('@cache_path', $this->_runtimePath . DIRECTORY_SEPARATOR . 'caches');
 	}
 
+    private $_vendorPath;
+
+    /**
+     * Returns the directory that stores vendor files.
+     *
+     * @return string the directory that stores vendor files.
+     *         Defaults to "vendor" directory under [[basePath]].
+     */
+    public function getVendorPath()
+    {
+        if ($this->_vendorPath === null) {
+            $this->setVendorPath(dirname($this->getBasePath()) . '/vendor');
+        }
+
+        return $this->_vendorPath;
+    }
+
+    /**
+     * Sets the directory that stores vendor files.
+     *
+     * @param string $path
+     *            the directory that stores vendor files.
+     */
+    public function setVendorPath($path)
+    {
+        $this->_vendorPath = Kant::getAlias($path);
+        Kant::setAlias('@vendor', $this->_vendorPath);
+        Kant::setAlias('@bower', $this->_vendorPath . DIRECTORY_SEPARATOR . 'bower');
+    }
+
 	/**
 	 * Parpare
 	 */

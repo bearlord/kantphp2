@@ -43,10 +43,9 @@ class Controller extends Component
     public $id;
 
     /**
-     *
-     * @var Module the moduleid that this controller belongs to.
+     * @var Module the module that this controller belongs to.
      */
-    public $moduleid;
+    public $module;
 
     /**
      *
@@ -98,12 +97,14 @@ class Controller extends Component
     public $dispatcher;
 
     /**
-     * Construct
+     * @param string $id the ID of this controller.
+     * @param Module $module the module that this controller belongs to.
+     * @param array $config name-value pairs that will be used to initialize the object properties.
      */
-    public function __construct($id = "", $moduleid = "", $config = [])
+    public function __construct($id = "", $module = "", $config = [])
     {
         $this->id = $id;
-        $this->moduleid = $moduleid;
+        $this->module = $module;
         parent::__construct($config);
     }
 

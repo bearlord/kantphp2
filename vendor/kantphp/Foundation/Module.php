@@ -78,7 +78,10 @@ class Module extends ServiceLocator
      * @var string the root directory of the module.
      */
     private $_basePath;
-    private $_vendorPath;
+    /**
+     * @var string the root directory that contains view files for this module
+     */
+    private $_viewPath;
 
     /*
      * @var string the implicit controller template
@@ -124,31 +127,25 @@ class Module extends ServiceLocator
     }
 
     /**
-     * Returns the directory that stores vendor files.
-     * 
-     * @return string the directory that stores vendor files.
-     *         Defaults to "vendor" directory under [[basePath]].
+     * Returns the directory that contains the view files for this module.
+     * @return string the root directory of view files. Defaults to "[[basePath]]/views".
      */
-    public function getVendorPath()
+    public function getViewPath()
     {
-        if ($this->_vendorPath === null) {
-            $this->setVendorPath(dirname($this->getBasePath()) . '/vendor');
+        if ($this->_viewPath === null) {
+            $this->_viewPath = $this->getBasePath() . DIRECTORY_SEPARATOR . 'views';
         }
-
-        return $this->_vendorPath;
+        return $this->_viewPath;
     }
 
     /**
-     * Sets the directory that stores vendor files.
-     * 
-     * @param string $path
-     *            the directory that stores vendor files.
+     * Sets the directory that contains the view files.
+     * @param string $path the root directory of view files.
+     * @throws InvalidParamException if the directory is invalid.
      */
-    public function setVendorPath($path)
+    public function setViewPath($path)
     {
-        $this->_vendorPath = Kant::getAlias($path);
-        Kant::setAlias('@vendor', $this->_vendorPath);
-        Kant::setAlias('@bower', $this->_vendorPath . DIRECTORY_SEPARATOR . 'bower');
+        $this->_viewPath = Yii::getAlias($path);
     }
 
     /**
@@ -271,7 +268,7 @@ class Module extends ServiceLocator
         if (is_subclass_of($className, 'Kant\Controller\Controller')) {
             $controller = Kant::createObject($className, [
                         $controllerName,
-                        $moduleName
+                        $this
             ]);
             return get_class($controller) === $className ? $controller : null;
         } elseif (KANT_DEBUG) {

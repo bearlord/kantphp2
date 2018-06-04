@@ -39,10 +39,6 @@ return [
                 ]
             ]
         ],
-        'view' => [
-            'theme' => 'default',
-            'ext' => '.php'
-        ],
         'cookie' => [
             'domain' => '',
             'path' => '/',
