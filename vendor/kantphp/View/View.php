@@ -14,6 +14,7 @@ use Kant\Helper\ArrayHelper;
 use Kant\Support\Arr;
 use Kant\Support\ViewErrorBag;
 use Kant\Widget\FragmentCache;
+use Kant\Exception\InvalidCallException;
 
 /**
  * View class
@@ -326,8 +327,8 @@ class View extends BaseView
      *
      * @param type $view            
      */
-    /*
-    public function render($view = "", $params = [])
+
+    public function render($view = "", $params = [], $context = null)
     {
         $content = $this->fetch($view, $params);
         $layoutFile = $this->findLayoutFile();
@@ -339,7 +340,6 @@ class View extends BaseView
             return $content;
         }
     }
-    */
 
     /**
      * Finds the view file based on the given view name.
@@ -358,9 +358,7 @@ class View extends BaseView
         } elseif (strncmp($view, '/', 1) === 0) {
             // e.g. "/site/index"
             if (Kant::$app->controller !== null) {
-//                $file = Kant::$app->controller->module->getViewPath() . DIRECTORY_SEPARATOR . ltrim($view, '/');
-                $dispatcher =  trim(str_replace("/", DIRECTORY_SEPARATOR, dirname($this->dispatcher)), DIRECTORY_SEPARATOR);
-                $file = Kant::$app->controller->module->getViewPath() . DIRECTORY_SEPARATOR . $dispatcher . DIRECTORY_SEPARATOR  . ltrim($view, '/') ;
+                $file = Kant::$app->controller->module->getViewPath() . DIRECTORY_SEPARATOR . ltrim($view, '/');
             } else {
                 throw new InvalidCallException("Unable to locate view file for view '$view': no active controller.");
             }
@@ -369,7 +367,12 @@ class View extends BaseView
         } elseif (($currentViewFile = $this->getViewFile()) !== false) {
             $file = dirname($currentViewFile) . DIRECTORY_SEPARATOR . $view;
         } else {
-            throw new InvalidCallException("Unable to resolve view file for view '$view': no active view context.");
+            try {
+                $dispatcher =  trim(str_replace("/", DIRECTORY_SEPARATOR, dirname($this->dispatcher)), DIRECTORY_SEPARATOR);
+                $file = $this->getViewPath()  . DIRECTORY_SEPARATOR  . Kant::$app->controller->id . DIRECTORY_SEPARATOR .  ltrim($view, '/') ;
+            } catch(\Exception $e) {
+                throw new InvalidCallException("Unable to resolve view file for view '$view': no active view context.");
+            }
         }
 
         if (pathinfo($file, PATHINFO_EXTENSION) !== '') {
@@ -400,7 +403,7 @@ class View extends BaseView
      * @param type $view            
      * @return boolean|string
      */
-    /*
+
     public function findLayoutFile()
     {
         if ($this->layout === false) {
@@ -415,15 +418,14 @@ class View extends BaseView
             return $layout;
         }
 
-        $ext = Kant::$app->config->get("view.ext");
         if (strncmp($layout, '/', 1) === 0) {
-            $file = $this->getLayoutPath() . DIRECTORY_SEPARATOR . substr($layout, 1) . $ext;
+            $file = $this->getLayoutPath() . DIRECTORY_SEPARATOR . substr($layout, 1) . $this->defaultExtension;
         } else {
-            $file = $this->getLayoutPath() . DIRECTORY_SEPARATOR . $layout . $ext;
+            $file = $this->getLayoutPath() . DIRECTORY_SEPARATOR . $layout . '.' . $this->defaultExtension;
         }
         return $file;
     }
-    */
+
 
     /**
      * Renders a view file.
@@ -474,12 +476,29 @@ class View extends BaseView
      * Get view path
      */
 
-    protected function getViewPath()
+    public function getViewPath()
     {
-        $module = strtolower(Kant::$app->controller->id);
-        $viewPath = Kant::getAlias('@tpl_path') . DIRECTORY_SEPARATOR  . $module . DIRECTORY_SEPARATOR;
+        $dispatcherArr = explode('/', trim($this->dispatcher, '/'));
+        $module = $dispatcherArr[0];
+        $viewPath = Kant::getAlias('@tpl_path') . DIRECTORY_SEPARATOR  . $module;
         return $viewPath;
     }
+
+
+    /**
+     * Returns the directory that contains layout view files for this module.
+     *
+     * @return string
+     */
+
+    public function getLayoutPath()
+    {
+        if ($this->_layoutPath === null) {
+            $this->_layoutPath = $this->getViewPath() . DIRECTORY_SEPARATOR  . 'layouts';
+        }
+        return $this->_layoutPath;
+    }
+
 
 
     /**
@@ -569,21 +588,6 @@ class View extends BaseView
         }
         unset($this->assetBundles[$name]);
     }
-
-    /**
-     * Returns the directory that contains layout view files for this module.
-     *
-     * @return string
-     */
-    /*
-    protected function getLayoutPath()
-    {
-        if ($this->_layoutPath === null) {
-            $this->_layoutPath = $this->getViewPath() . 'layouts';
-        }
-        return $this->_layoutPath;
-    }
-    */
 
     /**
      * Registers the named asset bundle.

@@ -154,7 +154,7 @@ class Module extends ServiceLocator
     public function getViewPath()
     {
         if ($this->_viewPath === null) {
-            $this->_viewPath = $this->getBasePath() . DIRECTORY_SEPARATOR . 'views';
+            $this->_viewPath = $this->getBasePath() . DIRECTORY_SEPARATOR . 'view';
         }
         return $this->_viewPath;
     }
