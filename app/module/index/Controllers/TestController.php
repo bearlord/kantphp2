@@ -7,7 +7,7 @@ use Kant\Http\Request;
 use Kant\Http\Response;
 use Kant\Session\Session;
 
-class IndexController extends Controller
+class TestController extends Controller
 {
 
 	public function indexAction(Response $response, Session $session)
@@ -29,7 +29,7 @@ class IndexController extends Controller
     
     public function templateAction()
     {
-        return $this->view->fetch('/template');
+        return $this->view->render('template');
     }
 
 }

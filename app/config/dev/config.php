@@ -2,18 +2,11 @@
 
 return [
 	'basePath' => dirname(dirname(__DIR__)),
-	'debug' => true,
-	'token' => [
-		'switch' => true,
-	],
 	'session' => [
 		'driver' => 'file',
 		'table' => 'session',
 		'cookie' => 'kant_session',
 		'maxlifetime' => 1800,
-	],
-	'filesystems' => [
-		'default' => 'public'
 	],
 	'components' => [
 		'db' => [
@@ -27,6 +20,9 @@ return [
 		'cache' => [
 			'class' => 'Kant\Caching\FileCache',
 		],
+        'files' => [
+            'default' => 'public'
+        ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
