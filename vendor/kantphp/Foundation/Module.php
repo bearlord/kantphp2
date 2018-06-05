@@ -40,6 +40,14 @@ use Kant\Exception\InvalidParamException;
  */
 class Module extends ServiceLocator
 {
+    /**
+     * @var string an ID that uniquely identifies this module among other modules which have the same [[module|parent]].
+     */
+    public $id;
+    /**
+     * @var Module the parent module of this module. `null` if this module does not have a parent.
+     */
+    public $module;
 
     /**
      *
@@ -53,9 +61,9 @@ class Module extends ServiceLocator
      *     
      *      ```php
      *      [
-     *      'account' => 'app\controllers\UserController',
+     *      'account' => 'app\Controller\UserController',
      *      'article' => [
-     *      'class' => 'app\controllers\PostController',
+     *      'class' => 'app\Controller\PostController',
      *      'pageTitle' => 'something new',
      *      ],
      *      ]
@@ -93,6 +101,19 @@ class Module extends ServiceLocator
      * @var string the explicit controoler template
      */
     public $explicitControllerClassTpl = "App\%s\Controllers\%sController";
+
+    /**
+     * Constructor.
+     * @param string $id the ID of this module.
+     * @param Module $parent the parent module (if any).
+     * @param array $config name-value pairs that will be used to initialize the object properties.
+     */
+    public function __construct($id, $parent = null, $config = [])
+    {
+        $this->id = $id;
+        $this->module = $parent;
+        parent::__construct($config);
+    }
 
     /**
      * Returns the root directory of the module.

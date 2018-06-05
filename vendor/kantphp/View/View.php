@@ -346,24 +346,53 @@ class View extends BaseView
      *
      * @param string $view            
      */
-    /*
-    public function findViewFile($view = '')
+
+    public function findViewFile($view = '', $context = null)
     {
-        if (is_file($view)) {
-            return $view;
+        if (strncmp($view, '@', 1) === 0) {
+            // e.g. "@app/views/main"
+            $file = Kant::getAlias($view);
+        } elseif (strncmp($view, '//', 2) === 0) {
+            // e.g. "//layouts/main"
+            $file = Kant::$app->getViewPath() . DIRECTORY_SEPARATOR . ltrim($view, '/');
+        } elseif (strncmp($view, '/', 1) === 0) {
+            // e.g. "/site/index"
+            if (Kant::$app->controller !== null) {
+//                $file = Kant::$app->controller->module->getViewPath() . DIRECTORY_SEPARATOR . ltrim($view, '/');
+                $dispatcher =  trim(str_replace("/", DIRECTORY_SEPARATOR, dirname($this->dispatcher)), DIRECTORY_SEPARATOR);
+                $file = Kant::$app->controller->module->getViewPath() . DIRECTORY_SEPARATOR . $dispatcher . DIRECTORY_SEPARATOR  . ltrim($view, '/') ;
+            } else {
+                throw new InvalidCallException("Unable to locate view file for view '$view': no active controller.");
+            }
+        } elseif ($context instanceof ViewContextInterface) {
+            $file = $context->getViewPath() . DIRECTORY_SEPARATOR . $view;
+        } elseif (($currentViewFile = $this->getViewFile()) !== false) {
+            $file = dirname($currentViewFile) . DIRECTORY_SEPARATOR . $view;
+        } else {
+            throw new InvalidCallException("Unable to resolve view file for view '$view': no active view context.");
         }
-        $ext = Kant::$app->config->get("view.ext");
+
+        if (pathinfo($file, PATHINFO_EXTENSION) !== '') {
+            return $file;
+        }
+        $path = $file . '.' . $this->defaultExtension;
+        if ($this->defaultExtension !== 'php' && !is_file($path)) {
+            $path = $file . '.php';
+        }
+
+        return $path;
+
         $viewPath = $this->getViewPath();
         
         if (empty($view)) {
-            $viewFile = $viewPath . Kant::$app->controller->id . DIRECTORY_SEPARATOR . strtolower(Kant::$app->controller->action->id) . $ext;
+            $viewFile = $viewPath . Kant::$app->controller->id . DIRECTORY_SEPARATOR . strtolower(Kant::$app->controller->action->id) . '.' . $this->defaultExtension;
         } else {
-            $viewFile = $viewPath . $view . $ext;
+            $viewFile = $viewPath . $view . '.' . $this->defaultExtension;
         }
         echo $viewFile;
         return $viewFile;
     }
-    */
+
 
     /**
      * Finds the applicable layout file.
@@ -444,15 +473,14 @@ class View extends BaseView
     /**
      * Get view path
      */
-    /*
+
     protected function getViewPath()
     {
-        $module = strtolower(Kant::$app->controller->moduleid);
-        $theme = Kant::$app->config->get('view.theme');
-        $viewPath = Kant::getAlias('@tpl_path') . DIRECTORY_SEPARATOR . $theme . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR;
+        $module = strtolower(Kant::$app->controller->id);
+        $viewPath = Kant::getAlias('@tpl_path') . DIRECTORY_SEPARATOR  . $module . DIRECTORY_SEPARATOR;
         return $viewPath;
     }
-    */
+
 
     /**
      * Renders a view in response to an AJAX request.
