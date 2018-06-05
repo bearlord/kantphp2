@@ -145,7 +145,7 @@ class Module extends ServiceLocator
      */
     public function setViewPath($path)
     {
-        $this->_viewPath = Yii::getAlias($path);
+        $this->_viewPath = Kant::getAlias($path);
     }
 
     /**

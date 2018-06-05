@@ -269,42 +269,6 @@ class View extends BaseView
     }
 
     /**
-     * Clears up the registered meta tags, link tags, css/js scripts and files.
-     */
-    public function clear()
-    {
-        $this->metaTags = null;
-        $this->linkTags = null;
-        $this->css = null;
-        $this->cssFiles = null;
-        $this->js = null;
-        $this->jsFiles = null;
-        $this->assetBundles = [];
-    }
-
-    /**
-     * Registers all files provided by an asset bundle including depending bundles files.
-     * Removes a bundle from [[assetBundles]] once files are registered.
-     * 
-     * @param string $name
-     *            name of the bundle to register
-     */
-    protected function registerAssetFiles($name)
-    {
-        if (! isset($this->assetBundles[$name])) {
-            return;
-        }
-        $bundle = $this->assetBundles[$name];
-        if ($bundle) {
-            foreach ($bundle->depends as $dep) {
-                $this->registerAssetFiles($dep);
-            }
-            $bundle->registerAssetFiles($this);
-        }
-        unset($this->assetBundles[$name]);
-    }
-
-    /**
      * Returns the value of a property.
      *
      * @param type $key            
@@ -407,6 +371,7 @@ class View extends BaseView
      * @param type $view            
      * @return boolean|string
      */
+    /*
     public function findLayoutFile()
     {
         if ($this->layout === false) {
@@ -429,6 +394,7 @@ class View extends BaseView
         }
         return $file;
     }
+    */
 
     /**
      * Renders a view file.
@@ -461,6 +427,7 @@ class View extends BaseView
     /**
      * Renders a view file.
      */
+    /*
     public function renderPhpFile($file, $params = [])
     {
         ob_start();
@@ -472,16 +439,51 @@ class View extends BaseView
         $content = ob_get_clean();
         return $content;
     }
+    */
 
     /**
      * Get view path
      */
+    /*
     protected function getViewPath()
     {
         $module = strtolower(Kant::$app->controller->moduleid);
         $theme = Kant::$app->config->get('view.theme');
         $viewPath = Kant::getAlias('@tpl_path') . DIRECTORY_SEPARATOR . $theme . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR;
         return $viewPath;
+    }
+    */
+
+    /**
+     * Renders a view in response to an AJAX request.
+     *
+     * This method is similar to [[render()]] except that it will surround the view being rendered
+     * with the calls of [[beginPage()]], [[head()]], [[beginBody()]], [[endBody()]] and [[endPage()]].
+     * By doing so, the method is able to inject into the rendering result with JS/CSS scripts and files
+     * that are registered with the view.
+     *
+     * @param string $view the view name. Please refer to [[render()]] on how to specify this parameter.
+     * @param array $params the parameters (name-value pairs) that will be extracted and made available in the view file.
+     * @param object $context the context that the view should use for rendering the view. If null,
+     * existing [[context]] will be used.
+     * @return string the rendering result
+     * @see render()
+     */
+    public function renderAjax($view, $params = [], $context = null)
+    {
+        $viewFile = $this->findViewFile($view, $context);
+
+        ob_start();
+        ob_implicit_flush(false);
+
+        $this->beginPage();
+        $this->head();
+        $this->beginBody();
+        echo $this->renderFile($viewFile, $params, $context);
+        $this->endBody();
+        $this->endPage(true);
+
+        return ob_get_clean();
     }
 
     /**
@@ -495,10 +497,57 @@ class View extends BaseView
     }
 
     /**
+     * Sets the asset manager.
+     * @param \Kant\View\AssetManager $value the asset manager
+     */
+    public function setAssetManager($value)
+    {
+        $this->_assetManager = $value;
+    }
+
+
+    /**
+     * Clears up the registered meta tags, link tags, css/js scripts and files.
+     */
+    public function clear()
+    {
+        $this->metaTags = null;
+        $this->linkTags = null;
+        $this->css = null;
+        $this->cssFiles = null;
+        $this->js = null;
+        $this->jsFiles = null;
+        $this->assetBundles = [];
+    }
+
+    /**
+     * Registers all files provided by an asset bundle including depending bundles files.
+     * Removes a bundle from [[assetBundles]] once files are registered.
+     *
+     * @param string $name
+     *            name of the bundle to register
+     */
+    protected function registerAssetFiles($name)
+    {
+        if (! isset($this->assetBundles[$name])) {
+            return;
+        }
+        $bundle = $this->assetBundles[$name];
+        if ($bundle) {
+            foreach ($bundle->depends as $dep) {
+                $this->registerAssetFiles($dep);
+            }
+            $bundle->registerAssetFiles($this);
+        }
+        unset($this->assetBundles[$name]);
+    }
+
+    /**
      * Returns the directory that contains layout view files for this module.
      *
      * @return string
      */
+    /*
     protected function getLayoutPath()
     {
         if ($this->_layoutPath === null) {
@@ -506,6 +555,7 @@ class View extends BaseView
         }
         return $this->_layoutPath;
     }
+    */
 
     /**
      * Registers the named asset bundle.
@@ -854,48 +904,5 @@ class View extends BaseView
         }
         
         return (empty($lines) ? "" : implode("\n", $lines)) . "\n";
-    }
-
-    /**
-     * Begins fragment caching.
-     * This method will display cached content if it is available.
-     * If not, it will start caching and would expect an [[endCache()]]
-     * call to end the cache and save the content into cache.
-     * A typical usage of fragment caching is as follows,
-     *
-     * ```php
-     * if ($this->beginCache($id)) {
-     * // ...generate content here
-     * $this->endCache();
-     * }
-     * ```
-     *
-     * @param string $id
-     *            a unique ID identifying the fragment to be cached.
-     * @param array $properties
-     *            initial property values for [[FragmentCache]]
-     * @return bool whether you should generate the content for caching.
-     *         False if the cached version is available.
-     */
-    public function beginCache($id, $properties = [])
-    {
-        $properties['id'] = $id;
-        $properties['view'] = $this;
-        /* @var $cache FragmentCache */
-        $cache = FragmentCache::begin($properties);
-        if ($cache->getCachedContent() !== false) {
-            $this->endCache();
-            
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Ends fragment caching.
-     */
-    public function endCache()
-    {
-        FragmentCache::end();
     }
 }

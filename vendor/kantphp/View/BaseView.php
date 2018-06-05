@@ -11,6 +11,7 @@ namespace Kant\View;
 use Kant\Kant;
 use Kant\Foundation\Component;
 use Kant\Helper\FileHelper;
+use Kant\Widget\FragmentCache;
 use Kant\Exception\InvalidCallException;
 use Kant\Exception\ViewNotFoundException;
 
@@ -101,11 +102,10 @@ class BaseView extends Component
      */
     public function init()
     {
-        var_dump($this->theme);
         parent::init();
         if (is_array($this->theme)) {
             if (!isset($this->theme['class'])) {
-                $this->theme['class'] = '\Kant\Foundation\Theme';
+                $this->theme['class'] = 'Kant\Foundation\Theme';
             }
             $this->theme = Kant::createObject($this->theme);
         } elseif (is_string($this->theme)) {
@@ -301,6 +301,191 @@ class BaseView extends Component
             $this->trigger(self::EVENT_AFTER_RENDER, $event);
             $output = $event->output;
         }
+    }
+
+    /**
+     * Renders a view file as a PHP script.
+     *
+     * This method treats the view file as a PHP script and includes the file.
+     * It extracts the given parameters and makes them available in the view file.
+     * The method captures the output of the included view file and returns it as a string.
+     *
+     * This method should mainly be called by view renderer or [[renderFile()]].
+     *
+     * @param string $_file_ the view file.
+     * @param array $_params_ the parameters (name-value pairs) that will be extracted and made available in the view file.
+     * @return string the rendering result
+     */
+    public function renderPhpFile($_file_, $_params_ = [])
+    {
+        $_obInitialLevel_ = ob_get_level();
+        ob_start();
+        ob_implicit_flush(false);
+        extract($_params_, EXTR_OVERWRITE);
+        try {
+            require($_file_);
+            return ob_get_clean();
+        } catch (\Exception $e) {
+            while (ob_get_level() > $_obInitialLevel_) {
+                if (!@ob_end_clean()) {
+                    ob_clean();
+                }
+            }
+            throw $e;
+        } catch (\Throwable $e) {
+            while (ob_get_level() > $_obInitialLevel_) {
+                if (!@ob_end_clean()) {
+                    ob_clean();
+                }
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Renders dynamic content returned by the given PHP statements.
+     * This method is mainly used together with content caching (fragment caching and page caching)
+     * when some portions of the content (called *dynamic content*) should not be cached.
+     * The dynamic content must be returned by some PHP statements.
+     * @param string $statements the PHP statements for generating the dynamic content.
+     * @return string the placeholder of the dynamic content, or the dynamic content if there is no
+     * active content cache currently.
+     */
+    public function renderDynamic($statements)
+    {
+        if (!empty($this->cacheStack)) {
+            $n = count($this->dynamicPlaceholders);
+            $placeholder = "<![CDATA[YII-DYNAMIC-$n]]>";
+            $this->addDynamicPlaceholder($placeholder, $statements);
+
+            return $placeholder;
+        }
+        return $this->evaluateDynamicContent($statements);
+    }
+
+    /**
+     * Adds a placeholder for dynamic content.
+     * This method is internally used.
+     * @param string $placeholder the placeholder name
+     * @param string $statements the PHP statements for generating the dynamic content
+     */
+    public function addDynamicPlaceholder($placeholder, $statements)
+    {
+        foreach ($this->cacheStack as $cache) {
+            $cache->dynamicPlaceholders[$placeholder] = $statements;
+        }
+        $this->dynamicPlaceholders[$placeholder] = $statements;
+    }
+
+    /**
+     * Evaluates the given PHP statements.
+     * This method is mainly used internally to implement dynamic content feature.
+     * @param string $statements the PHP statements to be evaluated.
+     * @return mixed the return value of the PHP statements.
+     */
+    public function evaluateDynamicContent($statements)
+    {
+        return eval($statements);
+    }
+
+    /**
+     * Begins recording a block.
+     * This method is a shortcut to beginning [[Block]]
+     * @param string $id the block ID.
+     * @param bool $renderInPlace whether to render the block content in place.
+     * Defaults to false, meaning the captured block will not be displayed.
+     * @return Block the Block widget instance
+     */
+    public function beginBlock($id, $renderInPlace = false)
+    {
+        return Block::begin([
+            'id' => $id,
+            'renderInPlace' => $renderInPlace,
+            'view' => $this,
+        ]);
+    }
+
+    /**
+     * Ends recording a block.
+     */
+    public function endBlock()
+    {
+        Block::end();
+    }
+
+    /**
+     * Begins the rendering of content that is to be decorated by the specified view.
+     * This method can be used to implement nested layout. For example, a layout can be embedded
+     * in another layout file specified as '@app/views/layouts/base.php' like the following:
+     *
+     * ```php
+     * <?php $this->beginContent('@app/views/layouts/base.php'); ?>
+     * //...layout content here...
+     * <?php $this->endContent(); ?>
+     * ```
+     *
+     * @param string $viewFile the view file that will be used to decorate the content enclosed by this widget.
+     * This can be specified as either the view file path or [path alias](guide:concept-aliases).
+     * @param array $params the variables (name => value) to be extracted and made available in the decorative view.
+     * @return ContentDecorator the ContentDecorator widget instance
+     * @see ContentDecorator
+     */
+    public function beginContent($viewFile, $params = [])
+    {
+        return ContentDecorator::begin([
+            'viewFile' => $viewFile,
+            'params' => $params,
+            'view' => $this,
+        ]);
+    }
+
+    /**
+     * Ends the rendering of content.
+     */
+    public function endContent()
+    {
+        ContentDecorator::end();
+    }
+
+    /**
+     * Begins fragment caching.
+     * This method will display cached content if it is available.
+     * If not, it will start caching and would expect an [[endCache()]]
+     * call to end the cache and save the content into cache.
+     * A typical usage of fragment caching is as follows,
+     *
+     * ```php
+     * if ($this->beginCache($id)) {
+     *     // ...generate content here
+     *     $this->endCache();
+     * }
+     * ```
+     *
+     * @param string $id a unique ID identifying the fragment to be cached.
+     * @param array $properties initial property values for [[FragmentCache]]
+     * @return bool whether you should generate the content for caching.
+     * False if the cached version is available.
+     */
+    public function beginCache($id, $properties = [])
+    {
+        $properties['id'] = $id;
+        $properties['view'] = $this;
+        /* @var $cache FragmentCache */
+        $cache = FragmentCache::begin($properties);
+        if ($cache->getCachedContent() !== false) {
+            $this->endCache();
+
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Ends fragment caching.
+     */
+    public function endCache()
+    {
+        FragmentCache::end();
     }
 
     /**
