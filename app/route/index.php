@@ -9,6 +9,7 @@ use Kant\Kant;
 use Kant\Routing\Router;
 use Kant\Database\Query;
 use Kant\Http\Response;
+use Kant\View\View;
 
 $router->get("/welcome", function() {
     $a = 10 /0;
@@ -28,3 +29,10 @@ Router::get('/order/{id}', function($id, Query $query, Response $response) {
 		'data' => $item
 	];
 })->middleware('checkage:18')->where('id', '[0-9]+');
+
+Router::get('/test', function(View $view, Response $response) {
+//    return 'hello world!!';
+    return $view->render('index/test/template', [
+
+    ]);
+});

@@ -349,6 +349,7 @@ class View extends BaseView
 
     public function findViewFile($view = '', $context = null)
     {
+
         if (strncmp($view, '@', 1) === 0) {
             // e.g. "@app/views/main"
             $file = Kant::getAlias($view);
@@ -368,8 +369,13 @@ class View extends BaseView
             $file = dirname($currentViewFile) . DIRECTORY_SEPARATOR . $view;
         } else {
             try {
-                $dispatcher =  trim(str_replace("/", DIRECTORY_SEPARATOR, dirname($this->dispatcher)), DIRECTORY_SEPARATOR);
-                $file = $this->getViewPath()  . DIRECTORY_SEPARATOR  . Kant::$app->controller->id . DIRECTORY_SEPARATOR .  ltrim($view, '/') ;
+                if ($this->dispatcher) {
+                    $dispatcher =  trim(str_replace("/", DIRECTORY_SEPARATOR, dirname($this->dispatcher)), DIRECTORY_SEPARATOR);
+                    $file = $this->getViewPath()  . DIRECTORY_SEPARATOR  . Kant::$app->controller->id . DIRECTORY_SEPARATOR .  ltrim($view, '/') ;
+                } else {
+                    $file = $this->getViewPath()  . DIRECTORY_SEPARATOR . ltrim($view, '/') ;
+                }
+
             } catch(\Exception $e) {
                 throw new InvalidCallException("Unable to resolve view file for view '$view': no active view context.");
             }
@@ -384,6 +390,7 @@ class View extends BaseView
         }
 
         return $path;
+
 
         $viewPath = $this->getViewPath();
         

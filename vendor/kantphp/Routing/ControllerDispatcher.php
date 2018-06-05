@@ -19,16 +19,6 @@ class ControllerDispatcher
     protected $container;
     protected $actionSuffix;
 
-    /**
-     * Create a new controller dispatcher instance.
-     *
-     * @param \Kant\Container\Container $container            
-     * @return void
-     */
-    public function __construct()
-    {
-        
-    }
 
     /**
      * Dispatch a request to a given controller and method.
@@ -40,6 +30,7 @@ class ControllerDispatcher
      */
     public function dispatch(Route $route, $controller, $method)
     {
+        var_dump('aaaa');
         $parameters = $this->resolveClassMethodDependencies($route->parametersWithoutNulls(), $controller, $method);
 
         if (!empty($route->middleware())) {
@@ -52,7 +43,7 @@ class ControllerDispatcher
             'moduleid' => $moduleId,
             'routePattern' => 'explicit'
         ]);
-        
+
         $oldController = Kant::$app->controller;
         Kant::$app->controller = $controller;
 
