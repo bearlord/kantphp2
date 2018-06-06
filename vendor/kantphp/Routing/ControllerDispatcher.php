@@ -30,7 +30,6 @@ class ControllerDispatcher
      */
     public function dispatch(Route $route, $controller, $method)
     {
-        var_dump('aaaa');
         $parameters = $this->resolveClassMethodDependencies($route->parametersWithoutNulls(), $controller, $method);
 
         if (!empty($route->middleware())) {

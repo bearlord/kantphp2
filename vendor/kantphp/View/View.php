@@ -426,11 +426,20 @@ class View extends BaseView
         }
 
         if (strncmp($layout, '/', 1) === 0) {
-            $file = $this->getLayoutPath() . DIRECTORY_SEPARATOR . substr($layout, 1) . $this->defaultExtension;
+            $file = $this->getLayoutPath() . DIRECTORY_SEPARATOR . substr($layout, 1);
         } else {
-            $file = $this->getLayoutPath() . DIRECTORY_SEPARATOR . $layout . '.' . $this->defaultExtension;
+            $file = $this->getLayoutPath() . DIRECTORY_SEPARATOR . $layout;
         }
-        return $file;
+
+        if (pathinfo($file, PATHINFO_EXTENSION) !== '') {
+            return $file;
+        }
+        $path = $file . '.' . $this->defaultExtension;
+        if ($this->defaultExtension !== 'php' && !is_file($path)) {
+            $path = $file . '.php';
+        }
+
+        return $path;
     }
 
 
@@ -485,9 +494,13 @@ class View extends BaseView
 
     public function getViewPath()
     {
-        $dispatcherArr = explode('/', trim($this->dispatcher, '/'));
-        $module = $dispatcherArr[0];
-        $viewPath = Kant::getAlias('@tpl_path') . DIRECTORY_SEPARATOR  . $module;
+        if (!empty($this->dispatcher)) {
+            $dispatcherArr = explode('/', trim($this->dispatcher, '/'));
+            $module = $dispatcherArr[0];
+            $viewPath = Kant::getAlias('@tpl_path') . DIRECTORY_SEPARATOR  . $module;
+        } else {
+            $viewPath = Kant::getAlias('@tpl_path');
+        }
         return $viewPath;
     }
 
