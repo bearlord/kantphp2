@@ -9,6 +9,7 @@ use Kant\Session\Session;
 
 class IndexController extends Controller
 {
+//    public $layout = false;
 
 	public function indexAction(Response $response, Session $session)
 	{

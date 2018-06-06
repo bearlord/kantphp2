@@ -9,7 +9,6 @@ use Kant\Session\Session;
 
 class TestController extends Controller
 {
-
 	public function indexAction(Response $response, Session $session)
 	{
 //	    $a /0 ;
@@ -29,6 +28,7 @@ class TestController extends Controller
     
     public function templateAction()
     {
+        echo "<h1>Index/Test/Template</h1>";
         return $this->view->render('template');
     }
 

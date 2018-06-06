@@ -30,9 +30,17 @@ Router::get('/order/{id}', function($id, Query $query, Response $response) {
 	];
 })->middleware('checkage:18')->where('id', '[0-9]+');
 
-Router::get('/test', function(View $view, Response $response) {
-//    return 'hello world!!';
-    return $view->render('index/test/template', [
 
+Router::get('/test', function(View $view, Response $response) {
+    $user = [
+        'name' => '张三',
+        'age' => 18,
+        'avators' => [
+            'http://www.qqxoo.com/uploads/allimg/161020/1356023128-13.jpg',
+            'http://img3.a0bi.com/upload/ttq/20140813/1407915088900.jpg'
+        ]
+    ];
+    return $view->render('index/test/user', [
+        'user' => $user
     ]);
 });
