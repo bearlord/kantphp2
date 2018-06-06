@@ -361,7 +361,12 @@ class View extends BaseView
             if (Kant::$app->controller !== null) {
                 $file = Kant::$app->controller->module->getViewPath() . DIRECTORY_SEPARATOR . ltrim($view, '/');
             } else {
-                throw new InvalidCallException("Unable to locate view file for view '$view': no active controller.");
+                try {
+                    $file = $this->getViewPath() . DIRECTORY_SEPARATOR . ltrim($view, '/');
+                    echo $file;
+                } catch(\Exception $e) {
+                    throw new InvalidCallException("Unable to locate view file for view '$view': no active controller.");
+                }
             }
         } elseif ($context instanceof ViewContextInterface) {
             $file = $context->getViewPath() . DIRECTORY_SEPARATOR . $view;
@@ -369,13 +374,11 @@ class View extends BaseView
             $file = dirname($currentViewFile) . DIRECTORY_SEPARATOR . $view;
         } else {
             try {
-                if ($this->dispatcher) {
-                    $dispatcher =  trim(str_replace("/", DIRECTORY_SEPARATOR, dirname($this->dispatcher)), DIRECTORY_SEPARATOR);
+                if (Kant::$app->controller !== null) {
                     $file = $this->getViewPath()  . DIRECTORY_SEPARATOR  . Kant::$app->controller->id . DIRECTORY_SEPARATOR .  ltrim($view, '/') ;
                 } else {
                     $file = $this->getViewPath()  . DIRECTORY_SEPARATOR . ltrim($view, '/') ;
                 }
-
             } catch(\Exception $e) {
                 throw new InvalidCallException("Unable to resolve view file for view '$view': no active view context.");
             }
@@ -390,17 +393,6 @@ class View extends BaseView
         }
 
         return $path;
-
-
-        $viewPath = $this->getViewPath();
-        
-        if (empty($view)) {
-            $viewFile = $viewPath . Kant::$app->controller->id . DIRECTORY_SEPARATOR . strtolower(Kant::$app->controller->action->id) . '.' . $this->defaultExtension;
-        } else {
-            $viewFile = $viewPath . $view . '.' . $this->defaultExtension;
-        }
-        echo $viewFile;
-        return $viewFile;
     }
 
 
@@ -421,11 +413,9 @@ class View extends BaseView
             $layout = $this->layout;
         }
 
-        if (file_exists($layout)) {
-            return $layout;
-        }
-
-        if (strncmp($layout, '/', 1) === 0) {
+        if (strncmp($layout, '@', 1) === 0) {
+            $file = Kant::getAlias($layout);
+        } elseif (strncmp($layout, '/', 1) === 0) {
             $file = $this->getLayoutPath() . DIRECTORY_SEPARATOR . substr($layout, 1);
         } else {
             $file = $this->getLayoutPath() . DIRECTORY_SEPARATOR . $layout;
