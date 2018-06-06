@@ -12,35 +12,49 @@ use Kant\Http\Response;
 use Kant\View\View;
 
 $router->get("/welcome", function() {
-    $a = 10 /0;
-	return "Welcome To Kant Framework V2.2";
+    $a = 10 / 0;
+    return "Welcome To Kant Framework V2.2";
 });
 
 Router::get('/order/{id}', function($id, Query $query, Response $response) {
-	$response->format = Response::FORMAT_JSON;
+    $response->format = Response::FORMAT_JSON;
 
-	$item = $query->from("p_orders")
-					->where([
-						'id' => $id
-					])->one();
-	return [
-		'status' => 200,
-		'message' => '获取信息成功',
-		'data' => $item
-	];
+    $item = $query->from("p_orders")
+                    ->where([
+                        'id' => $id
+                    ])->one();
+    return [
+        'status' => 200,
+        'message' => '获取信息成功',
+        'data' => $item
+    ];
 })->middleware('checkage:18')->where('id', '[0-9]+');
 
 
 Router::get('/test', function(View $view, Response $response) {
-    $user = [
-        'name' => '张三',
-        'age' => 18,
-        'avators' => [
-            'http://www.qqxoo.com/uploads/allimg/161020/1356023128-13.jpg',
-            'http://img3.a0bi.com/upload/ttq/20140813/1407915088900.jpg'
-        ]
+    $users = [
+        [
+            'name' => '张三',
+            'age' => 16,
+            'avators' => [
+                'http://www.qqxoo.com/uploads/allimg/161020/1356023128-13.jpg',
+                'http://img3.a0bi.com/upload/ttq/20140813/1407915088900.jpg'
+            ]
+        ],
+        [
+            'name' => '李四',
+            'age' => 18,
+            'avators' => [
+                'http://www.qqxoo.com/uploads/allimg/161020/1356023128-13.jpg',
+                'http://img3.a0bi.com/upload/ttq/20140813/1407915088900.jpg'
+            ]
+        ],
     ];
+    
+//    $view->layout = false;
+//    $response->format = Response::FORMAT_JSON;
+    
     return $view->render('index/test/user', [
-        'user' => $user
+                'users' => $users
     ]);
 });
