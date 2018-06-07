@@ -85,7 +85,7 @@ class CaptchaValidator extends Validator
      */
     public function createCaptchaAction()
     {
-        $ca = Kant::$app->createController($this->captchaAction, 'implicit');
+        $ca = Kant::$app->createController($this->captchaAction);
         if ($ca !== false) {
             /* @var $controller \Kant\Controller\Controller */
             list ($controller, $actionID) = $ca;
