@@ -9,6 +9,8 @@ use Kant\Session\Session;
 
 class TestController extends Controller
 {
+//    public $routePattern = 'explicit';
+
 	public function indexAction(Response $response, Session $session)
 	{
 //	    $a /0 ;
