@@ -12,6 +12,7 @@ namespace Kant\Foundation;
 use Kant\Kant;
 use Kant\Di\ServiceLocator;
 use Kant\Exception\InvalidParamException;
+use Kant\Exception\InvalidConfigException;
 
 /**
  * Module is the base class for module and application classes.
@@ -412,6 +413,12 @@ class Module extends ServiceLocator
             }
 
             $controller = $this->createControllerByID($route);
+            //if route pattern is implicit, throw exception
+            if ($controller->routePattern === 'implicit') {
+                if (KANT_DEBUG) {
+                    throw new InvalidParamException("Implicit Route Pattern: $route.");
+                }
+            }
 
             return $controller === null ? false : [
                 $controller,

@@ -86,7 +86,7 @@ class Controller extends Component
 
     /**
      *
-     * @var $routerPattern
+     * @var explicit|implicit $routerPattern
      */
     public $routePattern;
 
