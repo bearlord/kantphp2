@@ -37,6 +37,16 @@ class Controller extends Component
     const EVENT_AFTER_ACTION = 'afterActions';
 
     /**
+     * Route Pattern explicit
+     */
+    const ROUTE_PATTERN_EXPLICIT = 'explicit';
+
+    /**
+     * Route Pattern implicit
+     */
+    const ROUTE_PATTERN_IMPLICIT = 'implicit';
+
+    /**
      *
      * @var string the ID of this controller.
      */
@@ -329,8 +339,8 @@ class Controller extends Component
     public function setIdOptions($options)
     {
         foreach ([
-            'moduleid',
             'id',
+            'module',
             'routePattern'
         ] as $value) {
             if (! empty($options[$value])) {

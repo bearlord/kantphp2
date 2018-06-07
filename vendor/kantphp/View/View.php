@@ -349,7 +349,6 @@ class View extends BaseView
 
     public function findViewFile($view = '', $context = null)
     {
-
         if (strncmp($view, '@', 1) === 0) {
             // e.g. "@app/views/main"
             $file = Kant::getAlias($view);
@@ -377,8 +376,9 @@ class View extends BaseView
                 if (Kant::$app->controller !== null) {
                     $file = $this->getViewPath()  . DIRECTORY_SEPARATOR  . Kant::$app->controller->id . DIRECTORY_SEPARATOR .  ltrim($view, '/') ;
                 } else {
-                    $file = $this->getViewPath()  . DIRECTORY_SEPARATOR . ltrim($view, '/') ;
+                    $file = $this->getViewPath()  . DIRECTORY_SEPARATOR . ltrim($view, '/');
                 }
+
             } catch(\Exception $e) {
                 throw new InvalidCallException("Unable to resolve view file for view '$view': no active view context.");
             }
@@ -432,56 +432,9 @@ class View extends BaseView
         return $path;
     }
 
-
-    /**
-     * Renders a view file.
-     */
-    /*
-    public function renderFile($viewFile, $params = [], $context = null)
-    {
-        $ext = pathinfo($viewFile, PATHINFO_EXTENSION);
-        $params = array_merge($this->params, $params, [
-            'errors' => $this->shared("errors")
-        ]);
-        if (isset($this->renderers[$ext])) {
-            if (is_array($this->renderers[$ext]) || is_string($this->renderers[$ext])) {
-                $class = ucfirst(Kant::$app->config->get($this->renderers[$ext]));
-                $this->renderers[$ext] = Kant::createObject([
-                    "class" => "Kant\\View\\$class"
-                ]);
-            }
-            /* @var $renderer ViewRenderer
-            $renderer = $this->renderers[$ext];
-            $output = $renderer->render($this, $viewFile, $params);
-        } else {
-            $output = $this->renderPhpFile($viewFile, $params);
-        }
-
-        return $output;
-    }
-    */
-
-    /**
-     * Renders a view file.
-     */
-    /*
-    public function renderPhpFile($file, $params = [])
-    {
-        ob_start();
-        ob_implicit_flush(0);
-        extract($params, EXTR_OVERWRITE);
-        if (file_exists($file)) {
-            include_once $file;
-        }
-        $content = ob_get_clean();
-        return $content;
-    }
-    */
-
     /**
      * Get view path
      */
-
     public function getViewPath()
     {
         if (!empty($this->dispatcher)) {

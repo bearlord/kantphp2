@@ -8,6 +8,7 @@
 use Kant\Kant;
 use Kant\Routing\Router;
 use Kant\Database\Query;
+use Kant\Http\Request;
 use Kant\Http\Response;
 use Kant\View\View;
 
@@ -58,3 +59,5 @@ Router::get('/test', function(View $view, Response $response) {
                 'users' => $users
     ]);
 });
+
+Router::get('template', ['uses'=>'TestController@template']);

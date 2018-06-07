@@ -176,23 +176,21 @@ class Route
      */
     protected function runController()
     {
-        $this->setDispatcher();
-        
-        return (new ControllerDispatcher())->dispatch($this, $this->getController(), $this->getControllerMethod());
+        $controller = $this->getController();
+        $controller->dispatcher = $this->getDispatcher();
+        Kant::$app->view->dispatcher = $this->getDispatcher();
+
+        return (new ControllerDispatcher())->dispatch($this, $controller, $this->getControllerMethod());
     }
 
-    /**
-     * Set dispatcher
-     */
-    protected function setDispatcher()
+
+    protected function getDispatcher()
     {
         $class = StringHelper::basename($this->parseControllerCallback()[0], $this->controllerSuffix);
         $method = StringHelper::basename($this->parseControllerCallback()[1], $this->actionSuffix);
-        $module = explode('\\', $this->parseControllerCallback()[0])[1];
-        
-        // Kant::$app->setDispatcher([
-        // $module, $class, $method
-        // ]);
+        $module = explode('\\', $this->parseControllerCallback()[0])[2];
+
+        return sprintf("%s/%s/%s", $module, $class, $method);
     }
 
     /**

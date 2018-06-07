@@ -731,17 +731,6 @@ abstract class Application extends Module
 	}
 
 	/**
-	 * Set view dispatcher
-	 *
-	 * @param array $dispatcher
-	 */
-	public function setDispatcher($dispatcher)
-	{
-		$this->dispatcher = $dispatcher;
-		$this->getView()->setDispatcher($dispatcher);
-	}
-
-	/**
 	 * Register the route middleware
 	 *
 	 * @param object $config

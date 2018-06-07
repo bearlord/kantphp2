@@ -33,13 +33,14 @@ class ControllerDispatcher
         $parameters = $this->resolveClassMethodDependencies($route->parametersWithoutNulls(), $controller, $method);
 
         if (!empty($route->middleware())) {
-            $moduleId = strtolower($route->middleware()[0]);
+            $id = strtolower($route->middleware()[0]);
         } else {
-            $moduleId = strtolower(explode("\\", get_class($controller))[1]);
+            $id = strtolower(explode("\\", get_class($controller))[1]);
         }
+
         $controller->setIdOptions([
             'id' => strtolower(str_replace('Controller', '', basename(get_class($controller)))),
-            'moduleid' => $moduleId,
+            'module' => $controller,
             'routePattern' => 'explicit'
         ]);
 

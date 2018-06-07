@@ -100,7 +100,6 @@ class ModuleDispatcher
 			$path = explode('/', $pathinfo);
 		}
 
-		$routeConfig = Kant::$app->config->get("route");
 		$module = array_shift($path);
 		$module = !empty($module) ? $module : $this->defaultRoute['module'];
 		$controller = !empty($path) ? array_shift($path) : $this->defaultRoute['controller'];
@@ -145,7 +144,7 @@ class ModuleDispatcher
 		if (is_array($parts)) {
 			/* @var $controller \Kant\Controller\Controller */
 			list ($controller, $actionID) = $parts;
-			$controller->routePattern = 'implicit';
+
 			$controller->view->dispatcher = $route;
 
 			$oldController = Kant::$app->controller;
