@@ -413,10 +413,10 @@ class Module extends ServiceLocator
             }
 
             $controller = $this->createControllerByID($route);
-            //if route pattern is implicit, throw exception
-            if ($controller->routePattern === 'implicit') {
+            //if route pattern is explicit, can not be accessed directly by routine
+            if ($controller->routePattern === 'explicit') {
                 if (KANT_DEBUG) {
-                    throw new InvalidParamException("Implicit Route Pattern: $route.");
+                    throw new InvalidParamException("Explicit Route Pattern cannot be accessed directly: $route.");
                 }
             }
 
