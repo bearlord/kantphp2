@@ -9,7 +9,7 @@ use Kant\Session\Session;
 
 class TestController extends Controller
 {
-    public $routePattern = self::ROUTE_PATTERN_EXPLICIT;
+//    public $routePattern = self::ROUTE_PATTERN_EXPLICIT;
 
 	public function indexAction(Response $response, Session $session)
 	{
