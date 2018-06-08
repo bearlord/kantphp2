@@ -6,8 +6,7 @@ use Kant\Kant;
 use Kant\Support\Collection;
 use Kant\Exception\InvalidRouteException;
 
-class ControllerDispatcher
-{
+class ControllerDispatcher {
 
     use RouteDependencyResolverTrait;
 
@@ -19,7 +18,6 @@ class ControllerDispatcher
     protected $container;
     protected $actionSuffix;
 
-
     /**
      * Dispatch a request to a given controller and method.
      *
@@ -28,8 +26,7 @@ class ControllerDispatcher
      * @param string $method            
      * @return mixed
      */
-    public function dispatch(Route $route, $controller, $method)
-    {
+    public function dispatch(Route $route, $controller, $method) {
         $parameters = $this->resolveClassMethodDependencies($route->parametersWithoutNulls(), $controller, $method);
 
         if (!empty($route->middleware())) {
@@ -40,21 +37,16 @@ class ControllerDispatcher
 
         $controller->setIdOptions([
             'id' => strtolower(str_replace('Controller', '', basename(get_class($controller)))),
-            'module' => $controller,
-            'routePattern' => 'explicit'
+            'module' => $controller
         ]);
 
         $oldController = Kant::$app->controller;
         Kant::$app->controller = $controller;
 
-        if (strpos($method, Kant::$app->config->get('actionSuffix')) > 1) {
-            $method = str_replace(Kant::$app->config->get('actionSuffix'), "", $method);
-        }
-
         $result = Kant::$container->call([
             $controller,
             'runActions'
-            ], [
+                ], [
             $method,
             $parameters
         ]);
@@ -72,17 +64,16 @@ class ControllerDispatcher
      * @param string $method            
      * @return array
      */
-    public static function getMiddleware($controller, $method)
-    {
+    public static function getMiddleware($controller, $method) {
         if (!method_exists($controller, 'getMiddleware')) {
             return [];
         }
 
         return (new Collection($controller->getMiddleware()))->reject(function ($data) use($method) {
-                    return static::methodExcludedByOptions($method, $data['options']);
-                })
-                ->pluck('middleware')
-                ->all();
+                            return static::methodExcludedByOptions($method, $data['options']);
+                        })
+                        ->pluck('middleware')
+                        ->all();
     }
 
     /**
@@ -92,8 +83,7 @@ class ControllerDispatcher
      * @param array $options            
      * @return bool
      */
-    protected static function methodExcludedByOptions($method, array $options)
-    {
+    protected static function methodExcludedByOptions($method, array $options) {
         return (isset($options['only']) && !in_array($method, (array) $options['only'])) || (!empty($options['except']) && in_array($method, (array) $options['except']));
     }
 

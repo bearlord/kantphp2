@@ -92,16 +92,6 @@ class Module extends ServiceLocator
      */
     private $_viewPath;
 
-    /*
-     * @var string the implicit controller template
-     */
-    public $implicitControllerClassTpl = "App\%s\Controllers\%sController";
-
-    /**
-     *
-     * @var string the explicit controoler template
-     */
-    public $explicitControllerClassTpl = "App\%s\Controllers\%sController";
 
     /**
      * Constructor.
@@ -412,13 +402,7 @@ class Module extends ServiceLocator
                 return false;
             }
 
-            $controller = $this->createControllerByID($route);
-            //if route pattern is explicit, can not be accessed directly by routine
-            if ($controller->routePattern === 'explicit') {
-                if (KANT_DEBUG) {
-                    throw new InvalidParamException("Explicit Route Pattern cannot be accessed directly: $route.");
-                }
-            }
+            $controller = $this->createControllerByID($route);           
 
             return $controller === null ? false : [
                 $controller,
@@ -459,11 +443,18 @@ class Module extends ServiceLocator
             return null;
         }
 
-        if (is_subclass_of($className, 'Kant\Controller\Controller')) {
+        if (is_subclass_of($className, \Kant\Controller\Controller::className())) {
             $controller = Kant::createObject($className, [
                         $controllerName,
                         $this
             ]);
+            //if route pattern is explicit, can not be accessed directly by routine
+            if (!empty($controller) && $controller->routePattern === \Kant\Controller\Controller::ROUTE_PATTERN_EXPLICIT) {
+                if (KANT_DEBUG) {
+                    throw new InvalidParamException("Explicit Route Pattern cannot be accessed directly: $route.");
+                }
+            }
+            
             return get_class($controller) === $className ? $controller : null;
         } elseif (KANT_DEBUG) {
             throw new InvalidConfigException("Controller class must extend from \\Kant\\Controller\\Controller.");
