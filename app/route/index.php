@@ -61,3 +61,8 @@ Router::get('/test', function(View $view, Response $response) {
 });
 
 Router::get('template', ['uses'=>'TestController@template']);
+
+$router->resource('prefix/foos', 'FooController');
+
+Router::resource('photos', 'PhotoCommentController');
+Router::resource('photos.comments', 'PhotoCommentController');
