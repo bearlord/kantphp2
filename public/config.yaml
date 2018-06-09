@@ -1,6 +1,0 @@
----
-name: kantphp
-version: 1
-
-handle:
-- rewrite: if(!is_dir() && !is_file() && path~"^(.*)$") goto "index.php/$1"
