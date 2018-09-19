@@ -9,10 +9,10 @@
 namespace Kant\Database;
 
 use Kant\Kant;
-use Kant\Foundation\Object;
+use Kant\Foundation\BaseObject;
 use Kant\Database\QueryBuilder;
 
-abstract class Schema extends Object
+abstract class Schema extends BaseObject
 {
 
     /**

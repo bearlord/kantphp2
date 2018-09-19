@@ -23,7 +23,7 @@ namespace Kant\Foundation;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Event extends Object
+class Event extends BaseObject
 {
 
     /**

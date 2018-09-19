@@ -8,7 +8,7 @@
  */
 namespace Kant\Database;
 
-use Kant\Foundation\Object;
+use Kant\Foundation\BaseObject;
 use Kant\Exception\InvalidParamException;
 
 /**
@@ -19,7 +19,7 @@ use Kant\Exception\InvalidParamException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class TableSchema extends Object
+class TableSchema extends BaseObject
 {
 
     /**

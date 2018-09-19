@@ -29,7 +29,7 @@ namespace Kant\Database;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Expression extends \Kant\Foundation\Object
+class Expression extends \Kant\Foundation\BaseObject
 {
 
     /**

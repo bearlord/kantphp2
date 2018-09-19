@@ -8,7 +8,7 @@
  */
 namespace Kant\Helper;
 
-use Kant\Foundation\Object;
+use Kant\Foundation\BaseObject;
 
 /**
  * JsExpression marks a string as a JavaScript expression.
@@ -19,7 +19,7 @@ use Kant\Foundation\Object;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class JsExpression extends Object
+class JsExpression extends BaseObject
 {
 
     /**

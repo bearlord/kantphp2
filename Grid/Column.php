@@ -9,7 +9,7 @@
 namespace Kant\Grid;
 
 use Closure;
-use Kant\Foundation\Object;
+use Kant\Foundation\BaseObject;
 use Kant\Helper\Html;
 
 /**
@@ -20,7 +20,7 @@ use Kant\Helper\Html;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Column extends Object
+class Column extends BaseObject
 {
 
     /**

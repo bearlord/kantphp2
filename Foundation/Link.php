@@ -8,7 +8,7 @@
  */
 namespace Kant\Foundation;
 
-use Kant\Foundation\Object;
+use Kant\Foundation\BaseObject;
 
 /**
  * Link represents a link object as defined in [JSON Hypermedia API Language](https://tools.ietf.org/html/draft-kelly-json-hal-03).
@@ -16,7 +16,7 @@ use Kant\Foundation\Object;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Link extends Object
+class Link extends BaseObject
 {
 
     /**

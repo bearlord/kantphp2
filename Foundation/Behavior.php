@@ -19,7 +19,7 @@ namespace Kant\Foundation;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Behavior extends Object
+class Behavior extends BaseObject
 {
 
     /**

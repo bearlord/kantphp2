@@ -9,7 +9,7 @@
 namespace Kant\Database;
 
 use Kant\Kant;
-use Kant\Foundation\Object;
+use Kant\Foundation\BaseObject;
 use Kant\Exception\InvalidConfigException;
 
 /**
@@ -44,7 +44,7 @@ use Kant\Exception\InvalidConfigException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Transaction extends Object
+class Transaction extends BaseObject
 {
 
     /**

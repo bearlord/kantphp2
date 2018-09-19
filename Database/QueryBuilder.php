@@ -8,10 +8,10 @@
  */
 namespace Kant\Database;
 
-use Kant\Foundation\Object;
+use Kant\Foundation\BaseObject;
 use Kant\Helper\ArrayHelper;
 
-class QueryBuilder extends Object
+class QueryBuilder extends BaseObject
 {
 
     /**

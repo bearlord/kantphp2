@@ -8,7 +8,7 @@
  */
 namespace Kant\Database;
 
-use Kant\Foundation\Object;
+use Kant\Foundation\BaseObject;
 
 /**
  * ColumnSchema class describes the metadata of a column in a database table.
@@ -16,7 +16,7 @@ use Kant\Foundation\Object;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class ColumnSchema extends Object
+class ColumnSchema extends BaseObject
 {
 
     /**

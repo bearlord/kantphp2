@@ -8,7 +8,7 @@
  */
 namespace Kant\View;
 
-use Kant\Foundation\Object;
+use Kant\Foundation\BaseObject;
 use Kant\Helper\ArrayHelper;
 use Kant\Helper\Url;
 use Kant\Kant;
@@ -26,7 +26,7 @@ use Kant\Kant;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class AssetBundle extends Object
+class AssetBundle extends BaseObject
 {
 
     /**

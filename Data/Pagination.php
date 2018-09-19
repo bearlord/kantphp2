@@ -9,7 +9,7 @@
 namespace Kant\Data;
 
 use Kant\Kant;
-use Kant\Foundation\Object;
+use Kant\Foundation\BaseObject;
 use Kant\Foundation\Link;
 use Kant\Foundation\Linkable;
 use Kant\Http\Request;
@@ -73,7 +73,7 @@ use Kant\Helper\Url;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Pagination extends Object implements Linkable
+class Pagination extends BaseObject implements Linkable
 {
 
     const LINK_NEXT = 'next';

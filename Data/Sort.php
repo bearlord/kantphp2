@@ -10,7 +10,7 @@ namespace Kant\Data;
 
 use Kant\Kant;
 use Kant\Exception\InvalidConfigException;
-use Kant\Foundation\Object;
+use Kant\Foundation\BaseObject;
 use Kant\Helper\Html;
 use Kant\Helper\Inflector;
 use Kant\Http\Request;
@@ -76,7 +76,7 @@ use Kant\Helper\Url;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Sort extends Object
+class Sort extends BaseObject
 {
 
     /**

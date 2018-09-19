@@ -9,7 +9,7 @@
 namespace Kant\Foundation;
 
 use Kant\Kant;
-use Kant\Foundation\Object;
+use Kant\Foundation\BaseObject;
 use Kant\Exception\InvalidCallException;
 use Kant\Exception\UnknownMethodException;
 use Kant\Exception\UnknownPropertyException;
@@ -100,7 +100,7 @@ use Kant\Exception\UnknownPropertyException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Component extends Object
+class Component extends BaseObject
 {
 
     /**
