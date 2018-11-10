@@ -46,11 +46,6 @@ class CaptchaValidator extends Validator
      */
     public $captchaAction = 'common/service/captcha';
 
-    /**
-     *
-     * @var string layout
-     */
-    public $layout = 'main';
 
     /**
      * @inheritdoc
@@ -89,8 +84,8 @@ class CaptchaValidator extends Validator
         if ($ca !== false) {
             /* @var $controller \Kant\Controller\Controller */
             list ($controller, $actionID) = $ca;
-            $controller->layout = $this->layout;
-            $controller->view->layout = $this->layout;
+//            $controller->layout = $this->layout;
+//            $controller->view->layout = $this->layout;
             $action = $controller->createActions($actionID);
             if ($action !== null) {
                 return $action;

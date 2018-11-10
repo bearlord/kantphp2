@@ -394,12 +394,10 @@ abstract class Application extends Module
 	 *
 	 * @return \Kant\Database\Connection the database connection.
 	 */
-	/*
 	public function getDb()
 	{
 		return $this->get('db');
 	}
-	*/
 
 	/**
 	 * Returns the log dispatcher component.

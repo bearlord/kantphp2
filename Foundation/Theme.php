@@ -9,8 +9,8 @@
 
 namespace Kant\Foundation;
 
-use Yii;
-use yii\helpers\FileHelper;
+use Kant;
+use Kant\Helper\FileHelper;
 
 /**
  * Theme represents an application theme.

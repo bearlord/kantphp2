@@ -11,6 +11,7 @@ namespace Kant\View;
 use Kant\Kant;
 use Kant\Helper\Html;
 use Kant\Helper\ArrayHelper;
+use Kant\Helper\Inflector;
 use Kant\Support\Arr;
 use Kant\Support\ViewErrorBag;
 use Kant\Widget\FragmentCache;
@@ -296,20 +297,6 @@ class View extends BaseView
     }
 
     /**
-     * Display template
-     * @deprecated
-     *
-     * @param string $view            
-     * @throws RuntimeException
-     */
-    public function display($view = '')
-    {
-        $content = $this->fetch($view);
-        header("X-Powered-By:KantPHP Framework");
-        echo $content;
-    }
-
-    /**
      * Fetach template
      *
      * @param type $view            
@@ -329,16 +316,40 @@ class View extends BaseView
      */
 
     public function render($view = "", $params = [], $context = null)
-    {
+    {		
         $content = $this->fetch($view, $params);
+        return $this->renderContent($content);
+    }
+	
+	/**
+     * Renders a static string by applying a layout.
+     * @param string $content the static string being rendered
+     * @return string the rendering result of the layout with the given static string as the `$content` variable.
+     * If the layout is disabled, the string will be returned back.
+     * @since 2.0.1
+     */
+    public function renderContent($content)
+    {
         $layoutFile = $this->findLayoutFile();
         if ($layoutFile !== false) {
-            return $this->renderFile($layoutFile, array_merge([
+            return $this->renderFile($layoutFile, [
                 'content' => $content
-            ], $params));
-        } else {
-            return $content;
-        }
+            ]);
+        } 
+		return $content;
+    }
+	
+	/**
+     * Renders a view without applying layout.
+     * This method differs from [[render()]] in that it does not apply any layout.
+     * @param string $view the view name. Please refer to [[render()]] on how to specify a view name.
+     * @param array $params the parameters (name-value pairs) that should be made available in the view.
+     * @return string the rendering result.
+     * @throws InvalidParamException if the view file does not exist.
+     */
+    public function renderPartial($view, $params = [])
+    {
+        return $this->render($view, $params, $this);
     }
 
     /**
@@ -362,7 +373,6 @@ class View extends BaseView
             } else {
                 try {
                     $file = $this->getViewPath() . DIRECTORY_SEPARATOR . ltrim($view, '/');
-                    echo $file;
                 } catch(\Exception $e) {
                     throw new InvalidCallException("Unable to locate view file for view '$view': no active controller.");
                 }
@@ -374,7 +384,8 @@ class View extends BaseView
         } else {
             try {
                 if (Kant::$app->controller !== null) {
-                    $file = $this->getViewPath()  . DIRECTORY_SEPARATOR  . Kant::$app->controller->id . DIRECTORY_SEPARATOR .  ltrim($view, '/') ;
+					$_controllerId = Inflector::camel2id(Kant::$app->controller->id);
+                    $file = $this->getViewPath()  . DIRECTORY_SEPARATOR  . $_controllerId . DIRECTORY_SEPARATOR .  ltrim($view, '/') ;
                 } else {
                     $file = $this->getViewPath()  . DIRECTORY_SEPARATOR . ltrim($view, '/');
                 }
