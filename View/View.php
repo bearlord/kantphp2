@@ -384,8 +384,8 @@ class View extends BaseView
         } else {
             try {
                 if (Kant::$app->controller !== null) {
-					$_controllerId = Inflector::camel2id(Kant::$app->controller->id);
-                    $file = $this->getViewPath()  . DIRECTORY_SEPARATOR  . $_controllerId . DIRECTORY_SEPARATOR .  ltrim($view, '/') ;
+					$_controllerId = str_replace('/', DIRECTORY_SEPARATOR, Inflector::camel2id(Kant::$app->controller->id));
+                    $file = Kant::$app->controller->module->getViewPath()  . DIRECTORY_SEPARATOR  . $_controllerId . DIRECTORY_SEPARATOR .  ltrim($view, '/') ;
                 } else {
                     $file = $this->getViewPath()  . DIRECTORY_SEPARATOR . ltrim($view, '/');
                 }
