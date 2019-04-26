@@ -121,7 +121,7 @@ class ActiveRecord extends BaseActiveRecord
     public function loadDefaultValues($skipIfSet = true)
     {
         foreach (static::getTableSchema()->columns as $column) {
-            if ($column->defaultValue !== null && (! $skipIfSet || $this->{$column->name} === null)) {
+            if ($column->defaultValue !== null && (!$skipIfSet || $this->{$column->name} === null)) {
                 $this->{$column->name} = $column->defaultValue;
             }
         }
@@ -183,12 +183,12 @@ class ActiveRecord extends BaseActiveRecord
     {
         $query = static::find();
         
-        if (! ArrayHelper::isAssociative($condition)) {
+        if (!ArrayHelper::isAssociative($condition)) {
             // query by primary key
             $primaryKey = static::primaryKey();
             if (isset($primaryKey[0])) {
                 $pk = $primaryKey[0];
-                if (! empty($query->join) || ! empty($query->joinWith)) {
+                if (!empty($query->join) || ! empty($query->joinWith)) {
                     $pk = static::tableName() . '.' . $pk;
                 }
                 $condition = [
@@ -457,7 +457,7 @@ class ActiveRecord extends BaseActiveRecord
             return false;
         }
         
-        if (! $this->isTransactional(self::OP_INSERT)) {
+        if (!$this->isTransactional(self::OP_INSERT)) {
             return $this->insertInternal($attributes);
         }
         
@@ -486,7 +486,7 @@ class ActiveRecord extends BaseActiveRecord
      */
     protected function insertInternal($attributes = null)
     {
-        if (! $this->beforeSave(true)) {
+        if (!$this->beforeSave(true)) {
             return false;
         }
         $values = $this->getDirtyAttributes($attributes);
@@ -567,7 +567,7 @@ class ActiveRecord extends BaseActiveRecord
             return false;
         }
         
-        if (! $this->isTransactional(self::OP_UPDATE)) {
+        if (!$this->isTransactional(self::OP_UPDATE)) {
             return $this->updateInternal($attributeNames);
         }
         
@@ -607,7 +607,7 @@ class ActiveRecord extends BaseActiveRecord
      */
     public function delete()
     {
-        if (! $this->isTransactional(self::OP_DELETE)) {
+        if (!$this->isTransactional(self::OP_DELETE)) {
             return $this->deleteInternal();
         }
         
@@ -635,7 +635,7 @@ class ActiveRecord extends BaseActiveRecord
      */
     protected function deleteInternal()
     {
-        if (! $this->beforeDelete()) {
+        if (!$this->beforeDelete()) {
             return false;
         }
         

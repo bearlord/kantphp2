@@ -40,7 +40,7 @@ class RouteParameterBinder
         // If the route has a regular expression for the host part of the URI, we will
         // compile that and get the parameter matches for this domain. We will then
         // merge them into this parameters array so that this array is completed.
-        if (! is_null($this->route->compiled->getHostRegex())) {
+        if (!is_null($this->route->compiled->getHostRegex())) {
             $parameters = $this->bindHostParameters($request, $parameters);
         }
         
@@ -106,7 +106,7 @@ class RouteParameterBinder
         }
         
         foreach ($this->route->defaults as $key => $value) {
-            if (! isset($parameters[$key])) {
+            if (!isset($parameters[$key])) {
                 $parameters[$key] = $value;
             }
         }

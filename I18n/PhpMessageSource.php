@@ -121,9 +121,9 @@ class PhpMessageSource extends MessageSource
             // . "Fallback file does not exist as well: $fallbackMessageFile", __METHOD__);
         } elseif (empty($messages)) {
             return $fallbackMessages;
-        } elseif (! empty($fallbackMessages)) {
+        } elseif (!empty($fallbackMessages)) {
             foreach ($fallbackMessages as $key => $value) {
-                if (! empty($value) && empty($messages[$key])) {
+                if (!empty($value) && empty($messages[$key])) {
                     $messages[$key] = $fallbackMessages[$key];
                 }
             }
@@ -163,7 +163,7 @@ class PhpMessageSource extends MessageSource
     {
         if (is_file($messageFile)) {
             $messages = include ($messageFile);
-            if (! is_array($messages)) {
+            if (!is_array($messages)) {
                 $messages = [];
             }
             

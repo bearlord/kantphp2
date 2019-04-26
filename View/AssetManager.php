@@ -231,9 +231,9 @@ class AssetManager extends Component
     public function init()
     {
         parent::init();
-        if (! is_dir($this->basePath)) {
+        if (!is_dir($this->basePath)) {
             throw new InvalidConfigException("The directory does not exist: {$this->basePath}");
-        } elseif (! is_writable($this->basePath)) {
+        } elseif (!is_writable($this->basePath)) {
             throw new InvalidConfigException("The directory is not writable by the Web process: {$this->basePath}");
         } else {
             $this->basePath = realpath($this->basePath);
@@ -258,7 +258,7 @@ class AssetManager extends Component
     {
         if ($this->bundles === false) {
             return $this->loadDummyBundle($name);
-        } elseif (! isset($this->bundles[$name])) {
+        } elseif (!isset($this->bundles[$name])) {
             return $this->bundles[$name] = $this->loadBundle($name, [], $publish);
         } elseif ($this->bundles[$name] instanceof AssetBundle) {
             return $this->bundles[$name];
@@ -285,7 +285,7 @@ class AssetManager extends Component
      */
     protected function loadBundle($name, $config = [], $publish = true)
     {
-        if (! isset($config['class'])) {
+        if (!isset($config['class'])) {
             $config['class'] = $name;
         }
         /* @var $bundle AssetBundle */
@@ -304,7 +304,7 @@ class AssetManager extends Component
      */
     protected function loadDummyBundle($name)
     {
-        if (! isset($this->_dummyBundles[$name])) {
+        if (!isset($this->_dummyBundles[$name])) {
             $this->_dummyBundles[$name] = $this->loadBundle($name, [
                 'sourcePath' => null,
                 'js' => [],
@@ -342,7 +342,7 @@ class AssetManager extends Component
             $baseUrl = $bundle->baseUrl;
         }
         
-        if (! Url::isRelative($asset) || strncmp($asset, '/', 1) === 0) {
+        if (!Url::isRelative($asset) || strncmp($asset, '/', 1) === 0) {
             return $asset;
         }
         
@@ -488,7 +488,7 @@ class AssetManager extends Component
             return $this->_published[$path];
         }
         
-        if (! is_string($path) || ($src = realpath($path)) === false) {
+        if (!is_string($path) || ($src = realpath($path)) === false) {
             throw new InvalidParamException("The file or directory to be published does not exist: $path");
         }
         
@@ -514,12 +514,12 @@ class AssetManager extends Component
         $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $dir;
         $dstFile = $dstDir . DIRECTORY_SEPARATOR . $fileName;
         
-        if (! is_dir($dstDir)) {
+        if (!is_dir($dstDir)) {
             FileHelper::createDirectory($dstDir, $this->dirMode, true);
         }
         
         if ($this->linkAssets) {
-            if (! is_file($dstFile)) {
+            if (!is_file($dstFile)) {
                 symlink($src, $dstFile);
             }
         } elseif (@filemtime($dstFile) < @filemtime($src)) {
@@ -563,16 +563,16 @@ class AssetManager extends Component
         $dir = $this->hash($src);
         $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $dir;
         if ($this->linkAssets) {
-            if (! is_dir($dstDir)) {
+            if (!is_dir($dstDir)) {
                 FileHelper::createDirectory(dirname($dstDir), $this->dirMode, true);
                 symlink($src, $dstDir);
             }
-        } elseif (! empty($options['forceCopy']) || ($this->forceCopy && ! isset($options['forceCopy'])) || ! is_dir($dstDir)) {
+        } elseif (!empty($options['forceCopy']) || ($this->forceCopy && ! isset($options['forceCopy'])) || ! is_dir($dstDir)) {
             $opts = array_merge($options, [
                 'dirMode' => $this->dirMode,
                 'fileMode' => $this->fileMode
             ]);
-            if (! isset($opts['beforeCopy'])) {
+            if (!isset($opts['beforeCopy'])) {
                 if ($this->beforeCopy !== null) {
                     $opts['beforeCopy'] = $this->beforeCopy;
                 } else {
@@ -581,7 +581,7 @@ class AssetManager extends Component
                     };
                 }
             }
-            if (! isset($opts['afterCopy']) && $this->afterCopy !== null) {
+            if (!isset($opts['afterCopy']) && $this->afterCopy !== null) {
                 $opts['afterCopy'] = $this->afterCopy;
             }
             FileHelper::copyDirectory($src, $dstDir, $opts);

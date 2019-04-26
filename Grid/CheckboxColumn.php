@@ -131,7 +131,7 @@ class CheckboxColumn extends Column
             $options = $this->checkboxOptions;
         }
         
-        if (! isset($options['value'])) {
+        if (!isset($options['value'])) {
             $options['value'] = is_array($key) ? Json::encode($key) : $key;
         }
         

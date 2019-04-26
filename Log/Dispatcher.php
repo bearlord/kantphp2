@@ -97,7 +97,7 @@ class Dispatcher extends Component
     {
         parent::init();
         foreach ($this->targets as $name => $target) {
-            if (! $target instanceof Target) {
+            if (!$target instanceof Target) {
                 $this->targets[$name] = Kant::createObject($target);
             }
         }
@@ -209,7 +209,7 @@ class Dispatcher extends Component
                 }
             }
         }
-        if (! empty($targetErrors)) {
+        if (!empty($targetErrors)) {
             $this->dispatch($targetErrors, true);
         }
     }

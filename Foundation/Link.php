@@ -84,7 +84,7 @@ class Link extends BaseObject
                     ];
                 }
                 $links[$rel] = $link;
-            } elseif (! $link instanceof self) {
+            } elseif (!$link instanceof self) {
                 $links[$rel] = [
                     'href' => $link
                 ];

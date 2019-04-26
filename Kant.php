@@ -152,7 +152,7 @@ class Kant
         $root = $pos === false ? $alias : substr($alias, 0, $pos);
         if ($path !== null) {
             $path = strncmp($path, '@', 1) ? rtrim($path, '\\/') : static::getAlias($path);
-            if (! isset(static::$aliases[$root])) {
+            if (!isset(static::$aliases[$root])) {
                 if ($pos === false) {
                     static::$aliases[$root] = $path;
                 } else {

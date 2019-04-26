@@ -151,7 +151,7 @@ class BaseStringHelper
         if ($trim) {
             if ($trim === true) {
                 $trim = 'trim';
-            } elseif (! is_callable($trim)) {
+            } elseif (!is_callable($trim)) {
                 $trim = function ($v) use($trim) {
                     return trim($v, $trim);
                 };

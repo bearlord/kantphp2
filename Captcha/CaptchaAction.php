@@ -140,7 +140,7 @@ class CaptchaAction extends Action
     public function init()
     {
         $this->fontFile = Kant::getAlias($this->fontFile);
-        if (! is_file($this->fontFile)) {
+        if (!is_file($this->fontFile)) {
             throw new InvalidConfigException("The font file does not exist: {$this->fontFile}");
         }
     }

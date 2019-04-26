@@ -96,11 +96,11 @@ class RouteCompiler implements RouteCompilerInterface
         $useUtf8 = preg_match('//u', $pattern);
         $needsUtf8 = $route->getOption('utf8');
         
-        if (! $needsUtf8 && $useUtf8 && preg_match('/[\x80-\xFF]/', $pattern)) {
+        if (!$needsUtf8 && $useUtf8 && preg_match('/[\x80-\xFF]/', $pattern)) {
             $needsUtf8 = true;
             @trigger_error(sprintf('Using UTF-8 route patterns without setting the "utf8" option is deprecated since Symfony 3.2 and will throw a LogicException in 4.0. Turn on the "utf8" route option for pattern "%s".', $pattern), E_USER_DEPRECATED);
         }
-        if (! $useUtf8 && $needsUtf8) {
+        if (!$useUtf8 && $needsUtf8) {
             throw new \LogicException(sprintf('Cannot mix UTF-8 requirements with non-UTF-8 pattern "%s".', $pattern));
         }
         
@@ -113,7 +113,7 @@ class RouteCompiler implements RouteCompilerInterface
             $precedingText = substr($pattern, $pos, $match[0][1] - $pos);
             $pos = $match[0][1] + strlen($match[0][0]);
             
-            if (! strlen($precedingText)) {
+            if (!strlen($precedingText)) {
                 $precedingChar = '';
             } elseif ($useUtf8) {
                 preg_match('/.$/u', $precedingText, $precedingChar);
@@ -141,7 +141,7 @@ class RouteCompiler implements RouteCompilerInterface
                     'text',
                     substr($precedingText, 0, - strlen($precedingChar))
                 );
-            } elseif (! $isSeparator && strlen($precedingText) > 0) {
+            } elseif (!$isSeparator && strlen($precedingText) > 0) {
                 $tokens[] = array(
                     'text',
                     $precedingText
@@ -169,13 +169,13 @@ class RouteCompiler implements RouteCompilerInterface
                     $regexp .= '+';
                 }
             } else {
-                if (! preg_match('//u', $regexp)) {
+                if (!preg_match('//u', $regexp)) {
                     $useUtf8 = false;
-                } elseif (! $needsUtf8 && preg_match('/[\x80-\xFF]|(?<!\\\\)\\\\(?:\\\\\\\\)*+(?-i:X|[pP][\{CLMNPSZ]|x\{[A-Fa-f0-9]{3})/', $regexp)) {
+                } elseif (!$needsUtf8 && preg_match('/[\x80-\xFF]|(?<!\\\\)\\\\(?:\\\\\\\\)*+(?-i:X|[pP][\{CLMNPSZ]|x\{[A-Fa-f0-9]{3})/', $regexp)) {
                     $needsUtf8 = true;
                     @trigger_error(sprintf('Using UTF-8 route requirements without setting the "utf8" option is deprecated since Symfony 3.2 and will throw a LogicException in 4.0. Turn on the "utf8" route option for variable "%s" in pattern "%s".', $varName, $pattern), E_USER_DEPRECATED);
                 }
-                if (! $useUtf8 && $needsUtf8) {
+                if (!$useUtf8 && $needsUtf8) {
                     throw new \LogicException(sprintf('Cannot mix UTF-8 requirement with non-UTF-8 charset for variable "%s" in pattern "%s".', $varName, $pattern));
                 }
             }
@@ -198,7 +198,7 @@ class RouteCompiler implements RouteCompilerInterface
         
         // find the first optional token
         $firstOptional = PHP_INT_MAX;
-        if (! $isHost) {
+        if (!$isHost) {
             for ($i = count($tokens) - 1; $i >= 0; -- $i) {
                 $token = $tokens[$i];
                 if ('variable' === $token[0] && $route->hasDefault($token[3])) {

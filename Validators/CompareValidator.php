@@ -146,7 +146,7 @@ class CompareValidator extends Validator
             $compareLabel = $compareValueOrAttribute = $model->getAttributeLabel($compareAttribute);
         }
         
-        if (! $this->compareValues($this->operator, $this->type, $value, $compareValue)) {
+        if (!$this->compareValues($this->operator, $this->type, $value, $compareValue)) {
             $this->addError($model, $attribute, $this->message, [
                 'compareAttribute' => $compareLabel,
                 'compareValue' => $compareValue,
@@ -163,7 +163,7 @@ class CompareValidator extends Validator
         if ($this->compareValue === null) {
             throw new InvalidConfigException('CompareValidator::compareValue must be set.');
         }
-        if (! $this->compareValues($this->operator, $this->type, $value, $this->compareValue)) {
+        if (!$this->compareValues($this->operator, $this->type, $value, $this->compareValue)) {
             return [
                 $this->message,
                 [

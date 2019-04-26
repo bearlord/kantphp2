@@ -73,7 +73,7 @@ namespace Kant\Secure\Crypt;
 /**
  * Include Math_BigInteger
  */
-if (! class_exists('Math_BigInteger')) {
+if (!class_exists('Math_BigInteger')) {
     require_once ('Math/BigInteger.php');
 }
 
@@ -84,14 +84,14 @@ if (! class_exists('Math_BigInteger')) {
 // will trigger a call to __autoload() if you're wanting to auto-load classes
 // call function_exists() a second time to stop the require_once from being called outside
 // of the auto loader
-if (! function_exists('crypt_random_string')) {
+if (!function_exists('crypt_random_string')) {
     require_once ('Crypt/Random.php');
 }
 
 /**
  * Include Crypt_Hash
  */
-if (! class_exists('Crypt_Hash')) {
+if (!class_exists('Crypt_Hash')) {
     require_once ('Crypt/Hash.php');
 }
 
@@ -485,7 +485,7 @@ class Crypt_RSA
     {
         $this->configFile = CRYPT_RSA_OPENSSL_CONFIG;
         
-        if (! defined('CRYPT_RSA_MODE')) {
+        if (!defined('CRYPT_RSA_MODE')) {
             switch (true) {
                 case extension_loaded('openssl') && version_compare(PHP_VERSION, '4.2.0', '>=') && file_exists($this->configFile):
                     define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_OPENSSL);
@@ -524,7 +524,7 @@ class Crypt_RSA
      */
     function createKey($bits = 1024, $timeout = false, $partial = array())
     {
-        if (! defined('CRYPT_RSA_EXPONENT')) {
+        if (!defined('CRYPT_RSA_EXPONENT')) {
             // http://en.wikipedia.org/wiki/65537_%28number%29
             define('CRYPT_RSA_EXPONENT', '65537');
         }
@@ -534,7 +534,7 @@ class Crypt_RSA
         // CRYPT_RSA_MODE is set to CRYPT_RSA_MODE_INTERNAL. if CRYPT_RSA_MODE is set to CRYPT_RSA_MODE_OPENSSL then
         // CRYPT_RSA_SMALLEST_PRIME is ignored (ie. multi-prime RSA support is more intended as a way to speed up RSA key
         // generation when there's a chance neither gmp nor OpenSSL are installed)
-        if (! defined('CRYPT_RSA_SMALLEST_PRIME')) {
+        if (!defined('CRYPT_RSA_SMALLEST_PRIME')) {
             define('CRYPT_RSA_SMALLEST_PRIME', 4096);
         }
         
@@ -571,7 +571,7 @@ class Crypt_RSA
         }
         
         static $e;
-        if (! isset($e)) {
+        if (!isset($e)) {
             $e = new Math_BigInteger(CRYPT_RSA_EXPONENT);
         }
         
@@ -591,7 +591,7 @@ class Crypt_RSA
         $generator = new Math_BigInteger();
         
         $n = $this->one->copy();
-        if (! empty($partial)) {
+        if (!empty($partial)) {
             extract(unserialize($partial));
         } else {
             $exponents = $coefficients = $primes = array();
@@ -625,7 +625,7 @@ class Crypt_RSA
                 
                 if ($i == $num_primes) {
                     list ($min, $temp) = $absoluteMin->divide($n);
-                    if (! $temp->equals($this->zero)) {
+                    if (!$temp->equals($this->zero)) {
                         $min = $min->add($this->one); // ie. ceil()
                     }
                     $primes[$i] = $generator->randomPrime($min, $finalMax, $timeout);
@@ -674,7 +674,7 @@ class Crypt_RSA
             list ($lcm) = $lcm['top']->divide($lcm['bottom']);
             $gcd = $lcm->gcd($e);
             $i0 = 1;
-        } while (! $gcd->equals($this->one));
+        } while (!$gcd->equals($this->one));
         
         $d = $e->modInverse($lcm);
         
@@ -738,7 +738,7 @@ class Crypt_RSA
                     return false;
                 }
                 $key = "PuTTY-User-Key-File-2: ssh-rsa\r\nEncryption: ";
-                $encryption = (! empty($this->password) || is_string($this->password)) ? 'aes256-cbc' : 'none';
+                $encryption = (!empty($this->password) || is_string($this->password)) ? 'aes256-cbc' : 'none';
                 $key .= $encryption;
                 $key .= "\r\nComment: " . $this->comment . "\r\n";
                 $public = pack('Na*Na*Na*', strlen('ssh-rsa'), 'ssh-rsa', strlen($raw['publicExponent']), $raw['publicExponent'], strlen($raw['modulus']), $raw['modulus']);
@@ -753,7 +753,7 @@ class Crypt_RSA
                 } else {
                     $private .= crypt_random_string(16 - (strlen($private) & 15));
                     $source .= pack('Na*', strlen($private), $private);
-                    if (! class_exists('Crypt_AES')) {
+                    if (!class_exists('Crypt_AES')) {
                         require_once ('Crypt/AES.php');
                     }
                     $sequence = 0;
@@ -774,7 +774,7 @@ class Crypt_RSA
                 $private = base64_encode($private);
                 $key .= 'Private-Lines: ' . ((strlen($private) + 32) >> 6) . "\r\n";
                 $key .= chunk_split($private, 64);
-                if (! class_exists('Crypt_Hash')) {
+                if (!class_exists('Crypt_Hash')) {
                     require_once ('Crypt/Hash.php');
                 }
                 $hash = new Crypt_Hash('sha1');
@@ -810,11 +810,11 @@ class Crypt_RSA
                 
                 $RSAPrivateKey = pack('Ca*a*', CRYPT_RSA_ASN1_SEQUENCE, $this->_encodeLength(strlen($RSAPrivateKey)), $RSAPrivateKey);
                 
-                if (! empty($this->password) || is_string($this->password)) {
+                if (!empty($this->password) || is_string($this->password)) {
                     $iv = crypt_random_string(8);
                     $symkey = pack('H*', md5($this->password . $iv)); // symkey is short for symmetric key
                     $symkey .= substr(pack('H*', md5($symkey . $this->password . $iv)), 0, 8);
-                    if (! class_exists('Crypt_TripleDES')) {
+                    if (!class_exists('Crypt_TripleDES')) {
                         require_once ('Crypt/TripleDES.php');
                     }
                     $des = new Crypt_TripleDES();
@@ -907,7 +907,7 @@ class Crypt_RSA
         
         switch ($type) {
             case CRYPT_RSA_PUBLIC_FORMAT_RAW:
-                if (! is_array($key)) {
+                if (!is_array($key)) {
                     return false;
                 }
                 $components = array();
@@ -966,33 +966,33 @@ class Crypt_RSA
                     }
                     switch ($matches[1]) {
                         case 'AES-256-CBC':
-                            if (! class_exists('Crypt_AES')) {
+                            if (!class_exists('Crypt_AES')) {
                                 require_once ('Crypt/AES.php');
                             }
                             $crypto = new Crypt_AES();
                             break;
                         case 'AES-128-CBC':
-                            if (! class_exists('Crypt_AES')) {
+                            if (!class_exists('Crypt_AES')) {
                                 require_once ('Crypt/AES.php');
                             }
                             $symkey = substr($symkey, 0, 16);
                             $crypto = new Crypt_AES();
                             break;
                         case 'DES-EDE3-CFB':
-                            if (! class_exists('Crypt_TripleDES')) {
+                            if (!class_exists('Crypt_TripleDES')) {
                                 require_once ('Crypt/TripleDES.php');
                             }
                             $crypto = new Crypt_TripleDES(CRYPT_DES_MODE_CFB);
                             break;
                         case 'DES-EDE3-CBC':
-                            if (! class_exists('Crypt_TripleDES')) {
+                            if (!class_exists('Crypt_TripleDES')) {
                                 require_once ('Crypt/TripleDES.php');
                             }
                             $symkey = substr($symkey, 0, 24);
                             $crypto = new Crypt_TripleDES();
                             break;
                         case 'DES-CBC':
-                            if (! class_exists('Crypt_DES')) {
+                            if (!class_exists('Crypt_DES')) {
                                 require_once ('Crypt/DES.php');
                             }
                             $crypto = new Crypt_DES();
@@ -1112,12 +1112,12 @@ class Crypt_RSA
                     2 => new Math_BigInteger($this->_string_shift($key, $length), 256)
                 );
                 
-                if (! empty($key)) {
+                if (!empty($key)) {
                     if (ord($this->_string_shift($key)) != CRYPT_RSA_ASN1_SEQUENCE) {
                         return false;
                     }
                     $this->_decodeLength($key);
-                    while (! empty($key)) {
+                    while (!empty($key)) {
                         if (ord($this->_string_shift($key)) != CRYPT_RSA_ASN1_SEQUENCE) {
                             return false;
                         }
@@ -1187,7 +1187,7 @@ class Crypt_RSA
                 xml_set_element_handler($xml, '_start_element_handler', '_stop_element_handler');
                 xml_set_character_data_handler($xml, '_data_handler');
                 // add <xml></xml> to account for "dangling" tags like <BitStrength>...</BitStrength> that are sometimes added
-                if (! xml_parse($xml, '<xml>' . $key . '</xml>')) {
+                if (!xml_parse($xml, '<xml>' . $key . '</xml>')) {
                     return false;
                 }
                 
@@ -1216,7 +1216,7 @@ class Crypt_RSA
                 
                 switch ($encryption) {
                     case 'aes256-cbc':
-                        if (! class_exists('Crypt_AES')) {
+                        if (!class_exists('Crypt_AES')) {
                             require_once ('Crypt/AES.php');
                         }
                         $symkey = '';
@@ -1361,7 +1361,7 @@ class Crypt_RSA
      */
     function _data_handler($parser, $data)
     {
-        if (! isset($this->current) || is_object($this->current)) {
+        if (!isset($this->current) || is_object($this->current)) {
             return;
         }
         $this->current .= trim($data);
@@ -2178,7 +2178,7 @@ class Crypt_RSA
         }
         $type = 2;
         // see the comments of _rsaes_pkcs1_v1_5_decrypt() to understand why this is being done
-        if (defined('CRYPT_RSA_PKCS15_COMPAT') && (! isset($this->publicExponent) || $this->exponent !== $this->publicExponent)) {
+        if (defined('CRYPT_RSA_PKCS15_COMPAT') && (!isset($this->publicExponent) || $this->exponent !== $this->publicExponent)) {
             $type = 1;
             // "The padding string PS shall consist of k-3-||D|| octets. ... for block type 01, they shall have value FF"
             $ps = str_repeat("\xFF", $psLen);

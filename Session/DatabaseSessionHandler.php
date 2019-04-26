@@ -129,7 +129,7 @@ class DatabaseSessionHandler implements SessionHandlerInterface
     {
         $payload = $this->getDefaultData($data);
         
-        if (! $this->exists) {
+        if (!$this->exists) {
             $this->read($sessionId);
         }
         

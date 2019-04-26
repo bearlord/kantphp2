@@ -40,7 +40,7 @@ class Pathinfo
                     'REDIRECT_URL'
                 ];
                 foreach ($pathinfoFetch as $type) {
-                    if (! empty($_SERVER[$type])) {
+                    if (!empty($_SERVER[$type])) {
                         $pathinfo = (0 === strpos($_SERVER[$type], $_SERVER['SCRIPT_NAME'])) ? substr($_SERVER[$type], strlen($_SERVER['SCRIPT_NAME'])) : $_SERVER[$type];
                         break;
                     }
@@ -53,7 +53,7 @@ class Pathinfo
                 'HTTP_X_REWRITE_URL',
                 'argv'
             ) as $var) {
-                if (! empty($_SERVER[$var])) {
+                if (!empty($_SERVER[$var])) {
                     $requestUri = $_SERVER[$var];
                     if ($var == 'argv') {
                         $requestUri = @strtolower($requestUri[1]);
@@ -66,7 +66,7 @@ class Pathinfo
             if (strpos($requestUri, "index.php") !== false) {
                 $parse = parse_url($requestUri);
                 // url as [/index.php?module=demo&ctrl=index&act=index]
-                if (! empty($parse['query']) && strpos($parse['query'], 'module') !== false) {
+                if (!empty($parse['query']) && strpos($parse['query'], 'module') !== false) {
                     $pathinfo = "";
                 } else {
                     // url as [/index.php/demo/index/index]

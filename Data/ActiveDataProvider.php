@@ -104,7 +104,7 @@ class ActiveDataProvider extends BaseDataProvider
      */
     protected function prepareModels()
     {
-        if (! $this->query instanceof QueryInterface) {
+        if (!$this->query instanceof QueryInterface) {
             throw new InvalidConfigException('The "query" property must be an instance of a class that implements the QueryInterface e.g. yii\db\Query or its subclasses.');
         }
         $query = clone $this->query;
@@ -166,7 +166,7 @@ class ActiveDataProvider extends BaseDataProvider
      */
     protected function prepareTotalCount()
     {
-        if (! $this->query instanceof QueryInterface) {
+        if (!$this->query instanceof QueryInterface) {
             throw new InvalidConfigException('The "query" property must be an instance of a class that implements the QueryInterface e.g. yii\db\Query or its subclasses.');
         }
         $query = clone $this->query;
@@ -199,7 +199,7 @@ class ActiveDataProvider extends BaseDataProvider
                 }
             } else {
                 foreach ($sort->attributes as $attribute => $config) {
-                    if (! isset($config['label'])) {
+                    if (!isset($config['label'])) {
                         $sort->attributes[$attribute]['label'] = $model->getAttributeLabel($attribute);
                     }
                 }

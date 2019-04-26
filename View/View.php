@@ -383,7 +383,7 @@ class View extends BaseView
             $file = dirname($currentViewFile) . DIRECTORY_SEPARATOR . $view;
         } else {
             try {
-                if (Kant::$app->controller !== null) {
+                if (!empty(Kant::$app->controller->module)) {
 					$_controllerId = str_replace('/', DIRECTORY_SEPARATOR, Inflector::camel2id(Kant::$app->controller->id));
                     $file = Kant::$app->controller->module->getViewPath()  . DIRECTORY_SEPARATOR  . $_controllerId . DIRECTORY_SEPARATOR .  ltrim($view, '/') ;
                 } else {
@@ -550,7 +550,7 @@ class View extends BaseView
      */
     protected function registerAssetFiles($name)
     {
-        if (! isset($this->assetBundles[$name])) {
+        if (!isset($this->assetBundles[$name])) {
             return;
         }
         $bundle = $this->assetBundles[$name];
@@ -579,7 +579,7 @@ class View extends BaseView
      */
     public function registerAssetBundle($name, $position = null)
     {
-        if (! isset($this->assetBundles[$name])) {
+        if (!isset($this->assetBundles[$name])) {
             $am = $this->getAssetManager();
             $bundle = $am->getBundle($name);
             $this->assetBundles[$name] = false;
@@ -811,23 +811,23 @@ class View extends BaseView
     protected function renderHeadHtml()
     {
         $lines = [];
-        if (! empty($this->metaTags)) {
+        if (!empty($this->metaTags)) {
             $lines[] = implode("\n", $this->metaTags);
         }
         
-        if (! empty($this->linkTags)) {
+        if (!empty($this->linkTags)) {
             $lines[] = implode("\n", $this->linkTags);
         }
-        if (! empty($this->cssFiles)) {
+        if (!empty($this->cssFiles)) {
             $lines[] = implode("\n", $this->cssFiles);
         }
-        if (! empty($this->css)) {
+        if (!empty($this->css)) {
             $lines[] = implode("\n", $this->css);
         }
-        if (! empty($this->jsFiles[self::POS_HEAD])) {
+        if (!empty($this->jsFiles[self::POS_HEAD])) {
             $lines[] = implode("\n", $this->jsFiles[self::POS_HEAD]);
         }
-        if (! empty($this->js[self::POS_HEAD])) {
+        if (!empty($this->js[self::POS_HEAD])) {
             $lines[] = Html::script(implode("\n", $this->js[self::POS_HEAD]), [
                 'type' => 'text/javascript'
             ]);
@@ -848,19 +848,19 @@ class View extends BaseView
      */
     protected function renderBodyEndHtml($ajaxMode)
     {
-        if (! empty($this->jsFiles[self::POS_END])) {
+        if (!empty($this->jsFiles[self::POS_END])) {
             $lines[] = implode("\n", $this->jsFiles[self::POS_END]);
         }
         
         if ($ajaxMode) {
             $scripts = [];
-            if (! empty($this->js[self::POS_END])) {
+            if (!empty($this->js[self::POS_END])) {
                 $scripts[] = implode("\n", $this->js[self::POS_END]);
             }
-            if (! empty($this->js[self::POS_READY])) {
+            if (!empty($this->js[self::POS_READY])) {
                 $scripts[] = implode("\n", $this->js[self::POS_READY]);
             }
-            if (! empty($this->js[self::POS_LOAD])) {
+            if (!empty($this->js[self::POS_LOAD])) {
                 $scripts[] = implode("\n", $this->js[self::POS_LOAD]);
             }
             {
@@ -869,18 +869,18 @@ class View extends BaseView
                 ]);
             }
         } else {
-            if (! empty($this->js[self::POS_END])) {
+            if (!empty($this->js[self::POS_END])) {
                 $lines[] = Html::script(implode("\n", $this->js[self::POS_END]), [
                     'type' => 'text/javascript'
                 ]);
             }
-            if (! empty($this->js[self::POS_READY])) {
+            if (!empty($this->js[self::POS_READY])) {
                 $js = "jQuery(document).ready(function () {\n" . implode("\n", $this->js[self::POS_READY]) . "\n});";
                 $lines[] = Html::script($js, [
                     'type' => 'text/javascript'
                 ]);
             }
-            if (! empty($this->js[self::POS_LOAD])) {
+            if (!empty($this->js[self::POS_LOAD])) {
                 $js = "jQuery(window).load(function () {\n" . implode("\n", $this->js[self::POS_LOAD]) . "\n});";
                 $lines[] = Html::script($js, [
                     'type' => 'text/javascript'
@@ -900,10 +900,10 @@ class View extends BaseView
     protected function renderBodyBeginHtml()
     {
         $lines = [];
-        if (! empty($this->jsFiles[self::POS_BEGIN])) {
+        if (!empty($this->jsFiles[self::POS_BEGIN])) {
             $lines[] = implode("\n", $this->jsFiles[self::POS_BEGIN]);
         }
-        if (! empty($this->js[self::POS_BEGIN])) {
+        if (!empty($this->js[self::POS_BEGIN])) {
             $lines[] = Html::script(implode("\n", $this->js[self::POS_BEGIN]), [
                 'type' => 'text/javascript'
             ]);

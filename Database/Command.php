@@ -200,11 +200,11 @@ class Command extends Component
                 $params[$name] = ($value ? 'TRUE' : 'FALSE');
             } elseif ($value === null) {
                 $params[$name] = 'NULL';
-            } elseif (! is_object($value) && ! is_resource($value)) {
+            } elseif (!is_object($value) && ! is_resource($value)) {
                 $params[$name] = $value;
             }
         }
-        if (! isset($params[1])) {
+        if (!isset($params[1])) {
             return strtr($this->_sql, $params);
         }
         $sql = '';

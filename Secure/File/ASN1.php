@@ -45,7 +45,7 @@ namespace Kant\Secure;
 /**
  * Include Math_BigInteger
  */
-if (! class_exists('Math_BigInteger')) {
+if (!class_exists('Math_BigInteger')) {
     require_once ('Math/BigInteger.php');
 }
 
@@ -344,7 +344,7 @@ class File_ASN1
             }
             
             // End-of-content, see paragraphs 8.1.1.3, 8.1.3.2, 8.1.3.6, 8.1.5, and (for an example) 8.6.4.2
-            if (! $type && ! $length) {
+            if (!$type && ! $length) {
                 return $decoded;
             }
             $content = $this->_string_shift($encoded, $length);
@@ -398,7 +398,7 @@ class File_ASN1
                     // The initial octet shall encode, as an unsigned binary integer with bit 1 as the least significant bit,
                     // the number of unused bits in the final subsequent octet. The number shall be in the range zero to
                     // seven.
-                    if (! $constructed) {
+                    if (!$constructed) {
                         $current['content'] = $content;
                     } else {
                         $temp = $this->_decode_ber($content, $start);
@@ -419,7 +419,7 @@ class File_ASN1
                     }
                     break;
                 case FILE_ASN1_TYPE_OCTET_STRING:
-                    if (! $constructed) {
+                    if (!$constructed) {
                         $current['content'] = $content;
                     } else {
                         $temp = $this->_decode_ber($content, $start);
@@ -638,7 +638,7 @@ class File_ASN1
                         $i ++;
                     } elseif (isset($child['default'])) {
                         $map[$key] = $child['default']; // Use default.
-                    } elseif (! isset($child['optional'])) {
+                    } elseif (!isset($child['optional'])) {
                         return NULL; // Syntax error.
                     }
                 }
@@ -704,7 +704,7 @@ class File_ASN1
                             $maymatch = $candidate !== NULL;
                         }
                         
-                        if (! $maymatch) {
+                        if (!$maymatch) {
                             break;
                         }
                         
@@ -715,10 +715,10 @@ class File_ASN1
                 }
                 
                 foreach ($mapping['children'] as $key => $child) {
-                    if (! isset($map[$key])) {
+                    if (!isset($map[$key])) {
                         if (isset($child['default'])) {
                             $map[$key] = $child['default'];
-                        } elseif (! isset($child['optional'])) {
+                        } elseif (!isset($child['optional'])) {
                             return NULL;
                         }
                     }
@@ -858,8 +858,8 @@ class File_ASN1
                 }
                 
                 foreach ($mapping['children'] as $key => $child) {
-                    if (! isset($source[$key])) {
-                        if (! isset($child['optional'])) {
+                    if (!isset($source[$key])) {
+                        if (!isset($child['optional'])) {
                             return false;
                         }
                         continue;
@@ -902,7 +902,7 @@ class File_ASN1
                 $temp = false;
                 
                 foreach ($mapping['children'] as $key => $child) {
-                    if (! isset($source[$key])) {
+                    if (!isset($source[$key])) {
                         continue;
                     }
                     
@@ -942,7 +942,7 @@ class File_ASN1
                 return $temp;
             case FILE_ASN1_TYPE_INTEGER:
             case FILE_ASN1_TYPE_ENUMERATED:
-                if (! isset($mapping['mapping'])) {
+                if (!isset($mapping['mapping'])) {
                     $value = $source->toBytes(true);
                 } else {
                     $value = array_search($source, $mapping['mapping']);
@@ -951,7 +951,7 @@ class File_ASN1
                     }
                     $value = new Math_BigInteger($value);
                     $value = $value->toBytes(true);
-                    if (! strlen($value)) {
+                    if (!strlen($value)) {
                         $value = chr(0);
                     }
                 }
@@ -1008,7 +1008,7 @@ class File_ASN1
                 $value = chr(40 * $parts[0] + $parts[1]);
                 for ($i = 2; $i < count($parts); $i ++) {
                     $temp = '';
-                    if (! $parts[$i]) {
+                    if (!$parts[$i]) {
                         $temp = "\0";
                     } else {
                         while ($parts[$i]) {
@@ -1056,7 +1056,7 @@ class File_ASN1
                 
                 $filters = $this->filters;
                 foreach ($loc as $part) {
-                    if (! isset($filters[$part])) {
+                    if (!isset($filters[$part])) {
                         $filters = false;
                         break;
                     }
@@ -1243,7 +1243,7 @@ class File_ASN1
      */
     function convert($in, $from = FILE_ASN1_TYPE_UTF8_STRING, $to = FILE_ASN1_TYPE_UTF8_STRING)
     {
-        if (! isset($this->stringTypeSize[$from]) || ! isset($this->stringTypeSize[$to])) {
+        if (!isset($this->stringTypeSize[$from]) || ! isset($this->stringTypeSize[$to])) {
             return false;
         }
         $insize = $this->stringTypeSize[$from];

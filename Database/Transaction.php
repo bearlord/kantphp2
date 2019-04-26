@@ -156,7 +156,7 @@ class Transaction extends BaseObject
      */
     public function commit()
     {
-        if (! $this->getIsActive()) {
+        if (!$this->getIsActive()) {
             throw new Exception('Failed to commit transaction: transaction was inactive.');
         }
         
@@ -184,7 +184,7 @@ class Transaction extends BaseObject
      */
     public function rollBack()
     {
-        if (! $this->getIsActive()) {
+        if (!$this->getIsActive()) {
             // do nothing if transaction is not active: this could be the transaction is committed
             // but the event handler to "commitTransaction" throw an exception
             return;
@@ -225,7 +225,7 @@ class Transaction extends BaseObject
      */
     public function setIsolationLevel($level)
     {
-        if (! $this->getIsActive()) {
+        if (!$this->getIsActive()) {
             throw new Exception('Failed to set isolation level: transaction was inactive.');
         }
         Kant::trace('Setting transaction isolation level to ' . $level, __METHOD__);

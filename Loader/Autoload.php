@@ -70,7 +70,7 @@ class KantAutoloaderInit
     public static function inclde($filename)
     {
         static $files = array();
-        if (! isset($files[$filename])) {
+        if (!isset($files[$filename])) {
             if (file_exists($filename)) {
                 require $filename;
                 $files[$filename] = true;

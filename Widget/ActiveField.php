@@ -237,20 +237,20 @@ class ActiveField extends Component
     public function render($content = null)
     {
         if ($content === null) {
-            if (! isset($this->parts['{input}'])) {
+            if (!isset($this->parts['{input}'])) {
                 $this->textInput();
             }
-            if (! isset($this->parts['{label}'])) {
+            if (!isset($this->parts['{label}'])) {
                 $this->label();
             }
-            if (! isset($this->parts['{error}'])) {
+            if (!isset($this->parts['{error}'])) {
                 $this->error();
             }
-            if (! isset($this->parts['{hint}'])) {
+            if (!isset($this->parts['{hint}'])) {
                 $this->hint(null);
             }
             $content = strtr($this->template, $this->parts);
-        } elseif (! is_string($content)) {
+        } elseif (!is_string($content)) {
             $content = call_user_func($content, $this);
         }
         
@@ -266,7 +266,7 @@ class ActiveField extends Component
     {
         if ($this->form->enableClientScript) {
             $clientOptions = $this->getClientOptions();
-            if (! empty($clientOptions)) {
+            if (!empty($clientOptions)) {
                 $this->form->attributes[] = $clientOptions;
             }
         }
@@ -504,7 +504,7 @@ class ActiveField extends Component
             $options = array_merge($this->inputOptions, $options);
         }
         
-        if (! isset($this->form->options['enctype'])) {
+        if (!isset($this->form->options['enctype'])) {
             $this->form->options['enctype'] = 'multipart/form-data';
         }
         $this->adjustLabelFor($options);
@@ -570,7 +570,7 @@ class ActiveField extends Component
         } else {
             if (isset($options['label']) && ! isset($this->parts['{label}'])) {
                 $this->parts['{label}'] = $options['label'];
-                if (! empty($options['labelOptions'])) {
+                if (!empty($options['labelOptions'])) {
                     $this->labelOptions = $options['labelOptions'];
                 }
             }
@@ -619,7 +619,7 @@ class ActiveField extends Component
         } else {
             if (isset($options['label']) && ! isset($this->parts['{label}'])) {
                 $this->parts['{label}'] = $options['label'];
-                if (! empty($options['labelOptions'])) {
+                if (!empty($options['labelOptions'])) {
                     $this->labelOptions = $options['labelOptions'];
                 }
             }
@@ -765,7 +765,7 @@ class ActiveField extends Component
      */
     public function widget($class, $config = [])
     {
-        /* @var $class \Kant\View\Widget */
+        /* @var $class \Kant\Widget\Widget */
         $config['model'] = $this->model;
         $config['attribute'] = $this->attribute;
         $config['view'] = $this->form->getView();
@@ -782,11 +782,11 @@ class ActiveField extends Component
      */
     protected function adjustLabelFor($options)
     {
-        if (! isset($options['id'])) {
+        if (!isset($options['id'])) {
             return;
         }
         $this->_inputId = $options['id'];
-        if (! isset($this->labelOptions['for'])) {
+        if (!isset($this->labelOptions['for'])) {
             $this->labelOptions['for'] = $options['id'];
         }
     }
@@ -799,7 +799,7 @@ class ActiveField extends Component
     protected function getClientOptions()
     {
         $attribute = Html::getAttributeName($this->attribute);
-        if (! in_array($attribute, $this->model->activeAttributes(), true)) {
+        if (!in_array($attribute, $this->model->activeAttributes(), true)) {
             return [];
         }
         
@@ -820,7 +820,7 @@ class ActiveField extends Component
             }
         }
         
-        if (! $enableAjaxValidation && (! $enableClientValidation || empty($validators))) {
+        if (!$enableAjaxValidation && (!$enableClientValidation || empty($validators))) {
             return [];
         }
         
@@ -853,7 +853,7 @@ class ActiveField extends Component
             $options[$name] = $this->$name === null ? $this->form->$name : $this->$name;
         }
         
-        if (! empty($validators)) {
+        if (!empty($validators)) {
             $options['validate'] = new JsExpression("function (attribute, value, messages, deferred, \$form) {" . implode('', $validators) . '}');
         }
         

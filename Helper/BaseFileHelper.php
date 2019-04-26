@@ -150,7 +150,7 @@ class BaseFileHelper
         if ($magicFile !== null) {
             $magicFile = Kant::getAlias($magicFile);
         }
-        if (! extension_loaded('fileinfo')) {
+        if (!extension_loaded('fileinfo')) {
             if ($checkExtension) {
                 return static::getMimeTypeByExtension($file, $magicFile);
             } else {
@@ -228,7 +228,7 @@ class BaseFileHelper
             $magicFile = static::$mimeMagicFile;
         }
         $magicFile = Kant::getAlias($magicFile);
-        if (! isset(self::$_mimeTypes[$magicFile])) {
+        if (!isset(self::$_mimeTypes[$magicFile])) {
             self::$_mimeTypes[$magicFile] = require ($magicFile);
         }
         return self::$_mimeTypes[$magicFile];
@@ -285,7 +285,7 @@ class BaseFileHelper
         if ($src === $dst || strpos($dst, $src . DIRECTORY_SEPARATOR) === 0) {
             throw new InvalidParamException('Trying to copy a directory to itself or a subdirectory.');
         }
-        if (! is_dir($dst)) {
+        if (!is_dir($dst)) {
             static::createDirectory($dst, isset($options['dirMode']) ? $options['dirMode'] : 0775, true);
         }
         
@@ -293,7 +293,7 @@ class BaseFileHelper
         if ($handle === false) {
             throw new InvalidParamException("Unable to open directory: $src");
         }
-        if (! isset($options['basePath'])) {
+        if (!isset($options['basePath'])) {
             // this should be done only once
             $options['basePath'] = realpath($src);
             $options = self::normalizeOptions($options);
@@ -315,7 +315,7 @@ class BaseFileHelper
                     }
                 } else {
                     // recursive copy, defaults to true
-                    if (! isset($options['recursive']) || $options['recursive']) {
+                    if (!isset($options['recursive']) || $options['recursive']) {
                         static::copyDirectory($from, $to, $options);
                     }
                 }
@@ -343,11 +343,11 @@ class BaseFileHelper
      */
     public static function removeDirectory($dir, $options = [])
     {
-        if (! is_dir($dir)) {
+        if (!is_dir($dir)) {
             return;
         }
         if (isset($options['traverseSymlinks']) && $options['traverseSymlinks'] || ! is_link($dir)) {
-            if (! ($handle = opendir($dir))) {
+            if (!($handle = opendir($dir))) {
                 return;
             }
             while (($file = readdir($handle)) !== false) {
@@ -418,11 +418,11 @@ class BaseFileHelper
      */
     public static function findFiles($dir, $options = [])
     {
-        if (! is_dir($dir)) {
+        if (!is_dir($dir)) {
             throw new InvalidParamException("The dir argument must be a directory: $dir");
         }
         $dir = rtrim($dir, DIRECTORY_SEPARATOR);
-        if (! isset($options['basePath'])) {
+        if (!isset($options['basePath'])) {
             // this should be done only once
             $options['basePath'] = realpath($dir);
             $options = self::normalizeOptions($options);
@@ -440,7 +440,7 @@ class BaseFileHelper
             if (static::filterPath($path, $options)) {
                 if (is_file($path)) {
                     $list[] = $path;
-                } elseif (! isset($options['recursive']) || $options['recursive']) {
+                } elseif (!isset($options['recursive']) || $options['recursive']) {
                     $list = array_merge($list, static::findFiles($path, $options));
                 }
             }
@@ -475,13 +475,13 @@ class BaseFileHelper
         
         $path = str_replace('\\', '/', $path);
         
-        if (! empty($options['except'])) {
+        if (!empty($options['except'])) {
             if (($except = self::lastExcludeMatchingFromList($options['basePath'], $path, $options['except'])) !== null) {
                 return $except['flags'] & self::PATTERN_NEGATIVE;
             }
         }
         
-        if (! empty($options['only']) && ! is_dir($path)) {
+        if (!empty($options['only']) && ! is_dir($path)) {
             if (($except = self::lastExcludeMatchingFromList($options['basePath'], $path, $options['only'])) !== null) {
                 // don't check PATTERN_NEGATIVE since those entries are not prefixed with !
                 return true;
@@ -520,11 +520,11 @@ class BaseFileHelper
             static::createDirectory($parentDir, $mode, true);
         }
         try {
-            if (! mkdir($path, $mode)) {
+            if (!mkdir($path, $mode)) {
                 return false;
             }
         } catch (\Exception $e) {
-            if (! is_dir($path)) {
+            if (!is_dir($path)) {
                 throw new KantException("Failed to create directory \"$path\": " . $e->getMessage(), $e->getCode());
             }
         }
@@ -653,7 +653,7 @@ class BaseFileHelper
             if (is_string($exclude)) {
                 $exclude = self::parseExcludePattern($exclude, false);
             }
-            if (! isset($exclude['pattern']) || ! isset($exclude['flags']) || ! isset($exclude['firstWildcard'])) {
+            if (!isset($exclude['pattern']) || ! isset($exclude['flags']) || ! isset($exclude['firstWildcard'])) {
                 throw new InvalidParamException('If exclude/include pattern is an array it must contain the pattern, flags and firstWildcard keys.');
             }
             if ($exclude['flags'] & self::PATTERN_MUSTBEDIR && ! is_dir($path)) {
@@ -685,7 +685,7 @@ class BaseFileHelper
      */
     private static function parseExcludePattern($pattern, $caseSensitive)
     {
-        if (! is_string($pattern)) {
+        if (!is_string($pattern)) {
             throw new InvalidParamException('Exclude/include pattern must be a string.');
         }
         
@@ -695,11 +695,11 @@ class BaseFileHelper
             'firstWildcard' => false
         ];
         
-        if (! $caseSensitive) {
+        if (!$caseSensitive) {
             $result['flags'] |= self::PATTERN_CASE_INSENSITIVE;
         }
         
-        if (! isset($pattern[0])) {
+        if (!isset($pattern[0])) {
             return $result;
         }
         
@@ -755,7 +755,7 @@ class BaseFileHelper
      */
     private static function normalizeOptions(array $options)
     {
-        if (! array_key_exists('caseSensitive', $options)) {
+        if (!array_key_exists('caseSensitive', $options)) {
             $options['caseSensitive'] = true;
         }
         if (isset($options['except'])) {

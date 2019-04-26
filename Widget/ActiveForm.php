@@ -225,7 +225,7 @@ class ActiveForm extends Widget
      */
     public function init()
     {
-        if (! isset($this->options['id'])) {
+        if (!isset($this->options['id'])) {
             $this->options['id'] = $this->getId();
         }
         ob_start();
@@ -240,7 +240,7 @@ class ActiveForm extends Widget
      */
     public function run()
     {
-        if (! empty($this->_fields)) {
+        if (!empty($this->_fields)) {
             throw new InvalidCallException('Each beginField() should have a matching endField() call.');
         }
         
@@ -342,7 +342,7 @@ class ActiveForm extends Widget
         if ($config instanceof \Closure) {
             $config = call_user_func($config, $model, $attribute);
         }
-        if (! isset($config['class'])) {
+        if (!isset($config['class'])) {
             $config['class'] = $this->fieldClass;
         }
         return Kant::createObject(ArrayHelper::merge($config, $options, [

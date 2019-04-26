@@ -81,7 +81,7 @@ class VerbFilter extends Behavior
     public function events()
     {
         return [
-            Controller::EVENT_BEFORE_ACTION => 'beforeAction'
+            Controller::EVENT_BEFORE_ACTION => 'beforeActions'
         ];
     }
 
@@ -104,7 +104,7 @@ class VerbFilter extends Behavior
         
         $verb = Kant::$app->getRequest()->getMethod();
         $allowed = array_map('strtoupper', $verbs);
-        if (! in_array($verb, $allowed)) {
+        if (!in_array($verb, $allowed)) {
             $event->isValid = false;
             // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.7
             Kant::$app->getResponse()

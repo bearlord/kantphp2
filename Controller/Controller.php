@@ -88,25 +88,6 @@ class Controller extends Component
     public $action;
 
     /**
-     *
-     * @var boolean whether to enable CSRF validation for the actions in this controller.
-     *      CSRF validation is enabled only when both this property and [[\Kant\Http\Request::enableCsrfValidation]] are true.
-     */
-    public $enableCsrfValidation = true;
-
-    /**
-     *
-     * @var explicit|implicit $routerPattern
-     */
-    public $routePattern;
-
-    /**
-     *
-     * @var $dispatcher
-     */
-    public $dispatcher;
-
-    /**
      * @param string $id the ID of this controller.
      * @param Module $module the module that this controller belongs to.
      * @param array $config name-value pairs that will be used to initialize the object properties.
@@ -152,7 +133,9 @@ class Controller extends Component
      */
     public function runActions($id, $params = [])
     {
+
         $action = $this->createActions($id);
+		
         if ($action === null) {
             throw new InvalidArgumentException('Unable to resolve the request: ' . $this->getUniqueId() . '/' . $id);
         }
@@ -343,7 +326,7 @@ class Controller extends Component
             'module',
             'routePattern'
         ] as $value) {
-            if (! empty($options[$value])) {
+            if (!empty($options[$value])) {
                 $this->$value = $options[$value];
             }
         }

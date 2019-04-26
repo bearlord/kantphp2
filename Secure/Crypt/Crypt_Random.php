@@ -146,7 +146,7 @@ function crypt_random_string($length)
         session_start();
         
         $v = $seed = $_SESSION['seed'] = pack('H*', sha1(serialize($_SERVER) . serialize($_POST) . serialize($_GET) . serialize($_COOKIE) . serialize($GLOBALS) . serialize($_SESSION) . serialize($_OLD_SESSION)));
-        if (! isset($_SESSION['count'])) {
+        if (!isset($_SESSION['count'])) {
             $_SESSION['count'] = 0;
         }
         $_SESSION['count'] ++;

@@ -64,7 +64,7 @@ class Action extends Component
      */
     public function runWithParams($params)
     {
-        if (! method_exists($this, 'run')) {
+        if (!method_exists($this, 'run')) {
             throw new InvalidConfigException(get_class($this) . ' must define a "run()" method.');
         }
         

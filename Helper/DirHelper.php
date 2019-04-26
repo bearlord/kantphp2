@@ -72,14 +72,14 @@ class DirHelper
     {
         $fromdir = self::path($fromdir);
         $todir = self::path($todir);
-        if (! is_dir($fromdir)) {
+        if (!is_dir($fromdir)) {
             return false;
         }
-        if (! is_dir($todir)) {
+        if (!is_dir($todir)) {
             self::create($todir);
         }
         $list = glob($fromdir . '*');
-        if (! empty($list)) {
+        if (!empty($list)) {
             foreach ($list as $v) {
                 $path = $todir . basename($v);
                 if (is_dir($v)) {
@@ -111,7 +111,7 @@ class DirHelper
         $files = glob($path . '*');
         foreach ($files as $v) {
             $fileext = substr(strrchr($v, '.'), 1);
-            if (! $exts || preg_match("/\.($exts)/i", $v)) {
+            if (!$exts || preg_match("/\.($exts)/i", $v)) {
                 $list[] = $v;
                 if (is_dir($v)) {
                     $list = self::lists($v, $exts, $list);
@@ -159,11 +159,11 @@ class DirHelper
      */
     public static function touch($path, $mtime = TIME, $atime = TIME)
     {
-        if (! is_dir($path)) {
+        if (!is_dir($path)) {
             return false;
         }
         $path = self::path($path);
-        if (! is_dir($path)) {
+        if (!is_dir($path)) {
             touch($path, $mtime, $atime);
         }
         $files = glob($path . '*');
@@ -213,7 +213,7 @@ class DirHelper
     public static function delete($dir)
     {
         $dir = self::path($dir);
-        if (! is_dir($dir)) {
+        if (!is_dir($dir)) {
             return false;
         }
         $list = glob($dir . '*');

@@ -207,7 +207,7 @@ class Request extends BaseRequest
     {
         $method = $this->getMethod();
         // only validate CSRF token on non-"safe" methods http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.1.1
-        if (! $this->enableCsrfValidation || in_array($method, [
+        if (!$this->enableCsrfValidation || in_array($method, [
             'GET',
             'HEAD',
             'OPTIONS'
@@ -233,7 +233,7 @@ class Request extends BaseRequest
      */
     private function validateCsrfTokenInternal($token, $trueToken)
     {
-        if (! is_string($token)) {
+        if (!is_string($token)) {
             return false;
         }
 

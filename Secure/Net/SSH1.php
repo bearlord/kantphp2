@@ -72,7 +72,7 @@ namespace Kant\Secure;
  *
  * Used to do RSA encryption.
  */
-if (! class_exists('Math_BigInteger')) {
+if (!class_exists('Math_BigInteger')) {
     require_once ('Math/BigInteger.php');
 }
 
@@ -84,21 +84,21 @@ if (! class_exists('Math_BigInteger')) {
 /**
  * Include Crypt_DES
  */
-if (! class_exists('Crypt_DES')) {
+if (!class_exists('Crypt_DES')) {
     require_once ('Crypt/DES.php');
 }
 
 /**
  * Include Crypt_TripleDES
  */
-if (! class_exists('Crypt_TripleDES')) {
+if (!class_exists('Crypt_TripleDES')) {
     require_once ('Crypt/TripleDES.php');
 }
 
 /**
  * Include Crypt_RC4
  */
-if (! class_exists('Crypt_RC4')) {
+if (!class_exists('Crypt_RC4')) {
     require_once ('Crypt/RC4.php');
 }
 
@@ -109,7 +109,7 @@ if (! class_exists('Crypt_RC4')) {
 // will trigger a call to __autoload() if you're wanting to auto-load classes
 // call function_exists() a second time to stop the require_once from being called outside
 // of the auto loader
-if (! function_exists('crypt_random_string') && ! class_exists('Crypt_Random') && ! function_exists('crypt_random_string')) {
+if (!function_exists('crypt_random_string') && ! class_exists('Crypt_Random') && ! function_exists('crypt_random_string')) {
     require_once ('Crypt/Random.php');
 }
 
@@ -530,7 +530,7 @@ class Net_SSH1
         $this->_define_array($this->protocol_flags);
         
         $this->fsock = @fsockopen($host, $port, $errno, $errstr, $timeout);
-        if (! $this->fsock) {
+        if (!$this->fsock) {
             user_error(rtrim("Cannot connect to $host. Error $errno. $errstr"));
             return;
         }
@@ -542,7 +542,7 @@ class Net_SSH1
             $this->_append_log('->', $this->identifier . "\r\n");
         }
         
-        if (! preg_match('#SSH-([0-9\.]+)-(.+)#', $init_line, $parts)) {
+        if (!preg_match('#SSH-([0-9\.]+)-(.+)#', $init_line, $parts)) {
             user_error('Can only connect to SSH servers');
             return;
         }
@@ -627,7 +627,7 @@ class Net_SSH1
         $cipher = isset($this->supported_ciphers[$cipher]) ? $cipher : NET_SSH1_CIPHER_3DES;
         $data = pack('C2a*na*N', NET_SSH1_CMSG_SESSION_KEY, $cipher, $anti_spoofing_cookie, 8 * strlen($double_encrypted_session_key), $double_encrypted_session_key, 0);
         
-        if (! $this->_send_binary_packet($data)) {
+        if (!$this->_send_binary_packet($data)) {
             user_error('Error sending SSH_CMSG_SESSION_KEY');
             return;
         }
@@ -676,13 +676,13 @@ class Net_SSH1
      */
     function login($username, $password = '')
     {
-        if (! ($this->bitmap & NET_SSH1_MASK_CONSTRUCTOR)) {
+        if (!($this->bitmap & NET_SSH1_MASK_CONSTRUCTOR)) {
             return false;
         }
         
         $data = pack('CNa*', NET_SSH1_CMSG_USER, strlen($username), $username);
         
-        if (! $this->_send_binary_packet($data)) {
+        if (!$this->_send_binary_packet($data)) {
             user_error('Error sending SSH_CMSG_USER');
             return false;
         }
@@ -703,7 +703,7 @@ class Net_SSH1
         
         $data = pack('CNa*', NET_SSH1_CMSG_AUTH_PASSWORD, strlen($password), $password);
         
-        if (! $this->_send_binary_packet($data)) {
+        if (!$this->_send_binary_packet($data)) {
             user_error('Error sending SSH_CMSG_AUTH_PASSWORD');
             return false;
         }
@@ -766,19 +766,19 @@ class Net_SSH1
      */
     function exec($cmd, $block = true)
     {
-        if (! ($this->bitmap & NET_SSH1_MASK_LOGIN)) {
+        if (!($this->bitmap & NET_SSH1_MASK_LOGIN)) {
             user_error('Operation disallowed prior to login()');
             return false;
         }
         
         $data = pack('CNa*', NET_SSH1_CMSG_EXEC_CMD, strlen($cmd), $cmd);
         
-        if (! $this->_send_binary_packet($data)) {
+        if (!$this->_send_binary_packet($data)) {
             user_error('Error sending SSH_CMSG_EXEC_CMD');
             return false;
         }
         
-        if (! $block) {
+        if (!$block) {
             return true;
         }
         
@@ -820,7 +820,7 @@ class Net_SSH1
         // terminal is a command line interpreter or shell". thus, opening a terminal session to run the shell.
         $data = pack('CNa*N4C', NET_SSH1_CMSG_REQUEST_PTY, strlen('vt100'), 'vt100', 24, 80, 0, 0, NET_SSH1_TTY_OP_END);
         
-        if (! $this->_send_binary_packet($data)) {
+        if (!$this->_send_binary_packet($data)) {
             user_error('Error sending SSH_CMSG_REQUEST_PTY');
             return false;
         }
@@ -837,7 +837,7 @@ class Net_SSH1
         
         $data = pack('C', NET_SSH1_CMSG_EXEC_SHELL);
         
-        if (! $this->_send_binary_packet($data)) {
+        if (!$this->_send_binary_packet($data)) {
             user_error('Error sending SSH_CMSG_EXEC_SHELL');
             return false;
         }
@@ -876,12 +876,12 @@ class Net_SSH1
      */
     function read($expect, $mode = NET_SSH1_READ_SIMPLE)
     {
-        if (! ($this->bitmap & NET_SSH1_MASK_LOGIN)) {
+        if (!($this->bitmap & NET_SSH1_MASK_LOGIN)) {
             user_error('Operation disallowed prior to login()');
             return false;
         }
         
-        if (! ($this->bitmap & NET_SSH1_MASK_SHELL) && ! $this->_initShell()) {
+        if (!($this->bitmap & NET_SSH1_MASK_SHELL) && ! $this->_initShell()) {
             user_error('Unable to initiate an interactive shell session');
             return false;
         }
@@ -915,19 +915,19 @@ class Net_SSH1
      */
     function interactiveWrite($cmd)
     {
-        if (! ($this->bitmap & NET_SSH1_MASK_LOGIN)) {
+        if (!($this->bitmap & NET_SSH1_MASK_LOGIN)) {
             user_error('Operation disallowed prior to login()');
             return false;
         }
         
-        if (! ($this->bitmap & NET_SSH1_MASK_SHELL) && ! $this->_initShell()) {
+        if (!($this->bitmap & NET_SSH1_MASK_SHELL) && ! $this->_initShell()) {
             user_error('Unable to initiate an interactive shell session');
             return false;
         }
         
         $data = pack('CNa*', NET_SSH1_CMSG_STDIN_DATA, strlen($cmd), $cmd);
         
-        if (! $this->_send_binary_packet($data)) {
+        if (!$this->_send_binary_packet($data)) {
             user_error('Error sending SSH_CMSG_STDIN');
             return false;
         }
@@ -950,12 +950,12 @@ class Net_SSH1
      */
     function interactiveRead()
     {
-        if (! ($this->bitmap & NET_SSH1_MASK_LOGIN)) {
+        if (!($this->bitmap & NET_SSH1_MASK_LOGIN)) {
             user_error('Operation disallowed prior to login()');
             return false;
         }
         
-        if (! ($this->bitmap & NET_SSH1_MASK_SHELL) && ! $this->_initShell()) {
+        if (!($this->bitmap & NET_SSH1_MASK_SHELL) && ! $this->_initShell()) {
             user_error('Unable to initiate an interactive shell session');
             return false;
         }
@@ -1056,7 +1056,7 @@ class Net_SSH1
             $sec = floor($this->curTimeout);
             $usec = 1000000 * ($this->curTimeout - $sec);
             // on windows this returns a "Warning: Invalid CRT parameters detected" error
-            if (! @stream_select($read, $write, $except, $sec, $usec) && ! count($read)) {
+            if (!@stream_select($read, $write, $except, $sec, $usec) && ! count($read)) {
                 // $this->_disconnect('Timeout');
                 return true;
             }
@@ -1529,7 +1529,7 @@ class Net_SSH1
         $args = func_get_args();
         foreach ($args as $arg) {
             foreach ($arg as $key => $value) {
-                if (! defined($value)) {
+                if (!defined($value)) {
                     define($value, $key);
                 } else {
                     break 2;
@@ -1548,7 +1548,7 @@ class Net_SSH1
      */
     function getLog()
     {
-        if (! defined('NET_SSH1_LOGGING')) {
+        if (!defined('NET_SSH1_LOGGING')) {
             return false;
         }
         
@@ -1752,13 +1752,13 @@ class Net_SSH1
             // the earliest part of the log file is denoted by the first <<< START >>> and is not going to necessarily
             // at the beginning of the file
             case NET_SSH1_LOG_REALTIME_FILE:
-                if (! isset($this->realtime_log_file)) {
+                if (!isset($this->realtime_log_file)) {
                     // PHP doesn't seem to like using constants in fopen()
                     $filename = NET_SSH2_LOG_REALTIME_FILE;
                     $fp = fopen($filename, 'w');
                     $this->realtime_log_file = $fp;
                 }
-                if (! is_resource($this->realtime_log_file)) {
+                if (!is_resource($this->realtime_log_file)) {
                     break;
                 }
                 $entry = $this->_format_log(array(

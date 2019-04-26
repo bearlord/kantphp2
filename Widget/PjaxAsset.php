@@ -17,7 +17,7 @@ use Kant\View\AssetBundle;
  */
 class PjaxAsset extends AssetBundle
 {
-    public $sourcePath = '@bower/kant-pjax';
+    public $sourcePath = '@bower/jquery-pjax';
     public $js = [
         'jquery.pjax.js',
     ];

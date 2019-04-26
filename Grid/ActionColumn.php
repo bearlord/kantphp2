@@ -179,7 +179,7 @@ class ActionColumn extends Column
      */
     protected function initDefaultButton($name, $iconName, $additionalOptions = [])
     {
-        if (! isset($this->buttons[$name]) && strpos($this->template, '{' . $name . '}') !== false) {
+        if (!isset($this->buttons[$name]) && strpos($this->template, '{' . $name . '}') !== false) {
             $this->buttons[$name] = function ($url, $model, $key) use($name, $iconName, $additionalOptions) {
                 $title = Kant::t('kant', ucfirst($name));
                 $options = array_merge([

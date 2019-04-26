@@ -87,7 +87,7 @@ class FileTarget extends Target
         }
         
         $logPath = dirname($this->logFile);
-        if (! is_dir($logPath)) {
+        if (!is_dir($logPath)) {
             DirHelper::create($logPath, $this->dirMode, true);
         }
         if ($this->maxLogFiles < 1) {

@@ -65,9 +65,9 @@ class CompositeAuth extends AuthMethod
     public function authenticate($user, $request, $response)
     {
         foreach ($this->authMethods as $i => $auth) {
-            if (! $auth instanceof AuthInterface) {
+            if (!$auth instanceof AuthInterface) {
                 $this->authMethods[$i] = $auth = Kant::createObject($auth);
-                if (! $auth instanceof AuthInterface) {
+                if (!$auth instanceof AuthInterface) {
                     throw new InvalidConfigException(get_class($auth) . ' must implement Kant\Filter\Auth\AuthInterface');
                 }
             }

@@ -70,7 +70,7 @@ class CookieSessionHandler implements SessionHandlerInterface
     public function read($sessionId)
     {
         $value = $this->request->cookies->get($sessionId) ?  : '';
-        if (! is_null($decoded = json_decode($value, true)) && is_array($decoded)) {
+        if (!is_null($decoded = json_decode($value, true)) && is_array($decoded)) {
             if (isset($decoded['expires']) && time() <= $decoded['expires']) {
                 return $decoded['data'];
             }

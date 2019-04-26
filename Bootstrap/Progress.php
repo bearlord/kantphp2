@@ -137,7 +137,7 @@ class Progress extends Widget
         $bars = [];
         foreach ($this->bars as $bar) {
             $label = ArrayHelper::getValue($bar, 'label', '');
-            if (! isset($bar['percent'])) {
+            if (!isset($bar['percent'])) {
                 throw new InvalidConfigException("The 'percent' option is required.");
             }
             $options = ArrayHelper::getValue($bar, 'options', []);

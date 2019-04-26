@@ -331,7 +331,7 @@ abstract class ErrorHandler extends Component
      */
     public static function convertExceptionToString($exception)
     {
-        if ($exception instanceof Exception && ($exception instanceof UserException || !YII_DEBUG)) {
+        if ($exception instanceof Exception && ($exception instanceof UserException || !KANT_DEBUG)) {
             $message = "{$exception->getName()}: {$exception->getMessage()}";
         } elseif (KANT_DEBUG) {
             if ($exception instanceof Exception) {

@@ -373,19 +373,19 @@ class File_ANSI
                                             $this->bold = $this->underline = $this->blink = $this->color = $this->reverse = false;
                                             break;
                                         case 1: // Turn bold mode on
-                                            if (! $this->bold) {
+                                            if (!$this->bold) {
                                                 $this->attrs[$this->y][$this->x] = '<b>';
                                                 $this->bold = true;
                                             }
                                             break;
                                         case 4: // Turn underline mode on
-                                            if (! $this->underline) {
+                                            if (!$this->underline) {
                                                 $this->attrs[$this->y][$this->x] = '<u>';
                                                 $this->underline = true;
                                             }
                                             break;
                                         case 5: // Turn blinking mode on
-                                            if (! $this->blink) {
+                                            if (!$this->blink) {
                                                 $this->attrs[$this->y][$this->x] = '<blink>';
                                                 $this->blink = true;
                                             }

@@ -105,7 +105,7 @@ class Container extends Component
         if (isset($this->_singletons[$class])) {
             // singleton
             return $this->_singletons[$class];
-        } elseif (! isset($this->_definitions[$class])) {
+        } elseif (!isset($this->_definitions[$class])) {
             return $this->build($class, $params, $config);
         }
         
@@ -299,7 +299,7 @@ class Container extends Component
         } elseif (is_callable($definition, true) || is_object($definition)) {
             return $definition;
         } elseif (is_array($definition)) {
-            if (! isset($definition['class'])) {
+            if (!isset($definition['class'])) {
                 if (strpos($class, '\\') !== false) {
                     $definition['class'] = $class;
                 } else {
@@ -346,13 +346,13 @@ class Container extends Component
         }
         
         $dependencies = $this->resolveDependencies($dependencies, $reflection);
-        if (! $reflection->isInstantiable()) {
+        if (!$reflection->isInstantiable()) {
             throw new NotInstantiableException($reflection->name);
         }
         if (empty($config)) {
             return $reflection->newInstanceArgs($dependencies);
         }
-        if (! empty($dependencies) && $reflection->implementsInterface('Kant\Foundation\Configurable')) {
+        if (!empty($dependencies) && $reflection->implementsInterface('Kant\Foundation\Configurable')) {
             // set $config as the last parameter (existing one will be overwritten)
             $dependencies[count($dependencies) - 1] = $config;
             return $reflection->newInstanceArgs($dependencies);
@@ -529,7 +529,7 @@ class Container extends Component
                 if ($associative && isset($params[$name]) && $params[$name] instanceof $className) {
                     $args[] = $params[$name];
                     unset($params[$name]);
-                } elseif (! $associative && isset($params[0]) && $params[0] instanceof $className) {
+                } elseif (!$associative && isset($params[0]) && $params[0] instanceof $className) {
                     $args[] = array_shift($params);
                 } elseif (isset(Kant::$app) && Kant::$app->has($name) && ($obj = Kant::$app->get($name)) instanceof $className) {
                     $args[] = $obj;
@@ -548,11 +548,11 @@ class Container extends Component
             } elseif ($associative && isset($params[$name])) {
                 $args[] = $params[$name];
                 unset($params[$name]);
-            } elseif (! $associative && count($params)) {
+            } elseif (!$associative && count($params)) {
                 $args[] = array_shift($params);
             } elseif ($param->isDefaultValueAvailable()) {
                 $args[] = $param->getDefaultValue();
-            } elseif (! $param->isOptional()) {
+            } elseif (!$param->isOptional()) {
                 $funcName = $reflection->getName();
                 throw new InvalidConfigException("Missing required parameter \"$name\" when calling \"$funcName\".");
             }
@@ -623,13 +623,13 @@ class Container extends Component
         }
         if (is_array($callback)) {
             list ($class, $name) = $callback;
-            if (! preg_match('/^[A-Za-z](\w)*$/', $name)) {
+            if (!preg_match('/^[A-Za-z](\w)*$/', $name)) {
                 throw new ReflectionException('Method not exists: ' . get_class($class) . "::" . $name);
             }
             if (method_exists($class, $name)) {
                 $method = new ReflectionMethod($class, $name);
                 
-                if (! $method->isPublic()) {
+                if (!$method->isPublic()) {
                     throw new ReflectionException('Method not exists: ' . get_class($class) . "::" . $name);
                 }
                 return $method;
@@ -709,6 +709,6 @@ class Container extends Component
      */
     protected static function methodExcludedByOptions($method, array $options)
     {
-        return (isset($options['only']) && ! in_array($method, (array) $options['only'])) || (! empty($options['except']) && in_array($method, (array) $options['except']));
+        return (isset($options['only']) && ! in_array($method, (array) $options['only'])) || (!empty($options['except']) && in_array($method, (array) $options['except']));
     }
 }

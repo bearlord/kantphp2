@@ -202,7 +202,7 @@ class Logger extends Component
         $messages = $this->messages;
         // new messages could be logged while the existing ones are being handled by targets
         $this->messages = [];
-        if (! $this->dispatcher instanceof Dispatcher) {
+        if (!$this->dispatcher instanceof Dispatcher) {
             $this->dispatcher = Kant::$app->getLog();
         }
         if ($this->dispatcher instanceof Dispatcher) {
@@ -269,7 +269,7 @@ class Logger extends Component
                 }
             }
             
-            if (! $matched) {
+            if (!$matched) {
                 unset($timings[$i]);
             }
         }

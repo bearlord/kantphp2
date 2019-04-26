@@ -451,7 +451,7 @@ class DateValidator extends Validator
             return false;
         }
         
-        if (! $hasTimeInfo) {
+        if (!$hasTimeInfo) {
             $date->setTime(0, 0, 0);
         }
         return $date->getTimestamp();

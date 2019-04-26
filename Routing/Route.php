@@ -202,7 +202,8 @@ class Route
     {
         $class = $this->parseControllerCallback()[0];
         if (!$this->controller) {
-            if (is_subclass_of($class, 'Kant\Controller\Controller')) {
+
+            if (is_subclass_of($class, \Kant\Controller\Controller::className())) {
                 $this->controller = Kant::createObject($class);
             } elseif (KANT_DEBUG) {
                 throw new InvalidConfigException("Controller class must extend from \\Kant\\Controller\\Controller: $class.");

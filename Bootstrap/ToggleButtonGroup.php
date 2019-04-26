@@ -75,7 +75,7 @@ class ToggleButtonGroup extends InputWidget
      */
     public function run()
     {
-        if (! isset($this->options['item'])) {
+        if (!isset($this->options['item'])) {
             $this->options['item'] = [
                 $this,
                 'renderItem'

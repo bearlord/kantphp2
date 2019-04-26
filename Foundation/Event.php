@@ -180,7 +180,7 @@ class Event extends BaseObject
         ], class_parents($class, true), class_implements($class, true));
         
         foreach ($classes as $class) {
-            if (! empty(self::$_events[$name][$class])) {
+            if (!empty(self::$_events[$name][$class])) {
                 return true;
             }
         }
@@ -225,7 +225,7 @@ class Event extends BaseObject
         ], class_parents($class, true), class_implements($class, true));
         
         foreach ($classes as $class) {
-            if (! empty(self::$_events[$name][$class])) {
+            if (!empty(self::$_events[$name][$class])) {
                 foreach (self::$_events[$name][$class] as $handler) {
                     $event->data = $handler[1];
                     call_user_func($handler[0], $event);

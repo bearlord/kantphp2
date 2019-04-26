@@ -175,7 +175,7 @@ class PageCache extends ActionFilter
      */
     public function beforeAction($action)
     {
-        if (! $this->enabled) {
+        if (!$this->enabled) {
             return true;
         }
         
@@ -187,7 +187,7 @@ class PageCache extends ActionFilter
         
         $response = Kant::$app->getResponse();
         $data = $this->cache->get($this->calculateCacheKey());
-        if (! is_array($data) || ! isset($data['cacheVersion']) || $data['cacheVersion'] !== 1) {
+        if (!is_array($data) || ! isset($data['cacheVersion']) || $data['cacheVersion'] !== 1) {
             $this->view->cacheStack[] = $this;
             ob_start();
             ob_implicit_flush(false);
@@ -256,7 +256,7 @@ class PageCache extends ActionFilter
                 $response->{$name}->fromArray(array_merge($data[$name], $response->{$name}->toArray()));
             }
         }
-        if (! empty($data['dynamicPlaceholders']) && is_array($data['dynamicPlaceholders'])) {
+        if (!empty($data['dynamicPlaceholders']) && is_array($data['dynamicPlaceholders'])) {
             if (empty($this->view->cacheStack)) {
                 // outermost cache: replace placeholder with dynamic content
                 $response->content = $this->updateDynamicContent($response->content, $data['dynamicPlaceholders']);

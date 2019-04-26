@@ -119,17 +119,17 @@ class MimeTypeGuesser implements MimeTypeGuesserInterface
      */
     public function guess($path)
     {
-        if (! is_file($path)) {
+        if (!is_file($path)) {
             throw new FileNotFoundException($path);
         }
         
-        if (! is_readable($path)) {
+        if (!is_readable($path)) {
             throw new AccessDeniedException($path);
         }
         
-        if (! $this->guessers) {
+        if (!$this->guessers) {
             $msg = 'Unable to guess the mime type as no guessers are available';
-            if (! FileinfoMimeTypeGuesser::isSupported()) {
+            if (!FileinfoMimeTypeGuesser::isSupported()) {
                 $msg .= ' (Did you enable the php_fileinfo extension?)';
             }
             throw new \LogicException($msg);

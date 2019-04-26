@@ -219,7 +219,7 @@ class Cors extends ActionFilter
     {
         $requestHeaderField = 'Access-Control-Request-' . $type;
         $responseHeaderField = 'Access-Control-Allow-' . $type;
-        if (! isset($requestHeaders[$requestHeaderField], $this->cors[$requestHeaderField])) {
+        if (!isset($requestHeaders[$requestHeaderField], $this->cors[$requestHeaderField])) {
             return;
         }
         if (in_array('*', $this->cors[$requestHeaderField])) {
@@ -227,7 +227,7 @@ class Cors extends ActionFilter
         } else {
             $requestedData = preg_split("/[\\s,]+/", $requestHeaders[$requestHeaderField], - 1, PREG_SPLIT_NO_EMPTY);
             $acceptedData = array_uintersect($requestedData, $this->cors[$requestHeaderField], 'strcasecmp');
-            if (! empty($acceptedData)) {
+            if (!empty($acceptedData)) {
                 $responseHeaders[$responseHeaderField] = implode(', ', $acceptedData);
             }
         }

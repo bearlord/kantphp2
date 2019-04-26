@@ -48,7 +48,7 @@ namespace Kant\Secure;
 /**
  * Include File_ASN1
  */
-if (! class_exists('File_ASN1')) {
+if (!class_exists('File_ASN1')) {
     require_once ('File/ASN1.php');
 }
 
@@ -1577,7 +1577,7 @@ class File_X509
             unset($this->currentCert);
             unset($this->currentKeyIdentifier);
             $this->dn = $cert['tbsCertificate']['subject'];
-            if (! isset($this->dn)) {
+            if (!isset($this->dn)) {
                 return false;
             }
             $this->currentCert = $cert;
@@ -1602,10 +1602,10 @@ class File_X509
         $asn1->loadOIDs($this->oids);
         $decoded = $asn1->decodeBER($cert);
         
-        if (! empty($decoded)) {
+        if (!empty($decoded)) {
             $x509 = $asn1->asn1map($decoded[0], $this->Certificate);
         }
-        if (! isset($x509) || $x509 === false) {
+        if (!isset($x509) || $x509 === false) {
             $this->currentCert = false;
             return false;
         }
@@ -1637,7 +1637,7 @@ class File_X509
      */
     function saveX509($cert, $format = FILE_X509_FORMAT_PEM)
     {
-        if (! is_array($cert) || ! isset($cert['tbsCertificate'])) {
+        if (!is_array($cert) || ! isset($cert['tbsCertificate'])) {
             return false;
         }
         
@@ -1711,13 +1711,13 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                  * corresponding to the extension type identified by extnID
                  */
                 $map = $this->_getMapping($id);
-                if (! is_bool($map)) {
+                if (!is_bool($map)) {
                     $mapped = $asn1->asn1map($decoded[0], $map);
                     $value = $mapped === false ? $decoded[0] : $mapped;
                     
                     if ($id == 'id-ce-certificatePolicies') {
                         for ($j = 0; $j < count($value); $j ++) {
-                            if (! isset($value[$j]['policyQualifiers'])) {
+                            if (!isset($value[$j]['policyQualifiers'])) {
                                 continue;
                             }
                             for ($k = 0; $k < count($value[$j]['policyQualifiers']); $k ++) {
@@ -1762,7 +1762,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                 switch ($id) {
                     case 'id-ce-certificatePolicies':
                         for ($j = 0; $j < count($value); $j ++) {
-                            if (! isset($value[$j]['policyQualifiers'])) {
+                            if (!isset($value[$j]['policyQualifiers'])) {
                                 continue;
                             }
                             for ($k = 0; $k < count($value[$j]['policyQualifiers']); $k ++) {
@@ -1792,7 +1792,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                  */
                 $map = $this->_getMapping($id);
                 if (is_bool($map)) {
-                    if (! $map) {
+                    if (!$map) {
                         user_error($id . ' is not a currently supported extension');
                         unset($extensions[$i]);
                     }
@@ -1831,7 +1831,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                     for ($j = 0; $j < count($values); $j ++) {
                         $value = $asn1->encodeDER($values[$j], $this->AttributeValue);
                         $decoded = $asn1->decodeBER($value);
-                        if (! is_bool($map)) {
+                        if (!is_bool($map)) {
                             $mapped = $asn1->asn1map($decoded[0], $map);
                             if ($mapped !== false) {
                                 $values[$j] = $mapped;
@@ -1883,7 +1883,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                                 break;
                         }
                         
-                        if (! is_bool($map)) {
+                        if (!is_bool($map)) {
                             $temp = $asn1->encodeDER($values[$j], $map);
                             $decoded = $asn1->decodeBER($temp);
                             $values[$j] = $asn1->asn1map($decoded[0], $this->AttributeValue);
@@ -1903,7 +1903,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function _getMapping($extnId)
     {
-        if (! is_string($extnId)) { // eg. if it's a File_ASN1_Element object
+        if (!is_string($extnId)) { // eg. if it's a File_ASN1_Element object
             return true;
         }
         
@@ -2005,7 +2005,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         $oldkeyid = $this->currentKeyIdentifier;
         
         $cert = $this->loadX509($cert);
-        if (! $cert) {
+        if (!$cert) {
             $this->dn = $olddn;
             $this->currentCert = $oldcert;
             $this->signatureSubject = $oldsigsubj;
@@ -2070,12 +2070,12 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function validateURL($url)
     {
-        if (! is_array($this->currentCert) || ! isset($this->currentCert['tbsCertificate'])) {
+        if (!is_array($this->currentCert) || ! isset($this->currentCert['tbsCertificate'])) {
             return false;
         }
         
         $components = parse_url($url);
-        if (! isset($components['host'])) {
+        if (!isset($components['host'])) {
             return false;
         }
         
@@ -2140,11 +2140,11 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function validateDate($date = NULL)
     {
-        if (! is_array($this->currentCert) || ! isset($this->currentCert['tbsCertificate'])) {
+        if (!is_array($this->currentCert) || ! isset($this->currentCert['tbsCertificate'])) {
             return false;
         }
         
-        if (! isset($date)) {
+        if (!isset($date)) {
             $date = time();
         }
         
@@ -2178,7 +2178,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function validateSignature($options = 0)
     {
-        if (! is_array($this->currentCert) || ! isset($this->signatureSubject)) {
+        if (!is_array($this->currentCert) || ! isset($this->signatureSubject)) {
             return 0;
         }
         
@@ -2203,7 +2203,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                     }
                 }
                 
-                if (! empty($this->CAs)) {
+                if (!empty($this->CAs)) {
                     for ($i = 0; $i < count($this->CAs); $i ++) {
                         // even if the cert is a self-signed one we still want to see if it's a CA;
                         // if not, we'll conditionally return an error
@@ -2222,7 +2222,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                     if (count($this->CAs) == $i && ($options & FILE_X509_VALIDATE_SIGNATURE_BY_CA)) {
                         return false;
                     }
-                } elseif (! isset($signingCert) || ($options & FILE_X509_VALIDATE_SIGNATURE_BY_CA)) {
+                } elseif (!isset($signingCert) || ($options & FILE_X509_VALIDATE_SIGNATURE_BY_CA)) {
                     return false;
                 }
                 return $this->_validateSignature($signingCert['tbsCertificate']['subjectPublicKeyInfo']['algorithm']['algorithm'], $signingCert['tbsCertificate']['subjectPublicKeyInfo']['subjectPublicKey'], $this->currentCert['signatureAlgorithm']['algorithm'], substr(base64_decode($this->currentCert['signature']), 1), $this->signatureSubject);
@@ -2231,7 +2231,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
             case isset($this->currentCert['publicKeyAndChallenge']):
                 return $this->_validateSignature($this->currentCert['publicKeyAndChallenge']['spki']['algorithm']['algorithm'], $this->currentCert['publicKeyAndChallenge']['spki']['subjectPublicKey'], $this->currentCert['signatureAlgorithm']['algorithm'], substr(base64_decode($this->currentCert['signature']), 1), $this->signatureSubject);
             case isset($this->currentCert['tbsCertList']):
-                if (! empty($this->CAs)) {
+                if (!empty($this->CAs)) {
                     for ($i = 0; $i < count($this->CAs); $i ++) {
                         $ca = $this->CAs[$i];
                         if ($this->currentCert['tbsCertList']['issuer'] === $ca['tbsCertificate']['subject']) {
@@ -2246,7 +2246,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                         }
                     }
                 }
-                if (! isset($signingCert)) {
+                if (!isset($signingCert)) {
                     return false;
                 }
                 return $this->_validateSignature($signingCert['tbsCertificate']['subjectPublicKeyInfo']['algorithm']['algorithm'], $signingCert['tbsCertificate']['subjectPublicKeyInfo']['subjectPublicKey'], $this->currentCert['signatureAlgorithm']['algorithm'], substr(base64_decode($this->currentCert['signature']), 1), $this->signatureSubject);
@@ -2272,7 +2272,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
     {
         switch ($publicKeyAlgorithm) {
             case 'rsaEncryption':
-                if (! class_exists('Crypt_RSA')) {
+                if (!class_exists('Crypt_RSA')) {
                     require_once ('Crypt/RSA.php');
                 }
                 $rsa = new Crypt_RSA();
@@ -2288,7 +2288,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                     case 'sha512WithRSAEncryption':
                         $rsa->setHash(preg_replace('#WithRSAEncryption$#', '', $signatureAlgorithm));
                         $rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
-                        if (! @$rsa->verify($signatureSubject, $signature)) {
+                        if (!@$rsa->verify($signatureSubject, $signature)) {
                             return false;
                         }
                         break;
@@ -2439,7 +2439,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         }
         
         foreach ((array) $propValue as $v) {
-            if (! is_array($v) && isset($type)) {
+            if (!is_array($v) && isset($type)) {
                 $v = array(
                     $type => $v
                 );
@@ -2495,7 +2495,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function getDNProp($propName, $dn = NULL, $withType = false)
     {
-        if (! isset($dn)) {
+        if (!isset($dn)) {
             $dn = $this->dn;
         }
         
@@ -2513,7 +2513,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         for ($i = 0; $i < count($dn); $i ++) {
             if ($dn[$i][0]['type'] == $propName) {
                 $v = $dn[$i][0]['value'];
-                if (! $withType && is_array($v)) {
+                if (!$withType && is_array($v)) {
                     foreach ($v as $type => $s) {
                         $type = array_search($type, $asn1->ANYmap, true);
                         if ($type !== false && isset($asn1->stringTypeSize[$type])) {
@@ -2548,7 +2548,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function setDN($dn, $merge = false, $type = 'utf8String')
     {
-        if (! $merge) {
+        if (!$merge) {
             $this->dn = NULL;
         }
         
@@ -2560,7 +2560,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
             
             // handles stuff generated by openssl_x509_parse()
             foreach ($dn as $prop => $value) {
-                if (! $this->setDNProp($prop, $value, $type)) {
+                if (!$this->setDNProp($prop, $value, $type)) {
                     return false;
                 }
             }
@@ -2572,7 +2572,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         for ($i = 1; $i < count($results); $i += 2) {
             $prop = trim($results[$i], ', =/');
             $value = $results[$i + 1];
-            if (! $this->setDNProp($prop, $value, $type)) {
+            if (!$this->setDNProp($prop, $value, $type)) {
                 return false;
             }
         }
@@ -2592,7 +2592,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function getDN($format = FILE_X509_DN_ARRAY, $dn = NULL)
     {
-        if (! isset($dn)) {
+        if (!isset($dn)) {
             $dn = isset($this->currentCert['tbsCertList']) ? $this->currentCert['tbsCertList']['issuer'] : $this->dn;
         }
         
@@ -2618,7 +2618,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                 for ($i = 1; $i < count($attrs); $i += 2) {
                     $prop = trim($attrs[$i], ', =/');
                     $value = $attrs[$i + 1];
-                    if (! isset($dn[$prop])) {
+                    if (!isset($dn[$prop])) {
                         $dn[$prop] = $value;
                     } else {
                         $dn[$prop] = array_merge((array) $dn[$prop], array(
@@ -2659,7 +2659,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                 return $result;
             case FILE_X509_DN_HASH:
                 $dn = $this->getDN(FILE_X509_DN_CANON, $dn);
-                if (! class_exists('Crypt_Hash')) {
+                if (!class_exists('Crypt_Hash')) {
                     require_once ('Crypt/Hash.php');
                 }
                 $hash = new Crypt_Hash('sha1');
@@ -2708,7 +2708,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                     $desc = preg_replace('#.+-([^-]+)$#', '$1', $prop) . '=';
             }
             
-            if (! $start) {
+            if (!$start) {
                 $output .= $delim;
             }
             if (is_array($value)) {
@@ -2840,7 +2840,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
             $this->currentCert
         );
         
-        if (! is_array($this->currentCert) || ! isset($this->currentCert['tbsCertificate'])) {
+        if (!is_array($this->currentCert) || ! isset($this->currentCert['tbsCertificate'])) {
             return false;
         }
         if (empty($this->CAs)) {
@@ -2922,7 +2922,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                 'certificationRequestInfo/subjectPKInfo'
             ) as $path) {
                 $keyinfo = $this->_subArray($this->currentCert, $path);
-                if (! empty($keyinfo)) {
+                if (!empty($keyinfo)) {
                     break;
                 }
             }
@@ -2935,7 +2935,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         
         switch ($keyinfo['algorithm']['algorithm']) {
             case 'rsaEncryption':
-                if (! class_exists('Crypt_RSA')) {
+                if (!class_exists('Crypt_RSA')) {
                     require_once ('Crypt/RSA.php');
                 }
                 $publicKey = new Crypt_RSA();
@@ -2963,7 +2963,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
             unset($this->currentKeyIdentifier);
             unset($this->signatureSubject);
             $this->dn = $csr['certificationRequestInfo']['subject'];
-            if (! isset($this->dn)) {
+            if (!isset($this->dn)) {
                 return false;
             }
             
@@ -2992,7 +2992,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         }
         
         $csr = $asn1->asn1map($decoded[0], $this->CertificationRequest);
-        if (! isset($csr) || $csr === false) {
+        if (!isset($csr) || $csr === false) {
             $this->currentCert = false;
             return false;
         }
@@ -3008,7 +3008,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         
         switch ($algorithm) {
             case 'rsaEncryption':
-                if (! class_exists('Crypt_RSA')) {
+                if (!class_exists('Crypt_RSA')) {
                     require_once ('Crypt/RSA.php');
                 }
                 $this->publicKey = new Crypt_RSA();
@@ -3036,7 +3036,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function saveCSR($csr, $format = FILE_X509_FORMAT_PEM)
     {
-        if (! is_array($csr) || ! isset($csr['certificationRequestInfo'])) {
+        if (!is_array($csr) || ! isset($csr['certificationRequestInfo'])) {
             return false;
         }
         
@@ -3121,7 +3121,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         
         $csr = $asn1->asn1map($decoded[0], $this->SignedPublicKeyAndChallenge);
         
-        if (! isset($csr) || $csr === false) {
+        if (!isset($csr) || $csr === false) {
             $this->currentCert = false;
             return false;
         }
@@ -3134,7 +3134,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         
         switch ($algorithm) {
             case 'rsaEncryption':
-                if (! class_exists('Crypt_RSA')) {
+                if (!class_exists('Crypt_RSA')) {
                     require_once ('Crypt/RSA.php');
                 }
                 $this->publicKey = new Crypt_RSA();
@@ -3185,7 +3185,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         }
         
         $crl = $asn1->asn1map($decoded[0], $this->CertificateList);
-        if (! isset($crl) || $crl === false) {
+        if (!isset($crl) || $crl === false) {
             $this->currentCert = false;
             return false;
         }
@@ -3217,7 +3217,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function saveCRL($crl, $format = FILE_X509_FORMAT_PEM)
     {
-        if (! is_array($crl) || ! isset($crl['tbsCertList'])) {
+        if (!is_array($crl) || ! isset($crl['tbsCertList'])) {
             return false;
         }
         
@@ -3279,7 +3279,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function sign($issuer, $subject, $signatureAlgorithm = 'sha1WithRSAEncryption')
     {
-        if (! is_object($issuer->privateKey) || empty($issuer->dn)) {
+        if (!is_object($issuer->privateKey) || empty($issuer->dn)) {
             return false;
         }
         
@@ -3293,21 +3293,21 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         if (isset($subject->currentCert) && is_array($subject->currentCert) && isset($subject->currentCert['tbsCertificate'])) {
             $this->currentCert = $subject->currentCert;
             $this->currentCert['tbsCertificate']['signature']['algorithm'] = $this->currentCert['signatureAlgorithm']['algorithm'] = $signatureAlgorithm;
-            if (! empty($this->startDate)) {
+            if (!empty($this->startDate)) {
                 $this->currentCert['tbsCertificate']['validity']['notBefore']['generalTime'] = $this->startDate;
                 unset($this->currentCert['tbsCertificate']['validity']['notBefore']['utcTime']);
             }
-            if (! empty($this->endDate)) {
+            if (!empty($this->endDate)) {
                 $this->currentCert['tbsCertificate']['validity']['notAfter']['generalTime'] = $this->endDate;
                 unset($this->currentCert['tbsCertificate']['validity']['notAfter']['utcTime']);
             }
-            if (! empty($this->serialNumber)) {
+            if (!empty($this->serialNumber)) {
                 $this->currentCert['tbsCertificate']['serialNumber'] = $this->serialNumber;
             }
-            if (! empty($subject->dn)) {
+            if (!empty($subject->dn)) {
                 $this->currentCert['tbsCertificate']['subject'] = $subject->dn;
             }
-            if (! empty($subject->publicKey)) {
+            if (!empty($subject->publicKey)) {
                 $this->currentCert['tbsCertificate']['subjectPublicKeyInfo'] = $subjectPublicKey;
             }
             $this->removeExtension('id-ce-authorityKeyIdentifier');
@@ -3318,7 +3318,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
             if (isset($subject->currentCert) && is_array($subject->currentCert) && isset($subject->currentCert['tbsCertList'])) {
                 return false;
             } else {
-                if (! isset($subject->publicKey)) {
+                if (!isset($subject->publicKey)) {
                     return false;
                 }
                 
@@ -3356,7 +3356,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                 // Copy extensions from CSR.
                 $csrexts = $subject->getAttribute('pkcs-9-at-extensionRequest', 0);
                 
-                if (! empty($csrexts)) {
+                if (!empty($csrexts)) {
                     $this->currentCert['tbsCertificate']['extensions'] = $csrexts;
                 }
             }
@@ -3392,7 +3392,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         
         if ($this->caFlag) {
             $keyUsage = $this->getExtension('id-ce-keyUsage');
-            if (! $keyUsage) {
+            if (!$keyUsage) {
                 $keyUsage = array();
             }
             
@@ -3402,7 +3402,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
             )))));
             
             $basicConstraints = $this->getExtension('id-ce-basicConstraints');
-            if (! $basicConstraints) {
+            if (!$basicConstraints) {
                 $basicConstraints = array();
             }
             
@@ -3410,7 +3410,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                 'cA' => true
             ), $basicConstraints)), true);
             
-            if (! isset($subject->currentKeyIdentifier)) {
+            if (!isset($subject->currentKeyIdentifier)) {
                 $this->setExtension('id-ce-subjectKeyIdentifier', base64_encode($this->computeKeyIdentifier($this->currentCert)), false, false);
             }
         }
@@ -3437,7 +3437,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function signCSR($signatureAlgorithm = 'sha1WithRSAEncryption')
     {
-        if (! is_object($this->privateKey) || empty($this->dn)) {
+        if (!is_object($this->privateKey) || empty($this->dn)) {
             return false;
         }
         
@@ -3446,7 +3446,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         $this->publicKey = new $class();
         $this->publicKey->loadKey($this->privateKey->getPublicKey());
         $this->publicKey->setPublicKey();
-        if (! ($publicKey = $this->_formatSubjectPublicKey())) {
+        if (!($publicKey = $this->_formatSubjectPublicKey())) {
             return false;
         }
         $this->publicKey = $origPublicKey;
@@ -3456,7 +3456,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         
         if (isset($this->currentCert) && is_array($this->currentCert) && isset($this->currentCert['certificationRequestInfo'])) {
             $this->currentCert['signatureAlgorithm']['algorithm'] = $signatureAlgorithm;
-            if (! empty($this->dn)) {
+            if (!empty($this->dn)) {
                 $this->currentCert['certificationRequestInfo']['subject'] = $this->dn;
             }
             $this->currentCert['certificationRequestInfo']['subjectPKInfo'] = $publicKey;
@@ -3503,7 +3503,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function signCRL($issuer, $crl, $signatureAlgorithm = 'sha1WithRSAEncryption')
     {
-        if (! is_object($issuer->privateKey) || empty($issuer->dn)) {
+        if (!is_object($issuer->privateKey) || empty($issuer->dn)) {
             return false;
         }
         
@@ -3542,7 +3542,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
             'generalTime' => $thisUpdate
         );
         
-        if (! empty($this->endDate)) {
+        if (!empty($this->endDate)) {
             $tbsCertList['nextUpdate'] = array(
                 'generalTime' => $this->endDate
             ); // $this->setEndDate()
@@ -3550,7 +3550,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
             unset($tbsCertList['nextUpdate']);
         }
         
-        if (! empty($this->serialNumber)) {
+        if (!empty($this->serialNumber)) {
             $crlNumber = $this->serialNumber;
         } else {
             $crlNumber = $this->getExtension('id-ce-cRLNumber');
@@ -3562,12 +3562,12 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         
         // Be sure version >= v2 if some extension found.
         $version = isset($tbsCertList['version']) ? $tbsCertList['version'] : 0;
-        if (! $version) {
-            if (! empty($tbsCertList['crlExtensions'])) {
+        if (!$version) {
+            if (!empty($tbsCertList['crlExtensions'])) {
                 $version = 1; // v2.
-            } elseif (! empty($tbsCertList['revokedCertificates'])) {
+            } elseif (!empty($tbsCertList['revokedCertificates'])) {
                 foreach ($tbsCertList['revokedCertificates'] as $cert) {
-                    if (! empty($cert['crlEntryExtensions'])) {
+                    if (!empty($cert['crlEntryExtensions'])) {
                         $version = 1; // v2.
                     }
                 }
@@ -3579,8 +3579,8 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         }
         
         // Store additional extensions.
-        if (! empty($tbsCertList['version'])) { // At least v2.
-            if (! empty($crlNumber)) {
+        if (!empty($tbsCertList['version'])) { // At least v2.
+            if (!empty($crlNumber)) {
                 $this->setExtension('id-ce-cRLNumber', $crlNumber);
             }
             
@@ -3732,17 +3732,17 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
     {
         $false = false;
         
-        if (! is_array($root)) {
+        if (!is_array($root)) {
             return $false;
         }
         
         foreach (explode('/', $path) as $i) {
-            if (! is_array($root)) {
+            if (!is_array($root)) {
                 return $false;
             }
             
-            if (! isset($root[$i])) {
-                if (! $create) {
+            if (!isset($root[$i])) {
+                if (!$create) {
                     return $false;
                 }
                 
@@ -3768,7 +3768,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function &_extensions(&$root, $path = NULL, $create = false)
     {
-        if (! isset($root)) {
+        if (!isset($root)) {
             $root = $this->currentCert;
         }
         
@@ -3807,7 +3807,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         
         $extensions = &$this->_subArray($root, $path, $create);
         
-        if (! is_array($extensions)) {
+        if (!is_array($extensions)) {
             $false = false;
             return $false;
         }
@@ -3828,7 +3828,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
     {
         $extensions = &$this->_extensions($this->currentCert, $path);
         
-        if (! is_array($extensions)) {
+        if (!is_array($extensions)) {
             return false;
         }
         
@@ -3861,7 +3861,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
     {
         $extensions = $this->_extensions($cert, $path);
         
-        if (! is_array($extensions)) {
+        if (!is_array($extensions)) {
             return false;
         }
         
@@ -3916,7 +3916,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
     {
         $extensions = &$this->_extensions($this->currentCert, $path, true);
         
-        if (! is_array($extensions)) {
+        if (!is_array($extensions)) {
             return false;
         }
         
@@ -3928,7 +3928,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         
         foreach ($extensions as $key => $value) {
             if ($value['extnId'] == $id) {
-                if (! $replace) {
+                if (!$replace) {
                     return false;
                 }
                 
@@ -4012,7 +4012,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
     {
         $attributes = &$this->_subArray($this->currentCert, 'certificationRequestInfo/attributes');
         
-        if (! is_array($attributes)) {
+        if (!is_array($attributes)) {
             return false;
         }
         
@@ -4069,7 +4069,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         
         $attributes = $this->_subArray($csr, 'certificationRequestInfo/attributes');
         
-        if (! is_array($attributes)) {
+        if (!is_array($attributes)) {
             return false;
         }
         
@@ -4134,7 +4134,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
     {
         $attributes = &$this->_subArray($this->currentCert, 'certificationRequestInfo/attributes', true);
         
-        if (! is_array($attributes)) {
+        if (!is_array($attributes)) {
             return false;
         }
         
@@ -4249,11 +4249,11 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                 }
                 $raw = base64_decode($raw);
                 // If the key is private, compute identifier from its corresponding public key.
-                if (! class_exists('Crypt_RSA')) {
+                if (!class_exists('Crypt_RSA')) {
                     require_once ('Crypt/RSA.php');
                 }
                 $key = new Crypt_RSA();
-                if (! $key->loadKey($raw)) {
+                if (!$key->loadKey($raw)) {
                     return false; // Not an unencrypted RSA key.
                 }
                 if ($key->getPrivateKey() !== false) { // If private.
@@ -4283,7 +4283,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         }
         
         // Now we have the key string: compute its sha-1 sum.
-        if (! class_exists('Crypt_Hash')) {
+        if (!class_exists('Crypt_Hash')) {
             require_once ('Crypt/Hash.php');
         }
         $hash = new Crypt_Hash('sha1');
@@ -4305,7 +4305,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function _formatSubjectPublicKey()
     {
-        if (! isset($this->publicKey) || ! is_object($this->publicKey)) {
+        if (!isset($this->publicKey) || ! is_object($this->publicKey)) {
             return false;
         }
         
@@ -4367,12 +4367,12 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
         $serial = new Math_BigInteger($serial);
         
         foreach ($rclist as $i => $rc) {
-            if (! ($serial->compare($rc['userCertificate']))) {
+            if (!($serial->compare($rc['userCertificate']))) {
                 return $i;
             }
         }
         
-        if (! $create) {
+        if (!$create) {
             return false;
         }
         
@@ -4402,7 +4402,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
                 if ($this->_revokedCertificate($rclist, $serial) === false) { // If not yet revoked
                     if (($i = $this->_revokedCertificate($rclist, $serial, true)) !== false) {
                         
-                        if (! empty($date)) {
+                        if (!empty($date)) {
                             $rclist[$i]['revocationDate'] = array(
                                 'generalTime' => $date
                             );
@@ -4465,11 +4465,11 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function listRevoked($crl = NULL)
     {
-        if (! isset($crl)) {
+        if (!isset($crl)) {
             $crl = $this->currentCert;
         }
         
-        if (! isset($crl['tbsCertList'])) {
+        if (!isset($crl['tbsCertList'])) {
             return false;
         }
         
@@ -4517,7 +4517,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function getRevokedCertificateExtension($serial, $id, $crl = NULL)
     {
-        if (! isset($crl)) {
+        if (!isset($crl)) {
             $crl = $this->currentCert;
         }
         
@@ -4541,7 +4541,7 @@ $filters['distributionPoint']['fullName']['directoryName']['rdnSequence']['value
      */
     function getRevokedCertificateExtensions($serial, $crl = NULL)
     {
-        if (! isset($crl)) {
+        if (!isset($crl)) {
             $crl = $this->currentCert;
         }
         

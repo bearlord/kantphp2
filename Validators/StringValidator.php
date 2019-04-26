@@ -121,7 +121,7 @@ class StringValidator extends Validator
     {
         $value = $model->$attribute;
         
-        if (! is_string($value)) {
+        if (!is_string($value)) {
             $this->addError($model, $attribute, $this->message);
             
             return;
@@ -151,7 +151,7 @@ class StringValidator extends Validator
      */
     protected function validateValue($value)
     {
-        if (! is_string($value)) {
+        if (!is_string($value)) {
             return [
                 $this->message,
                 []

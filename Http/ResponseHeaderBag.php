@@ -50,7 +50,7 @@ class ResponseHeaderBag extends HeaderBag
     {
         parent::__construct($headers);
         
-        if (! isset($this->headers['cache-control'])) {
+        if (!isset($this->headers['cache-control'])) {
             $this->set('Cache-Control', '');
         }
     }
@@ -93,7 +93,7 @@ class ResponseHeaderBag extends HeaderBag
         
         parent::replace($headers);
         
-        if (! isset($this->headers['cache-control'])) {
+        if (!isset($this->headers['cache-control'])) {
             $this->set('Cache-Control', '');
         }
     }
@@ -209,7 +209,7 @@ class ResponseHeaderBag extends HeaderBag
      */
     public function getCookies($format = self::COOKIES_FLAT)
     {
-        if (! in_array($format, array(
+        if (!in_array($format, array(
             self::COOKIES_FLAT,
             self::COOKIES_ARRAY
         ))) {
@@ -269,7 +269,7 @@ class ResponseHeaderBag extends HeaderBag
      */
     public function makeDisposition($disposition, $filename, $filenameFallback = '')
     {
-        if (! in_array($disposition, array(
+        if (!in_array($disposition, array(
             self::DISPOSITION_ATTACHMENT,
             self::DISPOSITION_INLINE
         ))) {
@@ -281,7 +281,7 @@ class ResponseHeaderBag extends HeaderBag
         }
         
         // filenameFallback is not ASCII.
-        if (! preg_match('/^[\x20-\x7e]*$/', $filenameFallback)) {
+        if (!preg_match('/^[\x20-\x7e]*$/', $filenameFallback)) {
             throw new \InvalidArgumentException('The filename fallback must only contain ASCII characters.');
         }
         
@@ -314,11 +314,11 @@ class ResponseHeaderBag extends HeaderBag
      */
     protected function computeCacheControlValue()
     {
-        if (! $this->cacheControl && ! $this->has('ETag') && ! $this->has('Last-Modified') && ! $this->has('Expires')) {
+        if (!$this->cacheControl && ! $this->has('ETag') && ! $this->has('Last-Modified') && ! $this->has('Expires')) {
             return 'no-cache';
         }
         
-        if (! $this->cacheControl) {
+        if (!$this->cacheControl) {
             // conservative by default
             return 'private, must-revalidate';
         }
@@ -329,7 +329,7 @@ class ResponseHeaderBag extends HeaderBag
         }
         
         // public if s-maxage is defined, private otherwise
-        if (! isset($this->cacheControl['s-maxage'])) {
+        if (!isset($this->cacheControl['s-maxage'])) {
             return $header . ', private';
         }
         

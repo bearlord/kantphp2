@@ -284,11 +284,11 @@ class IpValidator extends Validator
     {
         parent::init();
         
-        if (! $this->ipv4 && ! $this->ipv6) {
+        if (!$this->ipv4 && ! $this->ipv6) {
             throw new InvalidConfigException('Both IPv4 and IPv6 checks can not be disabled at the same time');
         }
         
-        if (! defined('AF_INET6') && $this->ipv6) {
+        if (!defined('AF_INET6') && $this->ipv6) {
             throw new InvalidConfigException('IPv6 validation can not be used. PHP is compiled without IPv6');
         }
         
@@ -406,7 +406,7 @@ class IpValidator extends Validator
      */
     private function validateSubnet($ip)
     {
-        if (! is_string($ip)) {
+        if (!is_string($ip)) {
             return [
                 $this->message,
                 []
@@ -455,13 +455,13 @@ class IpValidator extends Validator
                 $cidr = static::IPV6_ADDRESS_LENGTH;
             }
             
-            if (! $this->ipv6) {
+            if (!$this->ipv6) {
                 return [
                     $this->ipv6NotAllowed,
                     []
                 ];
             }
-            if (! $this->validateIPv6($ip)) {
+            if (!$this->validateIPv6($ip)) {
                 return [
                     $this->message,
                     []
@@ -484,13 +484,13 @@ class IpValidator extends Validator
                 $cidr = static::IPV4_ADDRESS_LENGTH;
             }
             
-            if (! $this->ipv4) {
+            if (!$this->ipv4) {
                 return [
                     $this->ipv4NotAllowed,
                     []
                 ];
             }
-            if (! $this->validateIPv4($ip)) {
+            if (!$this->validateIPv4($ip)) {
                 return [
                     $this->message,
                     []
@@ -498,7 +498,7 @@ class IpValidator extends Validator
             }
         }
         
-        if (! $this->isAllowed($ip, $cidr)) {
+        if (!$this->isAllowed($ip, $cidr)) {
             return [
                 $this->notInRange,
                 []
@@ -507,7 +507,7 @@ class IpValidator extends Validator
         
         $result = $negation . $ip;
         
-        if ($this->subnet !== false && (! $isCidrDefault || $isCidrDefault && $this->normalize)) {
+        if ($this->subnet !== false && (!$isCidrDefault || $isCidrDefault && $this->normalize)) {
             $result .= "/$cidr";
         }
         

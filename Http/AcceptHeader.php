@@ -154,7 +154,7 @@ class AcceptHeader
      */
     private function sort()
     {
-        if (! $this->sorted) {
+        if (!$this->sorted) {
             uasort($this->items, function ($a, $b) {
                 $qA = $a->getQuality();
                 $qB = $b->getQuality();

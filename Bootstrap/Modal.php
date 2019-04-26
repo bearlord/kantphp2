@@ -278,7 +278,7 @@ class Modal extends Widget
             $this->toggleButton = array_merge([
                 'data-toggle' => 'modal'
             ], $this->toggleButton);
-            if (! isset($this->toggleButton['data-target']) && ! isset($this->toggleButton['href'])) {
+            if (!isset($this->toggleButton['data-target']) && ! isset($this->toggleButton['href'])) {
                 $this->toggleButton['data-target'] = '#' . $this->options['id'];
             }
         }

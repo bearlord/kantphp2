@@ -215,10 +215,10 @@ class Security extends Component
      */
     protected function encrypt($data, $passwordBased, $secret, $info)
     {
-        if (! extension_loaded('openssl')) {
+        if (!extension_loaded('openssl')) {
             throw new InvalidConfigException('Encryption requires the OpenSSL PHP extension');
         }
-        if (! isset($this->allowedCiphers[$this->cipher][0], $this->allowedCiphers[$this->cipher][1])) {
+        if (!isset($this->allowedCiphers[$this->cipher][0], $this->allowedCiphers[$this->cipher][1])) {
             throw new InvalidConfigException($this->cipher . ' is not an allowed cipher');
         }
         
@@ -269,10 +269,10 @@ class Security extends Component
      */
     protected function decrypt($data, $passwordBased, $secret, $info)
     {
-        if (! extension_loaded('openssl')) {
+        if (!extension_loaded('openssl')) {
             throw new InvalidConfigException('Encryption requires the OpenSSL PHP extension');
         }
-        if (! isset($this->allowedCiphers[$this->cipher][0], $this->allowedCiphers[$this->cipher][1])) {
+        if (!isset($this->allowedCiphers[$this->cipher][0], $this->allowedCiphers[$this->cipher][1])) {
             throw new InvalidConfigException($this->cipher . ' is not an allowed cipher');
         }
         
@@ -326,14 +326,14 @@ class Security extends Component
     public function hkdf($algo, $inputKey, $salt = null, $info = null, $length = 0)
     {
         $test = @hash_hmac($algo, '', '', true);
-        if (! $test) {
+        if (!$test) {
             throw new InvalidParamException('Failed to generate HMAC with hash algorithm: ' . $algo);
         }
         $hashLength = StringHelper::byteLength($test);
         if (is_string($length) && preg_match('{^\d{1,16}$}', $length)) {
             $length = (int) $length;
         }
-        if (! is_int($length) || $length < 0 || $length > 255 * $hashLength) {
+        if (!is_int($length) || $length < 0 || $length > 255 * $hashLength) {
             throw new InvalidParamException('Invalid length');
         }
         $blocks = $length !== 0 ? ceil($length / $hashLength) : 1;
@@ -388,19 +388,19 @@ class Security extends Component
         
         // todo: is there a nice way to reduce the code repetition in hkdf() and pbkdf2()?
         $test = @hash_hmac($algo, '', '', true);
-        if (! $test) {
+        if (!$test) {
             throw new InvalidParamException('Failed to generate HMAC with hash algorithm: ' . $algo);
         }
         if (is_string($iterations) && preg_match('{^\d{1,16}$}', $iterations)) {
             $iterations = (int) $iterations;
         }
-        if (! is_int($iterations) || $iterations < 1) {
+        if (!is_int($iterations) || $iterations < 1) {
             throw new InvalidParamException('Invalid iterations');
         }
         if (is_string($length) && preg_match('{^\d{1,16}$}', $length)) {
             $length = (int) $length;
         }
-        if (! is_int($length) || $length < 0) {
+        if (!is_int($length) || $length < 0) {
             throw new InvalidParamException('Invalid length');
         }
         $hashLength = StringHelper::byteLength($test);
@@ -446,7 +446,7 @@ class Security extends Component
     public function hashData($data, $key, $rawHash = false)
     {
         $hash = hash_hmac($this->macHash, $data, $key, $rawHash);
-        if (! $hash) {
+        if (!$hash) {
             throw new InvalidConfigException('Failed to generate HMAC with hash algorithm: ' . $this->macHash);
         }
         return $hash . $data;
@@ -474,7 +474,7 @@ class Security extends Component
     public function validateData($data, $key, $rawHash = false)
     {
         $test = @hash_hmac($this->macHash, '', '', $rawHash);
-        if (! $test) {
+        if (!$test) {
             throw new InvalidConfigException('Failed to generate HMAC with hash algorithm: ' . $this->macHash);
         }
         $hashLength = StringHelper::byteLength($test);
@@ -509,7 +509,7 @@ class Security extends Component
      */
     public function generateRandomKey($length = 32)
     {
-        if (! is_int($length)) {
+        if (!is_int($length)) {
             throw new InvalidParamException('First parameter ($length) must be an integer');
         }
         
@@ -610,7 +610,7 @@ class Security extends Component
      */
     public function generateRandomString($length = 32)
     {
-        if (! is_int($length)) {
+        if (!is_int($length)) {
             throw new InvalidParamException('First parameter ($length) must be an integer');
         }
         
@@ -677,7 +677,7 @@ class Security extends Component
         $salt = $this->generateSalt($cost);
         $hash = crypt($password, $salt);
         // strlen() is safe since crypt() returns only ascii
-        if (! is_string($hash) || strlen($hash) !== 60) {
+        if (!is_string($hash) || strlen($hash) !== 60) {
             throw new Exception('Unknown error occurred while generating hash.');
         }
         
@@ -697,11 +697,11 @@ class Security extends Component
      */
     public function validatePassword($password, $hash)
     {
-        if (! is_string($password) || $password === '') {
+        if (!is_string($password) || $password === '') {
             throw new InvalidParamException('Password must be a string and cannot be empty.');
         }
         
-        if (! preg_match('/^\$2[axy]\$(\d\d)\$[\.\/0-9A-Za-z]{22}/', $hash, $matches) || $matches[1] < 4 || $matches[1] > 30) {
+        if (!preg_match('/^\$2[axy]\$(\d\d)\$[\.\/0-9A-Za-z]{22}/', $hash, $matches) || $matches[1] < 4 || $matches[1] > 30) {
             throw new InvalidParamException('Hash is invalid.');
         }
         

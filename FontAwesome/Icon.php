@@ -39,7 +39,7 @@ class Icon
     public function __construct($name, $options = [])
     {
         Html::addCssClass($options, FontAwesome::$cssPrefix);
-        if (! empty($name)) {
+        if (!empty($name)) {
             Html::addCssClass($options, FontAwesome::$cssPrefix . '-' . $name);
         }
         $this->options = $options;
@@ -194,7 +194,7 @@ class Icon
     public function addCssClass($class, $condition = true, $throw = false)
     {
         if ($condition === false) {
-            if (! empty($throw)) {
+            if (!empty($throw)) {
                 $message = ! is_string($throw) ? 'Condition is false' : $throw;
                 
                 throw new \yii\base\InvalidConfigException($message);

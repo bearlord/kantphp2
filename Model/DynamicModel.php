@@ -189,7 +189,7 @@ class DynamicModel extends Model
     {
         /* @var $model DynamicModel */
         $model = new static($data);
-        if (! empty($rules)) {
+        if (!empty($rules)) {
             $validators = $model->getValidators();
             foreach ($rules as $rule) {
                 if ($rule instanceof Validator) {

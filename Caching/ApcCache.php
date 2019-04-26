@@ -45,7 +45,7 @@ class ApcCache extends Cache
     {
         parent::init();
         $extension = $this->useApcu ? 'apcu' : 'apc';
-        if (! extension_loaded($extension)) {
+        if (!extension_loaded($extension)) {
             throw new InvalidConfigException("ApcCache requires PHP $extension extension to be loaded.");
         }
     }

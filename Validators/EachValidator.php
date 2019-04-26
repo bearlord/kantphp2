@@ -112,7 +112,7 @@ class EachValidator extends Validator
         if ($rule instanceof Validator) {
             return $rule;
         } elseif (is_array($rule) && isset($rule[0])) { // validator type
-            if (! is_object($model)) {
+            if (!is_object($model)) {
                 $model = new Model(); // mock up context model
             }
             return Validator::createValidator($rule[0], $model, $this->attributes, array_slice($rule, 1));
@@ -127,7 +127,7 @@ class EachValidator extends Validator
     public function validateAttribute($model, $attribute)
     {
         $value = $model->$attribute;
-        if (! is_array($value)) {
+        if (!is_array($value)) {
             $this->addError($model, $attribute, $this->message, []);
             return;
         }
@@ -138,14 +138,14 @@ class EachValidator extends Validator
         $filteredValue = [];
         foreach ($value as $k => $v) {
             $model->$attribute = $v;
-            if (! $validator->skipOnEmpty || ! $validator->isEmpty($v)) {
+            if (!$validator->skipOnEmpty || ! $validator->isEmpty($v)) {
                 $validator->validateAttribute($model, $attribute);
             }
             $filteredValue[$k] = $model->$attribute;
             if ($model->hasErrors($attribute)) {
                 $validationErrors = $model->getErrors($attribute);
                 $model->clearErrors($attribute);
-                if (! empty($originalErrors)) {
+                if (!empty($originalErrors)) {
                     $model->addErrors([
                         $attribute => $originalErrors
                     ]);
@@ -171,7 +171,7 @@ class EachValidator extends Validator
      */
     protected function validateValue($value)
     {
-        if (! is_array($value)) {
+        if (!is_array($value)) {
             return [
                 $this->message,
                 []

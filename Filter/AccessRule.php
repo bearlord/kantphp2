@@ -118,7 +118,7 @@ class AccessRule extends Component
      */
     public function allows($action, $user, $request)
     {
-        if ($this->matchAction($action) && $this->matchRole($user) && $this->matchIP($request->getUserIP()) && $this->matchVerb($request->getMethod()) && $this->matchController($action->controller) && $this->matchCustom($action)) {
+        if ($this->matchAction($action) && $this->matchRole($user) && $this->matchIP($request->getClientIp()) && $this->matchVerb($request->getMethod()) && $this->matchController($action->controller) && $this->matchCustom($action)) {
             return $this->allow ? true : false;
         } else {
             return null;
@@ -164,7 +164,7 @@ class AccessRule extends Component
                     return true;
                 }
             } elseif ($role === '@') {
-                if (! $user->getIsGuest()) {
+                if (!$user->getIsGuest()) {
                     return true;
                 }
             } elseif ($user->can($role)) {

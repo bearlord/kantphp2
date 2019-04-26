@@ -99,7 +99,7 @@ class ButtonGroup extends Widget
                 }
                 
                 $button['view'] = $this->getView();
-                if (! isset($button['encodeLabel'])) {
+                if (!isset($button['encodeLabel'])) {
                     $button['encodeLabel'] = $this->encodeLabels;
                 }
                 $buttons[] = Button::widget($button);

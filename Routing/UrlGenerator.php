@@ -192,7 +192,7 @@ class UrlGenerator
         
         return $this->format($root, '/' . trim($path, '/')) . $this->httpBluidQuery($tail, $query);
     }
-
+	
     /**
      * Generate a secure, absolute URL to the given path.
      *
@@ -276,7 +276,7 @@ class UrlGenerator
      */
     public function formatScheme($secure)
     {
-        if (! is_null($secure)) {
+        if (!is_null($secure)) {
             return $secure ? 'https://' : 'http://';
         }
         
@@ -299,7 +299,7 @@ class UrlGenerator
      */
     public function route($name, $parameters = [], $absolute = true)
     {
-        if (! is_null($route = $this->routes->getByName($name))) {
+        if (!is_null($route = $this->routes->getByName($name))) {
             return $this->parseToRoute($route, $parameters, $absolute);
         }
         
@@ -446,7 +446,7 @@ class UrlGenerator
      */
     public function isValidUrl($path)
     {
-        if (! Str::startsWith($path, [
+        if (!Str::startsWith($path, [
             '#',
             '//',
             'mailto:',
@@ -467,7 +467,7 @@ class UrlGenerator
      */
     protected function routeUrl()
     {
-        if (! $this->routeGenerator) {
+        if (!$this->routeGenerator) {
             $this->routeGenerator = new RouteUrlGenerator($this, $this->request);
         }
         
@@ -648,11 +648,11 @@ class UrlGenerator
      */
     protected function httpBluidQuery(array $tail, $query = NULL)
     {
-        if (! empty($query)) {
+        if (!empty($query)) {
             parse_str(ltrim($query, "?"), $params);
             return "?" . http_build_query(array_merge($params, $tail));
         }
-        if (! empty($tail)) {
+        if (!empty($tail)) {
             return "?" . http_build_query($tail);
         }
     }

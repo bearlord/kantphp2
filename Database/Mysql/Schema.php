@@ -154,7 +154,7 @@ class Schema extends \Kant\Database\Schema
             if (isset($this->typeMap[$type])) {
                 $column->type = $this->typeMap[$type];
             }
-            if (! empty($matches[2])) {
+            if (!empty($matches[2])) {
                 if ($type === 'enum') {
                     $values = explode(',', $matches[2]);
                     foreach ($values as $i => $value) {
@@ -182,7 +182,7 @@ class Schema extends \Kant\Database\Schema
         
         $column->phpType = $this->getColumnPhpType($column);
         
-        if (! $column->isPrimaryKey) {
+        if (!$column->isPrimaryKey) {
             if ($column->type === 'timestamp' && $info['default'] === 'CURRENT_TIMESTAMP') {
                 $column->defaultValue = new Expression('CURRENT_TIMESTAMP');
             } elseif (isset($type) && $type === 'bit') {
@@ -299,7 +299,7 @@ SQL;
             }
         } catch (\Exception $e) {
             $previous = $e->getPrevious();
-            if (! $previous instanceof \PDOException || strpos($previous->getMessage(), 'SQLSTATE[42S02') === false) {
+            if (!$previous instanceof \PDOException || strpos($previous->getMessage(), 'SQLSTATE[42S02') === false) {
                 throw $e;
             }
             

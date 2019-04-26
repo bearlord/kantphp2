@@ -150,7 +150,7 @@ class Filesystem
         
         foreach ($paths as $path) {
             try {
-                if (! @unlink($path)) {
+                if (!@unlink($path)) {
                     $success = false;
                 }
             } catch (ErrorException $e) {
@@ -350,7 +350,7 @@ class Filesystem
     public function allFiles($directory, $hidden = false)
     {
         return iterator_to_array(Finder::create()->files()
-            ->ignoreDotFiles(! $hidden)
+            ->ignoreDotFiles(!$hidden)
             ->in($directory), false);
     }
 
@@ -402,7 +402,7 @@ class Filesystem
     public function moveDirectory($from, $to, $overwrite = false)
     {
         if ($overwrite && $this->isDirectory($to)) {
-            if (! $this->deleteDirectory($to)) {
+            if (!$this->deleteDirectory($to)) {
                 return false;
             }
         }
@@ -420,7 +420,7 @@ class Filesystem
      */
     public function copyDirectory($directory, $destination, $options = null)
     {
-        if (! $this->isDirectory($directory)) {
+        if (!$this->isDirectory($directory)) {
             return false;
         }
         
@@ -429,7 +429,7 @@ class Filesystem
         // If the destination directory does not actually exist, we will go ahead and
         // create it recursively, which just gets the destination prepared to copy
         // the files over. Once we make the directory we'll proceed the copying.
-        if (! $this->isDirectory($destination)) {
+        if (!$this->isDirectory($destination)) {
             $this->makeDirectory($destination, 0777, true);
         }
         
@@ -444,7 +444,7 @@ class Filesystem
             if ($item->isDir()) {
                 $path = $item->getPathname();
                 
-                if (! $this->copyDirectory($path, $target, $options)) {
+                if (!$this->copyDirectory($path, $target, $options)) {
                     return false;
                 }
             }             
@@ -453,7 +453,7 @@ class Filesystem
             // location and keep looping. If for some reason the copy fails we'll bail out
             // and return false, so the developer is aware that the copy process failed.
             else {
-                if (! $this->copy($item->getPathname(), $target)) {
+                if (!$this->copy($item->getPathname(), $target)) {
                     return false;
                 }
             }
@@ -473,7 +473,7 @@ class Filesystem
      */
     public function deleteDirectory($directory, $preserve = false)
     {
-        if (! $this->isDirectory($directory)) {
+        if (!$this->isDirectory($directory)) {
             return false;
         }
         
@@ -495,7 +495,7 @@ class Filesystem
             }
         }
         
-        if (! $preserve) {
+        if (!$preserve) {
             @rmdir($directory);
         }
         
@@ -524,7 +524,7 @@ class Filesystem
      */
     public function cleanDirectoryByFilemtime($directory, $expire)
     {
-        if (! $this->isDirectory($directory)) {
+        if (!$this->isDirectory($directory)) {
             return false;
         }
         

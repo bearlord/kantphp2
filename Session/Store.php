@@ -101,7 +101,7 @@ class Store implements Session
     {
         $this->loadSession();
         
-        if (! $this->has('_token')) {
+        if (!$this->has('_token')) {
             $this->regenerateToken();
         }
         
@@ -185,7 +185,7 @@ class Store implements Session
      */
     public function setId($id)
     {
-        if (! $this->isValidId($id)) {
+        if (!$this->isValidId($id)) {
             $id = $this->generateSessionId();
         }
         
@@ -422,7 +422,7 @@ class Store implements Session
      */
     public function put($key, $value = null)
     {
-        if (! is_array($key)) {
+        if (!is_array($key)) {
             $key = [
                 $key => $value
             ];

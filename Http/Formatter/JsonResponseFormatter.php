@@ -24,9 +24,9 @@ use Kant\Helper\Json;
  * 'response' => [
  * // ...
  * 'formatters' => [
- * \yii\web\Response::FORMAT_JSON => [
- * 'class' => 'yii\web\JsonResponseFormatter',
- * 'prettyPrint' => YII_DEBUG, // use "pretty" output in debug mode
+ * \Kant\Http\Response::FORMAT_JSON => [
+ * 'class' => 'Kant\Http\JsonResponseFormatter',
+ * 'prettyPrint' => KANT_DEBUG, // use "pretty" output in debug mode
  * // ...
  * ],
  * ],

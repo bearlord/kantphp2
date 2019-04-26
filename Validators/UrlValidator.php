@@ -81,7 +81,7 @@ class UrlValidator extends Validator
     {
         $value = $model->$attribute;
         $result = $this->validateValue($value);
-        if (! empty($result)) {
+        if (!empty($result)) {
             $this->addError($model, $attribute, $result[0], $result[1]);
         } elseif ($this->defaultScheme !== null && strpos($value, '://') === false) {
             $model->$attribute = $this->defaultScheme . '://' . $value;

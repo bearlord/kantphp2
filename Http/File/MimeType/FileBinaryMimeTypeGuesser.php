@@ -55,15 +55,15 @@ class FileBinaryMimeTypeGuesser implements MimeTypeGuesserInterface
      */
     public function guess($path)
     {
-        if (! is_file($path)) {
+        if (!is_file($path)) {
             throw new FileNotFoundException($path);
         }
         
-        if (! is_readable($path)) {
+        if (!is_readable($path)) {
             throw new AccessDeniedException($path);
         }
         
-        if (! self::isSupported()) {
+        if (!self::isSupported()) {
             return;
         }
         
@@ -79,7 +79,7 @@ class FileBinaryMimeTypeGuesser implements MimeTypeGuesserInterface
         
         $type = trim(ob_get_clean());
         
-        if (! preg_match('#^([a-z0-9\-]+/[a-z0-9\-\.]+)#i', $type, $match)) {
+        if (!preg_match('#^([a-z0-9\-]+/[a-z0-9\-\.]+)#i', $type, $match)) {
             // it's not a type, but an error message
             return;
         }

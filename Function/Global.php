@@ -8,7 +8,7 @@
  */
 use Kant\Kant;
 
-if (! function_exists('hash')) {
+if (!function_exists('hash')) {
 
     /**
      *
@@ -88,7 +88,7 @@ if (! function_exists('hash')) {
         }
     }
 }
-if (! function_exists('csrf_token')) {
+if (!function_exists('csrf_token')) {
 
     /**
      * Get the CSRF token value.
@@ -109,7 +109,7 @@ if (! function_exists('csrf_token')) {
     }
 }
 
-if (! function_exists('addslashess')) {
+if (!function_exists('addslashess')) {
 
     function addslashess($value)
     {
@@ -122,7 +122,7 @@ if (! function_exists('addslashess')) {
     }
 }
 
-if (! function_exists('get_client_ip')) {
+if (!function_exists('get_client_ip')) {
 
     /**
      *
@@ -177,7 +177,7 @@ if (function_exists('random')) {
     }
 }
 
-if (! function_exists('array_wrap')) {
+if (!function_exists('array_wrap')) {
 
     /**
      * If the given value is not an array, wrap it in one.
@@ -198,7 +198,7 @@ function strcut($str, $start = 0, $offset = '')
     $j = 0;
     $cn = 0;
     $substr = "";
-    if (! $offset)
+    if (!$offset)
         $offset = strlen($str);
     while ($cn < $start) {
         if (ord($str{$j}) >= 0x80 && ord($str{$j}) <= 0xff)
@@ -222,7 +222,7 @@ function strcut($str, $start = 0, $offset = '')
     return $substr;
 }
 
-if (! function_exists('unserializesession')) {
+if (!function_exists('unserializesession')) {
 
     function unserializesession($data)
     {
@@ -239,7 +239,7 @@ if (! function_exists('unserializesession')) {
         $currentKey = '';
         foreach ($matchesarray[2] as $value) {
             $offset = $value[1];
-            if (! is_null($lastOffset)) {
+            if (!is_null($lastOffset)) {
                 $valueText = substr($data, $lastOffset, $offset - $lastOffset);
                 $returnArray[$currentKey] = unserialize($valueText);
             }
@@ -255,7 +255,7 @@ if (! function_exists('unserializesession')) {
     }
 }
 
-if (! function_exists('value')) {
+if (!function_exists('value')) {
 
     /**
      * Return the default value of the given value.
@@ -269,7 +269,7 @@ if (! function_exists('value')) {
     }
 }
 
-if (! function_exists('tap')) {
+if (!function_exists('tap')) {
 
     /**
      * Call the given Closure with the given value then return the value.

@@ -340,14 +340,14 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
         foreach ($this->items as $key => $value) {
             $groupKeys = $groupBy($value, $key);
             
-            if (! is_array($groupKeys)) {
+            if (!is_array($groupKeys)) {
                 $groupKeys = [
                     $groupKeys
                 ];
             }
             
             foreach ($groupKeys as $groupKey) {
-                if (! array_key_exists($groupKey, $results)) {
+                if (!array_key_exists($groupKey, $results)) {
                     $results[$groupKey] = new static();
                 }
                 
@@ -736,7 +736,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      */
     public function search($value, $strict = false)
     {
-        if (! $this->useAsCallable($value)) {
+        if (!$this->useAsCallable($value)) {
             return array_search($value, $this->items, $strict);
         }
         

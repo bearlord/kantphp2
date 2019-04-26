@@ -104,14 +104,14 @@ class QueryBuilder extends BaseObject
         $sql = implode($this->separator, array_filter($clauses));
         $sql = $this->buildOrderByAndLimit($sql, $query->orderBy, $query->limit, $query->offset);
         
-        if (! empty($query->orderBy)) {
+        if (!empty($query->orderBy)) {
             foreach ($query->orderBy as $expression) {
                 if ($expression instanceof Expression) {
                     $params = array_merge($params, $expression->params);
                 }
             }
         }
-        if (! empty($query->groupBy)) {
+        if (!empty($query->groupBy)) {
             foreach ($query->groupBy as $expression) {
                 if ($expression instanceof Expression) {
                     $params = array_merge($params, $expression->params);
@@ -176,7 +176,7 @@ class QueryBuilder extends BaseObject
             }
         }
         
-        return 'INSERT INTO ' . $schema->quoteTableName($table) . (! empty($names) ? ' (' . implode(', ', $names) . ')' : '') . (! empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : ' DEFAULT VALUES');
+        return 'INSERT INTO ' . $schema->quoteTableName($table) . (!empty($names) ? ' (' . implode(', ', $names) . ')' : '') . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : ' DEFAULT VALUES');
     }
 
     /**
@@ -829,7 +829,7 @@ class QueryBuilder extends BaseObject
         }
         
         foreach ($joins as $i => $join) {
-            if (! is_array($join) || ! isset($join[0], $join[1])) {
+            if (!is_array($join) || ! isset($join[0], $join[1])) {
                 throw new Exception('A join clause must be specified as an array of join type, join table, and optionally join condition.');
             }
             // 0:join type, 1:join table, 2:on-condition (optional)
@@ -1054,7 +1054,7 @@ class QueryBuilder extends BaseObject
      */
     public function buildColumns($columns)
     {
-        if (! is_array($columns)) {
+        if (!is_array($columns)) {
             if (strpos($columns, '(') !== false) {
                 return $columns;
             } else {
@@ -1089,7 +1089,7 @@ class QueryBuilder extends BaseObject
                 $params[$n] = $v;
             }
             return $condition->expression;
-        } elseif (! is_array($condition)) {
+        } elseif (!is_array($condition)) {
             return (string) $condition;
         } elseif (empty($condition)) {
             return '';
@@ -1177,7 +1177,7 @@ class QueryBuilder extends BaseObject
                 $parts[] = $operand;
             }
         }
-        if (! empty($parts)) {
+        if (!empty($parts)) {
             return '(' . implode(") $operator (", $parts) . ')';
         } else {
             return '';
@@ -1228,7 +1228,7 @@ class QueryBuilder extends BaseObject
      */
     public function buildBetweenCondition($operator, $operands, &$params)
     {
-        if (! isset($operands[0], $operands[1], $operands[2])) {
+        if (!isset($operands[0], $operands[1], $operands[2])) {
             throw new InvalidParamException("Operator '$operator' requires three operands.");
         }
         
@@ -1277,7 +1277,7 @@ class QueryBuilder extends BaseObject
      */
     public function buildInCondition($operator, $operands, &$params)
     {
-        if (! isset($operands[0], $operands[1])) {
+        if (!isset($operands[0], $operands[1])) {
             throw new Exception("Operator '$operator' requires two operands.");
         }
         
@@ -1291,7 +1291,7 @@ class QueryBuilder extends BaseObject
         if ($values instanceof Query) {
             return $this->buildSubqueryInCondition($operator, $column, $values, $params);
         }
-        if (! is_array($values) && ! $values instanceof \Traversable) {
+        if (!is_array($values) && ! $values instanceof \Traversable) {
             // ensure values is an array
             $values = (array) $values;
         }
@@ -1429,7 +1429,7 @@ class QueryBuilder extends BaseObject
      */
     public function buildLikeCondition($operator, $operands, &$params)
     {
-        if (! isset($operands[0], $operands[1])) {
+        if (!isset($operands[0], $operands[1])) {
             throw new InvalidParamException("Operator '$operator' requires two operands.");
         }
         
@@ -1440,16 +1440,16 @@ class QueryBuilder extends BaseObject
         ];
         unset($operands[2]);
         
-        if (! preg_match('/^(AND |OR |)(((NOT |))I?LIKE)/', $operator, $matches)) {
+        if (!preg_match('/^(AND |OR |)(((NOT |))I?LIKE)/', $operator, $matches)) {
             throw new InvalidParamException("Invalid operator '$operator'.");
         }
-        $andor = ' ' . (! empty($matches[1]) ? $matches[1] : 'AND ');
+        $andor = ' ' . (!empty($matches[1]) ? $matches[1] : 'AND ');
         $not = ! empty($matches[3]);
         $operator = $matches[2];
         
         list ($column, $values) = $operands;
         
-        if (! is_array($values)) {
+        if (!is_array($values)) {
             $values = [
                 $values
             ];

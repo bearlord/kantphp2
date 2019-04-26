@@ -107,7 +107,7 @@ class ExistValidator extends Validator
             ];
         }
         
-        if (! $this->allowArray) {
+        if (!$this->allowArray) {
             foreach ($params as $value) {
                 if (is_array($value)) {
                     $this->addError($model, $attribute, Kant::t('kant', '{attribute} is invalid.'));
@@ -124,7 +124,7 @@ class ExistValidator extends Validator
             if ($query->count("DISTINCT [[$targetAttribute]]") != count($model->$attribute)) {
                 $this->addError($model, $attribute, $this->message);
             }
-        } elseif (! $query->exists()) {
+        } elseif (!$query->exists()) {
             $this->addError($model, $attribute, $this->message);
         }
     }
@@ -137,7 +137,7 @@ class ExistValidator extends Validator
         if ($this->targetClass === null) {
             throw new InvalidConfigException('The "targetClass" property must be set.');
         }
-        if (! is_string($this->targetAttribute)) {
+        if (!is_string($this->targetAttribute)) {
             throw new InvalidConfigException('The "targetAttribute" property must be configured as a string.');
         }
         
@@ -146,7 +146,7 @@ class ExistValidator extends Validator
         ]);
         
         if (is_array($value)) {
-            if (! $this->allowArray) {
+            if (!$this->allowArray) {
                 return [
                     $this->message,
                     []

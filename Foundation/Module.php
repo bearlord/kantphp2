@@ -43,6 +43,11 @@ class Module extends ServiceLocator
 {
 
 	/**
+	 * @var array custom module parameters (name => value).
+	 */
+	public $params = [];
+
+	/**
 	 * @var string an ID that uniquely identifies this module among other modules which have the same [[module|parent]].
 	 */
 	public $id;
@@ -73,6 +78,20 @@ class Module extends ServiceLocator
 	 *      ```
 	 */
 	public $controllerMap = [];
+	
+	/**
+     * @var string the namespace that controller classes are in.
+     * This namespace will be used to load controller classes by prepending it to the controller
+     * class name.
+     *
+     * If not set, it will use the `controllers` sub-namespace under the namespace of this module.
+     * For example, if the namespace of this module is `foo\bar`, then the default
+     * controller namespace would be `foo\bar\controllers`.
+     *
+     * See also the [guide section on autoloading](guide:concept-autoloading) to learn more about
+     * defining namespaces and how classes are loaded.
+     */
+    public $controllerNamespace = "\\app\\modules";
 
 	/**
 	 *
@@ -395,7 +414,7 @@ class Module extends ServiceLocator
 	 * @throws InvalidConfigException if the controller class and its file do not match.
 	 */
 	public function createController($route)
-	{
+	{		
 		// double slashes or leading/ending slashes may cause substr problem
 		$route = trim($route, '/');
 		if (strpos($route, '//') !== false) {
@@ -403,18 +422,31 @@ class Module extends ServiceLocator
 		}
 
 		if (strpos($route, '/') !== false) {
-			$path = explode("/", $route);
-			if (count($path) !== 3) {
-				return false;
-			}
+			list ($id, $route) = explode('/', $route, 2);
+		} else {
+            $id = $route;
+            $route = '';
+        }
 
-			$controller = $this->createControllerByID($route);
-
-			return $controller === null ? false : [
-				$controller,
-				end($path)
-			];
+		// module and controller map take precedence
+		if (isset($this->controllerMap[$id])) {
+			$controller = Kant::createObject($this->controllerMap[$id], [$id, $this]);
+			return [$controller, $route];
 		}
+		
+		if (($pos = strrpos($route, '/')) !== false) {
+            $id .= '/' . substr($route, 0, $pos);
+            $route = substr($route, $pos + 1);
+        }
+		
+
+		$controller = $this->createControllerByID($id);
+        if ($controller === null && $route !== '') {
+            $controller = $this->createControllerByID($id . '/' . $route);
+            $route = '';
+        }
+		
+        return $controller === null ? false : [$controller, $route];
 	}
 
 	/**
@@ -433,24 +465,33 @@ class Module extends ServiceLocator
 	 */
 	public function createControllerByID($id)
 	{
-		if (strrpos($id, '/') === false) {
-			return null;
-		}
-		list ($moduleName, $controllerName, $actionName) = explode("/", strtolower($id));
+		$pos = strrpos($id, '/');
+        if ($pos === false) {
+            $prefix = '';
+            $className = $id;
+        } else {
+            $prefix = substr($id, 0, $pos + 1);
+            $className = substr($id, $pos + 1);
+        }
 
-		if (strpos($controllerName, "-") !== false) {
-			$controllerName = str_replace(' ', '', ucwords(str_replace('-', ' ', $controllerName)));
-		}
+        if (!preg_match('%^[a-z][a-z0-9\\-_]*$%', $className)) {
+            return null;
+        }
+        if ($prefix !== '' && !preg_match('%^[a-z0-9_/]+$%i', $prefix)) {
+            return null;
+        }
 
-		$className = sprintf("app\modules\%s\controllers\%sController", $moduleName, ucfirst($controllerName));
-
+		$className = str_replace(' ', '', ucwords(str_replace('-', ' ', $className))) . 'Controller';
+		
+        $className = ltrim($this->controllerNamespace . '\\' . str_replace('/', '\\', $prefix . 'controllers\\')  . $className, '\\');
+		
 		if (strpos($className, '-') !== false || !class_exists($className)) {
 			return null;
 		}
-
+		
 		if (is_subclass_of($className, \Kant\Controller\Controller::className())) {
 			$controller = Kant::createObject($className, [
-						$controllerName,
+						$id,
 						$this
 			]);
 			//if route pattern is explicit, can not be accessed directly by routine

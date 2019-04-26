@@ -116,7 +116,7 @@ class MessageSource extends Component
     protected function translateMessage($category, $message, $language)
     {
         $key = $language . '/' . $category;
-        if (! isset($this->_messages[$key])) {
+        if (!isset($this->_messages[$key])) {
             $this->_messages[$key] = $this->loadMessages($category, $language);
         }
         if (isset($this->_messages[$key][$message]) && $this->_messages[$key][$message] !== '') {

@@ -185,7 +185,7 @@ class ActiveField extends \Kant\Widget\ActiveField
     public function render($content = null)
     {
         if ($content === null) {
-            if (! isset($this->parts['{beginWrapper}'])) {
+            if (!isset($this->parts['{beginWrapper}'])) {
                 $options = $this->wrapperOptions;
                 $tag = ArrayHelper::remove($options, 'tag', 'div');
                 $this->parts['{beginWrapper}'] = Html::beginTag($tag, $options);
@@ -196,7 +196,7 @@ class ActiveField extends \Kant\Widget\ActiveField
                 $this->parts['{beginLabel}'] = '';
                 $this->parts['{labelTitle}'] = '';
                 $this->parts['{endLabel}'] = '';
-            } elseif (! isset($this->parts['{beginLabel}'])) {
+            } elseif (!isset($this->parts['{beginLabel}'])) {
                 $this->renderLabelParts();
             }
             if ($this->enableError === false) {
@@ -218,7 +218,7 @@ class ActiveField extends \Kant\Widget\ActiveField
     public function checkbox($options = [], $enclosedByLabel = true)
     {
         if ($enclosedByLabel) {
-            if (! isset($options['template'])) {
+            if (!isset($options['template'])) {
                 $this->template = $this->form->layout === 'horizontal' ? $this->horizontalCheckboxTemplate : $this->checkboxTemplate;
             } else {
                 $this->template = $options['template'];
@@ -242,7 +242,7 @@ class ActiveField extends \Kant\Widget\ActiveField
     public function radio($options = [], $enclosedByLabel = true)
     {
         if ($enclosedByLabel) {
-            if (! isset($options['template'])) {
+            if (!isset($options['template'])) {
                 $this->template = $this->form->layout === 'horizontal' ? $this->horizontalRadioTemplate : $this->radioTemplate;
             } else {
                 $this->template = $options['template'];
@@ -266,20 +266,20 @@ class ActiveField extends \Kant\Widget\ActiveField
     public function checkboxList($items, $options = [])
     {
         if ($this->inline) {
-            if (! isset($options['template'])) {
+            if (!isset($options['template'])) {
                 $this->template = $this->inlineCheckboxListTemplate;
             } else {
                 $this->template = $options['template'];
                 unset($options['template']);
             }
-            if (! isset($options['itemOptions'])) {
+            if (!isset($options['itemOptions'])) {
                 $options['itemOptions'] = [
                     'labelOptions' => [
                         'class' => 'checkbox-inline'
                     ]
                 ];
             }
-        } elseif (! isset($options['item'])) {
+        } elseif (!isset($options['item'])) {
             $itemOptions = isset($options['itemOptions']) ? $options['itemOptions'] : [];
             $options['item'] = function ($index, $label, $name, $checked, $value) use($itemOptions) {
                 $options = array_merge([
@@ -299,21 +299,21 @@ class ActiveField extends \Kant\Widget\ActiveField
     public function radioList($items, $options = [])
     {
         if ($this->inline) {
-            if (! isset($options['template'])) {
+            if (!isset($options['template'])) {
                 // do nothing
                 // $this->template = $this->inlineRadioListTemplate;
             } else {
                 $this->template = $options['template'];
                 unset($options['template']);
             }
-            if (! isset($options['itemOptions'])) {
+            if (!isset($options['itemOptions'])) {
                 $options['itemOptions'] = [
                     'labelOptions' => [
                         'class' => 'radio-inline'
                     ]
                 ];
             }
-        } elseif (! isset($options['item'])) {
+        } elseif (!isset($options['item'])) {
             $itemOptions = isset($options['itemOptions']) ? $options['itemOptions'] : [];
             $options['item'] = function ($index, $label, $name, $checked, $value) use($itemOptions) {
                 $options = array_merge([
@@ -456,12 +456,12 @@ class ActiveField extends \Kant\Widget\ActiveField
                 $label = Html::encode($this->model->getAttributeLabel($attribute));
             }
         }
-        if (! isset($options['for'])) {
+        if (!isset($options['for'])) {
             $options['for'] = Html::getInputId($this->model, $this->attribute);
         }
         $this->parts['{beginLabel}'] = Html::beginTag('label', $options);
         $this->parts['{endLabel}'] = Html::endTag('label');
-        if (! isset($this->parts['{labelTitle}'])) {
+        if (!isset($this->parts['{labelTitle}'])) {
             $this->parts['{labelTitle}'] = $label;
         }
     }

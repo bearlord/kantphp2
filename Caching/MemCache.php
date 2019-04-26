@@ -213,7 +213,7 @@ class MemCache extends Cache
     {
         if ($this->_cache === null) {
             $extension = $this->useMemcached ? 'memcached' : 'memcache';
-            if (! extension_loaded($extension)) {
+            if (!extension_loaded($extension)) {
                 throw new InvalidConfigException("MemCache requires PHP $extension extension to be loaded.");
             }
             
@@ -223,7 +223,7 @@ class MemCache extends Cache
                     $this->_cache->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
                     $this->_cache->setSaslAuthData($this->username, $this->password);
                 }
-                if (! empty($this->options)) {
+                if (!empty($this->options)) {
                     $this->_cache->setOptions($this->options);
                 }
             } else {

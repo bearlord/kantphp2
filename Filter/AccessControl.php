@@ -87,7 +87,7 @@ class AccessControl extends ActionFilter
      *      specified via [[rules]] will take precedence when the same property of the rule is configured.
      */
     public $ruleConfig = [
-        'class' => 'Kant\Filters\AccessRule'
+        'class' => 'Kant\Filter\AccessRule'
     ];
 
     /**

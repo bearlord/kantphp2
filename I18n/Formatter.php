@@ -311,7 +311,7 @@ class Formatter extends Component
             $this->nullDisplay = '<span class="not-set">' . Kant::t('kant', '(not set)', [], $this->locale) . '</span>';
         }
         $this->_intlLoaded = extension_loaded('intl');
-        if (! $this->_intlLoaded) {
+        if (!$this->_intlLoaded) {
             if ($this->decimalSeparator === null) {
                 $this->decimalSeparator = '.';
             }
@@ -340,7 +340,7 @@ class Formatter extends Component
     public function format($value, $format)
     {
         if (is_array($format)) {
-            if (! isset($format[0])) {
+            if (!isset($format[0])) {
                 throw new InvalidParamException('The $format array must contain at least one element.');
             }
             $f = $format[0];
@@ -664,7 +664,7 @@ class Formatter extends Component
         // avoid time zone conversion for date-only values
         if ($type === 'date') {
             list ($timestamp, $hasTimeInfo) = $this->normalizeDatetimeValue($value, true);
-            if (! $hasTimeInfo) {
+            if (!$hasTimeInfo) {
                 $timeZone = $this->defaultTimeZone;
             }
         } else {
@@ -1472,7 +1472,7 @@ class Formatter extends Component
         if (is_string($value) && is_numeric($value)) {
             $value = (float) $value;
         }
-        if (! is_numeric($value)) {
+        if (!is_numeric($value)) {
             throw new InvalidParamException("'$value' is not a numeric value.");
         }
         return $value;

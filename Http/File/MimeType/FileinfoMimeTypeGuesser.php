@@ -50,19 +50,19 @@ class FileinfoMimeTypeGuesser implements MimeTypeGuesserInterface
      */
     public function guess($path)
     {
-        if (! is_file($path)) {
+        if (!is_file($path)) {
             throw new FileNotFoundException($path);
         }
         
-        if (! is_readable($path)) {
+        if (!is_readable($path)) {
             throw new AccessDeniedException($path);
         }
         
-        if (! self::isSupported()) {
+        if (!self::isSupported()) {
             return;
         }
         
-        if (! $finfo = new \finfo(FILEINFO_MIME_TYPE, $this->magicFile)) {
+        if (!$finfo = new \finfo(FILEINFO_MIME_TYPE, $this->magicFile)) {
             return;
         }
         

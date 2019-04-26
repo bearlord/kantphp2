@@ -275,7 +275,7 @@ class Validator extends Component
         }
         foreach ($attributes as $attribute) {
             $skip = ($this->skipOnError && $model->hasErrors($attribute)) || ($this->skipOnEmpty && $this->isEmpty($model->$attribute));
-            if (! $skip) {
+            if (!$skip) {
                 if ($this->when === null || call_user_func($this->when, $model, $attribute)) {
                     $this->validateAttribute($model, $attribute);
                 }
@@ -295,7 +295,7 @@ class Validator extends Component
     public function validateAttribute($model, $attribute)
     {
         $result = $this->validateValue($model->$attribute);
-        if (! empty($result)) {
+        if (!empty($result)) {
             $this->addError($model, $attribute, $result[0], $result[1]);
         }
     }
@@ -417,7 +417,7 @@ class Validator extends Component
     public function addError($model, $attribute, $message, $params = [])
     {
         $params['attribute'] = $model->getAttributeLabel($attribute);
-        if (! isset($params['value'])) {
+        if (!isset($params['value'])) {
             $value = $model->$attribute;
             if (is_array($value)) {
                 $params['value'] = 'array()';

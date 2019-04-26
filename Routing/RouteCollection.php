@@ -129,7 +129,7 @@ class RouteCollection
         // by the consumer. Otherwise we will check for routes with another verb.
         $route = $this->matchAgainstRoutes($routes, $request);
         
-        if (! is_null($route)) {
+        if (!is_null($route)) {
             return $route->bind($request);
         }
         
@@ -178,7 +178,7 @@ class RouteCollection
         $others = [];
         
         foreach ($methods as $method) {
-            if (! is_null($this->matchAgainstRoutes($this->get($method), $request, false))) {
+            if (!is_null($this->matchAgainstRoutes($this->get($method), $request, false))) {
                 $others[] = $method;
             }
         }

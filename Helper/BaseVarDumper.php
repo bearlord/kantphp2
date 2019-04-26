@@ -133,7 +133,7 @@ class BaseVarDumper
                     self::$_output .= "$className#$id\n" . $spaces . '(';
                     if ('__PHP_Incomplete_Class' !== get_class($var) && method_exists($var, '__debugInfo')) {
                         $dumpValues = $var->__debugInfo();
-                        if (! is_array($dumpValues)) {
+                        if (!is_array($dumpValues)) {
                             throw new InvalidValueException('__debuginfo() must return an array');
                         }
                     } else {

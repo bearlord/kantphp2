@@ -226,7 +226,7 @@ class QueryBuilder extends QueryBuilder
             }
         }
         
-        return 'INSERT INTO ' . $schema->quoteTableName($table) . (! empty($names) ? ' (' . implode(', ', $names) . ')' : '') . (! empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : ' DEFAULT VALUES');
+        return 'INSERT INTO ' . $schema->quoteTableName($table) . (!empty($names) ? ' (' . implode(', ', $names) . ')' : '') . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : ' DEFAULT VALUES');
     }
 
     /**

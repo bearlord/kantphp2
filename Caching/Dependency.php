@@ -55,7 +55,7 @@ abstract class Dependency extends \Kant\Foundation\BaseObject
     {
         if ($this->reusable) {
             $hash = $this->generateReusableHash();
-            if (! array_key_exists($hash, self::$_reusableData)) {
+            if (!array_key_exists($hash, self::$_reusableData)) {
                 self::$_reusableData[$hash] = $this->generateDependencyData($cache);
             }
             $this->data = self::$_reusableData[$hash];
@@ -86,7 +86,7 @@ abstract class Dependency extends \Kant\Foundation\BaseObject
     {
         if ($this->reusable) {
             $hash = $this->generateReusableHash();
-            if (! array_key_exists($hash, self::$_reusableData)) {
+            if (!array_key_exists($hash, self::$_reusableData)) {
                 self::$_reusableData[$hash] = $this->generateDependencyData($cache);
             }
             $data = self::$_reusableData[$hash];

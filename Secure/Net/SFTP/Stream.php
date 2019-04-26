@@ -37,7 +37,7 @@
 /**
  * Include Net_SSH2
  */
-if (! class_exists('Net_SFTP')) {
+if (!class_exists('Net_SFTP')) {
     require_once ('Net/SFTP.php');
 }
 
@@ -152,7 +152,7 @@ class Net_SFTP_Stream
     {
         extract(parse_url($path));
         
-        if (! isset($host)) {
+        if (!isset($host)) {
             return false;
         }
         
@@ -164,7 +164,7 @@ class Net_SFTP_Stream
         if ($host[0] == '$') {
             $host = substr($host, 1);
             global $$host;
-            if (! is_object($$host) || get_class($$host) != 'Net_sFTP') {
+            if (!is_object($$host) || get_class($$host) != 'Net_sFTP') {
                 return false;
             }
             $this->sftp = $$host;
@@ -190,7 +190,7 @@ class Net_SFTP_Stream
                 $pass = $context['sftp']['privkey'];
             }
             
-            if (! isset($user) || ! isset($pass)) {
+            if (!isset($user) || ! isset($pass)) {
                 return false;
             }
             
@@ -212,13 +212,13 @@ class Net_SFTP_Stream
                      */
                     call_user_func($this->notification, STREAM_NOTIFY_CONNECT, STREAM_NOTIFY_SEVERITY_INFO, '', 0, 0, 0);
                     call_user_func($this->notification, STREAM_NOTIFY_AUTH_REQUIRED, STREAM_NOTIFY_SEVERITY_INFO, '', 0, 0, 0);
-                    if (! $this->sftp->login($user, $pass)) {
+                    if (!$this->sftp->login($user, $pass)) {
                         call_user_func($this->notification, STREAM_NOTIFY_AUTH_RESULT, STREAM_NOTIFY_SEVERITY_ERR, 'Login Failure', NET_SSH2_MSG_USERAUTH_FAILURE, 0, 0);
                         return false;
                     }
                     call_user_func($this->notification, STREAM_NOTIFY_AUTH_RESULT, STREAM_NOTIFY_SEVERITY_INFO, 'Login Success', NET_SSH2_MSG_USERAUTH_SUCCESS, 0, 0);
                 } else {
-                    if (! $this->sftp->login($user, $pass)) {
+                    if (!$this->sftp->login($user, $pass)) {
                         return false;
                     }
                 }
@@ -328,7 +328,7 @@ class Net_SFTP_Stream
         
         $result = $this->sftp->put($this->path, $data, NET_SFTP_STRING, $this->pos);
         if (isset($this->notification) && is_callable($this->notification)) {
-            if (! $result) {
+            if (!$result) {
                 call_user_func($this->notification, STREAM_NOTIFY_FAILURE, STREAM_NOTIFY_SEVERITY_ERR, $this->sftp->getLastSFTPError(), NET_SFTP_OPEN, 0, 0);
                 return 0;
             }
@@ -492,7 +492,7 @@ class Net_SFTP_Stream
         $path_to = $path_to['path']; // the $component part of parse_url() was added in PHP 5.1.2
                                      // "It is an error if there already exists a file with the name specified by newpath."
                                      // -- http://tools.ietf.org/html/draft-ietf-secsh-filexfer-02#section-6.5
-        if (! $this->sftp->rename($path_from, $path_to)) {
+        if (!$this->sftp->rename($path_from, $path_to)) {
             if ($this->sftp->stat($path_to)) {
                 return $this->sftp->delete($path_to, true) && $this->sftp->rename($path_from, $path_to);
             }
@@ -687,7 +687,7 @@ class Net_SFTP_Stream
      */
     function _stream_truncate($new_size)
     {
-        if (! $this->sftp->truncate($this->path, $new_size)) {
+        if (!$this->sftp->truncate($this->path, $new_size)) {
             return false;
         }
         
@@ -753,7 +753,7 @@ class Net_SFTP_Stream
             echo ")\r\n";
         }
         $name = '_' . $name;
-        if (! method_exists($this, $name)) {
+        if (!method_exists($this, $name)) {
             return false;
         }
         return call_user_func_array(array(

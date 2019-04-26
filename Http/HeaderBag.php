@@ -38,7 +38,7 @@ class HeaderBag implements \IteratorAggregate, \Countable
      */
     public function __toString()
     {
-        if (! $this->headers) {
+        if (!$this->headers) {
             return '';
         }
         
@@ -116,7 +116,7 @@ class HeaderBag implements \IteratorAggregate, \Countable
     {
         $key = str_replace('_', '-', strtolower($key));
         
-        if (! array_key_exists($key, $this->headers)) {
+        if (!array_key_exists($key, $this->headers)) {
             if (null === $default) {
                 return $first ? null : array();
             }

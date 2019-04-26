@@ -314,7 +314,7 @@ class Query extends Component implements QueryInterface
      */
     public function column($db = null)
     {
-        if (! is_string($this->indexBy)) {
+        if (!is_string($this->indexBy)) {
             return $this->createCommand($db)->queryColumn();
         }
         if (is_array($this->select) && count($this->select) === 1) {
@@ -501,7 +501,7 @@ class Query extends Component implements QueryInterface
             $columns = [
                 $columns
             ];
-        } elseif (! is_array($columns)) {
+        } elseif (!is_array($columns)) {
             $columns = preg_split('/\s*,\s*/', trim($columns), - 1, PREG_SPLIT_NO_EMPTY);
         }
         $this->select = $columns;
@@ -531,7 +531,7 @@ class Query extends Component implements QueryInterface
             $columns = [
                 $columns
             ];
-        } elseif (! is_array($columns)) {
+        } elseif (!is_array($columns)) {
             $columns = preg_split('/\s*,\s*/', trim($columns), - 1, PREG_SPLIT_NO_EMPTY);
         }
         if ($this->select === null) {
@@ -591,7 +591,7 @@ class Query extends Component implements QueryInterface
      */
     public function from($tables)
     {
-        if (! is_array($tables)) {
+        if (!is_array($tables)) {
             $tables = preg_split('/\s*,\s*/', trim($tables), - 1, PREG_SPLIT_NO_EMPTY);
         }
         $this->from = $tables;
@@ -888,7 +888,7 @@ class Query extends Component implements QueryInterface
             $columns = [
                 $columns
             ];
-        } elseif (! is_array($columns)) {
+        } elseif (!is_array($columns)) {
             $columns = preg_split('/\s*,\s*/', trim($columns), - 1, PREG_SPLIT_NO_EMPTY);
         }
         $this->groupBy = $columns;
@@ -918,7 +918,7 @@ class Query extends Component implements QueryInterface
             $columns = [
                 $columns
             ];
-        } elseif (! is_array($columns)) {
+        } elseif (!is_array($columns)) {
             $columns = preg_split('/\s*,\s*/', trim($columns), - 1, PREG_SPLIT_NO_EMPTY);
         }
         if ($this->groupBy === null) {
@@ -1048,7 +1048,7 @@ class Query extends Component implements QueryInterface
      */
     public function addParams($params)
     {
-        if (! empty($params)) {
+        if (!empty($params)) {
             if (empty($this->params)) {
                 $this->params = $params;
             } else {

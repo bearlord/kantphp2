@@ -181,7 +181,7 @@ class Nav extends Widget
         if (is_string($item)) {
             return $item;
         }
-        if (! isset($item['label'])) {
+        if (!isset($item['label'])) {
             throw new InvalidConfigException("The 'label' option is required.");
         }
         $encodeLabel = isset($item['encode']) ? $item['encode'] : $this->encodeLabels;
@@ -296,7 +296,7 @@ class Nav extends Widget
                 $params = $item['url'];
                 unset($params[0]);
                 foreach ($params as $name => $value) {
-                    if ($value !== null && (! isset($this->params[$name]) || $this->params[$name] != $value)) {
+                    if ($value !== null && (!isset($this->params[$name]) || $this->params[$name] != $value)) {
                         return false;
                     }
                 }

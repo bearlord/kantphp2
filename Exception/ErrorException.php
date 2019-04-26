@@ -49,12 +49,12 @@ class ErrorException extends \ErrorException
             $xDebugTrace = array_slice(array_reverse(xdebug_get_function_stack()), 3, - 1);
             $trace = [];
             foreach ($xDebugTrace as $frame) {
-                if (! isset($frame['function'])) {
+                if (!isset($frame['function'])) {
                     $frame['function'] = 'unknown';
                 }
                 
                 // XDebug < 2.1.1: http://bugs.xdebug.org/view.php?id=695
-                if (! isset($frame['type']) || $frame['type'] === 'static') {
+                if (!isset($frame['type']) || $frame['type'] === 'static') {
                     $frame['type'] = '::';
                 } elseif ($frame['type'] === 'dynamic') {
                     $frame['type'] = '->';

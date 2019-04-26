@@ -61,7 +61,7 @@ class KantRegistry extends ArrayObject
     {
         $instance = self::getInstance();
         
-        if (! $instance->offsetExists($index)) {
+        if (!$instance->offsetExists($index)) {
             // do nothing;
             // throw new Exception("No entry is registered for key '$index'");
         }

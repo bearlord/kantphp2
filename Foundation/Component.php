@@ -141,7 +141,7 @@ class Component extends BaseObject
         } else {
             // behavior property
             $this->ensureBehaviors();
-            if (! empty($this->_behaviors)) {
+            if (!empty($this->_behaviors)) {
                 foreach ($this->_behaviors as $behavior) {
                     if ($behavior->canGetProperty($name)) {
                         return $behavior->$name;
@@ -198,7 +198,7 @@ class Component extends BaseObject
         } else {
             // behavior property
             $this->ensureBehaviors();
-            if (! empty($this->_behaviors)) {
+            if (!empty($this->_behaviors)) {
                 foreach ($this->_behaviors as $behavior) {
                     if ($behavior->canSetProperty($name)) {
                         $behavior->$name = $value;
@@ -600,7 +600,7 @@ class Component extends BaseObject
     public function trigger($name, Event $event = null)
     {
         $this->ensureBehaviors();
-        if (! empty($this->_events[$name])) {
+        if (!empty($this->_events[$name])) {
             if ($event === null) {
                 $event = new Event();
             }
@@ -745,7 +745,7 @@ class Component extends BaseObject
      */
     private function attachBehaviorInternal($name, $behavior)
     {
-        if (! ($behavior instanceof Behavior)) {
+        if (!($behavior instanceof Behavior)) {
             $behavior = Kant::createObject($behavior);
         }
         if (is_int($name)) {

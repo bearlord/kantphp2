@@ -162,15 +162,15 @@ class Tabs extends Widget
         $headers = [];
         $panes = [];
         
-        if (! $this->hasActiveTab() && ! empty($this->items)) {
+        if (!$this->hasActiveTab() && ! empty($this->items)) {
             $this->items[0]['active'] = true;
         }
         
         foreach ($this->items as $n => $item) {
-            if (! ArrayHelper::remove($item, 'visible', true)) {
+            if (!ArrayHelper::remove($item, 'visible', true)) {
                 continue;
             }
-            if (! array_key_exists('label', $item)) {
+            if (!array_key_exists('label', $item)) {
                 throw new InvalidConfigException("The 'label' option is required.");
             }
             $encodeLabel = isset($item['encode']) ? $item['encode'] : $this->encodeLabels;
@@ -191,7 +191,7 @@ class Tabs extends Widget
                 Html::addCssClass($linkOptions, [
                     'widget' => 'dropdown-toggle'
                 ]);
-                if (! isset($linkOptions['data-toggle'])) {
+                if (!isset($linkOptions['data-toggle'])) {
                     $linkOptions['data-toggle'] = 'dropdown';
                 }
                 $header = Html::a($label, "#", $linkOptions) . "\n" . Dropdown::widget([
@@ -214,7 +214,7 @@ class Tabs extends Widget
                 if (isset($item['url'])) {
                     $header = Html::a($label, $item['url'], $linkOptions);
                 } else {
-                    if (! isset($linkOptions['data-toggle'])) {
+                    if (!isset($linkOptions['data-toggle'])) {
                         $linkOptions['data-toggle'] = 'tab';
                     }
                     $header = Html::a($label, '#' . $options['id'], $linkOptions);
@@ -273,7 +273,7 @@ class Tabs extends Widget
             if (isset($item['visible']) && ! $item['visible']) {
                 continue;
             }
-            if (! array_key_exists('content', $item)) {
+            if (!array_key_exists('content', $item)) {
                 throw new InvalidConfigException("The 'content' option is required.");
             }
             
@@ -290,7 +290,7 @@ class Tabs extends Widget
             
             $options['id'] = ArrayHelper::getValue($options, 'id', $this->options['id'] . '-dd' . $itemNumber . '-tab' . $n);
             $item['url'] = '#' . $options['id'];
-            if (! isset($item['linkOptions']['data-toggle'])) {
+            if (!isset($item['linkOptions']['data-toggle'])) {
                 $item['linkOptions']['data-toggle'] = 'tab';
             }
             $panes[] = Html::tag('div', $content, $options);

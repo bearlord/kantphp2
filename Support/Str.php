@@ -179,7 +179,7 @@ class Str
     {
         preg_match('/^\s*+(?:\S++\s*+){1,' . $words . '}/u', $value, $matches);
         
-        if (! isset($matches[0]) || strlen($value) === strlen($matches[0])) {
+        if (!isset($matches[0]) || strlen($value) === strlen($matches[0])) {
             return $value;
         }
         
@@ -371,7 +371,7 @@ class Str
             return static::$snakeCache[$key];
         }
         
-        if (! ctype_lower($value)) {
+        if (!ctype_lower($value)) {
             $value = preg_replace('/\s+/', '', $value);
             
             $value = static::lower(preg_replace('/(.)(?=[A-Z])/', '$1' . $delimiter, $value));

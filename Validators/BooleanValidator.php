@@ -60,7 +60,7 @@ class BooleanValidator extends Validator
     {
         $valid = ! $this->strict && ($value == $this->trueValue || $value == $this->falseValue) || $this->strict && ($value === $this->trueValue || $value === $this->falseValue);
         
-        if (! $valid) {
+        if (!$valid) {
             return [
                 $this->message,
                 [

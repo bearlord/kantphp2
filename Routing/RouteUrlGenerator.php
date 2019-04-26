@@ -93,7 +93,7 @@ class RouteUrlGenerator
         // be absolute, we will return it as-is. Otherwise we will remove the URL's root.
         $uri = strtr(rawurlencode($uri), $this->dontEncode);
         
-        if (! $absolute) {
+        if (!$absolute) {
             return '/' . ltrim(str_replace($root, '', $uri), '/');
         }
         
@@ -153,7 +153,7 @@ class RouteUrlGenerator
         
         $port = (int) $this->request->getPort();
         
-        return ($secure && $port === 443) || (! $secure && $port === 80) ? $domain : $domain . ':' . $port;
+        return ($secure && $port === 443) || (!$secure && $port === 80) ? $domain : $domain . ':' . $port;
     }
 
     /**
@@ -221,7 +221,7 @@ class RouteUrlGenerator
         // If the URI has a fragment we will move it to the end of this URI since it will
         // need to come after any query string that may be added to the URL else it is
         // not going to be available. We will remove it then append it back on here.
-        if (! is_null($fragment = parse_url($uri, PHP_URL_FRAGMENT))) {
+        if (!is_null($fragment = parse_url($uri, PHP_URL_FRAGMENT))) {
             $uri = preg_replace('/#.*/', '', $uri);
         }
         

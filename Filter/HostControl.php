@@ -134,7 +134,7 @@ class HostControl extends ActionFilter
             return true;
         }
         
-        if (! is_array($allowedHosts) && ! $allowedHosts instanceof \Traversable) {
+        if (!is_array($allowedHosts) && ! $allowedHosts instanceof \Traversable) {
             $allowedHosts = (array) $allowedHosts;
         }
         
@@ -175,7 +175,7 @@ class HostControl extends ActionFilter
         $exception = new NotFoundHttpException(Kant::t('yii', 'Page not found.'));
         
         // use regular error handling if $this->fallbackHostInfo was set
-        if (! empty(Kant::$app->getRequest()->hostName)) {
+        if (!empty(Kant::$app->getRequest()->hostName)) {
             throw $exception;
         }
         

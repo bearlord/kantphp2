@@ -152,7 +152,7 @@ class Crypt_Hash
      */
     function __construct($hash = 'sha1')
     {
-        if (! defined('CRYPT_HASH_MODE')) {
+        if (!defined('CRYPT_HASH_MODE')) {
             switch (true) {
                 case extension_loaded('hash'):
                     define('CRYPT_HASH_MODE', CRYPT_HASH_MODE_HASH);
@@ -317,7 +317,7 @@ class Crypt_Hash
     {
         $mode = is_array($this->hash) ? CRYPT_HASH_MODE_INTERNAL : CRYPT_HASH_MODE;
         
-        if (! empty($this->key) || is_string($this->key)) {
+        if (!empty($this->key) || is_string($this->key)) {
             switch ($mode) {
                 case CRYPT_HASH_MODE_MHASH:
                     $output = mhash($this->hash, $text, $this->key);
@@ -869,13 +869,13 @@ class Crypt_Hash
      */
     function _sha512($m)
     {
-        if (! class_exists('Math_BigInteger')) {
+        if (!class_exists('Math_BigInteger')) {
             require_once ('Math/BigInteger.php');
         }
         
         static $init384, $init512, $k;
         
-        if (! isset($k)) {
+        if (!isset($k)) {
             // Initialize variables
             $init384 = array( // initial values for SHA384
                 'cbbb9d5dc1059ed8',
@@ -1173,7 +1173,7 @@ class Crypt_Hash
     function _add()
     {
         static $mod;
-        if (! isset($mod)) {
+        if (!isset($mod)) {
             $mod = pow(2, 32);
         }
         

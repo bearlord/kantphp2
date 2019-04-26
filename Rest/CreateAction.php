@@ -62,7 +62,7 @@ class CreateAction extends Action
                 $this->viewAction,
                 'id' => $id
             ], true));
-        } elseif (! $model->hasErrors()) {
+        } elseif (!$model->hasErrors()) {
             throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
         }
         

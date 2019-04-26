@@ -199,7 +199,7 @@ class Sort extends BaseObject
     {
         $attributes = [];
         foreach ($this->attributes as $name => $attribute) {
-            if (! is_array($attribute)) {
+            if (!is_array($attribute)) {
                 $attributes[$attribute] = [
                     'asc' => [
                         $attribute => SORT_ASC
@@ -208,7 +208,7 @@ class Sort extends BaseObject
                         $attribute => SORT_DESC
                     ]
                 ];
-            } elseif (! isset($attribute['asc'], $attribute['desc'])) {
+            } elseif (!isset($attribute['asc'], $attribute['desc'])) {
                 $attributes[$name] = array_merge([
                     'asc' => [
                         $name => SORT_ASC
@@ -281,7 +281,7 @@ class Sort extends BaseObject
                     
                     if (isset($this->attributes[$attribute])) {
                         $this->_attributeOrders[$attribute] = $descending ? SORT_DESC : SORT_ASC;
-                        if (! $this->enableMultiSort) {
+                        if (!$this->enableMultiSort) {
                             return $this->_attributeOrders;
                         }
                     }
@@ -392,7 +392,7 @@ class Sort extends BaseObject
      */
     public function createSortParam($attribute)
     {
-        if (! isset($this->attributes[$attribute])) {
+        if (!isset($this->attributes[$attribute])) {
             throw new InvalidConfigException("Unknown attribute: $attribute");
         }
         $definition = $this->attributes[$attribute];

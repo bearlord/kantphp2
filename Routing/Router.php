@@ -140,7 +140,7 @@ class Router extends Component
 			$this->group([
 				'prefix' => strtolower($mapName),
 				'middleware' => ($mapName),
-				'namespace' => "app\\module\\{$mapName}\\Controllers"
+				'namespace' => "app\\modules\\{$mapName}\\controllers"
 					], $map);
 		}
 	}
@@ -750,11 +750,11 @@ class Router extends Component
      */
     public function pushMiddlewareToGroup($group, $middleware)
     {
-        if (! array_key_exists($group, $this->middlewareGroups)) {
+        if (!array_key_exists($group, $this->middlewareGroups)) {
             $this->middlewareGroups[$group] = [];
         }
 
-        if (! in_array($middleware, $this->middlewareGroups[$group])) {
+        if (!in_array($middleware, $this->middlewareGroups[$group])) {
             $this->middlewareGroups[$group][] = $middleware;
         }
 
@@ -894,7 +894,7 @@ class Router extends Component
      */
     public function currentRouteAction()
     {
-        if (! $this->current()) {
+        if (!$this->current()) {
             return;
         }
 

@@ -110,7 +110,7 @@ class Collapse extends Widget
         $items = [];
         $index = 0;
         foreach ($this->items as $item) {
-            if (! array_key_exists('label', $item)) {
+            if (!array_key_exists('label', $item)) {
                 throw new InvalidConfigException("The 'label' option is required.");
             }
             $header = $item['label'];

@@ -614,7 +614,7 @@ class Route implements \Serializable
 
     private function sanitizeRequirement($key, $regex)
     {
-        if (! is_string($regex)) {
+        if (!is_string($regex)) {
             throw new \InvalidArgumentException(sprintf('Routing requirement for "%s" must be a string.', $key));
         }
         

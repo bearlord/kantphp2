@@ -241,7 +241,7 @@ class Target extends Component
                 }
             }
             
-            if (! $matched) {
+            if (!$matched) {
                 unset($messages[$i]);
             }
         }
@@ -260,7 +260,7 @@ class Target extends Component
     {
         list ($text, $level, $category, $timestamp) = $message;
         $level = Logger::getLevelName($level);
-        if (! is_string($text)) {
+        if (!is_string($text)) {
             // exceptions may not be serializable if in the call stack somewhere is a Closure
             if ($text instanceof \Exception) {
                 $text = (string) $text;

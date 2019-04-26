@@ -328,10 +328,10 @@ class GridView extends BaseListView
         } elseif (is_array($this->formatter)) {
             $this->formatter = Kant::createObject($this->formatter);
         }
-        if (! $this->formatter instanceof Formatter) {
+        if (!$this->formatter instanceof Formatter) {
             throw new InvalidConfigException('The "formatter" property must be either a Format object or a configuration array.');
         }
-        if (! isset($this->filterRowOptions['id'])) {
+        if (!isset($this->filterRowOptions['id'])) {
             $this->filterRowOptions['id'] = $this->options['id'] . '-filters';
         }
         
@@ -426,7 +426,7 @@ class GridView extends BaseListView
      */
     public function renderCaption()
     {
-        if (! empty($this->caption)) {
+        if (!empty($this->caption)) {
             return Html::tag('caption', $this->caption, $this->captionOptions);
         } else {
             return false;
@@ -443,7 +443,7 @@ class GridView extends BaseListView
         $requireColumnGroup = false;
         foreach ($this->columns as $column) {
             /* @var $column Column */
-            if (! empty($column->options)) {
+            if (!empty($column->options)) {
                 $requireColumnGroup = true;
                 break;
             }
@@ -536,7 +536,7 @@ class GridView extends BaseListView
             $key = $keys[$index];
             if ($this->beforeRow !== null) {
                 $row = call_user_func($this->beforeRow, $model, $key, $index, $this);
-                if (! empty($row)) {
+                if (!empty($row)) {
                     $rows[] = $row;
                 }
             }
@@ -545,7 +545,7 @@ class GridView extends BaseListView
             
             if ($this->afterRow !== null) {
                 $row = call_user_func($this->afterRow, $model, $key, $index, $this);
-                if (! empty($row)) {
+                if (!empty($row)) {
                     $rows[] = $row;
                 }
             }
@@ -605,7 +605,7 @@ class GridView extends BaseListView
                     'grid' => $this
                 ], $column));
             }
-            if (! $column->visible) {
+            if (!$column->visible) {
                 unset($this->columns[$i]);
                 continue;
             }
@@ -623,7 +623,7 @@ class GridView extends BaseListView
      */
     protected function createDataColumn($text)
     {
-        if (! preg_match('/^([^:]+)(:(\w*))?(:(.*))?$/', $text, $matches)) {
+        if (!preg_match('/^([^:]+)(:(\w*))?(:(.*))?$/', $text, $matches)) {
             throw new InvalidConfigException('The column must be specified in the format of "attribute", "attribute:format" or "attribute:format:label"');
         }
         

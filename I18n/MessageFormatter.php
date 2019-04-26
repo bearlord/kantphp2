@@ -94,7 +94,7 @@ class MessageFormatter extends Component
             return $pattern;
         }
         
-        if (! class_exists('MessageFormatter', false)) {
+        if (!class_exists('MessageFormatter', false)) {
             return $this->fallbackFormat($pattern, $params, $language);
         }
         
@@ -156,7 +156,7 @@ class MessageFormatter extends Component
         $this->_errorCode = 0;
         $this->_errorMessage = '';
         
-        if (! class_exists('MessageFormatter', false)) {
+        if (!class_exists('MessageFormatter', false)) {
             throw new NotSupportedException('You have to install PHP intl extension to use this feature.');
         }
         
@@ -171,7 +171,7 @@ class MessageFormatter extends Component
         foreach ($tokens as $i => $token) {
             if (is_array($token)) {
                 $param = trim($token[0]);
-                if (! isset($map[$param])) {
+                if (!isset($map[$param])) {
                     $map[$param] = count($map);
                 }
                 $token[0] = $map[$param];
@@ -222,13 +222,13 @@ class MessageFormatter extends Component
             return false;
         }
         foreach ($tokens as $i => $token) {
-            if (! is_array($token)) {
+            if (!is_array($token)) {
                 continue;
             }
             $param = trim($token[0]);
             if (isset($givenParams[$param])) {
                 // if param is given, replace it with a number
-                if (! isset($map[$param])) {
+                if (!isset($map[$param])) {
                     $map[$param] = count($map);
                     // make sure only used params are passed to format method
                     $resultingParams[$map[$param]] = $givenParams[$param];
@@ -242,7 +242,7 @@ class MessageFormatter extends Component
             $type = isset($token[1]) ? trim($token[1]) : 'none';
             // replace plural and select format recursively
             if ($type === 'plural' || $type === 'select') {
-                if (! isset($token[2])) {
+                if (!isset($token[2])) {
                     return false;
                 }
                 if (($subtokens = self::tokenizePattern($token[2])) === false) {
@@ -396,7 +396,7 @@ class MessageFormatter extends Component
                 /* http://icu-project.org/apiref/icu4c/classicu_1_1SelectFormat.html
                   selectStyle = (selector '{' message '}')+
                  */
-                if (! isset($token[2])) {
+                if (!isset($token[2])) {
                     return false;
                 }
                 $select = self::tokenizePattern($token[2]);
@@ -424,7 +424,7 @@ class MessageFormatter extends Component
                   keyword = [^[[:Pattern_Syntax:][:Pattern_White_Space:]]]+
                   message: see MessageFormat
                  */
-                if (! isset($token[2])) {
+                if (!isset($token[2])) {
                     return false;
                 }
                 $plural = self::tokenizePattern($token[2]);

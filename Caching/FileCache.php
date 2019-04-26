@@ -92,7 +92,7 @@ class FileCache extends Cache
     {
         parent::init();
         $this->cachePath = Kant::getAlias($this->cachePath);
-        if (! is_dir($this->cachePath)) {
+        if (!is_dir($this->cachePath)) {
             FileHelper::createDirectory($this->cachePath, $this->dirMode, true);
         }
     }
@@ -289,14 +289,14 @@ class FileCache extends Cache
                 $fullPath = $path . DIRECTORY_SEPARATOR . $file;
                 if (is_dir($fullPath)) {
                     $this->gcRecursive($fullPath, $expiredOnly);
-                    if (! $expiredOnly) {
-                        if (! @rmdir($fullPath)) {
+                    if (!$expiredOnly) {
+                        if (!@rmdir($fullPath)) {
                             $error = error_get_last();
                             Yii::warning("Unable to remove directory '{$fullPath}': {$error['message']}", __METHOD__);
                         }
                     }
-                } elseif (! $expiredOnly || $expiredOnly && @filemtime($fullPath) < time()) {
-                    if (! @unlink($fullPath)) {
+                } elseif (!$expiredOnly || $expiredOnly && @filemtime($fullPath) < time()) {
+                    if (!@unlink($fullPath)) {
                         $error = error_get_last();
                         Yii::warning("Unable to remove file '{$fullPath}': {$error['message']}", __METHOD__);
                     }

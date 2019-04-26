@@ -98,7 +98,7 @@ class NumberValidator extends Validator
             return;
         }
         $pattern = $this->integerOnly ? $this->integerPattern : $this->numberPattern;
-        if (! preg_match($pattern, "$value")) {
+        if (!preg_match($pattern, "$value")) {
             $this->addError($model, $attribute, $this->message);
         }
         if ($this->min !== null && $value < $this->min) {
@@ -125,7 +125,7 @@ class NumberValidator extends Validator
             ];
         }
         $pattern = $this->integerOnly ? $this->integerPattern : $this->numberPattern;
-        if (! preg_match($pattern, "$value")) {
+        if (!preg_match($pattern, "$value")) {
             return [
                 $this->message,
                 []

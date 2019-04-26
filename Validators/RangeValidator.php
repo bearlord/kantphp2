@@ -64,7 +64,7 @@ class RangeValidator extends Validator
     public function init()
     {
         parent::init();
-        if (! is_array($this->range) && ! ($this->range instanceof \Closure) && ! ($this->range instanceof \Traversable)) {
+        if (!is_array($this->range) && ! ($this->range instanceof \Closure) && ! ($this->range instanceof \Traversable)) {
             throw new InvalidConfigException('The "range" property must be set.');
         }
         if ($this->message === null) {
@@ -83,7 +83,7 @@ class RangeValidator extends Validator
             $in = true;
         }
         
-        if (! $in && ArrayHelper::isIn($value, $this->range, $this->strict)) {
+        if (!$in && ArrayHelper::isIn($value, $this->range, $this->strict)) {
             $in = true;
         }
         

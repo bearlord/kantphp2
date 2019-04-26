@@ -73,7 +73,7 @@ class ChainedDependency extends Dependency
         foreach ($this->dependencies as $dependency) {
             if ($this->dependOnAll && $dependency->isChanged($cache)) {
                 return true;
-            } elseif (! $this->dependOnAll && ! $dependency->isChanged($cache)) {
+            } elseif (!$this->dependOnAll && ! $dependency->isChanged($cache)) {
                 return false;
             }
         }

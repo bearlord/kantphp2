@@ -215,7 +215,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
                 }
             } elseif (empty($validator->on)) {
                 foreach ($names as $name) {
-                    if (! in_array($name, $validator->except, true)) {
+                    if (!in_array($name, $validator->except, true)) {
                         foreach ($validator->attributes as $attribute) {
                             $scenarios[$name][$attribute] = true;
                         }
@@ -231,7 +231,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
         }
         
         foreach ($scenarios as $scenario => $attributes) {
-            if (! empty($attributes)) {
+            if (!empty($attributes)) {
                 $scenarios[$scenario] = array_keys($attributes);
             }
         }
@@ -275,7 +275,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
         $class = new ReflectionClass($this);
         $names = [];
         foreach ($class->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            if (! $property->isStatic()) {
+            if (!$property->isStatic()) {
                 $names[] = $property->getName();
             }
         }
@@ -355,13 +355,13 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
             $this->clearErrors();
         }
         
-        if (! $this->beforeValidate()) {
+        if (!$this->beforeValidate()) {
             return false;
         }
         
         $scenarios = $this->scenarios();
         $scenario = $this->getScenario();
-        if (! isset($scenarios[$scenario])) {
+        if (!isset($scenarios[$scenario])) {
             throw new InvalidParamException("Unknown scenario: $scenario");
         }
         
@@ -614,7 +614,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
         } else {
             $errors = [];
             foreach ($this->_errors as $name => $es) {
-                if (! empty($es)) {
+                if (!empty($es)) {
                     $errors[$name] = reset($es);
                 }
             }
@@ -807,7 +807,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
     {
         $scenario = $this->getScenario();
         $scenarios = $this->scenarios();
-        if (! isset($scenarios[$scenario])) {
+        if (!isset($scenarios[$scenario])) {
             return [];
         }
         $attributes = [];
@@ -829,7 +829,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
     {
         $scenario = $this->getScenario();
         $scenarios = $this->scenarios();
-        if (! isset($scenarios[$scenario])) {
+        if (!isset($scenarios[$scenario])) {
             return [];
         }
         $attributes = $scenarios[$scenario];
@@ -925,11 +925,11 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
         foreach ($models as $i => $model) {
             /* @var $model Model */
             if ($formName == '') {
-                if (! empty($data[$i])) {
+                if (!empty($data[$i])) {
                     $model->load($data[$i], '');
                     $success = true;
                 }
-            } elseif (! empty($data[$formName][$i])) {
+            } elseif (!empty($data[$formName][$i])) {
                 $model->load($data[$formName][$i], '');
                 $success = true;
             }

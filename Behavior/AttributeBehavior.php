@@ -113,7 +113,7 @@ class AttributeBehavior extends Behavior
             return;
         }
         
-        if (! empty($this->attributes[$event->name])) {
+        if (!empty($this->attributes[$event->name])) {
             $attributes = (array) $this->attributes[$event->name];
             $value = $this->getValue($event);
             foreach ($attributes as $attribute) {

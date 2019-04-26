@@ -94,7 +94,7 @@ class File extends \SplFileInfo
     {
         $target = $this->getTargetFile($directory, $name);
         
-        if (! @rename($this->getPathname(), $target)) {
+        if (!@rename($this->getPathname(), $target)) {
             $error = error_get_last();
             throw new FileException(sprintf('Could not move the file "%s" to "%s" (%s)', $this->getPathname(), $target, strip_tags($error['message'])));
         }
@@ -106,11 +106,11 @@ class File extends \SplFileInfo
 
     protected function getTargetFile($directory, $name = null)
     {
-        if (! is_dir($directory)) {
+        if (!is_dir($directory)) {
             if (false === @mkdir($directory, 0777, true) && ! is_dir($directory)) {
                 throw new FileException(sprintf('Unable to create the "%s" directory', $directory));
             }
-        } elseif (! is_writable($directory)) {
+        } elseif (!is_writable($directory)) {
             throw new FileException(sprintf('Unable to write in the "%s" directory', $directory));
         }
         

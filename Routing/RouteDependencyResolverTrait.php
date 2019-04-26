@@ -20,7 +20,7 @@ trait RouteDependencyResolverTrait
      */
     protected function resolveClassMethodDependencies(array $parameters, $instance, $method)
     {
-        if (! method_exists($instance, $method)) {
+        if (!method_exists($instance, $method)) {
             return $parameters;
         }
         
@@ -39,7 +39,7 @@ trait RouteDependencyResolverTrait
         $originalParameters = $parameters;
         foreach ($reflector->getParameters() as $key => $parameter) {
             $instance = $this->transformDependency($parameter, $parameters, $originalParameters);
-            if (! is_null($instance)) {
+            if (!is_null($instance)) {
                 $this->spliceIntoParameters($parameters, $key, $instance);
             }
         }

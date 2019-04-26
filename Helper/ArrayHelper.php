@@ -70,9 +70,9 @@ class ArrayHelper
             
             return $object;
         } elseif (is_object($object)) {
-            if (! empty($properties)) {
+            if (!empty($properties)) {
                 $className = get_class($object);
-                if (! empty($properties[$className])) {
+                if (!empty($properties[$className])) {
                     $result = [];
                     foreach ($properties[$className] as $key => $name) {
                         if (is_int($key)) {
@@ -122,7 +122,7 @@ class ArrayHelper
     {
         $args = func_get_args();
         $res = array_shift($args);
-        while (! empty($args)) {
+        while (!empty($args)) {
             $next = array_shift($args);
             foreach ($next as $k => $v) {
                 if (is_int($k)) {
@@ -366,14 +366,14 @@ class ArrayHelper
             
             foreach ($groups as $group) {
                 $value = static::getValue($element, $group);
-                if (! array_key_exists($value, $lastArray)) {
+                if (!array_key_exists($value, $lastArray)) {
                     $lastArray[$value] = [];
                 }
                 $lastArray = &$lastArray[$value];
             }
             
             if ($key === null) {
-                if (! empty($groups)) {
+                if (!empty($groups)) {
                     $lastArray[] = $element;
                 }
             } else {
@@ -601,7 +601,7 @@ class ArrayHelper
         }
         $d = [];
         foreach ($data as $key => $value) {
-            if (! $valuesOnly && is_string($key)) {
+            if (!$valuesOnly && is_string($key)) {
                 $key = htmlspecialchars($key, ENT_QUOTES | ENT_SUBSTITUTE, $charset);
             }
             if (is_string($value)) {
@@ -634,7 +634,7 @@ class ArrayHelper
     {
         $d = [];
         foreach ($data as $key => $value) {
-            if (! $valuesOnly && is_string($key)) {
+            if (!$valuesOnly && is_string($key)) {
                 $key = htmlspecialchars_decode($key, ENT_QUOTES);
             }
             if (is_string($value)) {
@@ -666,13 +666,13 @@ class ArrayHelper
      */
     public static function isAssociative($array, $allStrings = true)
     {
-        if (! is_array($array) || empty($array)) {
+        if (!is_array($array) || empty($array)) {
             return false;
         }
         
         if ($allStrings) {
             foreach ($array as $key => $value) {
-                if (! is_string($key)) {
+                if (!is_string($key)) {
                     return false;
                 }
             }
@@ -704,7 +704,7 @@ class ArrayHelper
      */
     public static function isIndexed($array, $consecutive = false)
     {
-        if (! is_array($array)) {
+        if (!is_array($array)) {
             return false;
         }
         
@@ -716,7 +716,7 @@ class ArrayHelper
             return array_keys($array) === range(0, count($array) - 1);
         } else {
             foreach ($array as $key => $value) {
-                if (! is_int($key)) {
+                if (!is_int($key)) {
                     return false;
                 }
             }
@@ -745,7 +745,7 @@ class ArrayHelper
     {
         if ($haystack instanceof \Traversable) {
             foreach ($haystack as $value) {
-                if ($needle == $value && (! $strict || $needle === $value)) {
+                if ($needle == $value && (!$strict || $needle === $value)) {
                     return true;
                 }
             }
@@ -795,7 +795,7 @@ class ArrayHelper
     {
         if (is_array($needles) || $needles instanceof \Traversable) {
             foreach ($needles as $needle) {
-                if (! static::isIn($needle, $haystack, $strict)) {
+                if (!static::isIn($needle, $haystack, $strict)) {
                     return false;
                 }
             }
@@ -876,10 +876,10 @@ class ArrayHelper
                 $result[$globalKey] = $array[$globalKey];
                 continue;
             }
-            if (! isset($array[$globalKey][$localKey])) {
+            if (!isset($array[$globalKey][$localKey])) {
                 continue;
             }
-            if (! array_key_exists($globalKey, $result)) {
+            if (!array_key_exists($globalKey, $result)) {
                 $result[$globalKey] = [];
             }
             $result[$globalKey][$localKey] = $array[$globalKey][$localKey];

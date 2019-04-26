@@ -270,7 +270,7 @@ SQL;
      */
     public function getViewNames($schema = '', $refresh = false)
     {
-        if (! isset($this->_viewNames[$schema]) || $refresh) {
+        if (!isset($this->_viewNames[$schema]) || $refresh) {
             $this->_viewNames[$schema] = $this->findViewNames($schema);
         }
         
@@ -324,7 +324,7 @@ SQL;
                 $foreignTable = $constraint['foreign_table_name'];
             }
             $name = $constraint['constraint_name'];
-            if (! isset($constraints[$name])) {
+            if (!isset($constraints[$name])) {
                 $constraints[$name] = [
                     'tableName' => $foreignTable,
                     'columns' => []
@@ -392,7 +392,7 @@ SQL;
         $rows = $this->getUniqueIndexInformation($table);
         foreach ($rows as $row) {
             $column = $row['columnname'];
-            if (! empty($column) && $column[0] === '"') {
+            if (!empty($column) && $column[0] === '"') {
                 // postgres will quote names that are not lowercase-only
                 $column = substr($column, 1, - 1);
             }
@@ -555,7 +555,7 @@ SQL;
         $params = [];
         $sql = $this->db->getQueryBuilder()->insert($table, $columns, $params);
         $returnColumns = $this->getTableSchema($table)->primaryKey;
-        if (! empty($returnColumns)) {
+        if (!empty($returnColumns)) {
             $returning = [];
             foreach ((array) $returnColumns as $name) {
                 $returning[] = $this->quoteColumnName($name);

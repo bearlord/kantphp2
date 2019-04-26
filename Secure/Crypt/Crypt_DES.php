@@ -1726,7 +1726,7 @@ class Crypt_DES
      */
     function __construct($mode = CRYPT_DES_MODE_CBC)
     {
-        if (! defined('CRYPT_DES_MODE')) {
+        if (!defined('CRYPT_DES_MODE')) {
             switch (true) {
                 case extension_loaded('mcrypt') && in_array('des', mcrypt_list_algorithms()):
                     define('CRYPT_DES_MODE', CRYPT_DES_MODE_MCRYPT);
@@ -1826,20 +1826,20 @@ class Crypt_DES
         switch ($method) {
             default: // 'pbkdf2'
                 list (, , $hash, $salt, $count) = func_get_args();
-                if (! isset($hash)) {
+                if (!isset($hash)) {
                     $hash = 'sha1';
                 }
                 // WPA and WPA2 use the SSID as the salt
-                if (! isset($salt)) {
+                if (!isset($salt)) {
                     $salt = 'phpseclib/salt';
                 }
                 // RFC2898#section-4.2 uses 1,000 iterations by default
                 // WPA and WPA2 use 4,096.
-                if (! isset($count)) {
+                if (!isset($count)) {
                     $count = 1000;
                 }
                 
-                if (! class_exists('Crypt_Hash')) {
+                if (!class_exists('Crypt_Hash')) {
                     require_once ('Crypt/Hash.php');
                 }
                 
@@ -1995,14 +1995,14 @@ class Crypt_DES
                 return $ciphertext;
             }
             
-            if (! $this->continuousBuffer) {
+            if (!$this->continuousBuffer) {
                 mcrypt_generic_init($this->enmcrypt, $this->keys, $this->encryptIV);
             }
             
             return $ciphertext;
         }
         
-        if (! is_array($this->keys)) {
+        if (!is_array($this->keys)) {
             $this->keys = $this->_prepareKey("\0\0\0\0\0\0\0\0");
         }
         
@@ -2190,14 +2190,14 @@ class Crypt_DES
                 return $plaintext;
             }
             
-            if (! $this->continuousBuffer) {
+            if (!$this->continuousBuffer) {
                 mcrypt_generic_init($this->demcrypt, $this->keys, $this->decryptIV);
             }
             
             return $this->paddable ? $this->_unpad($plaintext) : $plaintext;
         }
         
-        if (! is_array($this->keys)) {
+        if (!is_array($this->keys)) {
             $this->keys = $this->_prepareKey("\0\0\0\0\0\0\0\0");
         }
         
@@ -2441,7 +2441,7 @@ class Crypt_DES
     {
         $length = strlen($text);
         
-        if (! $this->padding) {
+        if (!$this->padding) {
             if (($length & 7) == 0) {
                 return $text;
             } else {
@@ -2465,13 +2465,13 @@ class Crypt_DES
      */
     function _unpad($text)
     {
-        if (! $this->padding) {
+        if (!$this->padding) {
             return $text;
         }
         
         $length = ord($text[strlen($text) - 1]);
         
-        if (! $length || $length > 8) {
+        if (!$length || $length > 8) {
             return false;
         }
         
@@ -4494,7 +4494,7 @@ class Crypt_DES
         
         $code_hash = "$mode,$des_rounds";
         
-        if (! isset($lambda_functions[$code_hash])) {
+        if (!isset($lambda_functions[$code_hash])) {
             // Generating encrypt code:
             $ki = - 1;
             $init_cryptBlock = '

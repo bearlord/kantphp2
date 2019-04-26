@@ -9,7 +9,7 @@
 // KantPHP Path
 define('KANT_PATH', __DIR__);
 // Vendor Path
-define('VENDOR_PATH', dirname(__DIR__));
+define('VENDOR_PATH', dirname(dirname(__DIR__)));
 
 require_once KANT_PATH . '/Defines.php';
 require_once VENDOR_PATH . '/autoload.php';

@@ -37,7 +37,7 @@ class ControllerDispatcher {
 
         $controller->setIdOptions([
             'id' => strtolower(str_replace('Controller', '', basename(get_class($controller)))),
-            'module' => $controller
+//            'module' => $controller
         ]);
 
         $oldController = Kant::$app->controller;

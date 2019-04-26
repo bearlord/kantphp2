@@ -55,7 +55,7 @@ class I18N extends Component
     public function init()
     {
         parent::init();
-        if (! isset($this->translations['kant']) && ! isset($this->translations['kant*'])) {
+        if (!isset($this->translations['kant']) && ! isset($this->translations['kant*'])) {
             $this->translations['kant'] = [
                 'class' => 'Kant\I18n\PhpMessageSource',
                 'sourceLanguage' => 'en-US',
@@ -64,7 +64,7 @@ class I18N extends Component
             // 'basePath' => '@kant/messages',
             ;
         }
-        if (! isset($this->translations['app']) && ! isset($this->translations['app*'])) {
+        if (!isset($this->translations['app']) && ! isset($this->translations['app*'])) {
             $this->translations['app'] = [
                 'class' => 'Kant\I18n\PhpMessageSource',
                 'sourceLanguage' => Kant::$app->sourceLanguage,

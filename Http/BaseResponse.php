@@ -337,7 +337,7 @@ class BaseResponse
             $headers->remove('Content-Length');
         } else {
             // Content-type based on the Request
-            if (! $headers->has('Content-Type')) {
+            if (!$headers->has('Content-Type')) {
                 $format = $request->getRequestFormat();
                 if (null !== $format && $mimeType = $request->getMimeType($format)) {
                     $headers->set('Content-Type', $mimeType);
@@ -346,7 +346,7 @@ class BaseResponse
             
             // Fix Content-Type
             $charset = $this->charset ?  : 'UTF-8';
-            if (! $headers->has('Content-Type')) {
+            if (!$headers->has('Content-Type')) {
                 $headers->set('Content-Type', 'text/html; charset=' . $charset);
             } elseif (0 === stripos($headers->get('Content-Type'), 'text/') && false === stripos($headers->get('Content-Type'), 'charset')) {
                 // add the charset
@@ -396,7 +396,7 @@ class BaseResponse
             return $this;
         }
         
-        if (! $this->headers->has('Date')) {
+        if (!$this->headers->has('Date')) {
             $this->setDate(\DateTime::createFromFormat('U', time()));
         }
         
@@ -597,7 +597,7 @@ class BaseResponse
      */
     public function isCacheable()
     {
-        if (! in_array($this->statusCode, array(
+        if (!in_array($this->statusCode, array(
             200,
             203,
             300,
@@ -695,7 +695,7 @@ class BaseResponse
      */
     public function getDate()
     {
-        if (! $this->headers->has('Date')) {
+        if (!$this->headers->has('Date')) {
             $this->setDate(\DateTime::createFromFormat('U', time()));
         }
         
@@ -1072,7 +1072,7 @@ class BaseResponse
      */
     public function getVary()
     {
-        if (! $vary = $this->headers->get('Vary', null, false)) {
+        if (!$vary = $this->headers->get('Vary', null, false)) {
             return array();
         }
         
@@ -1114,7 +1114,7 @@ class BaseResponse
      */
     public function isNotModified(Request $request)
     {
-        if (! $request->isMethodSafe()) {
+        if (!$request->isMethodSafe()) {
             return false;
         }
         
@@ -1127,7 +1127,7 @@ class BaseResponse
         }
         
         if ($modifiedSince && $lastModified) {
-            $notModified = strtotime($modifiedSince) >= strtotime($lastModified) && (! $etags || $notModified);
+            $notModified = strtotime($modifiedSince) >= strtotime($lastModified) && (!$etags || $notModified);
         }
         
         if ($notModified) {
@@ -1278,7 +1278,7 @@ class BaseResponse
         // PHP_OUTPUT_HANDLER_* are not defined on HHVM 3.3
         $flags = defined('PHP_OUTPUT_HANDLER_REMOVABLE') ? PHP_OUTPUT_HANDLER_REMOVABLE | ($flush ? PHP_OUTPUT_HANDLER_FLUSHABLE : PHP_OUTPUT_HANDLER_CLEANABLE) : - 1;
         
-        while ($level -- > $targetLevel && ($s = $status[$level]) && (! isset($s['del']) ? ! isset($s['flags']) || $flags === ($s['flags'] & $flags) : $s['del'])) {
+        while ($level -- > $targetLevel && ($s = $status[$level]) && (!isset($s['del']) ? ! isset($s['flags']) || $flags === ($s['flags'] & $flags) : $s['del'])) {
             if ($flush) {
                 ob_end_flush();
             } else {

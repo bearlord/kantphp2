@@ -138,7 +138,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     {
         $query = static::find();
         
-        if (! ArrayHelper::isAssociative($condition)) {
+        if (!ArrayHelper::isAssociative($condition)) {
             // query by primary key
             $primaryKey = static::primaryKey();
             if (isset($primaryKey[0])) {
@@ -619,7 +619,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
             }
         } else {
             foreach ($this->_attributes as $name => $value) {
-                if (isset($names[$name]) && (! array_key_exists($name, $this->_oldAttributes) || $value !== $this->_oldAttributes[$name])) {
+                if (isset($names[$name]) && (!array_key_exists($name, $this->_oldAttributes) || $value !== $this->_oldAttributes[$name])) {
                     $attributes[$name] = $value;
                 }
             }
@@ -774,7 +774,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     protected function updateInternal($attributes = null)
     {
-        if (! $this->beforeSave(false)) {
+        if (!$this->beforeSave(false)) {
             return false;
         }
         $values = $this->getDirtyAttributes($attributes);
@@ -832,7 +832,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     {
         if (static::updateAllCounters($counters, $this->getOldPrimaryKey(true)) > 0) {
             foreach ($counters as $name => $value) {
-                if (! isset($this->_attributes[$name])) {
+                if (!isset($this->_attributes[$name])) {
                     $this->_attributes[$name] = $value;
                 } else {
                     $this->_attributes[$name] += $value;
@@ -1100,7 +1100,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     public function getPrimaryKey($asArray = false)
     {
         $keys = $this->primaryKey();
-        if (! $asArray && count($keys) === 1) {
+        if (!$asArray && count($keys) === 1) {
             return isset($this->_attributes[$keys[0]]) ? $this->_attributes[$keys[0]] : null;
         } else {
             $values = [];
@@ -1136,7 +1136,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
         if (empty($keys)) {
             throw new Exception(get_class($this) . ' does not have a primary key. You should either define a primary key for the corresponding table or override the primaryKey() method.');
         }
-        if (! $asArray && count($keys) === 1) {
+        if (!$asArray && count($keys) === 1) {
             return isset($this->_oldAttributes[$keys[0]]) ? $this->_oldAttributes[$keys[0]] : null;
         } else {
             $values = [];
@@ -1236,7 +1236,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
                 return null;
             }
         }
-        if (! $relation instanceof ActiveQueryInterface) {
+        if (!$relation instanceof ActiveQueryInterface) {
             if ($throwException) {
                 throw new InvalidParamException(get_class($this) . ' has no relation named "' . $name . '".');
             } else {
@@ -1345,7 +1345,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
         }
         
         // update lazily loaded related objects
-        if (! $relation->multiple) {
+        if (!$relation->multiple) {
             $this->_related[$name] = $model;
         } elseif (isset($this->_related[$name])) {
             if ($relation->indexBy !== null) {
@@ -1451,7 +1451,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
             }
         }
         
-        if (! $relation->multiple) {
+        if (!$relation->multiple) {
             unset($this->_related[$name]);
         } elseif (isset($this->_related[$name])) {
             /* @var $b ActiveRecordInterface */
@@ -1496,7 +1496,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
                 $nulls[$a] = null;
                 $condition[$a] = $this->$b;
             }
-            if (! empty($viaRelation->where)) {
+            if (!empty($viaRelation->where)) {
                 $condition = [
                     'and',
                     $condition,
@@ -1523,7 +1523,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
         } else {
             /* @var $relatedModel ActiveRecordInterface */
             $relatedModel = $relation->modelClass;
-            if (! $delete && count($relation->link) === 1 && is_array($this->{$b = reset($relation->link)})) {
+            if (!$delete && count($relation->link) === 1 && is_array($this->{$b = reset($relation->link)})) {
                 // relation via array valued attribute
                 $this->$b = [];
                 $this->save(false);
@@ -1534,7 +1534,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
                     $nulls[$a] = null;
                     $condition[$a] = $this->$b;
                 }
-                if (! empty($relation->where)) {
+                if (!empty($relation->where)) {
                     $condition = [
                         'and',
                         $condition,

@@ -61,7 +61,7 @@ trait BootstrapWidgetTrait
     public function init()
     {
         parent::init();
-        if (! isset($this->options['id'])) {
+        if (!isset($this->options['id'])) {
             $this->options['id'] = $this->getId();
         }
     }
@@ -96,7 +96,7 @@ trait BootstrapWidgetTrait
      */
     protected function registerClientEvents()
     {
-        if (! empty($this->clientEvents)) {
+        if (!empty($this->clientEvents)) {
             $id = $this->options['id'];
             $js = [];
             foreach ($this->clientEvents as $event => $handler) {

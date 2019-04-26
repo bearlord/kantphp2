@@ -37,7 +37,7 @@ class RouteAction
         // If no "uses" property has been set, we will dig through the array to find a
         // Closure instance within this list. We will set the first Closure we come
         // across into the "uses" property that will get fired off by this route.
-        elseif (! isset($action['uses'])) {
+        elseif (!isset($action['uses'])) {
             $action['uses'] = static::findCallable($action);
         }
         
@@ -84,7 +84,7 @@ class RouteAction
      */
     protected static function makeInvokable($action)
     {
-        if (! method_exists($action, '__invoke')) {
+        if (!method_exists($action, '__invoke')) {
             throw new UnexpectedValueException("Invalid route action: [{$action}].");
         }
         

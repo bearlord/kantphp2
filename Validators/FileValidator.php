@@ -191,7 +191,7 @@ class FileValidator extends Validator
         if ($this->tooSmall === null) {
             $this->tooSmall = Kant::t('kant', 'The file "{file}" is too small. Its size cannot be smaller than {formattedLimit}.');
         }
-        if (! is_array($this->extensions)) {
+        if (!is_array($this->extensions)) {
             $this->extensions = preg_split('/[\s,]+/', strtolower($this->extensions), - 1, PREG_SPLIT_NO_EMPTY);
         } else {
             $this->extensions = array_map('strtolower', $this->extensions);
@@ -199,7 +199,7 @@ class FileValidator extends Validator
         if ($this->wrongMimeType === null) {
             $this->wrongMimeType = Kant::t('kant', 'Only files with these MIME types are allowed: {mimeTypes}.');
         }
-        if (! is_array($this->mimeTypes)) {
+        if (!is_array($this->mimeTypes)) {
             $this->mimeTypes = preg_split('/[\s,]+/', strtolower($this->mimeTypes), - 1, PREG_SPLIT_NO_EMPTY);
         } else {
             $this->mimeTypes = array_map('strtolower', $this->mimeTypes);
@@ -213,13 +213,13 @@ class FileValidator extends Validator
     {
         if ($this->maxFiles != 1) {
             $files = $model->$attribute;
-            if (! is_array($files)) {
+            if (!is_array($files)) {
                 $this->addError($model, $attribute, $this->uploadRequired);
                 
                 return;
             }
             foreach ($files as $i => $file) {
-                if (! $file instanceof UploadedFile || $file->error == UPLOAD_ERR_NO_FILE) {
+                if (!$file instanceof UploadedFile || $file->error == UPLOAD_ERR_NO_FILE) {
                     unset($files[$i]);
                 }
             }
@@ -234,14 +234,14 @@ class FileValidator extends Validator
             } else {
                 foreach ($files as $file) {
                     $result = $this->validateValue($file);
-                    if (! empty($result)) {
+                    if (!empty($result)) {
                         $this->addError($model, $attribute, $result[0], $result[1]);
                     }
                 }
             }
         } else {
             $result = $this->validateValue($model->$attribute);
-            if (! empty($result)) {
+            if (!empty($result)) {
                 $this->addError($model, $attribute, $result[0], $result[1]);
             }
         }
@@ -252,7 +252,7 @@ class FileValidator extends Validator
      */
     protected function validateValue($file)
     {
-        if (! $file instanceof UploadedFile || $file->error == UPLOAD_ERR_NO_FILE) {
+        if (!$file instanceof UploadedFile || $file->error == UPLOAD_ERR_NO_FILE) {
             return [
                 $this->uploadRequired,
                 []
@@ -279,7 +279,7 @@ class FileValidator extends Validator
                             'formattedLimit' => Kant::$app->formatter->asShortSize($this->minSize)
                         ]
                     ];
-                } elseif (! empty($this->extensions) && ! $this->validateExtension($file)) {
+                } elseif (!empty($this->extensions) && ! $this->validateExtension($file)) {
                     return [
                         $this->wrongExtension,
                         [
@@ -287,7 +287,7 @@ class FileValidator extends Validator
                             'extensions' => implode(', ', $this->extensions)
                         ]
                     ];
-                } elseif (! empty($this->mimeTypes) && ! $this->validateMimeType($file)) {
+                } elseif (!empty($this->mimeTypes) && ! $this->validateMimeType($file)) {
                     return [
                         $this->wrongMimeType,
                         [
@@ -409,12 +409,12 @@ class FileValidator extends Validator
             
             $extensionsByMimeType = FileHelper::getExtensionsByMimeType($mimeType);
             
-            if (! in_array($extension, $extensionsByMimeType, true)) {
+            if (!in_array($extension, $extensionsByMimeType, true)) {
                 return false;
             }
         }
         
-        if (! in_array($extension, $this->extensions, true)) {
+        if (!in_array($extension, $this->extensions, true)) {
             return false;
         }
         
@@ -453,7 +453,7 @@ class FileValidator extends Validator
         
         $options['skipOnEmpty'] = $this->skipOnEmpty;
         
-        if (! $this->skipOnEmpty) {
+        if (!$this->skipOnEmpty) {
             $options['uploadRequired'] = Kant::$app->getI18n()->format($this->uploadRequired, [
                 'attribute' => $label
             ], Kant::$app->language);

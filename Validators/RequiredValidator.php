@@ -78,7 +78,7 @@ class RequiredValidator extends Validator
             if ($this->strict && $value !== null || ! $this->strict && ! $this->isEmpty(is_string($value) ? trim($value) : $value)) {
                 return null;
             }
-        } elseif (! $this->strict && $value == $this->requiredValue || $this->strict && $value === $this->requiredValue) {
+        } elseif (!$this->strict && $value == $this->requiredValue || $this->strict && $value === $this->requiredValue) {
             return null;
         }
         if ($this->requiredValue === null) {

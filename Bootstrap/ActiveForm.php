@@ -96,7 +96,7 @@ class ActiveForm extends \Kant\Widget\ActiveForm
      */
     public function init()
     {
-        if (! in_array($this->layout, [
+        if (!in_array($this->layout, [
             'default',
             'horizontal',
             'inline'

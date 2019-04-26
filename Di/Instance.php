@@ -78,7 +78,7 @@ class Instance
     {
         if (is_array($reference)) {
             $class = isset($reference['class']) ? $reference['class'] : $type;
-            if (! $container instanceof Container) {
+            if (!$container instanceof Container) {
                 $container = Kant::$container;
             }
             unset($reference['class']);

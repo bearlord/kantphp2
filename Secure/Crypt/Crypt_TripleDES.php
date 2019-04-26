@@ -58,7 +58,7 @@ namespace Kant\Secure\Crypt;
 /**
  * Include Crypt_DES
  */
-if (! class_exists('Crypt_DES')) {
+if (!class_exists('Crypt_DES')) {
     require_once ('DES.php');
 }
 
@@ -108,7 +108,7 @@ class Crypt_TripleDES extends Crypt_DES
      */
     function Crypt_TripleDES($mode = CRYPT_DES_MODE_CBC)
     {
-        if (! defined('CRYPT_DES_MODE')) {
+        if (!defined('CRYPT_DES_MODE')) {
             switch (true) {
                 case extension_loaded('mcrypt') && in_array('tripledes', mcrypt_list_algorithms()):
                     define('CRYPT_DES_MODE', CRYPT_DES_MODE_MCRYPT);
@@ -257,20 +257,20 @@ class Crypt_TripleDES extends Crypt_DES
         switch ($method) {
             default: // 'pbkdf2'
                 list (, , $hash, $salt, $count) = func_get_args();
-                if (! isset($hash)) {
+                if (!isset($hash)) {
                     $hash = 'sha1';
                 }
                 // WPA and WPA2 use the SSID as the salt
-                if (! isset($salt)) {
+                if (!isset($salt)) {
                     $salt = 'phpseclib';
                 }
                 // RFC2898#section-4.2 uses 1,000 iterations by default
                 // WPA and WPA2 use 4,096.
-                if (! isset($count)) {
+                if (!isset($count)) {
                     $count = 1000;
                 }
                 
-                if (! class_exists('Crypt_Hash')) {
+                if (!class_exists('Crypt_Hash')) {
                     require_once ('Crypt/Hash.php');
                 }
                 
@@ -393,7 +393,7 @@ class Crypt_TripleDES extends Crypt_DES
                 return $ciphertext;
             }
             
-            if (! $this->continuousBuffer) {
+            if (!$this->continuousBuffer) {
                 mcrypt_generic_init($this->enmcrypt, $this->key, $this->encryptIV);
             }
             
@@ -613,7 +613,7 @@ class Crypt_TripleDES extends Crypt_DES
                 return $plaintext;
             }
             
-            if (! $this->continuousBuffer) {
+            if (!$this->continuousBuffer) {
                 mcrypt_generic_init($this->demcrypt, $this->key, $this->decryptIV);
             }
             

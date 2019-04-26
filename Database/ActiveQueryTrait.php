@@ -93,7 +93,7 @@ trait ActiveQueryTrait
         
         if (empty($this->with)) {
             $this->with = $with;
-        } elseif (! empty($with)) {
+        } elseif (!empty($with)) {
             foreach ($with as $name => $value) {
                 if (is_int($name)) {
                     // repeating relation is fine as normalizeRelations() handle it well
@@ -168,7 +168,7 @@ trait ActiveQueryTrait
     public function findWith($with, &$models)
     {
         $primaryModel = reset($models);
-        if (! $primaryModel instanceof ActiveRecordInterface) {
+        if (!$primaryModel instanceof ActiveRecordInterface) {
             $primaryModel = new $this->modelClass();
         }
         $relations = $this->normalizeRelations($primaryModel, $with);
@@ -204,7 +204,7 @@ trait ActiveQueryTrait
                 $childName = null;
             }
             
-            if (! isset($relations[$name])) {
+            if (!isset($relations[$name])) {
                 $relation = $model->getRelation($name);
                 $relation->primaryModel = null;
                 $relations[$name] = $relation;

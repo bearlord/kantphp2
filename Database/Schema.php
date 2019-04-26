@@ -252,7 +252,7 @@ abstract class Schema extends BaseObject
      */
     public function getTableNames($schema = '', $refresh = false)
     {
-        if (! isset($this->_tableNames[$schema]) || $refresh) {
+        if (!isset($this->_tableNames[$schema]) || $refresh) {
             $this->_tableNames[$schema] = $this->findTableNames($schema);
         }
         
@@ -500,7 +500,7 @@ abstract class Schema extends BaseObject
     public function insert($table, $columns)
     {
         $command = $this->db->createCommand()->insert($table, $columns);
-        if (! $command->execute()) {
+        if (!$command->execute()) {
             return false;
         }
         $tableSchema = $this->getTableSchema($table);
@@ -527,7 +527,7 @@ abstract class Schema extends BaseObject
      */
     public function quoteValue($str)
     {
-        if (! is_string($str)) {
+        if (!is_string($str)) {
             return $str;
         }
         

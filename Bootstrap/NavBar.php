@@ -128,7 +128,7 @@ class NavBar extends Widget
         $tag = ArrayHelper::remove($options, 'tag', 'nav');
         echo Html::beginTag($tag, $options);
         if ($this->renderInnerContainer) {
-            if (! isset($this->innerContainerOptions['class'])) {
+            if (!isset($this->innerContainerOptions['class'])) {
                 Html::addCssClass($this->innerContainerOptions, 'container');
             }
             echo Html::beginTag('div', $this->innerContainerOptions);
@@ -136,7 +136,7 @@ class NavBar extends Widget
         echo Html::beginTag('div', [
             'class' => 'navbar-header'
         ]);
-        if (! isset($this->containerOptions['id'])) {
+        if (!isset($this->containerOptions['id'])) {
             $this->containerOptions['id'] = "{$this->options['id']}-collapse";
         }
         echo $this->renderToggleButton();

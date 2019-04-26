@@ -49,11 +49,11 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface
             return;
         }
         // check for PDO extension
-        if (! extension_loaded('pdo')) {
+        if (!extension_loaded('pdo')) {
             throw new KantException('The PDO extension is required for this adapter but the extension is not loaded');
         }
         // check for PDO_PGSQL extension
-        if (! extension_loaded('pdo_sqlite')) {
+        if (!extension_loaded('pdo_sqlite')) {
             throw new KantException('The PDO_PGSQL extension is required for this adapter but the extension is not loaded');
         }
         
@@ -97,7 +97,7 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface
      */
     public function execute($sql)
     {
-        if (! is_object($this->dbh)) {
+        if (!is_object($this->dbh)) {
             $this->_connect();
         }
         try {
@@ -128,11 +128,11 @@ class Sqlite extends DbQueryAbstract implements DbQueryInterface
         if ($this->ttl) {
             $this->clearFields();
             $rows = $this->cache->get($cacheSqlMd5);
-            if (! empty($rows)) {
+            if (!empty($rows)) {
                 return $rows;
             }
         }
-        if (! is_resource($this->dbh)) {
+        if (!is_resource($this->dbh)) {
             $this->_connect();
         }
         $sth = $this->dbh->prepare($sql);

@@ -1543,7 +1543,7 @@ class Crypt_Rijndael
             0x7D
         );
         
-        if (! function_exists('create_function') || ! is_callable('create_function')) {
+        if (!function_exists('create_function') || ! is_callable('create_function')) {
             $this->use_inline_crypt = false;
         }
     }
@@ -1627,20 +1627,20 @@ class Crypt_Rijndael
         switch ($method) {
             default: // 'pbkdf2'
                 list (, , $hash, $salt, $count) = func_get_args();
-                if (! isset($hash)) {
+                if (!isset($hash)) {
                     $hash = 'sha1';
                 }
                 // WPA and WPA2 use the SSID as the salt
-                if (! isset($salt)) {
+                if (!isset($salt)) {
                     $salt = 'phpseclib';
                 }
                 // RFC2898#section-4.2 uses 1,000 iterations by default
                 // WPA and WPA2 use 4,096.
-                if (! isset($count)) {
+                if (!isset($count)) {
                     $count = 1000;
                 }
                 
-                if (! class_exists('Crypt_Hash')) {
+                if (!class_exists('Crypt_Hash')) {
                     require_once ('Crypt/Hash.php');
                 }
                 
@@ -2230,7 +2230,7 @@ class Crypt_Rijndael
             0x91000000
         );
         
-        if (! $this->explicit_key_length) {
+        if (!$this->explicit_key_length) {
             // we do >> 2, here, and not >> 5, as we do above, since strlen($this->key) tells us the number of bytes - not bits
             $length = strlen($this->key) >> 2;
             if ($length > 8) {
@@ -2425,7 +2425,7 @@ class Crypt_Rijndael
     {
         $length = strlen($text);
         
-        if (! $this->padding) {
+        if (!$this->padding) {
             if ($length % $this->block_size == 0) {
                 return $text;
             } else {
@@ -2450,13 +2450,13 @@ class Crypt_Rijndael
      */
     function _unpad($text)
     {
-        if (! $this->padding) {
+        if (!$this->padding) {
             return $text;
         }
         
         $length = ord($text[strlen($text) - 1]);
         
-        if (! $length || $length > $this->block_size) {
+        if (!$length || $length > $this->block_size) {
             return false;
         }
         
@@ -2583,7 +2583,7 @@ class Crypt_Rijndael
         
         $code_hash = md5("$mode, $block_size, " . implode(',', $w));
         
-        if (! isset($lambda_functions[$code_hash])) {
+        if (!isset($lambda_functions[$code_hash])) {
             $Nr = $this->Nr;
             $Nb = $this->Nb;
             $c = $this->c;

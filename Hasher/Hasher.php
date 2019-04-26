@@ -17,7 +17,7 @@ class Hasher
 
     public static function getInstance()
     {
-        if (! self::$_hasher) {
+        if (!self::$_hasher) {
             self::$_hasher = new static();
         }
         return self::$_hasher;

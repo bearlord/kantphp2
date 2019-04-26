@@ -85,7 +85,7 @@ class ActionFilter extends Behavior
      */
     public function beforeFilter($event)
     {
-        if (! $this->isActive($event->action)) {
+        if (!$this->isActive($event->action)) {
             return;
         }
         

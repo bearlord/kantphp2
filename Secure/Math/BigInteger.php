@@ -274,7 +274,7 @@ class Math_BigInteger
      */
     function Math_BigInteger($x = 0, $base = 10)
     {
-        if (! defined('MATH_BIGINTEGER_MODE')) {
+        if (!defined('MATH_BIGINTEGER_MODE')) {
             switch (true) {
                 case extension_loaded('gmp'):
                     define('MATH_BIGINTEGER_MODE', MATH_BIGINTEGER_MODE_GMP);
@@ -291,11 +291,11 @@ class Math_BigInteger
             define('MATH_BIGINTEGER_OPENSSL_ENABLED', true);
         }
         
-        if (! defined('PHP_INT_SIZE')) {
+        if (!defined('PHP_INT_SIZE')) {
             define('PHP_INT_SIZE', 4);
         }
         
-        if (! defined('MATH_BIGINTEGER_BASE') && MATH_BIGINTEGER_MODE == MATH_BIGINTEGER_MODE_INTERNAL) {
+        if (!defined('MATH_BIGINTEGER_BASE') && MATH_BIGINTEGER_MODE == MATH_BIGINTEGER_MODE_INTERNAL) {
             switch (PHP_INT_SIZE) {
                 case 8: // use 64-bit integers if int size is 8 bytes
                     define('MATH_BIGINTEGER_BASE', 31);
@@ -574,7 +574,7 @@ class Math_BigInteger
                 return $this->precision > 0 ? substr(str_pad($value, $this->precision >> 3, chr(0), STR_PAD_LEFT), - ($this->precision >> 3)) : ltrim($value, chr(0));
         }
         
-        if (! count($this->value)) {
+        if (!count($this->value)) {
             return $this->precision > 0 ? str_repeat(chr(0), ($this->precision + 1) >> 3) : '';
         }
         $result = $this->_int2bytes($this->value[count($this->value) - 1]);
@@ -690,7 +690,7 @@ class Math_BigInteger
                 return ltrim($this->value, '0');
         }
         
-        if (! count($this->value)) {
+        if (!count($this->value)) {
             return '0';
         }
         
@@ -1030,7 +1030,7 @@ class Math_BigInteger
         
         $diff = $this->_compare($x_value, $x_negative, $y_value, $y_negative);
         
-        if (! $diff) {
+        if (!$diff) {
             return array(
                 MATH_BIGINTEGER_VALUE => array(),
                 MATH_BIGINTEGER_SIGN => false
@@ -1038,7 +1038,7 @@ class Math_BigInteger
         }
         
         // switch $x and $y around, if appropriate.
-        if ((! $x_negative && $diff < 0) || ($x_negative && $diff > 0)) {
+        if ((!$x_negative && $diff < 0) || ($x_negative && $diff > 0)) {
             $temp = $x_value;
             $x_value = $y_value;
             $y_value = $temp;
@@ -1149,7 +1149,7 @@ class Math_BigInteger
         $x_length = count($x_value);
         $y_length = count($y_value);
         
-        if (! $x_length || ! $y_length) { // a 0 is being multiplied
+        if (!$x_length || ! $y_length) { // a 0 is being multiplied
             return array(
                 MATH_BIGINTEGER_VALUE => array(),
                 MATH_BIGINTEGER_SIGN => false
@@ -1177,7 +1177,7 @@ class Math_BigInteger
         $x_length = count($x_value);
         $y_length = count($y_value);
         
-        if (! $x_length || ! $y_length) { // a 0 is being multiplied
+        if (!$x_length || ! $y_length) { // a 0 is being multiplied
             return array();
         }
         
@@ -1436,7 +1436,7 @@ class Math_BigInteger
         }
         
         static $zero;
-        if (! isset($zero)) {
+        if (!isset($zero)) {
             $zero = new Math_BigInteger();
         }
         
@@ -1450,7 +1450,7 @@ class Math_BigInteger
         
         $diff = $x->compare($y);
         
-        if (! $diff) {
+        if (!$diff) {
             $temp = new Math_BigInteger();
             $temp->value = array(
                 1
@@ -1490,7 +1490,7 @@ class Math_BigInteger
         $quotient_value = $this->_array_repeat(0, $x_max - $y_max + 1);
         
         static $temp, $lhs, $rhs;
-        if (! isset($temp)) {
+        if (!isset($temp)) {
             $temp = new Math_BigInteger();
             $lhs = new Math_BigInteger();
             $rhs = new Math_BigInteger();
@@ -1865,12 +1865,12 @@ class Math_BigInteger
         $result = $this->_prepareReduce($result, $n_value, $mode);
         
         for ($i = 0; $i < $e_length;) {
-            if (! $e_bits[$i]) {
+            if (!$e_bits[$i]) {
                 $result = $this->_squareReduce($result, $n_value, $mode);
                 ++ $i;
             } else {
                 for ($j = $window_size - 1; $j > 0; -- $j) {
-                    if (! empty($e_bits[$i + $j])) {
+                    if (!empty($e_bits[$i + $j])) {
                         break;
                     }
                 }
@@ -2208,7 +2208,7 @@ class Math_BigInteger
         $x_length = count($x_value);
         $y_length = count($y_value);
         
-        if (! $x_length || ! $y_length) { // a 0 is being multiplied
+        if (!$x_length || ! $y_length) { // a 0 is being multiplied
             return array(
                 MATH_BIGINTEGER_VALUE => array(),
                 MATH_BIGINTEGER_SIGN => false
@@ -2475,7 +2475,7 @@ class Math_BigInteger
         }
         
         static $zero, $one;
-        if (! isset($zero)) {
+        if (!isset($zero)) {
             $zero = new Math_BigInteger();
             $one = new Math_BigInteger(1);
         }
@@ -2491,7 +2491,7 @@ class Math_BigInteger
         
         extract($this->extendedGCD($n));
         
-        if (! $gcd->equals($one)) {
+        if (!$gcd->equals($one)) {
             return false;
         }
         
@@ -2584,7 +2584,7 @@ class Math_BigInteger
             1
         );
         
-        while (! (($x->value[0] & 1) || ($y->value[0] & 1))) {
+        while (!(($x->value[0] & 1) || ($y->value[0] & 1))) {
             $x->_rshift(1);
             $y->_rshift(1);
             $g->_lshift(1);
@@ -2603,10 +2603,10 @@ class Math_BigInteger
         );
         $b->value = $c->value = array();
         
-        while (! empty($u->value)) {
-            while (! ($u->value[0] & 1)) {
+        while (!empty($u->value)) {
+            while (!($u->value[0] & 1)) {
                 $u->_rshift(1);
-                if ((! empty($a->value) && ($a->value[0] & 1)) || (! empty($b->value) && ($b->value[0] & 1))) {
+                if ((!empty($a->value) && ($a->value[0] & 1)) || (!empty($b->value) && ($b->value[0] & 1))) {
                     $a = $a->add($y);
                     $b = $b->subtract($x);
                 }
@@ -2614,9 +2614,9 @@ class Math_BigInteger
                 $b->_rshift(1);
             }
             
-            while (! ($v->value[0] & 1)) {
+            while (!($v->value[0] & 1)) {
                 $v->_rshift(1);
-                if ((! empty($d->value) && ($d->value[0] & 1)) || (! empty($c->value) && ($c->value[0] & 1))) {
+                if ((!empty($d->value) && ($d->value[0] & 1)) || (!empty($c->value) && ($c->value[0] & 1))) {
                     $c = $c->add($y);
                     $d = $d->subtract($x);
                 }
@@ -2739,7 +2739,7 @@ class Math_BigInteger
     function _compare($x_value, $x_negative, $y_value, $y_negative)
     {
         if ($x_negative != $y_negative) {
-            return (! $x_negative && $y_negative) ? 1 : - 1;
+            return (!$x_negative && $y_negative) ? 1 : - 1;
         }
         
         $result = $x_negative ? - 1 : 1;
@@ -2979,7 +2979,7 @@ class Math_BigInteger
             case MATH_BIGINTEGER_MODE_GMP:
                 static $two;
                 
-                if (! isset($two)) {
+                if (!isset($two)) {
                     $two = gmp_init('2');
                 }
                 
@@ -3017,7 +3017,7 @@ class Math_BigInteger
             case MATH_BIGINTEGER_MODE_GMP:
                 static $two;
                 
-                if (! isset($two)) {
+                if (!isset($two)) {
                     $two = gmp_init('2');
                 }
                 
@@ -3070,7 +3070,7 @@ class Math_BigInteger
         }
         $shift %= $precision;
         
-        if (! $shift) {
+        if (!$shift) {
             return $this->copy();
         }
         
@@ -3128,7 +3128,7 @@ class Math_BigInteger
         
         $compare = $max->compare($min);
         
-        if (! $compare) {
+        if (!$compare) {
             return $this->_normalize($min);
         } else 
             if ($compare < 0) {
@@ -3144,7 +3144,7 @@ class Math_BigInteger
         $max = ltrim($max->toBytes(), chr(0));
         $size = strlen($max) - 1;
         
-        $crypt_random = function_exists('crypt_random_string') || (! class_exists('Crypt_Random') && function_exists('crypt_random_string'));
+        $crypt_random = function_exists('crypt_random_string') || (!class_exists('Crypt_Random') && function_exists('crypt_random_string'));
         if ($crypt_random) {
             $random = crypt_random_string($size);
         } else {
@@ -3164,7 +3164,7 @@ class Math_BigInteger
         $fragment = new Math_BigInteger($random, 256);
         $leading = $fragment->compare(new Math_BigInteger(substr($max, 1), 256)) > 0 ? ord($max[0]) - 1 : ord($max[0]);
         
-        if (! $crypt_random) {
+        if (!$crypt_random) {
             $msb = chr(mt_rand(0, $leading));
         } else {
             $cutoff = floor(0xFF / $leading) * $leading;
@@ -3203,7 +3203,7 @@ class Math_BigInteger
     {
         $compare = $max->compare($min);
         
-        if (! $compare) {
+        if (!$compare) {
             return $min;
         } else 
             if ($compare < 0) {
@@ -3244,7 +3244,7 @@ class Math_BigInteger
         }
         
         static $one, $two;
-        if (! isset($one)) {
+        if (!isset($one)) {
             $one = new Math_BigInteger(1);
             $two = new Math_BigInteger(2);
         }
@@ -3336,7 +3336,7 @@ class Math_BigInteger
     {
         $length = strlen($this->toBytes());
         
-        if (! $t) {
+        if (!$t) {
             // see HAC 4.49 "Note (controlling the error probability)"
             if ($length >= 163) {
                 $t = 2;
@@ -3412,7 +3412,7 @@ else {
         
         static $primes, $zero, $one, $two;
         
-        if (! isset($primes)) {
+        if (!isset($primes)) {
             $primes = array(
                 3,
                 5,
@@ -3610,7 +3610,7 @@ else {
             $value = $this->value;
             foreach ($primes as $prime) {
                 list (, $r) = $this->_divide_digit($value, $prime);
-                if (! $r) {
+                if (!$r) {
                     return count($value) == 1 && $value[0] == $prime;
                 }
             }
@@ -3646,7 +3646,7 @@ else {
             $a = $this->random($two, $n_2);
             $y = $a->modPow($r, $n);
             
-            if (! $y->equals($one) && ! $y->equals($n_1)) {
+            if (!$y->equals($one) && ! $y->equals($n_1)) {
                 for ($j = 1; $j < $s && ! $y->equals($n_1); ++ $j) {
                     $y = $y->modPow($two, $n);
                     if ($y->equals($one)) {
@@ -3654,7 +3654,7 @@ else {
                     }
                 }
                 
-                if (! $y->equals($n_1)) {
+                if (!$y->equals($n_1)) {
                     return false;
                 }
             }
@@ -3749,13 +3749,13 @@ else {
         
         switch (MATH_BIGINTEGER_MODE) {
             case MATH_BIGINTEGER_MODE_GMP:
-                if (! empty($result->bitmask->value)) {
+                if (!empty($result->bitmask->value)) {
                     $result->value = gmp_and($result->value, $result->bitmask->value);
                 }
                 
                 return $result;
             case MATH_BIGINTEGER_MODE_BCMATH:
-                if (! empty($result->bitmask->value)) {
+                if (!empty($result->bitmask->value)) {
                     $result->value = bcmod($result->value, $result->bitmask->value);
                 }
                 
@@ -3764,13 +3764,13 @@ else {
         
         $value = &$result->value;
         
-        if (! count($value)) {
+        if (!count($value)) {
             return $result;
         }
         
         $value = $this->_trim($value);
         
-        if (! empty($result->bitmask->value)) {
+        if (!empty($result->bitmask->value)) {
             $length = min(count($value), count($this->bitmask->value));
             $value = array_slice($value, 0, $length);
             

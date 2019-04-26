@@ -57,7 +57,7 @@ class ModuleDispatcher
 	public function dispatch(Request $request)
 	{
 		$dispatcher = $this->parseUrl($request->path());
-		return $this->run($dispatcher['route']);
+		return $this->run($dispatcher);
 	}
 
 	/**
@@ -67,7 +67,7 @@ class ModuleDispatcher
 	 */
 	public function parseUrl($url)
 	{
-		$result = $this->parseRoute(strtolower($url));
+		$result = $this->parseRoute($url);
 		return $result;
 	}
 
@@ -78,6 +78,9 @@ class ModuleDispatcher
 	 */
 	protected function parseRoute($pathinfo)
 	{
+		/*
+		$pathinfo = strtolower(trim($pathinfo, "/"));
+		
 		$route = [
 			null,
 			null,
@@ -103,13 +106,25 @@ class ModuleDispatcher
 		$module = array_shift($path);
 		$module = !empty($module) ? $module : $this->defaultRoute['module'];
 		$controller = !empty($path) ? array_shift($path) : $this->defaultRoute['controller'];
-		$action = !empty($path) ? array_shift($path) : $this->defaultRoute['action'];
+		$action = !empty($path) ? array_shift($path) : '';
 		
 		$route = sprintf("%s/%s/%s", $module, $controller, $action);
 		return [
 			'route' => $route,
 			'var' => $var
 		];
+		*/
+		
+		
+		$pathinfo = strtolower(trim($pathinfo, "/"));
+		
+		$route = $pathinfo;
+		
+		if (strpos($pathinfo, "/") === false) {
+			$route = $pathinfo . "/" . $this->defaultRoute['controller'];
+		} 
+
+		return $route;
 	}
 
 	/**

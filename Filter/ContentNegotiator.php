@@ -165,10 +165,10 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
     {
         $request = $this->request ?  : Kant::$app->getRequest();
         $response = $this->response ?  : Kant::$app->getResponse();
-        if (! empty($this->formats)) {
+        if (!empty($this->formats)) {
             $this->negotiateContentType($request, $response);
         }
-        if (! empty($this->languages)) {
+        if (!empty($this->languages)) {
             Kant::$app->language = $this->negotiateLanguage($request);
         }
     }
@@ -183,7 +183,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
      */
     protected function negotiateContentType($request, $response)
     {
-        if (! empty($this->formatParam) && ($format = $request->get($this->formatParam)) !== null) {
+        if (!empty($this->formatParam) && ($format = $request->get($this->formatParam)) !== null) {
             if (in_array($format, $this->formats)) {
                 $response->format = $format;
                 $response->acceptMimeType = null;
@@ -232,7 +232,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
      */
     protected function negotiateLanguage($request)
     {
-        if (! empty($this->languageParam) && ($language = $request->get($this->languageParam)) !== null) {
+        if (!empty($this->languageParam) && ($language = $request->get($this->languageParam)) !== null) {
             if (isset($this->languages[$language])) {
                 return $this->languages[$language];
             }

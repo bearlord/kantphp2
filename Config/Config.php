@@ -86,7 +86,7 @@ class Config
             }
 
         } elseif (is_array($name)) {
-            if (! empty($name)) {
+            if (!empty($name)) {
                 foreach ($name as $key => $val) {
                     $this->set($key, $value);
                 }

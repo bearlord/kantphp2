@@ -587,7 +587,7 @@ class Connection extends Component
      */
     public function getQueryCacheInfo($duration, $dependency)
     {
-        if (! $this->enableQueryCache) {
+        if (!$this->enableQueryCache) {
             return null;
         }
         
@@ -632,7 +632,7 @@ class Connection extends Component
             return;
         }
         
-        if (! empty($this->masters)) {
+        if (!empty($this->masters)) {
             $db = $this->openFromPool($this->masters, $this->masterConfig);
             if ($db !== null) {
                 $this->pdo = $db->pdo;
@@ -854,7 +854,7 @@ class Connection extends Component
             return $this->_schema;
         } else {
             $driver = $this->getDriverName();
-            if (! empty(($this->schemaMap[$driver]))) {
+            if (!empty(($this->schemaMap[$driver]))) {
                 return $this->_schema = new $this->schemaMap[$driver]([
                     'db' => $this
                 ]);
@@ -1042,7 +1042,7 @@ class Connection extends Component
      */
     public function getSlave($fallbackToMaster = true)
     {
-        if (! $this->enableSlaves) {
+        if (!$this->enableSlaves) {
             return $fallbackToMaster ? $this : null;
         }
         
@@ -1096,7 +1096,7 @@ class Connection extends Component
             return null;
         }
         
-        if (! isset($sharedConfig['class'])) {
+        if (!isset($sharedConfig['class'])) {
             $sharedConfig['class'] = get_class($this);
         }
         

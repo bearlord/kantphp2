@@ -218,7 +218,7 @@ final class StartSession
      */
     protected function usingCookieSessions()
     {
-        if (! $this->sessionConfigured()) {
+        if (!$this->sessionConfigured()) {
             return false;
         }
         

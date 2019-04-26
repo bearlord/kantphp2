@@ -39,7 +39,7 @@ class BaseRedirectResponse extends BaseResponse
         
         $this->setTargetUrl($url);
         
-        if (! $this->isRedirect()) {
+        if (!$this->isRedirect()) {
             throw new \InvalidArgumentException(sprintf('The HTTP status code is not a redirect ("%s" given).', $status));
         }
         

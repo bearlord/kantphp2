@@ -133,7 +133,7 @@ class Net_SCP
      */
     function Net_SCP($ssh)
     {
-        if (! is_object($ssh)) {
+        if (!is_object($ssh)) {
             return;
         }
         
@@ -175,7 +175,7 @@ class Net_SCP
      */
     function put($remote_file, $data, $mode = NET_SCP_STRING)
     {
-        if (! isset($this->ssh)) {
+        if (!isset($this->ssh)) {
             return false;
         }
         
@@ -201,12 +201,12 @@ class Net_SCP
         if ($mode == NET_SCP_STRING) {
             $this->_send($data);
         } else {
-            if (! is_file($data)) {
+            if (!is_file($data)) {
                 user_error("$data is not a valid file", E_USER_NOTICE);
                 return false;
             }
             $fp = @fopen($data, 'rb');
-            if (! $fp) {
+            if (!$fp) {
                 return false;
             }
             $size = filesize($data);
@@ -233,7 +233,7 @@ class Net_SCP
      */
     function get($remote_file, $local_file = false)
     {
-        if (! isset($this->ssh)) {
+        if (!isset($this->ssh)) {
             return false;
         }
         
@@ -241,7 +241,7 @@ class Net_SCP
         
         $this->_send("\0");
         
-        if (! preg_match('#(?<perms>[^ ]+) (?<size>\d+) (?<name>.+)#', rtrim($this->_receive()), $info)) {
+        if (!preg_match('#(?<perms>[^ ]+) (?<size>\d+) (?<name>.+)#', rtrim($this->_receive()), $info)) {
             return false;
         }
         
@@ -251,7 +251,7 @@ class Net_SCP
         
         if ($local_file !== false) {
             $fp = @fopen($local_file, 'wb');
-            if (! $fp) {
+            if (!$fp) {
                 return false;
             }
         }
@@ -309,7 +309,7 @@ class Net_SCP
             case NET_SCP_SSH2:
                 return $this->ssh->_get_channel_packet(NET_SSH2_CHANNEL_EXEC, true);
             case NET_SCP_SSH1:
-                if (! $this->ssh->bitmap) {
+                if (!$this->ssh->bitmap) {
                     return false;
                 }
                 while (true) {

@@ -26,7 +26,7 @@ class Filter
      */
     public static function addslashes($string)
     {
-        if (! is_array($string)) {
+        if (!is_array($string)) {
             return addslashes($string);
         } else {
             foreach ($string as $key => $val) {
@@ -46,7 +46,7 @@ class Filter
      */
     public static function htmlspecialchars($string)
     {
-        if (! is_array($string)) {
+        if (!is_array($string)) {
             return htmlspecialchars($string);
         } else {
             foreach ($string as $key => $val) {
@@ -64,7 +64,7 @@ class Filter
      */
     public static function intval($number)
     {
-        if (! is_array($number)) {
+        if (!is_array($number)) {
             return intval($number);
         } else {
             foreach ($number as $key => $val) {
@@ -84,7 +84,7 @@ class Filter
      */
     public static function textval($string)
     {
-        if (! is_array($string)) {
+        if (!is_array($string)) {
             $string = is_string($string) ? self::xss(htmlspecialchars(trim($string), ENT_QUOTES)) : $string;
         } else {
             foreach ($string as $key => $val) {
@@ -104,7 +104,7 @@ class Filter
      */
     public static function html($string)
     {
-        if (! is_array($string)) {
+        if (!is_array($string)) {
             $string = is_string($string) ? self::xss($string) : $string;
         } else {
             foreach ($string as $key => $val) {
@@ -122,7 +122,7 @@ class Filter
      */
     public static function stripslashes($string)
     {
-        if (! is_array($string)) {
+        if (!is_array($string)) {
             $string = is_string($string) ? stripslashes($string) : $string;
             return $string;
         } else {

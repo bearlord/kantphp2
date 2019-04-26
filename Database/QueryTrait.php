@@ -229,11 +229,11 @@ trait QueryTrait
      */
     protected function filterCondition($condition)
     {
-        if (! is_array($condition)) {
+        if (!is_array($condition)) {
             return $condition;
         }
         
-        if (! isset($condition[0])) {
+        if (!isset($condition[0])) {
             // hash format: 'column1' => 'value1', 'column2' => 'value2', ...
             foreach ($condition as $name => $value) {
                 if ($this->isEmpty($value)) {

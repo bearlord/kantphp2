@@ -54,7 +54,7 @@ class TagDependency extends Dependency
                 $newKeys[] = $key;
             }
         }
-        if (! empty($newKeys)) {
+        if (!empty($newKeys)) {
             $timestamps = array_merge($timestamps, static::touchKeys($cache, $newKeys));
         }
         
